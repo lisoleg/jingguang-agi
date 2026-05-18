@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>AGI 12.0 三栏布局测试</title>
+<style>
+:root{
+  --bg:#09090f; --bg2:#111118; --acc:#7c3aed; --green:#10b981;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:sans-serif;background:var(--bg);color:#fff}
+#app{display:flex;height:100vh}
+#left{width:320px;background:var(--bg2);border-right:1px solid #333;padding:20px}
+#center{flex:1;background:#0a0a10;padding:20px}
+#right{width:400px;background:var(--bg2);border-left:1px solid #333;padding:20px}
+h2{font-size:14px;margin-bottom:15px;color:var(--acc)}
+.metric{background:#1a1a26;padding:12px;border-radius:8px;margin-bottom:10px}
+.label{font-size:11px;color:#888;margin-bottom:5px}
+.value{font-size:24px;font-weight:bold;color:var(--green)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="left">
+    <h2>左侧仪表盘</h2>
+    <div class="metric">
+      <div class="label">三相熵</div>
+      <div class="value">0.81</div>
+    </div>
+    <div class="metric">
+      <div class="label">五行耦合</div>
+      <div class="value">木火土金水</div>
+    </div>
+  </div>
+  <div id="center">
+    <h2>中间对话区域</h2>
+    <p>这是简洁的对话界面</p>
+  </div>
+  <div id="right">
+    <h2>右侧DAG图</h2>
+    <div class="metric">
+      <div class="label">关系链节点</div>
+      <div class="value">0</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

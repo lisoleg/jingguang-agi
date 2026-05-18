@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-05-10T04:53:21.479065",
+  "system_info": {
+    "cpu_count": 12,
+    "memory_total_gb": 31.73033905029297,
+    "python_version": "3.10.0rc2 (tags/v3.10.0rc2:839d789, Sep  7 2021, 18:51:45) [MSC v.1929 64 bit (AMD64)]"
+  },
+  "benchmarks": [
+    {
+      "name": "LLM推理压力测试",
+      "total_requests": 1385,
+      "successful": 1385,
+      "failed": 0,
+      "avg_response_time_ms": 108.61541126356275,
+      "min_response_time_ms": 101.20089999691118,
+      "max_response_time_ms": 145.85659999283962,
+      "p50_response_time_ms": 108.51069999625906,
+      "p90_response_time_ms": 110.06859999906737,
+      "p99_response_time_ms": 112.73300000175368,
+      "requests_per_second": 46.166666666666664,
+      "error_rate_percent": 0.0,
+      "memory_usage_mb": 23.4921875,
+      "cpu_percent": 0.0
+    },
+    {
+      "name": "工具调用压力测试",
+      "total_requests": 4834,
+      "successful": 4834,
+      "failed": 0,
+      "avg_response_time_ms": 62.12000078616133,
+      "min_response_time_ms": 50.65449999528937,
+      "max_response_time_ms": 112.31269998825155,
+      "p50_response_time_ms": 62.107099998684134,
+      "p90_response_time_ms": 63.25319998722989,
+      "p99_response_time_ms": 64.65709999611136,
+      "requests_per_second": 161.13333333333333,
+      "error_rate_percent": 0.0,
+      "memory_usage_mb": 25.91796875,
+      "cpu_percent": 0.0
+    },
+    {
+      "name": "记忆检索压力测试",
+      "total_requests": 4313,
+      "successful": 4313,
+      "failed": 0,
+      "avg_response_time_ms": 55.69280728024549,
+      "min_response_time_ms": 20.527900007436983,
+      "max_response_time_ms": 705.0033999985317,
+      "p50_response_time_ms": 43.80749999836553,
+      "p90_response_time_ms": 88.19049999874551,
+      "p99_response_time_ms": 264.85609999508597,
+      "requests_per_second": 143.76666666666668,
+      "error_rate_percent": 0.0,
+      "memory_usage_mb": 28.07421875,
+      "cpu_percent": 0.0
+    },
+    {
+      "name": "混合负载压力测试",
+      "total_requests": 9804,
+      "successful": 9804,
+      "failed": 0,
+      "avg_response_time_ms": 92.04703689310573,
+      "min_response_time_ms": 20.428899995749816,
+      "max_response_time_ms": 582.6958999969065,
+      "p50_response_time_ms": 84.0401000023121,
+      "p90_response_time_ms": 140.66630000888836,
+      "p99_response_time_ms": 255.3601000108756,
+      "requests_per_second": 163.4,
+      "error_rate_percent": 0.0,
+      "memory_usage_mb": 33.203125,
+      "cpu_percent": 0.0
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-05-14T18:41:30.150948",
+  "total": 6,
+  "passed": 5,
+  "failed": 1,
+  "pass_rate": 83.33333333333334,
+  "elapsed_seconds": 0.057768,
+  "results": [
+    {
+      "module": "Module 19: IAWW介质引擎",
+      "status": "PASS",
+      "result": {
+        "state": "decoherent",
+        "coherence": 0.0,
+        "vacuum_energy": 4.022814996697997,
+        "winding_number": -0.21580970829618357,
+        "stress_strain": {
+          "strain_magnitude": 0.5240909252434127,
+          "stress_magnitude": 0.5240909252434127,
+          "stress_strain_ratio": 1.0,
+          "deformation_energy": 0.1373356489612482
+        },
+        "yin_yang_analysis": {
+          "orthogonality": 0.32648545902239706,
+          "theorem_2_verified": 

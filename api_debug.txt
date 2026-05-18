@@ -1,0 +1,48 @@
+[DEBUG] ms=<class 'agi_medium_symbiosis.AGIMediumSymbiosis'>
+[DEBUG] ms_loaded
+[DEBUG] calling_analyze
+[DEBUG] analyze_done type=<class 'agi_medium_symbiosis.AGIAnalysisResult'>
+[DEBUG] medium_data={'phase_lock': 1.0, 'medium_state': 'high', 'four_mode': 'pilgrimage', 'four_mode_cn': '取经相干模态', 'four_mode_conf': 0.7942857142857144, 'hexagram': '', 'hexagram_name': '德之固', 'S_C': 0.0, 'xinzhai': True, 'holistic_confidence': 0.9382857142857144}
+[DEBUG] entropy_override_done
+[DEBUG] ms=<class 'agi_medium_symbiosis.AGIMediumSymbiosis'>
+[DEBUG] ms_loaded
+[DEBUG] calling_analyze
+[DEBUG] analyze_done type=<class 'agi_medium_symbiosis.AGIAnalysisResult'>
+[DEBUG] medium_data={'phase_lock': 1.0, 'medium_state': 'high', 'four_mode': 'pilgrimage', 'four_mode_cn': '取经相干模态', 'four_mode_conf': 0.7942857142857144, 'hexagram': '', 'hexagram_name': '德之固', 'S_C': 0.0, 'xinzhai': True, 'holistic_confidence': 0.9382857142857144}
+[DEBUG] entropy_override_done
+[DEBUG] ms=<class 'agi_medium_symbiosis.AGIMediumSymbiosis'>
+[DEBUG] ms_loaded
+[DEBUG] calling_analyze
+[DEBUG] analyze_done type=<class 'agi_medium_symbiosis.AGIAnalysisResult'>
+[DEBUG] medium_data={'phase_lock': 1.0, 'medium_state': 'high', 'four_mode': 'pilgrimage', 'four_mode_cn': '取经相干模态', 'four_mode_conf': 0.7942857142857144, 'hexagram': '', 'hexagram_name': '德之固', 'S_C': 0.0, 'xinzhai': True, 'holistic_confidence': 0.9382857142857144}
+[DEBUG] entropy_override_done
+[DEBUG] ms=<class 'agi_medium_symbiosis.AGIMediumSymbiosis'>
+[DEBUG] ms_loaded
+[DEBUG] calling_analyze
+[DEBUG] analyze_done type=<class 'agi_medium_symbiosis.AGIAnalysisResult'>
+[DEBUG] medium_data={'phase_lock': 1.0, 'medium_state': 'high', 'four_mode': 'pilgrimage', 'four_mode_cn': '取经相干模态', 'four_mode_conf': 0.7942857142857144, 'hexagram': '', 'hexagram_name': '德之固', 'S_C': 0.0, 'xinzhai': True, 'holistic_confidence': 0.9382857142857144}
+[DEBUG] entropy_override_done
+[DEBUG] ms=<class 'agi_medium_symbiosis.AGIMediumSymbiosis'>
+[DEBUG] ms_loaded
+[DEBUG] calling_analyze
+[DEBUG] analyze_done type=<class 'agi_medium_symbiosis.AGIAnalysisResult'>
+[DEBUG] medium_data={'phase_lock': 1.0, 'medium_state': 'high', 'four_mode': 'pilgrimage', 'four_mode_cn': '取经相干模态', 'four_mode_conf': 0.7942857142857144, 'hexagram': '', 'hexagram_name': '德之固', 'S_C': 0.0, 'xinzhai': True, 'holistic_confidence': 0.9382857142857144}
+[DEBUG] entropy_override_done
+[DEBUG] ms=<class 'agi_medium_symbiosis.AGIMediumSymbiosis'>
+[DEBUG] ms_loaded
+[DEBUG] calling_analyze
+[DEBUG] analyze_done type=<class 'agi_medium_symbiosis.AGIAnalysisResult'>
+[DEBUG] medium_data={'phase_lock': 1.0, 'medium_state': 'high', 'four_mode': 'pilgrimage', 'four_mode_cn': '取经相干模态', 'four_mode_conf': 0.7942857142857144, 'hexagram': '', 'hexagram_name': '德之固', 'S_C': 0.0, 'xinzhai': True, 'holistic_confidence': 0.9382857142857144}
+[DEBUG] entropy_override_done
+[DEBUG] ms=<class 'agi_medium_symbiosis.AGIMediumSymbiosis'>
+[DEBUG] ms_loaded
+[DEBUG] calling_analyze
+[DEBUG] analyze_done type=<class 'agi_medium_symbiosis.AGIAnalysisResult'>
+[DEBUG] medium_data={'phase_lock': 1.0, 'medium_state': 'high', 'four_mode': 'pilgrimage', 'four_mode_cn': '取经相干模态', 'four_mode_conf': 0.7942857142857144, 'hexagram': '', 'hexagram_name': '德之固', 'S_C': 0.0, 'xinzhai': True, 'holistic_confidence': 0.9382857142857144}
+[DEBUG] entropy_override_done
+[DEBUG] ms=<class 'agi_medium_symbiosis.AGIMediumSymbiosis'>
+[DEBUG] ms_loaded
+[DEBUG] calling_analyze
+[DEBUG] analyze_done type=<class 'agi_medium_symbiosis.AGIAnalysisResult'>
+[DEBUG] medium_data={'phase_lock': 1.0, 'medium_state': 'high', 'four_mode': 'pilgrimage', 'four_mode_cn': '取经相干模态', 'four_mode_conf': 0.7942857142857144, 'hexagram': '', 'hexagram_name': '德之固', 'S_C': 0.0, 'xinzhai': True, 'holistic_confidence': 0.9382857142857144}
+[DEBUG] entropy_override_done

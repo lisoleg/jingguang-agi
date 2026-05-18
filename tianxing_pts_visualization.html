@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天行力方程与PTS模型可视化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .control-group {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        .control-group input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        canvas {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-top: 20px;
+            background: #f8f9fa;
+        }
+        
+        .results {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .results h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .result-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .result-item strong {
+            color: #444;
+        }
+        
+        .result-item span {
+            color: #667eea;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌌 天行力方程与PTS模型可视化</h1>
+        
+        <!-- 天行力方程部分 -->
+        <div class="section">
+            <h2>📊 天行力方程</h2>
+            
+            <div class="control-panel">
+                <div class="control-group">
+                    <label>格子大小 (grid_size)</label>
+                    <input type="number" id="tianxing-grid-size" value="50" min="10" max="200">
+                </div>
+                
+                <div class="control-group">
+                    <label>时间步数 (time_steps)</label>
+                    <input type="number" id="tianxing-time-steps" value="100" min="10" max="1000">
+                </div>
+                
+                <div class="control-group">
+                    <label>时间步长 (dt)</label>
+                    <input type="number" id="tianxing-dt" value="0.01" min="0.001" max="0.1" step="0.001">
+                </div>
+            </div>
+            
+            <button onclick="evaluateTianxing()">🔬 评估天行力方程</button>
+            <button onclick="simulateTianxing()">🚿 模拟天行力演化</button>
+            
+            <canvas id="tianxing-canvas" width="800" height="400"></canvas>
+            
+            <div class="results" id="tianxing-results"></div>
+        </div>
+        
+        <!-- PTS模型部分 -->
+        <div class="section">
+            <h2>🔮 相位拓扑自激模型 (PTS)</h2>
+            
+            <div class="control-panel">
+                <div class="control-group">
+                    <label>格子大小 (grid_size)</label>
+                    <input type="number" id="pts-grid-size" value="50" min="10" max="200">
+                </div>
+                
+                <div class="control-group">
+                    <label>时间步数 (time_steps)</label>
+                    <input type="number" id="pts-time-steps" value="100" min="10" max="1000">
+                </div>
+                
+                <div class="control-group">
+                    <label>耦合常数 (coupling)</label>
+                    <input type="number" id="pts-coupling" value="1.0" min="0.1" max="10" step="0.1">
+                </div>
+            </div>
+            
+            <button onclick="evaluatePTS()">🔬 评估PTS模型</button>
+            <button onclick="simulatePTS()">💫 模拟PTS演化</button>
+            
+            <canvas id="pts-canvas" width="800" height="400"></canvas>
+            
+            <div class="results" id="pts-results"></div>
+        </div>
+    </div>
+    
+    <script>
+        // ==================== 天行力方程部分 ====================
+        
+        async function evaluateTianxing() {
+            const gridSize = document.getElementById('tianxing-grid-size').value;
+            const resultsDiv = document.getElementById('tianxing-results');
+            
+            resultsDiv.innerHTML = '<p>⏳️ 正在评估天行力方程...</p>';
+            
+            try {
+                const response = await fetch('/api/tianxing/evaluate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        psi: generateRandomPhaseField(gridSize),
+                        grid_size: parseInt(gridSize)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultsDiv.innerHTML = `
+                        <h3>✅ 评估完成</h3>
+                        <div class="result-item">
+                            <strong>量子势:</strong> <span>${data.quantum_potential.toFixed(6)}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>孤子解:</strong> <span>${data.soliton_solution.is_soliton ? '是' : '否'}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>解类型:</strong> <span>${data.soliton_solution.solution_type || 'N/A'}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>消息:</strong> <span>${data.message}</span>
+                        </div>
+                    `;
+                    
+                    // 可视化相位场
+                    visualizePhaseField('tianxing-canvas', data.psi || generateRandomPhaseField(gridSize));
+                } else {
+                    resultsDiv.innerHTML = `<p>❌ 错误: ${data.error}</p>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<p>❌ 请求失败: ${error.message}</p>`;
+            }
+        }
+        
+        async function simulateTianxing() {
+            const gridSize = document.getElementById('tianxing-grid-size').value;
+            const timeSteps = document.getElementById('tianxing-time-steps').value;
+            const dt = document.getElementById('tianxing-dt').value;
+            const resultsDiv = document.getElementById('tianxing-results');
+            
+            resultsDiv.innerHTML = '<p>⏳️ 正在模拟天行力演化...</p>';
+            
+            try {
+                const response = await fetch('/api/tianxing/simulate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        initial_psi: generateRandomPhaseField(gridSize),
+                        time_steps: parseInt(timeSteps),
+                        dt: parseFloat(dt)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultsDiv.innerHTML = `
+                        <h3>✅ 模拟完成</h3>
+                        <div class="result-item">
+                            <strong>演化步数:</strong> <span>${data.evolution.length}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>消息:</strong> <span>${data.message}</span>
+                        </div>
+                    `;
+                    
+                    // 可视化演化
+                    visualizeEvolution('tianxing-canvas', data.evolution);
+                } else {
+                    resultsDiv.innerHTML = `<p>❌ 错误: ${data.error}</p>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<p>❌ 请求失败: ${error.message}</p>`;
+            }
+        }
+        
+        // ==================== PTS模型部分 ====================
+        
+        async function evaluatePTS() {
+            const gridSize = document.getElementById('pts-grid-size').value;
+            const resultsDiv = document.getElementById('pts-results');
+            
+            resultsDiv.innerHTML = '<p>⏳️ 正在评估PTS模型...</p>';
+            
+            try {
+                const response = await fetch('/api/pts/evaluate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        psi: generateRandomPhaseField(gridSize),
+                        grid_size: parseInt(gridSize)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultsDiv.innerHTML = `
+                        <h3>✅ 评估完成</h3>
+                        <div class="result-item">
+                            <strong>缠绕数:</strong> <span>${data.winding_number.toFixed(6)}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>相位相干性:</strong> <span>${data.phase_coherence.toFixed(6)}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>消息:</strong> <span>${data.message}</span>
+                        </div>
+                    `;
+                    
+                    // 可视化相位场
+                    visualizePhaseField('pts-canvas', data.psi || generateRandomPhaseField(gridSize));
+                } else {
+                    resultsDiv.innerHTML = `<p>❌ 错误: ${data.error}</p>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<p>❌ 请求失败: ${error.message}</p>`;
+            }
+        }
+        
+        async function simulatePTS() {
+            const gridSize = document.getElementById('pts-grid-size').value;
+            const timeSteps = document.getElementById('pts-time-steps').value;
+            const coupling = document.getElementById('pts-coupling').value;
+            const resultsDiv = document.getElementById('pts-results');
+            
+            resultsDiv.innerHTML = '<p>⏳️ 正在模拟PTS演化...</p>';
+            
+            try {
+                const response = await fetch('/api/pts/simulate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        initial_psi: generateRandomPhaseField(gridSize),
+                        time_steps: parseInt(timeSteps),
+                        coupling: parseFloat(coupling)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultsDiv.innerHTML = `
+                        <h3>✅ 模拟完成</h3>
+                        <div class="result-item">
+                            <strong>演化步数:</strong> <span>${data.evolution.length}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>消息:</strong> <span>${data.message}</span>
+                        </div>
+                    `;
+                    
+                    // 可视化演化
+                    visualizeEvolution('pts-canvas', data.evolution);
+                } else {
+                    resultsDiv.innerHTML = `<p>❌ 错误: ${data.error}</p>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<p>❌ 请求失败: ${error.message}</p>`;
+            }
+        }
+        
+        // ==================== 可视化函数 ====================
+        
+        function generateRandomPhaseField(size) {
+            // 生成随机相位场（简化）
+            const field = [];
+            for (let i = 0; i < size; i++) {
+                field.push([]);
+                for (let j = 0; j < size; j++) {
+                    field[i].push(Math.random() * 2 * Math.PI);
+                }
+            }
+            return field;
+        }
+        
+        function visualizePhaseField(canvasId, field) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            const cellSize = Math.min(width, height) / field.length;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            for (let i = 0; i < field.length; i++) {
+                for (let j = 0; j < field[i].length; j++) {
+                    const value = field[i][j];
+                    const normalizedValue = (value + Math.PI) / (2 * Math.PI); // 归一化到[0, 1]
+                    
+                    // 使用彩虹色图
+                    const hue = normalizedValue * 360;
+                    ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+                    ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+        
+        function visualizeEvolution(canvasId, evolution) {
+            // 简化的演化可视化：只显示最后一帧
+            if (evolution && evolution.length > 0) {
+                visualizePhaseField(canvasId, evolution[evolution.length - 1]);
+            }
+        }
+        
+        // ==================== 初始化 ====================
+        
+        // 页面加载时，自动评估一次
+        window.onload = function() {
+            evaluateTianxing();
+            evaluatePTS();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌌 对话引用关系脑图系统 v2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            margin: 20px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        /* 左侧：脑图区域 */
+        .tree-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e0e0e0;
+        }
+        
+        .tree-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .tree-header button {
+            padding: 8px 16px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .tree-header button:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .tree-content {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        /* 树状结构样式 */
+        .tree-node {
+            margin-left: 30px;
+            position: relative;
+        }
+        
+        .tree-node-content {
+            padding: 10px 15px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid #667eea;
+        }
+        
+        .tree-node-content:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .tree-node-content.expanded {
+            border-left-color: #764ba2;
+        }
+        
+        .node-label {
+            font-weight: bold;
+            color: #333;
+            font-size: 15px;
+        }
+        
+        .node-question {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .node-toggle {
+            float: right;
+            color: #667eea;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .tree-children {
+            margin-left: 30px;
+            border-left: 2px dashed #ddd;
+            padding-left: 10px;
+        }
+        
+        .tree-children.collapsed {
+            display: none;
+        }
+        
+        /* 右侧：对话面板 */
+        .chat-panel {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+        
+        .chat-header {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            max-width: 85%;
+        }
+        
+        .message.user {
+            background: #667eea;
+            color: white;
+            margin-left: auto;
+        }
+        
+        .message.assistant {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .message-label {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            opacity: 0.7;
+        }
+        
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .chat-input input:focus {
+            border-color: #667eea;
+        }
+        
+        .chat-input button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .chat-input button:hover {
+            transform: scale(1.05);
+        }
+        
+        .chat-input button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* 问答详情面板 */
+        .qa-detail {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .qa-detail h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .qa-detail .question {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .qa-detail .answer {
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧：树状脑图 -->
+        <div class="tree-panel">
+            <div class="tree-header">
+                <span>🌌 对话引用关系脑图</span>
+                <button onclick="loadTree()">🔄 刷新</button>
+            </div>
+            <div class="tree-content" id="treeContainer">
+                <div class="loading">等待对话开始...</div>
+            </div>
+        </div>
+        
+        <!-- 右侧：对话面板 -->
+        <div class="chat-panel">
+            <div class="chat-header">
+                对话界面
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message assistant">
+                    <div class="message-label">🤖 AI助手</div>
+                    <div>你好！我是基于复合体理学的AGI系统。请问有什么可以帮你？</div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="输入你的问题..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <button onclick="sendMessage()" id="sendButton">发送</button>
+            </div>
+            <div class="qa-detail" id="qaDetail" style="display: none;">
+                <h4>📝 问答详情</h4>
+                <div class="question" id="detailQuestion"></div>
+                <div class="answer" id="detailAnswer"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let sessionId = 'default_' + Date.now();
+        let currentTree = null;
+        
+        // 发送消息
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // 显示用户消息
+            appendMessage('user', message);
+            input.value = '';
+            
+            // 禁用按钮
+            const button = document.getElementById('sendButton');
+            button.disabled = true;
+            button.textContent = '思考中...';
+            
+            try {
+                const response = await fetch('/api/chat_v2', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        message: message,
+                        session_id: sessionId,
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.reply) {
+                    // 显示AI回答
+                    appendMessage('assistant', data.reply);
+                    
+                    // 更新树
+                    if (data.tree) {
+                        currentTree = data.tree;
+                        renderTree(data.tree);
+                    }
+                } else if (data.error) {
+                    appendMessage('assistant', '❌ 错误: ' + data.error);
+                }
+            } catch (error) {
+                appendMessage('assistant', '❌ 网络错误: ' + error.message);
+            } finally {
+                button.disabled = false;
+                button.textContent = '发送';
+            }
+        }
+        
+        // 添加消息到聊天框
+        function appendMessage(role, content) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message ' + role;
+            
+            const label = role === 'user' ? '👤 你' : '🤖 AI助手';
+            msgDiv.innerHTML = `
+                <div class="message-label">${label}</div>
+                <div>${content.replace(/\n/g, '<br>')}</div>
+            `;
+            
+            messagesDiv.appendChild(msgDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        // 渲染树状结构
+        function renderTree(tree) {
+            const container = document.getElementById('treeContainer');
+            
+            if (!tree) {
+                container.innerHTML = '<div class="loading">暂无对话记录</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            renderNode(tree, container, 0);
+        }
+        
+        // 渲染单个节点
+        function renderNode(node, parentElement, level) {
+            if (!node) return;
+            
+            // 创建节点元素
+            const nodeDiv = document.createElement('div');
+            nodeDiv.className = 'tree-node';
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'tree-node-content';
+            contentDiv.onclick = () => showQADetail(node);
+            
+            let html = `<div class="node-label">${node.id === 'root' ? '📋' : '💬'} ${node.label}</div>`;
+            
+            if (node.question) {
+                html += `<div class="node-question">Q: ${node.question}</div>`;
+            }
+            
+            if (node.children && node.children.length > 0) {
+                html += `<span class="node-toggle">▼</span>`;
+                contentDiv.className += ' expanded';
+            }
+            
+            contentDiv.innerHTML = html;
+            nodeDiv.appendChild(contentDiv);
+            
+            // 子节点
+            if (node.children && node.children.length > 0) {
+                const childrenDiv = document.createElement('div');
+                childrenDiv.className = 'tree-children';
+                
+                node.children.forEach(child => {
+                    renderNode(child, childrenDiv, level + 1);
+                });
+                
+                nodeDiv.appendChild(childrenDiv);
+                
+                // 点击展开/折叠
+                contentDiv.onclick = (e) => {
+                    e.stopPropagation();
+                    if (childrenDiv.classList.contains('collapsed')) {
+                        childrenDiv.classList.remove('collapsed');
+                        contentDiv.querySelector('.node-toggle').textContent = '▼';
+                    } else {
+                        childrenDiv.classList.add('collapsed');
+                        contentDiv.querySelector('.node-toggle').textContent = '▶';
+                    }
+                    showQADetail(node);
+                };
+            }
+            
+            parentElement.appendChild(nodeDiv);
+        }
+        
+        // 显示问答详情
+        function showQADetail(node) {
+            if (!node || node.id === 'root') return;
+            
+            const detailDiv = document.getElementById('qaDetail');
+            const questionDiv = document.getElementById('detailQuestion');
+            const answerDiv = document.getElementById('detailAnswer');
+            
+            questionDiv.textContent = 'Q: ' + (node.question || node.label);
+            answerDiv.textContent = node.full_answer || node.answer || '暂无详细回答';
+            
+            detailDiv.style.display = 'block';
+        }
+        
+        // 加载树
+        async function loadTree() {
+            try {
+                const response = await fetch(`/api/mindmap?session_id=${sessionId}`);
+                const data = await response.json();
+                
+                if (data.success && data.tree) {
+                    currentTree = data.tree;
+                    renderTree(data.tree);
+                }
+            } catch (error) {
+                console.error('加载树失败:', error);
+            }
+        }
+        
+        // 页面加载时初始化
+        window.onload = () => {
+            console.log('🌌 对话引用关系脑图系统 v2 已启动');
+            console.log('Session ID:', sessionId);
+        };
+    </script>
+</body>
+</html>

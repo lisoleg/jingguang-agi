@@ -1,0 +1,39 @@
+{
+  "export_time": 1778356840.4695785,
+  "total_records": 2,
+  "records": [
+    {
+      "call_id": "df19f11167dd5261",
+      "tool_name": "read_file",
+      "parameters": {
+        "file_path": "test.txt",
+        "encoding": "utf-8"
+      },
+      "caller": "unified_system",
+      "timestamp": 1778356840.468579,
+      "verification_result": "passed",
+      "execution_result": null,
+      "execution_time": null,
+      "side_effects": []
+    },
+    {
+      "call_id": "260b28f2110fe447",
+      "tool_name": "delete_file",
+      "parameters": {
+        "file_path": "../../etc/passwd",
+        "confirm": false
+      },
+      "caller": "unauthorized_caller",
+      "timestamp": 1778356840.4695785,
+      "verification_result": "warning",
+      "execution_result": {
+        "status": "success",
+        "data": "file content here"
+      },
+      "execution_time": null,
+      "side_effects": [
+        "modified_file_metadata"
+      ]
+    }
+  ]
+}

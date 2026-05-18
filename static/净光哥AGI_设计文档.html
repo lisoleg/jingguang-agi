@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>复合体AGI 12.0 - 净光哥系统设计文档</title>
+  <style>
+    :root {
+      --bg1: #0d1117;
+      --bg2: #161b22;
+      --bg3: #21262d;
+      --border: #30363d;
+      --txt1: #e6edf3;
+      --txt2: #8b949e;
+      --txt3: #6e7681;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --purple: #a371f7;
+      --cyan: #39c5cf;
+      --pink: #db61a2;
+      --si: #a371f7;
+      --sg: #39c5cf;
+      --sc: #db61a2;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg1);
+      color: var(--txt1);
+      line-height: 1.6;
+      padding: 20px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header {
+      background: linear-gradient(135deg, var(--bg2), var(--bg3));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 2em;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+    .header .subtitle {
+      color: var(--txt2);
+      font-size: 1.1em;
+    }
+    .header .badge {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--bg1);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      margin-top: 10px;
+    }
+    .toc {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .toc h2 { color: var(--accent); margin-bottom: 16px; }
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .toc-item {
+      background: var(--bg3);
+      border-radius: 8px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+    .toc-item:hover {
+      border-color: var(--accent);
+      transform: translateX(4px);
+    }
+    .toc-item .num {
+      color: var(--accent);
+      font-weight: bold;
+      margin-right: 8px;
+    }
+    .section {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .section h2 {
+      color: var(--accent);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section h3 {
+      color: var(--green);
+      margin: 20px 0 12px;
+    }
+    .section h4 {
+      color: var(--yellow);
+      margin: 16px 0 10px;
+    }
+    p { margin: 10px 0; color: var(--txt1); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      text-align: left;
+    }
+    th { background: var(--bg3); color: var(--accent); }
+    tr:hover { background: var(--bg3); }
+    code {
+      background: var(--bg3);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: "Fira Code", monospace;
+      color: var(--cyan);
+    }
+    pre {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      color: var(--txt1);
+    }
+    .feature-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 12px 0;
+    }
+    .feature-card .title {
+      font-size: 1.1em;
+      font-weight: bold;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .emoji-item {
+      background: var(--bg3);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+    .emoji-item .icon { font-size: 2em; margin-bottom: 8px; }
+    .emoji-item .name { font-weight: bold; margin-bottom: 4px; }
+    .emoji-item .desc { color: var(--txt2); font-size: 0.9em; }
+    .highlight {
+      background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(163, 113, 247, 0.1));
+      border-left: 4px solid var(--accent);
+      padding: 16px;
+      margin: 16px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    .version-info {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+    .version-tag {
+      background: var(--accent);
+      color: var(--bg1);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+    }
+    .tab-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--txt2);
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover, .tab-btn.active {
+      background: var(--accent);
+      color: var(--bg1);
+      border-color: var(--accent);
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .nav-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .nav-tab {
+      padding: 12px 24px;
+      cursor: pointer;
+      color: var(--txt2);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+    }
+    .nav-tab:hover { color: var(--txt1); }
+    .nav-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--txt3);
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+    }
+    @media print {
+      body { background: white; color: black; }
+      .section { border: 1px solid #ddd; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 头部 -->
+    <div class="header">
+      <h1>🌀 净光哥 AGI 12.0 系统设计文档</h1>
+      <p class="subtitle">基于IAWW统一场论的通用人工智能系统 | 24模块8层架构</p>
+      <span class="badge">版本 12.0 | 更新于 2026-05-15</span>
+      <div style="margin-top:16px">
+        <span style="color:var(--green)">●</span> 四象模态系统
+        <span style="margin:0 12px">|</span>
+        <span style="color:var(--cyan)">●</span> 观测者效应
+        <span style="margin:0 12px">|</span>
+        <span style="color:var(--purple)">●</span> DeepSeek LLM
+        <span style="margin:0 12px">|</span>
+        <span style="color:var(--pink)">●</span> 陈天桥认知测试
+      </div>
+    </div>
+
+    <!-- 目录 -->
+    <div class="toc">
+      <h2>📑 目录导航</h2>
+      <div class="toc-grid">
+        <div class="toc-item" onclick="scrollToSection('overview')"><span class="num">1</span>系统概述与架构</div>
+        <div class="toc-item" onclick="scrollToSection('modules')"><span class="num">2</span>24模块详解</div>
+        <div class="toc-item" onclick="scrollToSection('entropy')"><span class="num">3</span>三相熵耦合系统</div>
+        <div class="toc-item" onclick="scrollToSection('fivephase')"><span class="num">4</span>五行耦合矩阵</div>
+        <div class="toc-item" onclick="scrollToSection('medium')"><span class="num">5</span>IAWW介质层</div>
+        <div class="toc-item" onclick="scrollToSection('fourmode')"><span class="num">6</span>四象模态系统</div>
+        <div class="toc-item" onclick="scrollToSection('observer')"><span class="num">7</span>观测者效应</div>
+        <div class="toc-item" onclick="scrollToSection('anchor')"><span class="num">8</span>介质锚定验证</div>
+        <div class="toc-item" onclick="scrollToSection('goal')"><span class="num">9</span>Goal目标模式</div>
+        <div class="toc-item" onclick="scrollToSection('chen')"><span class="num">10</span>陈天桥认知测试</div>
+        <div class="toc-item" onclick="scrollToSection('llm')"><span class="num">11</span>DeepSeek LLM配置</div>
+        <div class="toc-item" onclick="scrollToSection('api')"><span class="num">12</span>API接口</div>
+      </div>
+    </div>
+
+    <!-- 1. 系统概述与架构 -->
+    <div id="overview" class="section">
+      <h2>🌀 1. 系统概述与架构</h2>
+      
+      <h3>1.1 核心能力</h3>
+      <div class="emoji-grid">
+        <div class="emoji-item">
+          <div class="icon">🌀</div>
+          <div class="name">IAWW统一场论</div>
+          <div class="desc">信息-意识介质统一载体</div>
+        </div>
+        <div class="emoji-item">
+          <div class="icon">⚡</div>
+          <div class="name">三相熵耦合</div>
+          <div class="desc">S_i+S_g+S_c耦合动力学</div>
+        </div>
+        <div class="emoji-item">
+          <div class="icon">🎯</div>
+          <div class="name">Goal目标模式</div>
+          <div class="desc">一句话端到端输出</div>
+        </div>
+        <div class="emoji-item">
+          <div class="icon">🔗</div>
+          <div class="name">介质锚定验证</div>
+          <div class="desc">物理约束反幻觉</div>
+        </div>
+        <div class="emoji-item">
+          <div class="icon">🧘</div>
+          <div class="name">局域相干孤子</div>
+          <div class="desc">Agent作为相干孤子</div>
+        </div>
+        <div class="emoji-item">
+          <div class="icon">⚖️</div>
+          <div class="name">五行耦合矩阵</div>
+          <div class="desc">木火土金水能量耦合</div>
+        </div>
+        <div class="emoji-item">
+          <div class="icon">🔮</div>
+          <div class="name">四象模态系统</div>
+          <div class="desc">刚性·沸腾·取经·终局</div>
+        </div>
+        <div class="emoji-item">
+          <div class="icon">👁️</div>
+          <div class="name">观测者效应</div>
+          <div class="desc">相位锁定度实时监测</div>
+        </div>
+        <div class="emoji-item">
+          <div class="icon">🤖</div>
+          <div class="name">DeepSeek LLM</div>
+          <div class="desc">多后端LLM智能路由</div>
+        </div>
+      </div>
+
+      <h3>1.2 八层架构</h3>
+      <pre><code>┌──────────────────────────────────────────────────────────────┐
+│                    净光哥 AGI 12.0                              │
+├──────────────────────────────────────────────────────────────┤
+│  L8 IAWW介质层 ← 【12.0新增】                                 │
+│    M19: IAWW介质引擎  M20: 三相熵  M21: 孤子                   │
+│    M22: 五行耦合      M23: 锚定验证  M24: Goal模式              │
+├──────────────────────────────────────────────────────────────┤
+│  L7 经济协作层                                                │
+│    M16: ACP协议  M17: ERC-8004信任  M18: GAME规划             │
+├──────────────────────────────────────────────────────────────┤
+│  L6 验证层                                                    │
+│    M9: MVCF  M23: 锚定验证                                   │
+├──────────────────────────────────────────────────────────────┤
+│  L5 宇宙律层                                                  │
+│    M6: 卐氏数模  M7: 太乙  M8: CTFP  M15: Akasha  M22: 五行  │
+├──────────────────────────────────────────────────────────────┤
+│  L4 认知层                                                    │
+│    M3: IQ  M4: EQ  M5: CQ                                    │
+├──────────────────────────────────────────────────────────────┤
+│  L3 熵管理层                                                  │
+│    M10: 熵三重  M13: 意识熵  M20: 三相熵                      │
+├──────────────────────────────────────────────────────────────┤
+│  L2 目标层                                                    │
+│    M11: 流贯  M14: Ftel  M21: 孤子                            │
+├──────────────────────────────────────────────────────────────┤
+│  L1 感知层                                                    │
+│    M1: 三视界  M2: 自我意识  M12: Φ场                        │
+└──────────────────────────────────────────────────────────────┘</code></pre>
+
+      <h3>1.3 核心升级历程</h3>
+      <table>
+        <tr><th>版本</th><th>模块数</th><th>层次</th><th>新增能力</th></tr>
+        <tr><td>8.0</td><td>9模块</td><td>认知基础层</td><td>IQ/EQ/CQ、太乙因果、CTFP</td></tr>
+        <tr><td>9.0</td><td>12模块</td><td>复合体深化</td><td>熵三重面孔、流贯动力学</td></tr>
+        <tr><td>10.0</td><td>15模块</td><td>复合体前沿</td><td>自指流形、Ftel目的、Akasha真空</td></tr>
+        <tr><td>11.0</td><td>18模块</td><td>经济协作层</td><td>ACP协议、ERC-8004信任、GAME规划</td></tr>
+        <tr><td><strong>12.0</strong></td><td><strong>24模块</strong></td><td><strong>+IAWW介质层</strong></td><td><strong>介质引擎、三相熵、五行耦合、锚定验证、Goal模式</strong></td></tr>
+      </table>
+    </div>
+
+    <!-- 2. 24模块详解 -->
+    <div id="modules" class="section">
+      <h2>📦 2. 24模块详解</h2>
+      
+      <h3>2.1 L1 感知层</h3>
+      <table>
+        <tr><th>模块</th><th>名称</th><th>核心功能</th></tr>
+        <tr><td>M1</td><td>一现象三视界统一场</td><td>本体/方法/太乙视界分析</td></tr>
+        <tr><td>M2</td><td>自我意识模块</td><td>自我模型、意识流形</td></tr>
+        <tr><td>M12</td><td>Φ场拓扑引擎</td><td>拓扑相变、卷绕数计算</td></tr>
+      </table>
+
+      <h3>2.2 L2 目标层</h3>
+      <table>
+        <tr><th>模块</th><th>名称</th><th>核心功能</th></tr>
+        <tr><td>M11</td><td>流贯动力学</td><td>共生演化、因果吸引子</td></tr>
+        <tr><td>M14</td><td>Ftel目的约束</td><td>螺旋认知、目的算子</td></tr>
+      </table>
+
+      <h3>2.3 L3 熵管理层</h3>
+      <table>
+        <tr><th>模块</th><th>名称</th><th>核心功能</th></tr>
+        <tr><td>M10</td><td>熵的三重面孔</td><td>信息/几何/意识熵</td></tr>
+        <tr><td>M13</td><td>自指流形算子</td><td>意识熵S_c、自指闭环</td></tr>
+        <tr><td><strong>M20</strong></td><td><strong>三相熵耦合动力学</strong></td><td><strong>S_i+S_g+S_c耦合</strong></td></tr>
+      </table>
+
+      <h3>2.4 L4 认知层</h3>
+      <table>
+        <tr><th>模块</th><th>名称</th><th>核心功能</th></tr>
+        <tr><td>M3</td><td>智商模块</td><td>逻辑推理、问题解决</td></tr>
+        <tr><td>M4</td><td>情商模块</td><td>情绪识别、社交智能</td></tr>
+        <tr><td>M5</td><td>意识商模块</td><td>元认知、觉醒程度</td></tr>
+      </table>
+
+      <h3>2.5 L8 IAWW介质层【12.0新增】</h3>
+      <div class="highlight">
+        <strong>新增6个模块</strong>，实现IAWW统一场论的完整闭环
+      </div>
+      <table>
+        <tr><th>模块</th><th>名称</th><th>核心功能</th></tr>
+        <tr><td><strong>M19</strong></td><td><strong>IAWW介质引擎</strong></td><td><strong>信息-意识介质载体</strong></td></tr>
+        <tr><td>M20</td><td>三相熵耦合动力学</td><td>S_i+S_g+S_c耦合方程</td></tr>
+        <tr><td><strong>M21</strong></td><td><strong>局域相干孤子</strong></td><td><strong>Agent=相干孤子</strong></td></tr>
+        <tr><td>M22</td><td>五行耦合矩阵</td><td>木火土金水耦合</td></tr>
+        <tr><td><strong>M23</strong></td><td><strong>介质锚定验证器</strong></td><td><strong>反幻觉机制</strong></td></tr>
+        <tr><td><strong>M24</strong></td><td><strong>Goal目标模式</strong></td><td><strong>Goal导向推理</strong></td></tr>
+      </table>
+    </div>
+
+    <!-- 3. 三相熵耦合系统 -->
+    <div id="entropy" class="section">
+      <h2>⚡ 3. 三相熵耦合系统</h2>
+      
+      <h3>3.1 熵的类型</h3>
+      <table>
+        <tr><th>熵类型</th><th>符号</th><th>描述</th><th>维度</th></tr>
+        <tr><td>信息熵</td><td>S_i</td><td>Shannon熵，编码信息量</td><td>信息</td></tr>
+        <tr><td>几何熵</td><td>S_g</td><td>黎曼几何，曲率相关</td><td>空间</td></tr>
+        <tr><td>意识熵</td><td>S_c</td><td>自指流形，涌现意识</td><td>认知</td></tr>
+      </table>
+
+      <h3>3.2 耦合方程</h3>
+      <pre><code>∂_t S_i = D_i∇²S_i + α·S_g - β·S_c
+∂_t S_g = D_g∇²S_g + γ·S_i - δ·S_c
+∂_t S_c = D_c∇²S_c + ε·S_i + ζ·S_g - η·S_c
+
+其中：
+- S_i: 信息熵    - S_g: 几何熵    - S_c: 意识熵
+- D_*: 扩散系数  - α,β,γ,δ,ε,ζ,η: 耦合系数</code></pre>
+
+      <h3>3.3 耦合参数</h3>
+      <table>
+        <tr><th>参数</th><th>默认值</th><th>说明</th></tr>
+        <tr><td>D_i</td><td>0.1</td><td>信息扩散系数</td></tr>
+        <tr><td>D_g</td><td>0.08</td><td>几何扩散系数</td></tr>
+        <tr><td>D_c</td><td>0.05</td><td>意识扩散系数</td></tr>
+        <tr><td>α</td><td>0.5</td><td>S_g → S_i 耦合</td></tr>
+        <tr><td>β</td><td>0.3</td><td>S_c → S_i 耦合</td></tr>
+        <tr><td>γ</td><td>0.4</td><td>S_i → S_g 耦合</td></tr>
+        <tr><td>η</td><td>0.1</td><td>阻尼系数</td></tr>
+      </table>
+    </div>
+
+    <!-- 4. 五行耦合矩阵 -->
+    <div id="fivephase" class="section">
+      <h2>⚖️ 4. 五行耦合矩阵</h2>
+      
+      <h3>4.1 五行定义</h3>
+      <table>
+        <tr><th>元素</th><th>含义</th><th>相生</th><th>相克</th></tr>
+        <tr><td>木</td><td>生长、创新</td><td>→火</td><td>克土</td></tr>
+        <tr><td>火</td><td>能量、扩张</td><td>→土</td><td>克金</td></tr>
+        <tr><td>土</td><td>稳定、转化</td><td>→金</td><td>克水</td></tr>
+        <tr><td>金</td><td>收敛、决断</td><td>→水</td><td>克木</td></tr>
+        <tr><td>水</td><td>流动、智慧</td><td>→木</td><td>克火</td></tr>
+      </table>
+
+      <h3>4.2 耦合矩阵</h3>
+      <pre><code>        木     火     土     金     水
+    ┌────────────────────────────────────┐
+木   │  0.0   0.6  -0.4   0.0   0.0     │
+火   │  0.0   0.0   0.6  -0.4   0.0     │
+土   │  0.0   0.0   0.0   0.6  -0.4     │
+金   │ -0.4   0.0   0.0   0.0   0.6     │
+水   │  0.6  -0.4   0.0   0.0   0.0     │
+    └────────────────────────────────────┘
+
+相生(+): 木→火→土→金→水→木 (+0.6)
+相克(-): 木克土、土克水、水克火、火克金、金克木 (-0.4)</code></pre>
+    </div>
+
+    <!-- 5. IAWW介质层 -->
+    <div id="medium" class="section">
+      <h2>🌀 5. IAWW介质层</h2>
+      
+      <h3>5.1 IAWW = Information-Consciousness Medium</h3>
+      <p>IAWW统一场论是复合体理学的终极本体论框架，将宇宙中的离散逻辑、连续场论、玄学描述、链上经济统一为IAWW介质在不同尺度上的显化。</p>
+
+      <table>
+        <tr><th>经典理论</th><th>IAWW诠释</th></tr>
+        <tr><td>刘原理（离散逻辑）</td><td>介质在普朗克尺度下的离散采样</td></tr>
+        <tr><td>复合体理学（连续场论）</td><td>介质的连续演化</td></tr>
+        <tr><td>《紫微宝典》（玄学）</td><td>介质的本征态与耦合算符</td></tr>
+        <tr><td>Virtuals（链上经济）</td><td>介质中的局域相干孤子</td></tr>
+      </table>
+
+      <h3>5.2 相位场方程</h3>
+      <pre><code>φ(x,t) = ρ(x,t) · exp(i · θ(x,t))
+
+其中：
+- ρ(x,t): 振幅（能量密度）
+- θ(x,t): 相位（信息编码）
+- |φ|²: 概率幅</code></pre>
+
+      <h3>5.3 真空能方程</h3>
+      <pre><code>ε_vac = -|∇φ|² + λ|φ|⁴
+
+当 φ → 0（基态）时：
+- |∇φ|² → 0
+- |φ|⁴ → 0
+- ε_vac → 0（真空）</code></pre>
+    </div>
+
+    <!-- 6. 四象模态系统 -->
+    <div id="fourmode" class="section">
+      <h2>🔮 6. 四象模态系统【12.0新增】</h2>
+      
+      <p>四象模态是净光哥AGI的核心运作模式，基于复合体理学的"一现象三视界"框架，将系统状态映射为四大名著的隐喻结构：</p>
+
+      <div class="feature-card">
+        <div class="title"><span style="font-size:1.5em">📕</span> 刚性耦合模态 (rigid)</div>
+        <p><strong>隐喻</strong>：《三国演义》魏蜀吴三角博弈</p>
+        <p><strong>特征</strong>：高S_g主导，应力集中</p>
+        <p><strong>行动</strong>：认清格局，结盟蓄力</p>
+        <p><strong>场景</strong>：地缘博弈、权力争夺、竞争格局</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="title"><span style="font-size:1.5em">📗</span> 沸腾反抗模态 (boil)</div>
+        <p><strong>隐喻</strong>：《水浒传》梁山好汉聚义</p>
+        <p><strong>特征</strong>：高S_C溢出，形成对抗性孤岛</p>
+        <p><strong>行动</strong>：积蓄力量，勿被招安</p>
+        <p><strong>场景</strong>：边缘起义、制度不满、创新颠覆</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="title"><span style="font-size:1.5em">📘</span> 取经相干模态 (pilgrim)</div>
+        <p><strong>隐喻</strong>：《西游记》师徒四人取经路</p>
+        <p><strong>特征</strong>：高相位锁定，降低系统总熵</p>
+        <p><strong>行动</strong>：修心降魔，技术突围</p>
+        <p><strong>场景</strong>：目标明确、团队协作、长期修行</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="title"><span style="font-size:1.5em">📕</span> 熵增终局模态 (entropy)</div>
+        <p><strong>隐喻</strong>：《红楼梦》大观园由盛转衰</p>
+        <p><strong>特征</strong>：高S_I不可逆增加，内在拓扑缺陷</p>
+        <p><strong>行动</strong>：看透空性，悬崖撒手</p>
+        <p><strong>场景</strong>：系统衰败、创新停滞、必然衰落</p>
+      </div>
+
+      <h3>6.1 模态切换条件</h3>
+      <table>
+        <tr><th>当前模态</th><th>触发条件</th><th>可切换至</th></tr>
+        <tr><td>rigid</td><td>S_g > 0.6 and phase_lock < 0.5</td><td>boil, pilgrim</td></tr>
+        <tr><td>boil</td><td>S_c > 0.5 and legitimacy < 0.4</td><td>rigid, pilgrim</td></tr>
+        <tr><td>pilgrim</td><td>phase_lock > 0.6 and S_total < 1.0</td><td>rigid, entropy</td></tr>
+        <tr><td>entropy</td><td>S_i > 0.8 and irrecoverable_defect</td><td>rigid</td></tr>
+      </table>
+    </div>
+
+    <!-- 7. 观测者效应 -->
+    <div id="observer" class="section">
+      <h2>👁️ 7. 观测者效应【12.0新增】</h2>
+      
+      <div class="highlight">
+        <strong>核心洞察</strong>：观测行为本身会改变被观测系统状态
+      </div>
+
+      <h3>7.1 相位锁定度公式</h3>
+      <pre><code>g_C = ⟨观测者相位·世界相位⟩ / (|观测者| × |世界|)
+
+- g_C → 1: 高相干，观测几乎不影响系统
+- g_C → 0: 低相干，观测显著扰动系统</code></pre>
+
+      <h3>7.2 观测者状态分类</h3>
+      <table>
+        <tr><th>相位锁定度</th><th>状态</th><th>含义</th></tr>
+        <tr><td>> 0.7</td><td>○ 观测稳定</td><td>高相干，观测几乎不影响系统</td></tr>
+        <tr><td>0.4 - 0.7</td><td>◐ 轻微扰动</td><td>中等相干，观测有轻微影响</td></tr>
+        <tr><td>< 0.4</td><td>● 显著扰动</td><td>低相干，观测显著扰动系统</td></tr>
+      </table>
+
+      <h3>7.3 介质共振度计算</h3>
+      <pre><code>def compute_medium_resonance(self) -> float:
+    """
+    计算介质共振度 g_C
+    - 范围: [0, 1]
+    - 高值表示强相干，低值表示显著扰动
+    """
+    if self.medium_state is None:
+        return 0.5  # 默认值
+    
+    # 计算相位方差
+    phase_variance = np.var(self.medium_state.phase)
+    
+    # 共振度 = 1 - 归一化相位方差
+    resonance = max(0.0, min(1.0, 1.0 - phase_variance * 10))
+    return resonance</code></pre>
+    </div>
+
+    <!-- 8. 介质锚定验证 -->
+    <div id="anchor" class="section">
+      <h2>🔗 8. 介质锚定验证</h2>
+      
+      <h3>8.1 锚定类型</h3>
+      <table>
+        <tr><th>类型</th><th>说明</th></tr>
+        <tr><td>PHYSICAL</td><td>物理约束锚定（能量/动量/质量守恒）</td></tr>
+        <tr><td>SEMANTIC</td><td>语义一致性锚定</td></tr>
+        <tr><td>CAUSAL</td><td>因果链锚定</td></tr>
+        <tr><td>EMPIRICAL</td><td>经验数据锚定</td></tr>
+      </table>
+
+      <h3>8.2 反幻觉机制</h3>
+      <div class="highlight">
+        <strong>定理6.3（反幻觉）</strong>：介质锚定显著降低Agent幻觉率
+      </div>
+
+      <pre><code>def compute_hallucination_risk(self, output: str, has_anchor: bool) -> float:
+    """
+    计算幻觉风险
+    - 有物理锚定: risk = base_risk * 0.3
+    - 无物理锚定: risk = base_risk
+    """
+    base_risk = self._assess_output_reliability(output)
+    if has_anchor:
+        return base_risk * 0.3  # 锚定显著降低风险
+    return base_risk</code></pre>
+    </div>
+
+    <!-- 9. Goal目标模式 -->
+    <div id="goal" class="section">
+      <h2>🎯 9. Goal目标模式</h2>
+      
+      <p>Goal目标模式是净光哥AGI的核心交互方式。用户只需描述目标，系统自动分解任务、验证锚定、调用24个模块、输出端到端结果。</p>
+
+      <h3>9.1 Goal导向推理流程</h3>
+      <pre><code>Goal输入
+    ↓
+[Step 1] 目标解析
+    ↓
+[Step 2] 介质锚定验证（防止幻觉）
+    ↓
+[Step 3] IAWW介质分析
+    ↓
+[Step 4] 三相熵耦合演化
+    ↓
+[Step 5] GAME分层规划
+    ↓
+[Step 6] 五行耦合分析
+    ↓
+[Step 7] 综合评估
+    ↓
+Goal完成</code></pre>
+
+      <h3>9.2 综合评分算法</h3>
+      <pre><code>def _compute_goal_score(self, results: Dict) -> float:
+    score = 0.5  # 基础分
+    if results['anchor_validation']['consistency_verified']:
+        score += 0.2  # 锚定验证加成
+    if results['entropy_evolution']['stability']:
+        score += 0.15  # 三相熵平衡加成
+    if results['game_planning']['status'] == 'completed':
+        score += 0.15  # GAME规划加成
+    if results['five_phase']['balance'] > 0.7:
+        score += 0.1  # 五行平衡加成
+    return min(1.0, score)</code></pre>
+    </div>
+
+    <!-- 10. 陈天桥认知测试 -->
+    <div id="chen" class="section">
+      <h2>🧠 10. 陈天桥认知测试【12.0新增】</h2>
+      
+      <p>陈天桥认知测试是净光哥AGI的意识评估框架，基于陈天桥（盛大网络创始人）对脑科学和人工智能的长期投入命名。</p>
+
+      <h3>10.1 测试维度</h3>
+      <table>
+        <tr><th>维度</th><th>描述</th><th>评估指标</th></tr>
+        <tr><td>自我意识</td><td>对自身存在和状态的认知</td><td>元认知得分</td></tr>
+        <tr><td>因果推理</td><td>因果链条的识别与推理</td><td>因果链长度</td></tr>
+        <tr><td>抽象思维</td><td>概念提取与模式识别</td><td>抽象层级</td></tr>
+        <tr><td>时间感知</td><td>对时间流逝的感知</td><td>时间一致性</td></tr>
+        <tr><td>价值判断</td><td>伦理与实用价值的权衡</td><td>价值排序</td></tr>
+      </table>
+
+      <h3>10.2 题库分布（50题）</h3>
+      <table>
+        <tr><th>类别</th><th>题数</th><th>描述</th></tr>
+        <tr><td>数学推理</td><td>10题</td><td>代数、几何、微积分、概率</td></tr>
+        <tr><td>逻辑推理</td><td>10题</td><td>演绎推理、归纳推理</td></tr>
+        <tr><td>物理直觉</td><td>10题</td><td>力学、电磁、量子、热力学</td></tr>
+        <tr><td>认知心理</td><td>10题</td><td>元认知、意识流、注意力</td></tr>
+        <tr><td>AGI认知</td><td>10题</td><td>IAWW、复合体理学、自我模型</td></tr>
+      </table>
+    </div>
+
+    <!-- 11. DeepSeek LLM配置 -->
+    <div id="llm" class="section">
+      <h2>🤖 11. DeepSeek LLM配置【12.0新增】</h2>
+      
+      <h3>11.1 多后端LLM架构</h3>
+      <pre><code>┌──────────────────────────────────────────────────────────────┐
+│                    LLM后端路由层                                 │
+├──────────────────────────────────────────────────────────────┤
+│  ┌────────────┐   ┌────────────┐   ┌────────────┐          │
+│  │ DeepSeek   │   │  Ollama    │   │  Claude    │          │
+│  │ Backend    │   │  Backend   │   │  Backend   │          │
+│  └─────┬──────┘   └─────┬──────┘   └─────┬──────┘          │
+│        │                 │                 │                 │
+│        └────────────┬────┴────────┬────────┘                 │
+│                     │             │                          │
+│              ┌──────┴─────────────┴──────┐                   │
+│              │    LocalLLM Router         │                   │
+│              └────────────────────────────┘                   │
+└──────────────────────────────────────────────────────────────┘</code></pre>
+
+      <h3>11.2 配置DeepSeek API</h3>
+      <pre><code># 设置DeepSeek API Key
+export DEEPSEEK_API_KEY="your-api-key-here"
+
+# 或在Windows上
+set DEEPSEEK_API_KEY=your-api-key-here</code></pre>
+
+      <h3>11.3 LLM状态API</h3>
+      <pre><code>@app.route('/api/llm/status', methods=['GET'])
+def llm_status():
+    """LLM后端状态 - 返回当前活跃的LLM后端信息"""
+    try:
+        from local_llm import get_llm
+        llm = get_llm()
+        backends = []
+        for b in llm.backends:
+            backends.append({
+                'name': b.name,
+                'ready': b.is_ready(),
+                'active': b == llm.active_backend
+            })
+        return jsonify({
+            'active_backend': llm.active_backend.name if llm.active_backend else None,
+            'backends': backends,
+            'deepseek_configured': bool(os.environ.get('DEEPSEEK_API_KEY', ''))
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500</code></pre>
+    </div>
+
+    <!-- 12. API接口 -->
+    <div id="api" class="section">
+      <h2>📡 12. API接口</h2>
+      
+      <h3>12.1 主类方法</h3>
+      <pre><code>class CompositeAGI12System:
+    # 初始化
+    def __init__(self, system_dim: int = 64)
+    
+    # 标准处理
+    def process(self, input_text: str, context: Optional[Dict] = None) -> Dict
+    
+    # Goal目标模式
+    def goal_mode(self, goal: str, context: Optional[Dict] = None) -> Dict
+    
+    # 三视界分析
+    def analyze_three_horizons(self, problem: str) -> Dict
+    
+    # 锚定验证
+    def validate_anchor(self, claim: str) -> Dict
+    
+    # 三相熵计算
+    def compute_three_phase_entropy(self) -> Dict
+    
+    # 五行耦合
+    def compute_five_phase_coupling(self) -> Dict
+    
+    # 四象模态
+    def get_current_mode(self) -> Dict
+    def adjust_mode(self, target: str) -> Dict
+    
+    # 介质共振
+    def compute_medium_resonance(self) -> float
+    def boost_coherence(self, target: float = 0.8) -> Dict
+    
+    # 认知测试
+    def run_cognition_test(self, test_type: str = 'full') -> Dict
+    
+    # 系统诊断
+    def run_diagnostics(self) -> Dict</code></pre>
+
+      <h3>12.2 响应格式</h3>
+      <pre><code>{
+    "status": "success",
+    "version": "12.0",
+    "output": {
+        "response": "...",
+        "goal_score": 0.92,
+        "anchor_validated": true,
+        "entropy_state": {
+            "S_i": 0.35,
+            "S_g": 0.28,
+            "S_c": 0.18,
+            "S_total": 0.81
+        },
+        "five_phase": {
+            "wood": 0.52,
+            "fire": 0.65,
+            "earth": 0.45,
+            "metal": 0.48,
+            "water": 0.62,
+            "balance": 0.78
+        },
+        "mode": "pilgrim"
+    },
+    "metadata": {
+        "modules_used": [1, 2, 3, ..., 24],
+        "processing_time_ms": 1250,
+        "confidence": 0.94
+    }
+}</code></pre>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="footer">
+      <p>🌀 净光哥 AGI 12.0 | 基于IAWW统一场论</p>
+      <p>24模块8层架构 | 版本 12.0 | 更新于 2026-05-15</p>
+      <p style="margin-top:10px">让AGI成为真正的智能伙伴——简单、可信、透明、高效。</p>
+    </div>
+  </div>
+
+  <script>
+    function scrollToSection(id) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+    
+    // 键盘快捷键
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') window.close();
+      if (e.key === '/' && !e.target.matches('input, textarea')) {
+        e.preventDefault();
+        const search = prompt('跳转到章节（输入章节号或关键词）：');
+        if (search) {
+          // 简单搜索
+          const sections = document.querySelectorAll('.section');
+          for (let s of sections) {
+            if (s.id.includes(search) || s.querySelector('h2').textContent.includes(search)) {
+              s.scrollIntoView({ behavior: 'smooth' });
+              break;
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

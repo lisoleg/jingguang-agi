@@ -1,0 +1,2502 @@
+[
+  {
+    "text": "我今天很开心",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "太棒了",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "这个礼物我很喜欢",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "考试得了满分，开心死了",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "和朋友聚会真愉快",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到好吃的火锅，满足",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到录取通知书了，超兴奋",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "项目成功上线，团队太牛了",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "老板给我涨工资了，开心",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "今天天气好，心情好",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "爱死这个电影了",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "旅行太有意思了",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "学会新技能，有成就感",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "被夸奖了，心里美滋滋",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "中奖了，太幸运了",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "孩子考了第一名，骄傲",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "和家人在一起很幸福",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到喜欢的衣服，开心",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "听到好消息，振奋",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "工作完成得很好，满意",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "这个游戏太好玩了",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "看到的风景太美了",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到妈妈做的饭，温暖",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "被帮助了，感激",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "达成目标，有收获",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "朋友送了礼物，惊喜",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "业绩达标，有动力",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "论文发表了，激动",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "升职了，努力有回报",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "宠物很可爱，治愈",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "看到搞笑视频，笑死了",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "约会顺利，甜蜜",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到红包，开心",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "放假了，自由",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "身体康复了，舒心",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到限量款，满足",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "团队合作愉快，高效",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "学习进步了，自信",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "解决了难题，轻松",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到生日祝福，感动",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到心心念念的餐厅，满足",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "投资机会赚了，开心",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "工作得到认可，自豪",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "看到彩虹，治愈",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "孩子会走路了，开心",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到合适的房子，安心",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "旅行拍的美照，喜欢",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "完成马拉松，有成就感",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "这个产品太差了",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "今天倒霉透了",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "考试没及格，难过",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "和朋友吵架了，烦躁",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到过期食品，恶心",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "被辞退了，沮丧",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "项目失败了，挫败",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "钱包丢了，着急",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "生病了，难受",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "天气不好，心情差",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "讨厌这个电影",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "旅行遇到暴雨，扫兴",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "学不会新技能，挫败",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "被批评了，委屈",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "没中奖，失望",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "孩子成绩差，焦虑",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "和家人大吵一架，伤心",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到劣质衣服，生气",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "听到坏消息，低落",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "工作没完成，自责",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "这个游戏太垃圾了",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "看到的风景太丑了",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到难吃的饭，反胃",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "被欺负了，愤怒",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "目标没达成，沮丧",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "朋友借了钱不还，失望",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "业绩不达标，压力大",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "论文被拒了，挫败",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "降职了，失落",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "宠物生病了，担心",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "看到恐怖视频，害怕",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "约会分手了，伤心",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "红包被骗了，愤怒",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "开学了，烦躁",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "病情加重了，痛苦",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到假货，生气",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "团队不配合，低效",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "学习退步了，焦虑",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "遇到难题，头疼",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "没人记得生日，失落",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到苍蝇，恶心",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "投资亏了，心疼",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "工作被否定，挫败",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "看到车祸，惊恐",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "孩子受伤了，心疼",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "房子漏水，烦躁",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "旅行行李丢了，着急",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "马拉松退赛，遗憾",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "你好，请问现在几点",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "我今天吃了米饭",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "明天要下雨",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "我在写代码",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "桌子是红色的",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "这本书有200页",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "火车票是明天的",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "咖啡是热的",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "会议在下午3点",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "电脑屏幕是27寸",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "北京是中国的首都",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "水的沸点是100度",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "地球是圆的",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "一年有12个月",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "手机电量还剩50%",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "快递在途中",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "地铁要等5分钟",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "银行卡余额1000元",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "今天的气温是25度",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "公司在CBD区",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "我正在学习Python",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "文件保存在桌面",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "杯子是玻璃做的",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "空调开着26度",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "公交车还有2站到",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "身份证到期了",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "护照在抽屉里",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "眼镜度数是300度",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "电影时长2小时",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "餐厅营业到晚上10点",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "人工智能是热门领域",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "神经网络需要训练",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "数据要预处理",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "算法复杂度是O(n)",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "模型准确率90%",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "数据库存了1000条记录",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "向量维度是768",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "复合体理学是新理论",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "能量需要合理分配",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "认知是重要能力",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "感知是第一步",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "行动要谨慎",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "学习需要坚持",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "推理要严谨",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "决策要全面",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "任务要优先级排序",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "信息要筛选",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "知识要积累",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "经验要总结",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "进步要持续",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "桌子是红色的（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "快递在途中（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "太棒了（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "生病了，难受（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "行动要谨慎（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "考试得了满分，开心死了（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "论文被拒了，挫败（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "没人记得生日，失落（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "和家人大吵一架，伤心（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "桌子是红色的（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "团队不配合，低效（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "考试得了满分，开心死了（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "老板给我涨工资了，开心（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "解决了难题，轻松（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "认知是重要能力（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "被辞退了，沮丧（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "数据要预处理（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "和家人在一起很幸福（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "你好，请问现在几点（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "学习需要坚持（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "降职了，失落（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "和家人在一起很幸福（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "论文发表了，激动（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "投资机会赚了，开心（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "升职了，努力有回报（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "快递在途中（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "行动要谨慎（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "推理要严谨（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "没人记得生日，失落（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "旅行遇到暴雨，扫兴（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "没人记得生日，失落（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "餐厅营业到晚上10点（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "行动要谨慎（补充）（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "看到的风景太丑了（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "朋友借了钱不还，失望（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "钱包丢了，着急（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "团队不配合，低效（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "天气不好，心情差（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到妈妈做的饭，温暖（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "工作没完成，自责（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "进步要持续（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到生日祝福，感动（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "中奖了，太幸运了（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "团队合作愉快，高效（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "神经网络需要训练（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "达成目标，有收获（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "旅行遇到暴雨，扫兴（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "认知是重要能力（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到红包，开心（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "讨厌这个电影（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "考试得了满分，开心死了（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "看到恐怖视频，害怕（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到限量款，满足（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "遇到难题，头疼（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "团队不配合，低效（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到录取通知书了，超兴奋（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "放假了，自由（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "团队不配合，低效（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到生日祝福，感动（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "天气不好，心情差（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "和家人大吵一架，伤心（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "和朋友聚会真愉快（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "神经网络需要训练（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "论文发表了，激动（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "信息要筛选（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "学不会新技能，挫败（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "数据库存了1000条记录（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "认知是重要能力（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "孩子考了第一名，骄傲（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "降职了，失落（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "我今天很开心（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到假货，生气（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "升职了，努力有回报（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "团队合作愉快，高效（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "工作没完成，自责（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "看到的风景太丑了（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "项目成功上线，团队太牛了（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "论文被拒了，挫败（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "认知是重要能力（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "咖啡是热的（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "餐厅营业到晚上10点（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "生病了，难受（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "明天要下雨（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "一年有12个月（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "行动要谨慎（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "和家人在一起很幸福（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到红包，开心（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "放假了，自由（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "眼镜度数是300度（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "和家人在一起很幸福（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "认知是重要能力（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "孩子受伤了，心疼（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "你好，请问现在几点（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到过期食品，恶心（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "这个产品太差了（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "电影时长2小时（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "数据要预处理（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "餐厅营业到晚上10点（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "旅行拍的美照，喜欢（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "降职了，失落（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "咖啡是热的（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "没人记得生日，失落（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "一年有12个月（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "模型准确率90%（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到假货，生气（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "天气不好，心情差（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "病情加重了，痛苦（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "病情加重了，痛苦（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "工作完成得很好，满意（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到生日祝福，感动（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "餐厅营业到晚上10点（补充）（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "天气不好，心情差（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "和家人大吵一架，伤心（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "项目成功上线，团队太牛了（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "眼镜度数是300度（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到假货，生气（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "病情加重了，痛苦（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到劣质衣服，生气（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到妈妈做的饭，温暖（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "一年有12个月（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "旅行太有意思了（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "看到的风景太丑了（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "孩子成绩差，焦虑（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "放假了，自由（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "旅行遇到暴雨，扫兴（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "宠物很可爱，治愈（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "快递在途中（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "数据要预处理（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "听到好消息，振奋（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "今天天气好，心情好（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "项目成功上线，团队太牛了（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "孩子受伤了，心疼（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到红包，开心（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "工作被否定，挫败（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "投资亏了，心疼（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "太棒了（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "快递在途中（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "学不会新技能，挫败（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "工作没完成，自责（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "银行卡余额1000元（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "投资机会赚了，开心（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "旅行太有意思了（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "电影时长2小时（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "学习需要坚持（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "升职了，努力有回报（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "我正在学习Python（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "被欺负了，愤怒（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "降职了，失落（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "数据库存了1000条记录（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "行动要谨慎（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "空调开着26度（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "被辞退了，沮丧（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "听到好消息，振奋（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "和家人在一起很幸福（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "餐厅营业到晚上10点（补充）（补充）（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "身体康复了，舒心（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "认知是重要能力（补充）（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "经验要总结（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "我今天吃了米饭（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "快递在途中（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "今天天气好，心情好（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "决策要全面（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到假货，生气（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "遇到难题，头疼（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到生日祝福，感动（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "地球是圆的（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到假货，生气（补充）（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "这本书有200页（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "项目成功上线，团队太牛了（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到红包，开心（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "业绩达标，有动力（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "宠物很可爱，治愈（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "快递在途中（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "放假了，自由（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "孩子受伤了，心疼（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "数据要预处理（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "钱包丢了，着急（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "团队合作愉快，高效（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "今天倒霉透了（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "工作完成得很好，满意（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "一年有12个月（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "生病了，难受（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "推理要严谨（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "考试得了满分，开心死了（补充）（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "达成目标，有收获（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到假货，生气（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "被辞退了，沮丧（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "看到车祸，惊恐（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "被欺负了，愤怒（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "我在写代码（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "和家人在一起很幸福（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "看到的风景太丑了（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "咖啡是热的（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "工作得到认可，自豪（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到限量款，满足（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "论文发表了，激动（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "旅行拍的美照，喜欢（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到假货，生气（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到生日祝福，感动（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到过期食品，恶心（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "论文发表了，激动（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "看到彩虹，治愈（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "没人记得生日，失落（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "神经网络需要训练（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到红包，开心（补充）（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "和家人大吵一架，伤心（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "推理要严谨（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "经验要总结（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "认知是重要能力（补充）（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "遇到难题，头疼（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到苍蝇，恶心（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "团队不配合，低效（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "升职了，努力有回报（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "今天天气好，心情好（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到妈妈做的饭，温暖（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "考试得了满分，开心死了（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到过期食品，恶心（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "降职了，失落（补充）（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "学不会新技能，挫败（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "我在写代码（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到假货，生气（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "旅行太有意思了（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "银行卡余额1000元（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "团队合作愉快，高效（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "升职了，努力有回报（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "工作得到认可，自豪（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "快递在途中（补充）（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "降职了，失落（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "孩子成绩差，焦虑（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "降职了，失落（补充）（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "这个礼物我很喜欢（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "降职了，失落（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "降职了，失落（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到限量款，满足（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "旅行遇到暴雨，扫兴（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "快递在途中（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "眼镜度数是300度（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到录取通知书了，超兴奋（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "行动要谨慎（补充）（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "考试得了满分，开心死了（补充）（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "放假了，自由（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "升职了，努力有回报（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "工作完成得很好，满意（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "这个产品太差了（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "讨厌这个电影（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "行动要谨慎（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "听到好消息，振奋（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "我今天吃了米饭（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "降职了，失落（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "爱死这个电影了（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "今天倒霉透了（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "孩子成绩差，焦虑（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "工作得到认可，自豪（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "看到的风景太丑了（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "天气不好，心情差（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到过期食品，恶心（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "投资机会赚了，开心（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "升职了，努力有回报（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "手机电量还剩50%（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "投资机会赚了，开心（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "听到好消息，振奋（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "数据要预处理（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "电影时长2小时（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "宠物很可爱，治愈（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "信息要筛选（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "升职了，努力有回报（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "看到的风景太丑了（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "病情加重了，痛苦（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "太棒了（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "和家人大吵一架，伤心（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到假货，生气（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "眼镜度数是300度（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到假货，生气（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "决策要全面（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "业绩达标，有动力（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到红包，开心（补充）（补充）（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "老板给我涨工资了，开心（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到生日祝福，感动（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "升职了，努力有回报（补充）（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "信息要筛选（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "我今天吃了米饭（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到劣质衣服，生气（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "地球是圆的（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "孩子成绩差，焦虑（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "餐厅营业到晚上10点（补充）（补充）（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "论文发表了，激动（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "电脑屏幕是27寸（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "遇到难题，头疼（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "放假了，自由（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "团队不配合，低效（补充）（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "升职了，努力有回报（补充）（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "升职了，努力有回报（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "手机电量还剩50%（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "和家人大吵一架，伤心（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "手机电量还剩50%（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "遇到难题，头疼（补充）（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "学习进步了，自信（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "听到坏消息，低落（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "认知是重要能力（补充）（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "快递在途中（补充）（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "太棒了（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "投资机会赚了，开心（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "和家人在一起很幸福（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "学不会新技能，挫败（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "能量需要合理分配（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "爱死这个电影了（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "一年有12个月（补充）（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到过期食品，恶心（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "水的沸点是100度（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "旅行遇到暴雨，扫兴（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "行动要谨慎（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "推理要严谨（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "餐厅营业到晚上10点（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "今天倒霉透了（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "降职了，失落（补充）（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到过期食品，恶心（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "手机电量还剩50%（补充）（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "孩子会走路了，开心（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "朋友借了钱不还，失望（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到苍蝇，恶心（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到限量款，满足（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "太棒了（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到假货，生气（补充）（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "神经网络需要训练（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到假货，生气（补充）（补充）（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到过期食品，恶心（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到苍蝇，恶心（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "钱包丢了，着急（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "病情加重了，痛苦（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "工作没完成，自责（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "经验要总结（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "推理要严谨（补充）（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "眼镜度数是300度（补充）（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "升职了，努力有回报（补充）（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "这个产品太差了（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "今天的气温是25度（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "孩子考了第一名，骄傲（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "和家人在一起很幸福（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "被辞退了，沮丧（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "被欺负了，愤怒（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "遇到难题，头疼（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "看到的风景太丑了（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "听到好消息，振奋（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "收到录取通知书了，超兴奋（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到喜欢的衣服，开心（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "快递在途中（补充）（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "旅行遇到暴雨，扫兴（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "学习需要坚持（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "朋友借了钱不还，失望（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "投资机会赚了，开心（补充）（补充）（补充）",
+    "sentiment": "positive",
+    "confidence": 1.0
+  },
+  {
+    "text": "空调开着26度（补充）（补充）",
+    "sentiment": "neutral",
+    "confidence": 1.0
+  },
+  {
+    "text": "吃到过期食品，恶心（补充）（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "工作被否定，挫败（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  },
+  {
+    "text": "买到假货，生气（补充）（补充）（补充）（补充）（补充）",
+    "sentiment": "negative",
+    "confidence": 1.0
+  }
+]

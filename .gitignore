@@ -1,0 +1,69 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+flask.log
+*.log.*
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Pickle/dumps
+*.pkl
+*.pickle
+*.json.bak
+
+# Large models and data
+*.bin
+*.pt
+*.pth
+*.h5
+*.onnx
+*.pkl
+*.model
+*.db
+*.sqlite
+*.sqlite3
+
+# Temp files
+*.tmp
+*.temp
+t.txt
+stderr.txt
+stdout.txt
+
+# Large docx files
+*.docx
+
+# Wechat article crawler
+wechat-article-claw/
+debug*.txt

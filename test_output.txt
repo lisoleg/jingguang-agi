@@ -1,0 +1,31 @@
+============================= test session starts =============================
+platform win32 -- Python 3.10.0rc2, pytest-9.0.3, pluggy-1.6.0 -- C:\Users\1\AppData\Local\Programs\Python\Python310\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\1\WorkBuddy\2026-05-06-task-1
+plugins: anyio-4.12.0, langsmith-0.7.6
+collecting ... collected 38 items
+
+test_agi.py::TestAGICore::test_complex_unit_attention PASSED             [  2%]
+test_agi.py::TestAGICore::test_complex_unit_creation PASSED              [  5%]
+test_agi.py::TestAGICore::test_complex_unit_energy PASSED                [  7%]
+test_agi.py::TestAGICore::test_network_add_unit PASSED                   [ 10%]
+test_agi.py::TestAGICore::test_network_connect PASSED                    [ 13%]
+test_agi.py::TestAGICore::test_network_layer_units PASSED                [ 15%]
+test_agi.py::TestAGICore::test_network_propagate PASSED                  [ 18%]
+test_agi.py::TestEnergyEngine::test_consume_energy PASSED                [ 21%]
+test_agi.py::TestEnergyEngine::test_distribute_to_layer PASSED           [ 23%]
+test_agi.py::TestEnergyEngine::test_energy_allocation PASSED             [ 26%]
+test_agi.py::TestEnergyEngine::test_energy_report PASSED                 [ 28%]
+test_agi.py::TestEnergyEngine::test_information_value_evaluation PASSED  [ 31%]
+test_agi.py::TestEnergyEngine::test_process_signal PASSED                [ 34%]
+test_agi.py::TestAdaptiveLearner::test_adapt_parameters PASSED           [ 36%]
+test_agi.py::TestAdaptiveLearner::test_learning_insights PASSED          [ 39%]
+test_agi.py::TestAdaptiveLearner::test_performance_evaluation PASSED     [ 42%]
+test_agi.py::TestAdaptiveLearner::test_real_learning_loop PASSED         [ 44%]
+test_agi.py::TestAdaptiveLearner::test_record_experience PASSED          [ 47%]
+test_agi.py::TestAdaptiveLearner::test_save_load_experiences PASSED      [ 50%]
+test_agi.py::TestAdaptiveLearner::test_suggest_improvements PASSED       [ 52%]
+test_agi.py::TestTaskInterface::test_decision_making PASSED              [ 55%]
+test_agi.py::TestTaskInterface::test_reasoning PASSED                    [ 57%]
+test_agi.py::TestTaskInterface::test_reasoning_engine_extended PASSED    [ 60%]
+test_agi.py::TestTaskInterface::test_task_summary 

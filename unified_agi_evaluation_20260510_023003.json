@@ -1,0 +1,89 @@
+{
+  "system_name": "CompoundAGI_Complete_v1.0",
+  "evaluation_time": "2026-05-10T02:30:03.180360",
+  "test_scenario": "comprehensive",
+  "module_results": {
+    "tianxing": {
+      "status": "error",
+      "error": "'tianxing'",
+      "paper": 13
+    },
+    "pts": {
+      "status": "error",
+      "error": "'pts'",
+      "paper": [
+        5,
+        6
+      ]
+    },
+    "eight_consciousness": {
+      "status": "error",
+      "error": "'eight_consciousness'",
+      "paper": 10
+    },
+    "crd": {
+      "status": "error",
+      "error": "'crd'",
+      "paper": 12
+    },
+    "evaluator": {
+      "status": "error",
+      "error": "'evaluator'",
+      "paper": 11
+    },
+    "igctr": {
+      "status": "error",
+      "error": "'igctr'",
+      "paper": 4
+    },
+    "embodiment": {
+      "status": "error",
+      "error": "'embodiment'",
+      "paper": 10
+    },
+    "holo_pupation": {
+      "status": "error",
+      "error": "'holo_pupation'",
+      "paper": 10
+    }
+  },
+  "integrated_results": {
+    "module_interactions": [
+      {
+        "interaction": "Alaya → CRD",
+        "status": "error",
+        "error": "'eight_consciousness'"
+      },
+      {
+        "interaction": "Tianxing → AGI Evaluator",
+        "status": "error",
+        "error": "'tianxing'"
+      },
+      {
+        "interaction": "PTS → Holographic Pupation",
+        "status": "error",
+        "error": "'pts'"
+      }
+    ],
+    "data_flow": [],
+    "emergent_properties": []
+  },
+  "overall_assessment": {
+    "successful_modules": 0,
+    "total_modules": 8,
+    "successful_interactions": 0,
+    "total_interactions": 3,
+    "assessment": "需要改进",
+    "confidence": 0.4,
+    "theories_implemented": 8,
+    "papers_covered": [
+      4,
+      5,
+      6,
+      10,
+      11,
+      12,
+      13
+    ]
+  }
+}

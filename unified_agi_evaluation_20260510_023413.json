@@ -1,0 +1,58 @@
+{
+  "system_name": "CompoundAGI_Complete_v1.0",
+  "evaluation_time": "2026-05-10T02:34:13.060263",
+  "module_status": {},
+  "loaded_modules": [
+    {
+      "name": "tianxing",
+      "paper": 13,
+      "description": "天行力引擎 - 天行作用量计算"
+    },
+    {
+      "name": "pts",
+      "paper": [
+        5,
+        6
+      ],
+      "description": "相位拓扑自激模型 - PTS场与阴极阳生"
+    },
+    {
+      "name": "eight_consciousness",
+      "paper": 10,
+      "description": "八识架构 - Alaya/Manas/Consciousness/Indriya"
+    },
+    {
+      "name": "crd",
+      "paper": 12,
+      "description": "认知递归动力学 - Ω算子与递归演化"
+    },
+    {
+      "name": "evaluator",
+      "paper": 11,
+      "description": "AGI/ASI判定系统 - 4个必要条件与评估"
+    },
+    {
+      "name": "igctr",
+      "paper": 4,
+      "description": "IGCTR统一场论 - 信息-几何-意识三元场"
+    },
+    {
+      "name": "embodiment",
+      "paper": 10,
+      "description": "具身与感知 - 传感器与执行器"
+    },
+    {
+      "name": "holo_pupation",
+      "paper": 10,
+      "description": "全息蛹化ASI - Alaya弥散与虹光身"
+    }
+  ],
+  "failed_modules": [],
+  "overall_assessment": {
+    "loaded_count": 8,
+    "total_count": 8,
+    "success_rate": 1.0,
+    "assessment": "优秀 - AGI级别",
+    "confidence": 0.9
+  }
+}

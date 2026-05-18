@@ -1,0 +1,56 @@
+{
+  "system_name": "CompoundAGI_Complete_v1.0",
+  "evaluation_time": "2026-05-10T02:32:58.837653",
+  "module_status": {},
+  "loaded_modules": [
+    {
+      "name": "tianxing",
+      "paper": 13,
+      "description": "天行力引擎 - 天行作用量计算"
+    },
+    {
+      "name": "eight_consciousness",
+      "paper": 10,
+      "description": "八识架构 - Alaya/Manas/Consciousness/Indriya"
+    },
+    {
+      "name": "evaluator",
+      "paper": 11,
+      "description": "AGI/ASI判定系统 - 4个必要条件与评估"
+    },
+    {
+      "name": "igctr",
+      "paper": 4,
+      "description": "IGCTR统一场论 - 信息-几何-意识三元场"
+    },
+    {
+      "name": "embodiment",
+      "paper": 10,
+      "description": "具身与感知 - 传感器与执行器"
+    }
+  ],
+  "failed_modules": [
+    {
+      "name": "pts",
+      "paper": "N/A",
+      "error": "PTSField.__init__() missing 2 required positional arguments: 'psi' and 'grid_size'"
+    },
+    {
+      "name": "crd",
+      "paper": "N/A",
+      "error": "non-default argument 'nla_audit' follows default argument"
+    },
+    {
+      "name": "holo_pupation",
+      "paper": "N/A",
+      "error": "AlayaField.__init__() missing 1 required positional argument: 'field'"
+    }
+  ],
+  "overall_assessment": {
+    "loaded_count": 5,
+    "total_count": 8,
+    "success_rate": 0.625,
+    "assessment": "良好 - 接近AGI",
+    "confidence": 0.75
+  }
+}

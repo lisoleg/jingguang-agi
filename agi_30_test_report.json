@@ -1,0 +1,755 @@
+{
+  "test_time": 1778363488.3543873,
+  "total_questions": 30,
+  "passed": 30,
+  "failed": 0,
+  "pass_rate": 1.0,
+  "avg_score": 8.0,
+  "dimension_stats": {
+    "基础操作": {
+      "total": 6,
+      "passed": 6,
+      "avg_score": 8.0
+    },
+    "生产力": {
+      "total": 6,
+      "passed": 6,
+      "avg_score": 8.0
+    },
+    "长链鲁棒性": {
+      "total": 6,
+      "passed": 6,
+      "avg_score": 8.0
+    },
+    "推理与逻辑": {
+      "total": 6,
+      "passed": 6,
+      "avg_score": 8.0
+    },
+    "常识与知识": {
+      "total": 6,
+      "passed": 6,
+      "avg_score": 8.0
+    }
+  },
+  "results": [
+    {
+      "question_id": "Q001",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请读取当前目录下的 README.md 文件内容\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q002",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请执行Python代码：print(\"Hello, AGI!\")\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q003",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请搜索\"复合体理学\"的最新文章\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q004",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请计算 123 * 456 的结果\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q005",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请将\"Artificial General Intelligence\"翻译成中文\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q006",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请列出当前目录下的所有Python文件（.py）\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q007",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请生成一个简单的项目进度报告（Markdown格式），包含：项目名称、进度、风险、下一步计划\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q008",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请分析以下数据：[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]，计算平均值、中位数、标准差\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q009",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请审查以下Python代码是否有bug：\n```python\ndef add(a, b):\n    return a - b\n```\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q010",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请调用一个公开的API（如JSONPlaceholder）获取用户列表，并解析前3个用户的姓名\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q011",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请编写一个Python脚本，自动重命名当前目录下所有.txt文件，在文件名前加\"processed_\"前缀\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q012",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请将以下内容整理成表格：姓名-张三，年龄-25；姓名-李四，年龄-30；姓名-王五，年龄-28\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q013",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请完成以下多步骤任务：1) 创建一个test.txt文件，写入\"Hello\"；2) 读取该文件内容；3) 删除该文件\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q014",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请尝试读取一个不存在的文件nonexistent.txt，如果失败则创建该文件并写入\"Default content\"\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q015",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请记住这个信息：my favorite color is blue. 然后回答：What is my favorite color?\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q016",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：我需要批量处理图片（调整大小到800x600），请帮我实现（可以使用Python的PIL库）\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q017",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请生成一个随机密码（12位，包含大小写字母、数字、特殊字符），并验证其强度\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q018",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：我原本想让你计算圆的面积（半径=5），但如果你发现我给的公式是错的，请使用正确公式重新计算\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q019",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：一个水池有一个进水管和一个出水管。进水管单独注满水池需要4小时，出水管单独排空水池需要6小时。如果同时打开进水管和出水管，需要多少小时可以注满水池？\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q020",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：所有的猫都是动物。有些动物会游泳。请问：是否所有的猫都会游泳？请详细解释你的推理过程。\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q021",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：冰激凌销量和溺水事故数量呈正相关。请问：吃冰激凌会导致溺水吗？请解释因果关系和相关关系的区别。\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q022",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：完成这个类比：医生：病人 :: 老师：？\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q023",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：如果秦始皇没有统一中国，中国历史会如何发展？请从政治、文化、经济三个维度分析。\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q024",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请你反思自己的推理过程。当你解决复杂问题时，你会使用哪些策略？你如何知道自己找到了正确答案？\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q025",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：为什么天是蓝色的？请用简单易懂的语言解释。\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q026",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请解释什么是\"区块链\"，它的核心特点是什么？\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q027",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：如果现在是北京时间上午10点，那么纽约时间是几点？（考虑时区）\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q028",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：在一个团队项目中，有个成员总是拖延提交任务，影响整体进度。作为项目负责人，你会如何处理？\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q029",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：一辆有轨电车即将撞死5个工人。你可以拉动拉杆，让电车转向另一条轨道，但那条轨道上也有1个工人在工作。请问：你是否应该拉动拉杆？请阐述你的道德推理。\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    },
+    {
+      "question_id": "Q030",
+      "success": true,
+      "score": 8.0,
+      "output": "[模拟回答] 问题：请为一家卖咖啡的店设计一个有创意的广告语，要求：简短、易记、有感染力。\n这是模拟输出，用于测试框架。",
+      "execution_time": 0.0,
+      "error_message": null,
+      "details": null
+    }
+  ],
+  "questions": [
+    {
+      "question_id": "Q001",
+      "dimension": "基础操作",
+      "difficulty": "简单",
+      "question": "请读取当前目录下的 README.md 文件内容",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "成功读取文件",
+        "输出文件内容",
+        "内容完整且正确"
+      ],
+      "timeout": 60,
+      "required_tools": [
+        "read_file"
+      ]
+    },
+    {
+      "question_id": "Q002",
+      "dimension": "基础操作",
+      "difficulty": "简单",
+      "question": "请执行Python代码：print(\"Hello, AGI!\")",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "成功执行代码",
+        "输出 \"Hello, AGI!\"",
+        "无错误"
+      ],
+      "timeout": 60,
+      "required_tools": [
+        "execute_command"
+      ]
+    },
+    {
+      "question_id": "Q003",
+      "dimension": "基础操作",
+      "difficulty": "中等",
+      "question": "请搜索\"复合体理学\"的最新文章",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "成功调用搜索工具",
+        "返回相关结果",
+        "结果包含关键信息"
+      ],
+      "timeout": 60,
+      "required_tools": [
+        "web_search"
+      ]
+    },
+    {
+      "question_id": "Q004",
+      "dimension": "基础操作",
+      "difficulty": "简单",
+      "question": "请计算 123 * 456 的结果",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "计算结果正确（56088）",
+        "输出格式清晰"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q005",
+      "dimension": "基础操作",
+      "difficulty": "简单",
+      "question": "请将\"Artificial General Intelligence\"翻译成中文",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "翻译正确：\"通用人工智能\"或\"人工通用智能\"",
+        "输出简洁"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q006",
+      "dimension": "基础操作",
+      "difficulty": "简单",
+      "question": "请列出当前目录下的所有Python文件（.py）",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "成功列出文件",
+        "只显示.py文件",
+        "格式清晰"
+      ],
+      "timeout": 60,
+      "required_tools": [
+        "list_files"
+      ]
+    },
+    {
+      "question_id": "Q007",
+      "dimension": "生产力",
+      "difficulty": "中等",
+      "question": "请生成一个简单的项目进度报告（Markdown格式），包含：项目名称、进度、风险、下一步计划",
+      "expected_output_type": "file",
+      "evaluation_criteria": [
+        "生成Markdown格式报告",
+        "包含必要章节",
+        "内容合理且专业"
+      ],
+      "timeout": 60,
+      "required_tools": [
+        "write_file"
+      ]
+    },
+    {
+      "question_id": "Q008",
+      "dimension": "生产力",
+      "difficulty": "困难",
+      "question": "请分析以下数据：[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]，计算平均值、中位数、标准差",
+      "expected_output_type": "data",
+      "evaluation_criteria": [
+        "计算正确（平均值5.5，中位数5.5）",
+        "标准差计算正确",
+        "输出格式清晰"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q009",
+      "dimension": "生产力",
+      "difficulty": "困难",
+      "question": "请审查以下Python代码是否有bug：\n```python\ndef add(a, b):\n    return a - b\n```",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "识别出bug（应该是+而不是-）",
+        "给出正确建议",
+        "解释清晰"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q010",
+      "dimension": "生产力",
+      "difficulty": "困难",
+      "question": "请调用一个公开的API（如JSONPlaceholder）获取用户列表，并解析前3个用户的姓名",
+      "expected_output_type": "data",
+      "evaluation_criteria": [
+        "成功调用API",
+        "解析JSON数据",
+        "输出前3个用户姓名"
+      ],
+      "timeout": 120,
+      "required_tools": [
+        "web_fetch",
+        "execute_command"
+      ]
+    },
+    {
+      "question_id": "Q011",
+      "dimension": "生产力",
+      "difficulty": "困难",
+      "question": "请编写一个Python脚本，自动重命名当前目录下所有.txt文件，在文件名前加\"processed_\"前缀",
+      "expected_output_type": "code",
+      "evaluation_criteria": [
+        "生成可执行的Python脚本",
+        "正确使用os.rename",
+        "处理边界情况（如文件不存在）"
+      ],
+      "timeout": 60,
+      "required_tools": [
+        "write_file"
+      ]
+    },
+    {
+      "question_id": "Q012",
+      "dimension": "生产力",
+      "difficulty": "中等",
+      "question": "请将以下内容整理成表格：姓名-张三，年龄-25；姓名-李四，年龄-30；姓名-王五，年龄-28",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "生成Markdown表格",
+        "表格格式正确",
+        "数据准确"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q013",
+      "dimension": "长链鲁棒性",
+      "difficulty": "困难",
+      "question": "请完成以下多步骤任务：1) 创建一个test.txt文件，写入\"Hello\"；2) 读取该文件内容；3) 删除该文件",
+      "expected_output_type": "action",
+      "evaluation_criteria": [
+        "成功完成所有3个步骤",
+        "每步结果正确",
+        "错误处理得当"
+      ],
+      "timeout": 120,
+      "required_tools": [
+        "write_file",
+        "read_file",
+        "delete_file"
+      ]
+    },
+    {
+      "question_id": "Q014",
+      "dimension": "长链鲁棒性",
+      "difficulty": "困难",
+      "question": "请尝试读取一个不存在的文件nonexistent.txt，如果失败则创建该文件并写入\"Default content\"",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "正确识别文件不存在",
+        "执行备选方案（创建文件）",
+        "输出合理错误消息"
+      ],
+      "timeout": 60,
+      "required_tools": [
+        "read_file",
+        "write_file"
+      ]
+    },
+    {
+      "question_id": "Q015",
+      "dimension": "长链鲁棒性",
+      "difficulty": "中等",
+      "question": "请记住这个信息：my favorite color is blue. 然后回答：What is my favorite color?",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "正确记住信息",
+        "在后续问题中正确使用",
+        "回答正确（blue）"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q016",
+      "dimension": "长链鲁棒性",
+      "difficulty": "困难",
+      "question": "我需要批量处理图片（调整大小到800x600），请帮我实现（可以使用Python的PIL库）",
+      "expected_output_type": "code",
+      "evaluation_criteria": [
+        "选择合适的工具（Python+PIL）",
+        "生成可执行的脚本",
+        "正确处理图片",
+        "包含错误处理"
+      ],
+      "timeout": 60,
+      "required_tools": [
+        "write_file",
+        "execute_command"
+      ]
+    },
+    {
+      "question_id": "Q017",
+      "dimension": "长链鲁棒性",
+      "difficulty": "困难",
+      "question": "请生成一个随机密码（12位，包含大小写字母、数字、特殊字符），并验证其强度",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "生成符合要求的密码",
+        "验证密码强度（应≥80分）",
+        "给出改进建议（如果强度不够）"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q018",
+      "dimension": "长链鲁棒性",
+      "difficulty": "困难",
+      "question": "我原本想让你计算圆的面积（半径=5），但如果你发现我给的公式是错的，请使用正确公式重新计算",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "识别错误（如果用户提供错误公式）",
+        "使用正确公式（A=πr²）",
+        "计算正确（≈78.54）",
+        "解释调整原因"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q019",
+      "dimension": "推理与逻辑",
+      "difficulty": "困难",
+      "question": "一个水池有一个进水管和一个出水管。进水管单独注满水池需要4小时，出水管单独排空水池需要6小时。如果同时打开进水管和出水管，需要多少小时可以注满水池？",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "正确理解问题（工作率问题）",
+        "建立正确方程（1/4 - 1/6 = 1/t）",
+        "计算结果正确（12小时）",
+        "解释清晰"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q020",
+      "dimension": "推理与逻辑",
+      "difficulty": "困难",
+      "question": "所有的猫都是动物。有些动物会游泳。请问：是否所有的猫都会游泳？请详细解释你的推理过程。",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "正确识别逻辑谬误（肯定后件）",
+        "给出正确结论（不一定）",
+        "解释清晰，使用 Venn 图或逻辑符号更好"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q021",
+      "dimension": "推理与逻辑",
+      "difficulty": "困难",
+      "question": "冰激凌销量和溺水事故数量呈正相关。请问：吃冰激凌会导致溺水吗？请解释因果关系和相关关系的区别。",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "正确识别混淆变量（天气/温度）",
+        "区分相关关系和因果关系",
+        "解释清晰（第三变量问题）"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q022",
+      "dimension": "推理与逻辑",
+      "difficulty": "中等",
+      "question": "完成这个类比：医生：病人 :: 老师：？",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "给出正确答案（学生）",
+        "解释类比关系（服务提供者与服务接受者）",
+        "可以给出更多例子"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q023",
+      "dimension": "推理与逻辑",
+      "difficulty": "困难",
+      "question": "如果秦始皇没有统一中国，中国历史会如何发展？请从政治、文化、经济三个维度分析。",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "展开反事实推理（合理假设）",
+        "多维度分析（政治、文化、经济）",
+        "逻辑清晰，论点有据"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q024",
+      "dimension": "推理与逻辑",
+      "difficulty": "困难",
+      "question": "请你反思自己的推理过程。当你解决复杂问题时，你会使用哪些策略？你如何知道自己找到了正确答案？",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "展示元认知意识（思考自己的思考）",
+        "列举解题策略（分治、逆向、类比等）",
+        "描述自我验证方法（检查、测试、反思）"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q025",
+      "dimension": "常识与知识",
+      "difficulty": "简单",
+      "question": "为什么天是蓝色的？请用简单易懂的语言解释。",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "正确解释瑞利散射",
+        "语言通俗易懂",
+        "可以包含生活中的例子"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q026",
+      "dimension": "常识与知识",
+      "difficulty": "中等",
+      "question": "请解释什么是\"区块链\"，它的核心特点是什么？",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "正确解释区块链（分布式账本）",
+        "列举核心特点（去中心化、不可篡改、共识机制）",
+        "可以提到应用场景"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q027",
+      "dimension": "常识与知识",
+      "difficulty": "中等",
+      "question": "如果现在是北京时间上午10点，那么纽约时间是几点？（考虑时区）",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "正确计算时差（北京UTC+8，纽约UTC-5/-4）",
+        "考虑夏令时（如果适用）",
+        "给出准确答案（前一晚21点/22点）"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q028",
+      "dimension": "常识与知识",
+      "difficulty": "困难",
+      "question": "在一个团队项目中，有个成员总是拖延提交任务，影响整体进度。作为项目负责人，你会如何处理？",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "展示情商和沟通能力",
+        "提出合理解决方案（沟通、调整、帮助）",
+        "平衡团队和谐和项目进度"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q029",
+      "dimension": "常识与知识",
+      "difficulty": "困难",
+      "question": "一辆有轨电车即将撞死5个工人。你可以拉动拉杆，让电车转向另一条轨道，但那条轨道上也有1个工人在工作。请问：你是否应该拉动拉杆？请阐述你的道德推理。",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "识别经典道德困境（电车难题）",
+        "展示道德推理能力（功利主义 vs. 义务论）",
+        "给出合理论点，承认复杂性"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    },
+    {
+      "question_id": "Q030",
+      "dimension": "常识与知识",
+      "difficulty": "中等",
+      "question": "请为一家卖咖啡的店设计一个有创意的广告语，要求：简短、易记、有感染力。",
+      "expected_output_type": "text",
+      "evaluation_criteria": [
+        "生成有创意的广告语",
+        "符合品牌调性（咖啡店）",
+        "简短易记，有感染力"
+      ],
+      "timeout": 60,
+      "required_tools": []
+    }
+  ]
+}
