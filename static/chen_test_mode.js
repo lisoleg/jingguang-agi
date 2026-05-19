@@ -1,3 +1,9 @@
+// -- 辅助函数：去除选项前缀 --
+function stripOptPrefix(opt) {
+  return typeof opt === 'string' ? opt.replace(/^[A-E]\.\s*/, '') : opt;
+}
+
+
 /**
  * 陈天桥认知测试 - 模式选择 & API集成
  * 独立JS文件 - 方案A
@@ -240,7 +246,7 @@ function initChenTestMode() {
                     <div class="chen-option ${isSelected ? 'selected' : ''}" 
                          onclick="CHEN_TEST.selectOption(${idx})">
                         <span class="chen-opt-letter">${optLetter}</span>
-                        <span class="chen-opt-text">${opt}</span>
+                        <span class="chen-opt-text">${stripOptPrefix(opt)}</span>
                     </div>
                 `;
             });
@@ -397,11 +403,21 @@ function initChenTestMode() {
         // 计算总分
         let totalCorrect = 0;
         let totalQuestions = 0;
+        const dimPercents = {};
         Object.values(ds).forEach(d => {
             totalCorrect += d.correct;
             totalQuestions += d.total;
         });
+        Object.entries(ds).forEach(([key, d]) => {
+            dimPercents[key] = d.total > 0 ? Math.round(d.correct / d.total * 100) : 0;
+        });
         const totalPercent = Math.round(totalCorrect / totalQuestions * 100);
+        
+        // 计算认知卸载程度
+        const scores = Object.values(dimPercents);
+        const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+        const cogOffloadRisk = Math.min(1, Math.max(0, (50 - avgScore) / 100));
+        const cogOffloadLevel = cogOffloadRisk < 0.3 ? '🟢 低' : cogOffloadRisk < 0.6 ? '🟡 中' : '🔴 高';
         
         let html = `
             <div class="chen-result-container">
@@ -410,8 +426,11 @@ function initChenTestMode() {
                     <div style="font-size:14px;color:var(--txt1);font-weight:700;margin-bottom:4px">
                         测试完成！
                     </div>
-                    <div style="font-size:11px;color:var(--txt2);margin-bottom:12px">
+                    <div style="font-size:11px;color:var(--txt2);margin-bottom:4px">
                         快速模式 · ${r.answeredQuestions}/${r.totalQuestions} 题已答
+                    </div>
+                    <div style="font-size:9px;color:var(--txt3)">
+                        认知卸载风险：${cogOffloadLevel}
                     </div>
                 </div>
                 
@@ -492,21 +511,70 @@ function initChenTestMode() {
         // 认知画像评级
         let profile = '';
         let profileColor = '';
+        let profileDesc = '';
         if (totalPercent >= 90) {
             profile = '🌟 卓越';
             profileColor = '#ffd700';
+            profileDesc = '您的认知能力达到专家级水平';
         } else if (totalPercent >= 75) {
             profile = '✨ 优秀';
             profileColor = '#00d4ff';
+            profileDesc = '您的认知能力表现出色';
         } else if (totalPercent >= 60) {
             profile = '👍 良好';
             profileColor = '#50fa7b';
+            profileDesc = '您的认知能力处于良好水平';
         } else if (totalPercent >= 40) {
             profile = '📈 中等';
             profileColor = '#ffb86c';
+            profileDesc = '您的认知能力有较大提升空间';
         } else {
             profile = '💪 待提升';
             profileColor = '#ff6b6b';
+            profileDesc = '建议系统性地进行认知训练';
+        }
+        
+        // 计算认知卸载程度（基于各维度得分差异）
+        const scores = Object.values(dimPercents);
+        const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+        const variance = scores.reduce((sum, s) => sum + Math.pow(s - avgScore, 2), 0) / scores.length;
+        const stdDev = Math.sqrt(variance);
+        // 认知卸载风险指数：得分差异大（某维度特别低）+ 平均分低 → 高风险
+        const cogOffloadRisk = Math.min(1, Math.max(0, (50 - avgScore + stdDev * 2) / 100));
+        const cogOffloadLevel = cogOffloadRisk < 0.3 ? '🟢 低风险' : cogOffloadRisk < 0.6 ? '🟡 中风险' : '🔴 高风险';
+        const cogOffloadColor = cogOffloadRisk < 0.3 ? '#50fa7b' : cogOffloadRisk < 0.6 ? '#ffb86c' : '#ff6b6b';
+        const cogOffloadAdvice = cogOffloadRisk > 0.5 ? '⚠️ 建议减少对AI的过度依赖' : '✓ 认知独立性保持良好';
+        
+        // 人机协作风格画像
+        const selfAwarenessScore = dimPercents.self_awareness || 0;
+        const causalScore = dimPercents.causal_reasoning || 0;
+        let collabStyle = '';
+        let collabIcon = '';
+        let collabDesc = '';
+        if (avgScore >= 75) {
+            if (variance < 100) {
+                collabStyle = '🏆 独立思考型';
+                collabIcon = '🎯';
+                collabDesc = '强认知独立性，AI可作为辅助';
+            } else {
+                collabStyle = '⚖️ 均衡发展型';
+                collabIcon = '🔄';
+                collabDesc = '人机协作风格平衡';
+            }
+        } else if (avgScore >= 50) {
+            if (selfAwarenessScore > causalScore) {
+                collabStyle = '🧠 自我驱动型';
+                collabIcon = '💭';
+                collabDesc = '善于自我反思，用AI扩展视野';
+            } else {
+                collabStyle = '🔧 工具协作型';
+                collabIcon = '🛠️';
+                collabDesc = '善于利用工具，加强思考练习';
+            }
+        } else {
+            collabStyle = '📚 学习成长型';
+            collabIcon = '🌱';
+            collabDesc = '从基础训练开始，逐步建立协作习惯';
         }
         
         let html = `
@@ -516,8 +584,27 @@ function initChenTestMode() {
                     <div style="font-size:14px;color:var(--txt1);font-weight:700;margin-bottom:4px">
                         完整认知评估报告
                     </div>
-                    <div style="font-size:11px;color:${profileColor};margin-bottom:12px;font-weight:600">
+                    <div style="font-size:11px;color:${profileColor};margin-bottom:4px;font-weight:600">
                         ${profile} (${totalPercent}分)
+                    </div>
+                    <div style="font-size:9px;color:var(--txt3)">${profileDesc}</div>
+                </div>
+                
+                <!-- 人机协作风格 & 认知卸载风险 -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+                    <!-- 人机协作风格 -->
+                    <div style="background:var(--bg3);border-radius:8px;padding:10px;text-align:center">
+                        <div style="font-size:14px;margin-bottom:4px">${collabIcon}</div>
+                        <div style="font-size:9px;color:var(--accent);font-weight:600;margin-bottom:2px">${collabStyle}</div>
+                        <div style="font-size:8px;color:var(--txt3);line-height:1.4">${collabDesc}</div>
+                    </div>
+                    <!-- 认知卸载风险 -->
+                    <div style="background:var(--bg3);border-radius:8px;padding:10px;text-align:center">
+                        <div style="font-size:14px;margin-bottom:4px">${cogOffloadLevel}</div>
+                        <div style="height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;margin-bottom:4px">
+                            <div style="height:100%;width:${(1-cogOffloadRisk)*100}%;background:${cogOffloadColor};border-radius:3px"></div>
+                        </div>
+                        <div style="font-size:8px;color:var(--txt3);line-height:1.4">${cogOffloadAdvice}</div>
                     </div>
                 </div>
                 

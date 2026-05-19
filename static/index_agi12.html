@@ -3016,6 +3016,23 @@ function openDesignDoc() {
 // ════════════════════════════════════════════════════════════════
 // 陈天桥认知测试模块 - 对话栏版本
 // ════════════════════════════════════════════════════════════════
+// -- 辅助函数：去除选项前缀 --
+function stripOptPrefix(opt) {
+  return typeof opt === 'string' ? opt.replace(/^[A-E]\.\s*/, '') : opt;
+}
+// -- 辅助函数：获取数字格式的正确答案 --
+function getCorrectAnswer(q) {
+  if (q.correct_answer !== undefined) return Number(q.correct_answer);
+  if (typeof q.answer === 'number') return q.answer;
+  if (typeof q.answer === 'string' && /^[A-E]$/.test(q.answer)) return q.answer.charCodeAt(0) - 65;
+  return Number(q.answer);
+}
+// -- 辅助函数：计算问答题/作文得分比例 --
+function calcTextScoreRatio(userAns, minWords) {
+  if (!userAns || userAns.trim().length === 0) return 0;
+  return Math.min(1.0, userAns.trim().length / (minWords || 50));
+}
+
 const CHEN_TEST = {
   mode: 'quick',  // 测试模式：quick(12题) 或 full(300题)
   questions: [],
@@ -3727,7 +3744,7 @@ const CHEN_TEST = {
 
           // 后备：使用题目自带的正确答案（健壮性保护）
           if (aiChoice === -1 || aiChoice < 0 || aiChoice >= q.options.length || isNaN(aiChoice)) {
-            const fallback = Number(q.answer);
+            const fallback = getCorrectAnswer(q);
             aiChoice = isNaN(fallback) ? 0 : fallback;
           }
 
@@ -3863,7 +3880,7 @@ const CHEN_TEST = {
             <div class="chen-test-option ${this.answers[this.currentIdx] === i ? 'selected' : ''}"
                  data-qidx="${this.currentIdx}" data-opt="${i}" onclick="CHEN_TEST.selectAnswer(${this.currentIdx}, ${i})">
               <span class="chen-opt-letter">${String.fromCharCode(65 + i)}</span>
-              <span class="chen-opt-text">${opt}</span>
+              <span class="chen-opt-text">${stripOptPrefix(opt)}</span>
             </div>
           `).join('')}
         </div>
@@ -3909,6 +3926,7 @@ const CHEN_TEST = {
       </div>
       <div class="chen-test-question">
         <div class="chen-test-q-text">${q.question || q.q || '题目加载失败'}</div>
+        ${(q.type === 'essay' || q.type === 'composition') ? '<div style="font-size:10px;color:var(--amber);margin-top:4px">&#9998; 字数要求：至少 ' + (q.minWords || 50) + ' 字</div>' : ''}
         ${questionContent}
       </div>
       <div class="chen-test-nav">
@@ -4140,7 +4158,7 @@ const CHEN_TEST = {
       } else if (isChoiceQ) {
         // 选择题：答案等于正确选项索引（兼容字符串/数字类型）
         const numAns = Number(ans);
-        const numCorrect = Number(q.answer);
+        const numCorrect = getCorrectAnswer(q);
         // 健壮性：如果正确答案无效但有存储答案，允许通过（AI自纠机制）
         if (isNaN(numCorrect) && q.reference) {
           isCorrect = true; // 无法判定，默认给分（仁慈评分）
@@ -4229,10 +4247,11 @@ const CHEN_TEST = {
       let isCorrect = false;
       if (isTextQ) {
         const minWords = q.minWords || 50;
-        isCorrect = userAns && userAns.trim().length >= minWords;
+        const scoreRatio = calcTextScoreRatio(userAns, minWords);
+        isCorrect = scoreRatio >= 1.0;
       } else if (isChoiceQ) {
         const numAns = Number(userAns);
-        const numCorrect = Number(q.answer);
+        const numCorrect = getCorrectAnswer(q);
         if (isNaN(numCorrect) && q.reference) {
           isCorrect = true;
         } else {
@@ -4259,7 +4278,7 @@ const CHEN_TEST = {
           </div>
           ${q.reference ? `<div style="font-size:9px;color:var(--sky);margin-top:4px">参考答案: ${q.reference}</div>` : ''}
           <div style="font-size:9px;color:${isCorrect ? 'var(--green)' : 'var(--red)'}">
-            ${isCorrect ? '&#10004; 字数达标，得分' : '&#10006; 字数不足或未作答，未得分'}
+            ${scoreRatio >= 1.0 ? '&#10004; 字数达标，满分' : (scoreRatio > 0 ? '&#9993; 字数不足，得 ' + Math.round(scoreRatio * 100) + '% 分' : '&#10006; 未作答，0分')}
           </div>
         `;
       } else if (isChoiceQ && q.options) {
@@ -4268,13 +4287,13 @@ const CHEN_TEST = {
           <div style="font-size:10px;margin:4px 0">
             ${q.options.map((opt, oi) => {
               let cls = '';
-              if (oi === q.answer) cls = 'color:var(--green);font-weight:600';
+              if (oi === getCorrectAnswer(q)) cls = 'color:var(--green);font-weight:600';
               else if (oi === userAns && !isCorrect) cls = 'color:var(--red);text-decoration:line-through';
               return `<div style="${cls}">${String.fromCharCode(65 + oi)}. ${opt}</div>`;
             }).join('')}
           </div>
           <div style="font-size:9px;color:${isCorrect ? 'var(--green)' : 'var(--red)'}">
-            ${isCorrect ? '&#10004; 正确' : `&#10006; 错误 | 正确答案: ${q.answer !== undefined ? String.fromCharCode(65 + q.answer) : '?'}`}
+            ${isCorrect ? '&#10004; 正确' : `&#10006; 错误 | 正确答案: ${getCorrectAnswer(q) !== undefined ? String.fromCharCode(65 + getCorrectAnswer(q)) : '?'}`}
           </div>
           ${q.reference ? `<div style="font-size:9px;color:var(--sky);margin-top:4px">解析: ${q.reference}</div>` : ''}
         `;
@@ -8990,6 +9009,23 @@ function openDesignDoc() {
 // ════════════════════════════════════════════════════════════════
 // 陈天桥认知测试模块 - 对话栏版本
 // ════════════════════════════════════════════════════════════════
+// -- 辅助函数：去除选项前缀 --
+function stripOptPrefix(opt) {
+  return typeof opt === 'string' ? opt.replace(/^[A-E]\.\s*/, '') : opt;
+}
+// -- 辅助函数：获取数字格式的正确答案 --
+function getCorrectAnswer(q) {
+  if (q.correct_answer !== undefined) return Number(q.correct_answer);
+  if (typeof q.answer === 'number') return q.answer;
+  if (typeof q.answer === 'string' && /^[A-E]$/.test(q.answer)) return q.answer.charCodeAt(0) - 65;
+  return Number(q.answer);
+}
+// -- 辅助函数：计算问答题/作文得分比例 --
+function calcTextScoreRatio(userAns, minWords) {
+  if (!userAns || userAns.trim().length === 0) return 0;
+  return Math.min(1.0, userAns.trim().length / (minWords || 50));
+}
+
 const CHEN_TEST = {
   mode: 'quick',  // 测试模式：quick(12题) 或 full(300题)
   questions: [],
@@ -9779,7 +9815,7 @@ const CHEN_TEST = {
 
           // 后备：使用题目自带的正确答案（健壮性保护）
           if (aiChoice === -1 || aiChoice < 0 || aiChoice >= q.options.length || isNaN(aiChoice)) {
-            const fallback = Number(q.answer);
+            const fallback = getCorrectAnswer(q);
             aiChoice = isNaN(fallback) ? 0 : fallback;
           }
 
@@ -9915,7 +9951,7 @@ const CHEN_TEST = {
             <div class="chen-test-option ${this.answers[this.currentIdx] === i ? 'selected' : ''}"
                  data-qidx="${this.currentIdx}" data-opt="${i}" onclick="CHEN_TEST.selectAnswer(${this.currentIdx}, ${i})">
               <span class="chen-opt-letter">${String.fromCharCode(65 + i)}</span>
-              <span class="chen-opt-text">${opt}</span>
+              <span class="chen-opt-text">${stripOptPrefix(opt)}</span>
             </div>
           `).join('')}
         </div>
@@ -9961,6 +9997,7 @@ const CHEN_TEST = {
       </div>
       <div class="chen-test-question">
         <div class="chen-test-q-text">${q.question || q.q || '题目加载失败'}</div>
+        ${(q.type === 'essay' || q.type === 'composition') ? '<div style="font-size:10px;color:var(--amber);margin-top:4px">&#9998; 字数要求：至少 ' + (q.minWords || 50) + ' 字</div>' : ''}
         ${questionContent}
       </div>
       <div class="chen-test-nav">
@@ -10192,7 +10229,7 @@ const CHEN_TEST = {
       } else if (isChoiceQ) {
         // 选择题：答案等于正确选项索引（兼容字符串/数字类型）
         const numAns = Number(ans);
-        const numCorrect = Number(q.answer);
+        const numCorrect = getCorrectAnswer(q);
         // 健壮性：如果正确答案无效但有存储答案，允许通过（AI自纠机制）
         if (isNaN(numCorrect) && q.reference) {
           isCorrect = true; // 无法判定，默认给分（仁慈评分）
@@ -10281,10 +10318,11 @@ const CHEN_TEST = {
       let isCorrect = false;
       if (isTextQ) {
         const minWords = q.minWords || 50;
-        isCorrect = userAns && userAns.trim().length >= minWords;
+        const scoreRatio = calcTextScoreRatio(userAns, minWords);
+        isCorrect = scoreRatio >= 1.0;
       } else if (isChoiceQ) {
         const numAns = Number(userAns);
-        const numCorrect = Number(q.answer);
+        const numCorrect = getCorrectAnswer(q);
         if (isNaN(numCorrect) && q.reference) {
           isCorrect = true;
         } else {
@@ -10311,7 +10349,7 @@ const CHEN_TEST = {
           </div>
           ${q.reference ? `<div style="font-size:9px;color:var(--sky);margin-top:4px">参考答案: ${q.reference}</div>` : ''}
           <div style="font-size:9px;color:${isCorrect ? 'var(--green)' : 'var(--red)'}">
-            ${isCorrect ? '&#10004; 字数达标，得分' : '&#10006; 字数不足或未作答，未得分'}
+            ${scoreRatio >= 1.0 ? '&#10004; 字数达标，满分' : (scoreRatio > 0 ? '&#9993; 字数不足，得 ' + Math.round(scoreRatio * 100) + '% 分' : '&#10006; 未作答，0分')}
           </div>
         `;
       } else if (isChoiceQ && q.options) {
@@ -10320,13 +10358,13 @@ const CHEN_TEST = {
           <div style="font-size:10px;margin:4px 0">
             ${q.options.map((opt, oi) => {
               let cls = '';
-              if (oi === q.answer) cls = 'color:var(--green);font-weight:600';
+              if (oi === getCorrectAnswer(q)) cls = 'color:var(--green);font-weight:600';
               else if (oi === userAns && !isCorrect) cls = 'color:var(--red);text-decoration:line-through';
               return `<div style="${cls}">${String.fromCharCode(65 + oi)}. ${opt}</div>`;
             }).join('')}
           </div>
           <div style="font-size:9px;color:${isCorrect ? 'var(--green)' : 'var(--red)'}">
-            ${isCorrect ? '&#10004; 正确' : `&#10006; 错误 | 正确答案: ${q.answer !== undefined ? String.fromCharCode(65 + q.answer) : '?'}`}
+            ${isCorrect ? '&#10004; 正确' : `&#10006; 错误 | 正确答案: ${getCorrectAnswer(q) !== undefined ? String.fromCharCode(65 + getCorrectAnswer(q)) : '?'}`}
           </div>
           ${q.reference ? `<div style="font-size:9px;color:var(--sky);margin-top:4px">解析: ${q.reference}</div>` : ''}
         `;

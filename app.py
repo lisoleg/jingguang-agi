@@ -1895,6 +1895,9 @@ def cognition_test():
                     q['correct_answer'] = ord(q['answer']) - ord('A')
                 elif isinstance(q['answer'], int):
                     q['correct_answer'] = q['answer']
+            # 同时统一 answer 字段为数字索引，避免前端兼容问题
+            if 'answer' in q and isinstance(q['answer'], str) and q['answer'] in ['A', 'B', 'C', 'D', 'E']:
+                q['answer'] = ord(q['answer']) - ord('A')
         
         # 生成测试ID
         test_id = f"CHEN_{int(time.time())}_{random.randint(1000, 9999)}"
