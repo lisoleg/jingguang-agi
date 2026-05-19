@@ -4,7 +4,7 @@
 拓扑缺陷分析模块
 Topological Defect Analysis Module
 
-实现拓扑缺陷理论，用于分析复合体AGI系统中的拓扑缺陷
+实现拓扑缺陷理论，用于分析太乙AGI系统中的拓扑缺陷
 基于复合体理学的理论框架
 """
 

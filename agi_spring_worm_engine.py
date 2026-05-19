@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-复合体AGI 6.0 - 弹簧虫协调总线动画引擎
+太乙AGI 6.0 - 弹簧虫协调总线动画引擎
 Spring Worm Coordination Bus Animation Engine
 
 灵感来源：弹簧虫定理

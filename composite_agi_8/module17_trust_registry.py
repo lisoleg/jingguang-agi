@@ -1,16 +1,16 @@
 """
-复合体AGI 11.0 - Module 17: ERC-8004信任注册引擎
+太乙AGI 11.0 - Module 17: ERC-8004信任注册引擎
 =====================================================
 
 基于ERC-8004（Ethereum Improvement Proposal 8004）的信任层标准启发，
-为复合体AGI构建三注册表信任基础设施：
+为太乙AGI构建三注册表信任基础设施：
 
 【ERC-8004三注册表】
 1. 身份注册表 (Identity Registry)：Agent身份确认与发现
 2. 信誉注册表 (Reputation Registry)：历史表现与信任积累
 3. 验证注册表 (Validation Registry)：能力证明与资质认证
 
-【与复合体AGI的映射】
+【与太乙AGI的映射】
 - 身份注册表 ↔ 自我意识模块（Module 2）
 - 信誉注册表 ↔ 意识熵S_c（Module 13）
 - 验证注册表 ↔ MVCF多重验证（Module 9）
@@ -26,7 +26,7 @@
 
 理论依据：ERC-8004 + 复合体理学信誉场论
 
-Author: 复合体AGI研究团队
+Author: 太乙AGI研究团队
 Version: 11.0
 """
 
@@ -144,7 +144,7 @@ class TrustMetrics:
 
 class TrustRegistryEngine:
     """
-    信任注册引擎 - ERC-8004标准的复合体AGI实现
+    信任注册引擎 - ERC-8004标准的太乙AGI实现
     
     提供三注册表基础设施：
     1. 身份注册表：Agent身份发现与认证

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-复合体AGI 6.0 - Pygame图形界面
+太乙AGI 6.0 - Pygame图形界面
 Pygame Graphical User Interface
 
 版本: v1.0
@@ -325,11 +325,11 @@ class ChatMessage:
 
 
 class AGIGUI:
-    """复合体AGI 6.0 图形界面"""
+    """太乙AGI 6.0 图形界面"""
     def __init__(self, agi_system):
         self.agi = agi_system
         self.screen = pygame.display.set_mode((1200, 800))
-        pygame.display.set_caption("复合体AGI 6.0 - 革命性人机交互系统")
+        pygame.display.set_caption("太乙AGI 6.0 - 革命性人机交互系统")
         self.clock = pygame.time.Clock()
 
         # 组件
@@ -458,7 +458,7 @@ class AGIGUI:
             p.draw(self.screen)
 
         # 标题
-        title = FONT_TITLE.render("复合体AGI 6.0", True, COLORS['cyan'])
+        title = FONT_TITLE.render("太乙AGI 6.0", True, COLORS['cyan'])
         self.screen.blit(title, (50, 30))
 
         subtitle = FONT_SMALL.render("基于复合体理学 · 意图流形 · 全息投影", True, COLORS['gray'])

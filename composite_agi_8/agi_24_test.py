@@ -2,9 +2,9 @@
 AGI 12.0 测试套件
 ===================
 
-测试复合体AGI 12.0的所有24个模块
+测试太乙AGI 12.0的所有24个模块
 
-Author: 复合体AGI研究团队
+Author: 太乙AGI研究团队
 Version: 12.0
 """
 
@@ -50,7 +50,7 @@ class AGI12Tester:
     def run_tests(self):
         """运行所有测试"""
         print("=" * 70)
-        print("复合体AGI 12.0 测试套件")
+        print("太乙AGI 12.0 测试套件")
         print("=" * 70)
         
         # 导入模块

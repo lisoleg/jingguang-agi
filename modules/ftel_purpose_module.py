@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 FtelPurposeModule - 目的约束算子模块
-复合体AGI 5.0 核心模块
+太乙AGI 5.0 核心模块
 
 基于章锋论文《经络作为△上的持久同调1-圈》中的Ftel算子理论：
 - 目的约束算子（Teleological Constraint Operator）

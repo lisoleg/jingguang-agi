@@ -16,7 +16,7 @@ Module 19: IAWW介质引擎
 4. 介质相干性度量
 5. 介质孤子传播
 
-Author: 复合体AGI研究团队
+Author: 太乙AGI研究团队
 Version: 12.0
 """
 

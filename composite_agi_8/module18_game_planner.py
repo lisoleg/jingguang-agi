@@ -1,9 +1,9 @@
 """
-复合体AGI 11.0 - Module 18: GAME分层规划引擎
+太乙AGI 11.0 - Module 18: GAME分层规划引擎
 ================================================
 
 基于Virtuals Protocol的G.A.M.E.框架（Generative Autonomous Multimodal Entities）启发，
-实现复合体AGI的 hierarchical planning 分层规划能力：
+实现太乙AGI的 hierarchical planning 分层规划能力：
 
 【G.A.M.E.框架核心】
 G.A.M.E. = Generative Autonomous Multimodal Entities
@@ -23,7 +23,7 @@ G.A.M.E. = Generative Autonomous Multimodal Entities
    - 多Agent网络路由
    - 结果格式化输出
 
-【与复合体AGI的映射】
+【与太乙AGI的映射】
 - 高层规划 ↔ DIKWP的Intent层 + Ftel目的约束（Module 14）
 - 低层规划 ↔ DIKWP的Knowledge层 + 螺旋认知（Module 14）
 - Butler ↔ 对话界面层 + 情绪理解（Module 4）
@@ -35,7 +35,7 @@ G.A.M.E. = Generative Autonomous Multimodal Entities
 
 理论依据：Virtuals G.A.M.E. + 复合体理学目的论 + 范畴论
 
-Author: 复合体AGI研究团队
+Author: 太乙AGI研究团队
 Version: 11.0
 """
 
@@ -823,7 +823,7 @@ def demonstrate_game_engine():
     print(f"  执行时间: {result1['execution_time']:.2f}秒")
     
     print("\n【场景2：创作任务】")
-    result2 = engine.create_and_execute("设计一个复合体AGI的系统架构")
+    result2 = engine.create_and_execute("设计一个太乙AGI的系统架构")
     
     print(f"\n  计划ID: {result2['plan_id']}")
     print(f"  状态: {result2['status']}")

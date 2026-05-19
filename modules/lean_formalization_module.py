@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 LeanFormalizationModule - Lean形式化验证接口
-复合体AGI 5.0 核心模块
+太乙AGI 5.0 核心模块
 
 基于章锋论文《摘取皇冠上的明珠》中的Lean形式化验证理论：
 - Curry-Howard同构：证明=程序，命题=类型

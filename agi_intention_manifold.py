@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-复合体AGI 6.0 - 意图流形曲率引擎
+太乙AGI 6.0 - 意图流形曲率引擎
 Intention Manifold Curvature Engine
 
 基于复合体理学全息拓扑动力学：

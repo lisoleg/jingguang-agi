@@ -1,7 +1,7 @@
-# 净光哥 AGI 12.0 安装说明
+# Taiyi-AGI (太乙因果机) 12.0 安装说明
 
-> 版本：v6.2.0（62模块8层架构·复合体理学v3.5）
-> 更新日期：2026-05-19
+> 版本：v7.0.0（82模块8层架构·复合体理学v4.0）
+> 更新日期：2026-05-20
 
 ---
 
@@ -22,8 +22,8 @@
 
 ```bash
 # 如果使用 git
-git clone <项目地址> CompositeAGI
-cd CompositeAGI
+git clone <项目地址> TaiyiAGI
+cd TaiyiAGI
 ```
 
 或直接解压项目压缩包到 `C:\Users\1\WorkBuddy\2026-05-06-task-1\`
@@ -98,7 +98,7 @@ python app.py
 http://127.0.0.1:5001/static/index_agi12.html
 ```
 
-✅ 看到「净光哥 AGI 12.0」三栏界面即安装成功！
+✅ 看到「Taiyi-AGI (太乙因果机) 12.0」三栏界面即安装成功！
 
 ---
 
@@ -201,7 +201,7 @@ taskkill //F //PID <PID>
 ## 六、目录结构说明
 
 ```
-CompositeAGI/
+TaiyiAGI/
 ├── app.py                          # 主服务（端口5001）
 ├── app_mindmap_v2.py              # 脑图服务（端口5003）
 ├── local_llm.py                   # LLM多后端管理

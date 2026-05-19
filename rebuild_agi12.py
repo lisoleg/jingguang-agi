@@ -306,7 +306,7 @@ new_body = """<div id="app">
   <div id="topbar">
     <div class="logo-wrap">
       <span class="logo">&#128302;</span>
-      <span class="title">复合体AGI 12.0</span>
+      <span class="title">太乙AGI 12.0</span>
       <span class="version-badge">24模块·8层</span>
       <span class="theory-badge">IAWW统一场论</span>
     </div>

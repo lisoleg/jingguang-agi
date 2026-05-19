@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-复合体AGI 6.0 - DIKWP状态实时仪表盘
+太乙AGI 6.0 - DIKWP状态实时仪表盘
 DIKWP Real-time Status Dashboard
 
 基于复合体理学六层语义架构：

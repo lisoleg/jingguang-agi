@@ -938,7 +938,7 @@ class DiscreteFrameHopper:
         return possible[:5]  # 限制候选数量
 
 
-# ==================== 复合体AGI核心（整合所有组件）====================
+# ==================== 太乙AGI核心（整合所有组件）====================
 
 class CompoundPhysicsAGI:
     """复合体理学AGI - 整合所有AGI增强组件
@@ -1143,7 +1143,7 @@ def test_holographic():
 
 
 def test_compound_agi():
-    """测试复合体AGI"""
+    """测试太乙AGI"""
     print("\n" + "="*60)
     print("测试：复合体理学AGI")
     print("="*60)
@@ -1173,7 +1173,7 @@ def test_compound_agi():
     print(f"最优解: {solution['solution']}")
     print(f"模式: {solution['mode']}")
     
-    print("\n✅ 复合体AGI测试通过")
+    print("\n✅ 太乙AGI测试通过")
 
 
 if __name__ == "__main__":

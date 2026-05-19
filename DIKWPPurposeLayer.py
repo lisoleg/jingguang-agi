@@ -3,7 +3,7 @@
 模块38：DIKWP目的层（P层）
 IntentGuard意图门禁 + 目的漂移检测
 
-来源：复合体AGI 6.0升级方案（基于12文档深度分析）
+来源：太乙AGI 6.0升级方案（基于12文档深度分析）
 作者：基于高见远指令实现
 日期：2026-05-13
 """
@@ -435,7 +435,7 @@ if __name__ == "__main__":
     session_id = "session_001"
     lock = purpose_layer.lock_purpose(
         session_id=session_id,
-        purpose="分析复合体AGI架构并生成升级方案",
+        purpose="分析太乙AGI架构并生成升级方案",
         scopes=["read", "write", "execute"],
         metadata={"user": "高见远", "project": "CompositeAGI"}
     )
@@ -484,7 +484,7 @@ if __name__ == "__main__":
     print(f"\n✓ 全局目的一致性:")
     purpose_layer.set_global_purpose(
         purpose_vector={"AGI": 1.0, "研究": 0.8, "升级": 0.7},
-        description="复合体AGI研究项目"
+        description="太乙AGI研究项目"
     )
     
     consistency = purpose_layer.check_global_consistency(session_id)

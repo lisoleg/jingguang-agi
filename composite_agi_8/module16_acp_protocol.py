@@ -1,5 +1,5 @@
 """
-复合体AGI 11.0 - Module 16: ACP任务协商引擎
+太乙AGI 11.0 - Module 16: ACP任务协商引擎
 ================================================
 
 基于Virtuals Protocol的Agent Commerce Protocol (ACP)启发，
@@ -11,7 +11,7 @@
 3. Transaction Phase（交易阶段）：资源托管，服务交付
 4. Evaluation Phase（评估阶段）：独立Evaluator验证
 
-【与复合体AGI的映射】
+【与太乙AGI的映射】
 - Request → 目的意图解析（DI层）
 - Negotiation → 语义协商与约束确定（KP层）
 - Transaction → 认知资源分配与执行（W层）
@@ -24,7 +24,7 @@
 
 理论依据：Virtuals Protocol ACP + 复合体理学目的论
 
-Author: 复合体AGI研究团队
+Author: 太乙AGI研究团队
 Version: 11.0
 """
 
@@ -162,7 +162,7 @@ class ACPProtocolEngine:
     """
     ACP协议引擎 - 任务协商与执行控制器
     
-    实现Virtuals Protocol的ACP四阶段协议在复合体AGI中的映射：
+    实现Virtuals Protocol的ACP四阶段协议在太乙AGI中的映射：
     
     【阶段流程】
     Request → Negotiation → Transaction → Evaluation → Complete

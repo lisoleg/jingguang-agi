@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-复合体AGI 7.0 - Tkinter GUI版本 (完整升级版)
+太乙AGI 7.0 - Tkinter GUI版本 (完整升级版)
 ✅ 真正集成AGI系统（通过agi_connector.py）
 ✅ 支持测试集JSON保存/加载
 ✅ 支持测试报告导出（PDF/Excel）
@@ -331,7 +331,7 @@ class TestSetGenerator:
 class AGI_GUI(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title('复合体AGI 7.0 - 完整升级版 🚀')
+        self.title('太乙AGI 7.0 - 完整升级版 🚀')
         self.geometry('1300x850')
         
         # 初始化核心系统（可以切换连接器类型）
@@ -1017,7 +1017,7 @@ class QuestionEditor(tk.Toplevel):
 
 if __name__ == '__main__':
     print("=" * 60)
-    print("🚀 复合体AGI 7.0 - 完整升级版")
+    print("🚀 太乙AGI 7.0 - 完整升级版")
     print("=" * 60)
     print("✅ 功能列表：")
     print("   1. 真正集成AGI系统（支持多种后端）")

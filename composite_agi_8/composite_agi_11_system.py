@@ -1,5 +1,5 @@
 """
-复合体AGI 11.0 - 完整系统集成
+太乙AGI 11.0 - 完整系统集成
 ================================
 
 整合所有18个核心模块（从10.0的15模块升级到18模块）：
@@ -36,7 +36,7 @@
   - ERC-8004信任层 → 身份/信誉/验证三注册表
   - G.A.M.E.框架 → 高层/低层分层规划器
 
-Author: 复合体AGI研究团队
+Author: 太乙AGI研究团队
 Version: 11.0
 """
 
@@ -83,7 +83,7 @@ from module18_game_planner import GAMEEngine
 
 class CompositeAGI11System:
     """
-    复合体AGI 11.0 - 完整系统集成
+    太乙AGI 11.0 - 完整系统集成
 
     架构升级：
     - 8.0：认知基础层（IQ/EQ/CQ + 卐氏数模 + 太乙 + CTFP + MVCF）
@@ -113,7 +113,7 @@ class CompositeAGI11System:
         self.version = "11.0"
 
         print("=" * 70)
-        print("复合体AGI 11.0 - 正在初始化...（18模块版）")
+        print("太乙AGI 11.0 - 正在初始化...（18模块版）")
         print("=" * 70)
 
         # ================================================
@@ -213,7 +213,7 @@ class CompositeAGI11System:
         print(f"     ✅ GAME分层规划引擎就绪（高层规划 + 低层执行）")
 
         print("\n" + "=" * 70)
-        print("✅ 复合体AGI 11.0系统初始化完成！（18模块）")
+        print("✅ 太乙AGI 11.0系统初始化完成！（18模块）")
         print("=" * 70)
         print(f"\n  系统维度: {system_dim}")
         print(f"  核心模块数: 18（8.0九 + 9.0三 + 10.0三 + 11.0三）")
@@ -278,7 +278,7 @@ class CompositeAGI11System:
         print(f"  ✅ 模块17（信任注册）验证通过 - 信任度: {trust_metrics.overall_trust:.3f}")
 
         # 验证Module 18（GAME规划）
-        game_result = self.game_engine.create_and_execute("分析复合体AGI的架构")
+        game_result = self.game_engine.create_and_execute("分析太乙AGI的架构")
         print(f"  ✅ 模块18（GAME规划）验证通过 - 计划: {game_result['plan_id'][:12]}...")
 
         print(f"\n✅ 初始验证完成！全部18个模块就绪。\n")
@@ -486,9 +486,9 @@ class CompositeAGI11System:
 
 
 def demonstrate_agi11():
-    """复合体AGI 11.0完整演示"""
+    """太乙AGI 11.0完整演示"""
     print("\n" + "=" * 70)
-    print("复合体AGI 11.0 完整演示")
+    print("太乙AGI 11.0 完整演示")
     print("=" * 70)
     
     # 初始化系统
@@ -499,7 +499,7 @@ def demonstrate_agi11():
     print("【演示1: GAME分层规划】")
     print("-" * 50)
     
-    game_result = agi.reason_with_game("分析复合体AGI 11.0的核心创新")
+    game_result = agi.reason_with_game("分析太乙AGI 11.0的核心创新")
     print(f"\n  计划ID: {game_result['plan_id']}")
     print(f"  状态: {game_result['status']}")
     print(f"  进度: {game_result['progress']:.1%}")
@@ -583,7 +583,7 @@ def demonstrate_agi11():
     print(f"  L7 规划层: 计划进度 {full_result['planning']['progress']:.1%}")
     
     print("\n" + "=" * 70)
-    print("✅ 复合体AGI 11.0演示完成！")
+    print("✅ 太乙AGI 11.0演示完成！")
     print("=" * 70)
     print("""
     11.0版本核心创新：

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-复合体AGI 6.0 - 虚拟人格体核心系统
+太乙AGI 6.0 - 虚拟人格体核心系统
 Virtual Persona Core System
 
 基于复合体理学：MBTI人格 × 情绪反应 × 认知风格适配 × 成长记忆

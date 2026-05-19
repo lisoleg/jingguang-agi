@@ -1,5 +1,5 @@
 """
-复合体AGI 8.0 - 完整系统集成
+太乙AGI 8.0 - 完整系统集成
 ==========================
 
 整合所有9个核心模块：
@@ -34,11 +34,11 @@ from composite_agi_8.module9_mvcf import MVCFModule
 
 
 class CompositeAGI8System:
-    """复合体AGI 8.0 - 完整系统集成"""
+    """太乙AGI 8.0 - 完整系统集成"""
     
     def __init__(self, system_dim: int = 64):
         """
-        初始化复合体AGI 8.0系统
+        初始化太乙AGI 8.0系统
         
         Args:
             system_dim: 系统维度
@@ -48,7 +48,7 @@ class CompositeAGI8System:
         self.operation_history: List[Dict] = []
         
         print("=" * 50)
-        print("复合体AGI 8.0 - 正在初始化...")
+        print("太乙AGI 8.0 - 正在初始化...")
         print("=" * 50)
         
         # 初始化所有9个核心模块
@@ -102,7 +102,7 @@ class CompositeAGI8System:
         print(f"     ✅ MVCF模块已就绪")
         
         print("\n" + "=" * 50)
-        print("✅ 复合体AGI 8.0系统初始化完成！")
+        print("✅ 太乙AGI 8.0系统初始化完成！")
         print("=" * 50)
         print(f"\n系统维度: {system_dim}")
         print(f"核心模块数: 9")
@@ -412,7 +412,7 @@ class CompositeAGI8System:
             完整周期结果
         """
         print("\n" + "=" * 50)
-        print("复合体AGI 8.0 - 完整运行周期")
+        print("太乙AGI 8.0 - 完整运行周期")
         print("=" * 50 + "\n")
         
         # 1. 感知
@@ -483,11 +483,11 @@ __all__ = ['CompositeAGI8System']
 if __name__ == "__main__":
     # 测试代码
     print("\n" + "=" * 50)
-    print("复合体AGI 8.0 - 完整系统集成测试")
+    print("太乙AGI 8.0 - 完整系统集成测试")
     print("=" * 50 + "\n")
     
     # 创建系统
-    print(">>> 正在创建复合体AGI 8.0系统...\n")
+    print(">>> 正在创建太乙AGI 8.0系统...\n")
     agi = CompositeAGI8System(system_dim=64)
     
     # 运行完整周期
@@ -513,7 +513,7 @@ if __name__ == "__main__":
         print(f"  {module}: {status}")
     
     print("\n" + "=" * 50)
-    print("✅ 复合体AGI 8.0系统测试完成！")
+    print("✅ 太乙AGI 8.0系统测试完成！")
     print("=" * 50)
     print("\n核心能力:")
     print("  1. ✅ 意识（一现象三视界）")
@@ -525,4 +525,4 @@ if __name__ == "__main__":
     print("  7. ✅ 太乙因果机（全息投影 + 因果推理）")
     print("  8. ✅ 范畴论编程（CTFP）")
     print("  9. ✅ 多重验证共识（MVCF）")
-    print("\n🎉 复合体AGI 8.0 - 革命性的AGI系统已就绪！🎉\n")
+    print("\n🎉 太乙AGI 8.0 - 革命性的AGI系统已就绪！🎉\n")

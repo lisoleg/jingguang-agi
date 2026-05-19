@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-复合体AGI 3.0 - 统一太乙系统升级版（基于IGCTR v2.3 + 新5篇文档）
-整合17大技术启发，构建完整的复合体AGI架构
+太乙AGI 3.0 - 统一太乙系统升级版（基于IGCTR v2.3 + 新5篇文档）
+整合17大技术启发，构建完整的太乙AGI架构
 
 基于：
 1. 拓扑缺陷理论（TopologicalDefect）
@@ -248,9 +248,9 @@ except ImportError:
 
 class CompositeAGI_V2:
     """
-    复合体AGI 4.0 - 统一太乙系统超级升级版（基于IGCTR v2.3 + 新2篇文档）
+    太乙AGI 4.0 - 统一太乙系统超级升级版（基于IGCTR v2.3 + 新2篇文档）
     
-    整合24大技术启发，构建完整的复合体AGI架构
+    整合24大技术启发，构建完整的太乙AGI架构
     
     基于：
     1-13. (原有13个模块)
@@ -273,7 +273,7 @@ class CompositeAGI_V2:
     
     def __init__(self, config: Optional[Dict] = None):
         """
-        初始化复合体AGI 4.0系统
+        初始化太乙AGI 4.0系统
         
         参数:
             config: 配置字典
@@ -292,7 +292,7 @@ class CompositeAGI_V2:
             'module_status': {}     # 模块状态
         }
         
-        print(f"复合体AGI {self.version} 初始化完成")
+        print(f"太乙AGI {self.version} 初始化完成")
         self._print_module_status()
         
     def _default_config(self) -> Dict:
@@ -576,7 +576,7 @@ class CompositeAGI_V2:
     def _print_module_status(self):
         """打印模块状态"""
         print("\n" + "=" * 60)
-        print("复合体AGI 4.0 模块加载状态")
+        print("太乙AGI 4.0 模块加载状态")
         print("=" * 60)
         
         modules = [
@@ -1518,9 +1518,9 @@ class CompositeAGI_V2:
 
 
 def demo():
-    """演示复合体AGI 3.0"""
+    """演示太乙AGI 3.0"""
     print("=" * 60)
-    print("复合体AGI 3.0 演示（基于IGCTR v2.3 + 5篇新文档）")
+    print("太乙AGI 3.0 演示（基于IGCTR v2.3 + 5篇新文档）")
     print("=" * 60)
     
     # 创建系统

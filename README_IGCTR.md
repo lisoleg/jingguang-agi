@@ -19,9 +19,9 @@
 | 三视界诠释 | 微视界(Φ)/中视界(Σ)/宏视界(Γ) |
 | 可证伪预言 | 拓扑孤子/量子视觉/暗物质引力透镜 |
 
-### 复合体AGI系统 (`CompositeAGI_V2.py`)
+### 太乙AGI系统 (`CompositeAGI_V2.py`)
 
-集成IGCTR v2.3的完整复合体AGI系统，包含**23个技术启发模块**，全部加载完成。
+集成IGCTR v2.3的完整太乙AGI系统，包含**23个技术启发模块**，全部加载完成。
 
 | 模块类别 | 包含模块 |
 |---------|---------|
@@ -69,7 +69,7 @@ print(f"版本: {result['version']}")
 print(f"共振强度: {result['resonance_strength']:.4f}")
 ```
 
-### 2. 复合体AGI系统使用
+### 2. 太乙AGI系统使用
 
 ```python
 from CompositeAGI_V2 import CompositeAGI_V2
@@ -138,7 +138,7 @@ python app.py
 ```
 C:/Users/1/WorkBuddy/2026-05-06-task-1/
 ├── IGCTR_v2_3_Simplified.py    # IGCTR v2.3核心框架
-├── CompositeAGI_V2.py          # 复合体AGI系统（23模块）
+├── CompositeAGI_V2.py          # 太乙AGI系统（23模块）
 ├── igctr_ui.py                 # 图形用户界面
 ├── app_mindmap.py              # 脑图系统Flask服务（端口5002）
 ├── static/
@@ -230,7 +230,7 @@ r = f.process('什么是意识？')
 print('共振强度:', r['resonance_strength'])
 "
 
-# 测试复合体AGI
+# 测试太乙AGI
 python -c "
 from CompositeAGI_V2 import CompositeAGI_V2
 s = CompositeAGI_V2()

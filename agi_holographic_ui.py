@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-复合体AGI 6.0 - 全息密度投影系统
+太乙AGI 6.0 - 全息密度投影系统
 Holographic Density Projection System
 
 基于复合体理学全息拓扑动力学：
@@ -729,14 +729,14 @@ if __name__ == "__main__":
     nodes = [
         DensityNode(
             id="root",
-            label="复合体AGI",
+            label="太乙AGI",
             layer_type=LayerType.SYSTEMIC,
             depth=0,
             position=(0.5, 0.5),
             size=30,
             color=(200, 100, 150),
             icon="🚀",
-            details={"description": "复合体AGI核心"}
+            details={"description": "太乙AGI核心"}
         ),
         DensityNode(
             id="module_1",

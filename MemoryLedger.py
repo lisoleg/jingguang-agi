@@ -3,7 +3,7 @@
 模块40：MemoryLedger —— 记忆主权管理
 记忆带来源、有目的、有同意、有过期
 
-来源：复合体AGI 6.0升级方案（基于12文档深度分析）
+来源：太乙AGI 6.0升级方案（基于12文档深度分析）
 作者：基于高见远指令实现
 日期：2026-05-13
 """
@@ -579,7 +579,7 @@ if __name__ == "__main__":
             tags=["偏好", "格式"]
         ),
         memory.remember(
-            content="复合体AGI 6.0基于DIKWP六层架构升级",
+            content="太乙AGI 6.0基于DIKWP六层架构升级",
             source="research_analysis",
             purpose="知识积累",
             dikwp_layer=DIKWPLayer.K,

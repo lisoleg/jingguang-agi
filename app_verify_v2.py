@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-复合体AGI 4.0 — 对话引用关系脑图系统 v2
+太乙AGI 4.0 — 对话引用关系脑图系统 v2
 
 核心设计理念：
 - 每一轮问答对作为一个节点（Q1&A1, Q2&A2, ...）
@@ -135,10 +135,10 @@ def get_agi():
     global _agi
     with _agi_lock:
         if _agi is None:
-            print("🔮 正在初始化复合体AGI 4.0...")
+            print("🔮 正在初始化太乙AGI 4.0...")
             from CompositeAGI_V2 import CompositeAGI_V2
             _agi = CompositeAGI_V2()
-            print("✅ 复合体AGI 4.0 系统就绪！")
+            print("✅ 太乙AGI 4.0 系统就绪！")
     return _agi
 
 def get_conversation(session_id: str) -> Dict:
@@ -478,7 +478,7 @@ def get_state():
 # ==================== 启动 ====================
 if __name__ == '__main__':
     print("=" * 60)
-    print("🌌 复合体AGI 4.0 — 对话引用关系脑图系统 v2")
+    print("🌌 太乙AGI 4.0 — 对话引用关系脑图系统 v2")
     print("   前端: http://localhost:5002")
     print("   API:  http://localhost:5002/api/chat_v2")
     print("=" * 60)

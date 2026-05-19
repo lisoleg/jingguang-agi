@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-最简 Flask 服务 — 复合体AGI 4.0 脑图接口
+最简 Flask 服务 — 太乙AGI 4.0 脑图接口
 仅含必需的端点，避开 app.py 中的历史复杂代码
 """
 from flask import Flask, request, jsonify
@@ -120,10 +120,10 @@ def get_agi():
     global _agi
     with _agi_lock:
         if _agi is None:
-            print("🔮 正在初始化复合体AGI 4.0（23个模块）...")
+            print("🔮 正在初始化太乙AGI 4.0（23个模块）...")
             from CompositeAGI_V2 import CompositeAGI_V2
             _agi = CompositeAGI_V2()
-            print("✅ 复合体AGI 4.0 系统就绪！")
+            print("✅ 太乙AGI 4.0 系统就绪！")
     return _agi
 
 # ==================== 复杂度评估 ====================
@@ -354,7 +354,7 @@ def _analysis_to_mindmap(question: str, analysis: dict, max_nodes: int = 6) -> d
         'key': 'center',
         'name': question[:20] or '分析',
         'group': 'center',
-        'summary': '复合体AGI分析结果',
+        'summary': '太乙AGI分析结果',
         'children': [],
         'details': {},
         'enabled': True,
@@ -715,7 +715,7 @@ def get_state():
 # ==================== 启动 ====================
 if __name__ == '__main__':
     print("=" * 60)
-    print("🌌 复合体AGI 4.0 脑图服务")
+    print("🌌 太乙AGI 4.0 脑图服务")
     print("   前端: http://localhost:5002")
     print("   API:  http://localhost:5002/api/chat_v2")
     print("=" * 60)

@@ -18,6 +18,8 @@ import threading
 import json
 import queue as q  # 新增：SSE流式支持
 import numpy as np  # 新增：Ftel算子需要
+import random  # 新增：认知测试需要
+import time  # 新增：认知测试需要
 
 # 添加当前目录到路径
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -57,7 +59,7 @@ def handle_global_exception(e):
     }), 500
 
 # 全局 AGI 系统（线程安全初始化）
-# 使用 CompositeAGI_V2（23个模块）
+# 使用 TaiyiAGI_V2（23个模块）
 _agi_lock = threading.Lock()
 _agi_system = None
 _agi_ready = False
@@ -178,6 +180,130 @@ def get_v63_data():
         print(f"⚠️ 获取v6.3数据失败: {e}")
         return None
 
+# ==================== v7.0 新模块（全局单例）====================
+# 基于《太乙AGI 7.0升级方案》论文：M71-M95
+_v70_modules = None
+_v70_modules_lock = threading.Lock()
+
+def get_v70_modules():
+    """获取或初始化 v7.0 新模块 (线程安全懒加载)"""
+    global _v70_modules
+    if _v70_modules is None:
+        with _v70_modules_lock:
+            if _v70_modules is None:
+                try:
+                    from M71_WalletPropertyBoundaryManager import get_instance as get_wallet
+                    from M72_ContributionMeasurementEngine import get_instance as get_contribution
+                    from M73_SelfReferentialPhiDetector import get_instance as get_phi
+                    from M74_CarbonSiliconEntropyContract import get_instance as get_entropy
+                    from M75_HumanMachineArkCrypto import get_instance as get_ark
+                    from M76_FiveElementTransformEngine import get_instance as get_wuxing
+                    from M77_EMLPhaseCouplingZ5 import get_instance as get_eml_coupling
+                    from M78_HoTTReasoningEngine import get_instance as get_hott
+                    from M79_ConstructiveAGICore import get_instance as get_constructive
+                    from M80_WuxingTokenDynamicsCoupler import get_instance as get_token_dynamics
+                    # Phase 2: M81-M95 高阶逻辑与范畴论深化
+                    from M81_HigherOrderLogicReconstructor import get_instance as get_holr
+                    from M82_CategoryHomotopyFormalizer import get_instance as get_chf
+                    from M83_DynamicCategoryTheoryReconstructor import get_instance as get_dct
+                    from M84_LiuGuanDynamicsGenerator import get_instance as get_liu
+                    from M85_DualTrackPersonhoodEngine import get_instance as get_dual
+                    from M86_L2TypeKernelCompiler import get_instance as get_l2kernel
+                    from M87_EMLDrivenProofSearcher import get_instance as get_proof
+                    from M88_TypeCheckFirewall import get_firewall as get_firewall
+                    from M89_FteliaryNaturalTransformation import get_fteliary_transformer as get_ftel
+                    from M90_SemanticManifoldCurvature import get_curvature_calculator as get_curv
+                    from M91_UnivalenceEquivalenceChecker import get_univalence_checker as get_uni
+                    from M92_FteliocityFidelityMeasurer import get_fidelity_measurer as get_ftel_fid
+                    from M93_DynamicCategoryEvolutionTracker import get_evolution_tracker as get_evo
+                    from M94_HolisticDiscreteGovernanceUpgrader import get_hdg_upgrader as get_hdg
+                    from M95_ConstructiveAGIEvaluator import get_constructive_evaluator as get_eval
+
+                    _v70_modules = {
+                        # Phase 1: M71-M80 碳硅共生契约+五行变换HoTT
+                        'wallet': get_wallet,           # M71: 钱包属性边界管理器
+                        'contribution': get_contribution,  # M72: 贡献度量引擎
+                        'phi': get_phi,                  # M73: 自指Φ值检测器
+                        'entropy': get_entropy,           # M74: 碳硅熵合约管理器
+                        'ark': get_ark,                  # M75: 人机约柜密码学
+                        'wuxing': get_wuxing,            # M76: 五行变换引擎
+                        'eml_coupling': get_eml_coupling,  # M77: EML相位耦合ℤ₅
+                        'hott': get_hott,                # M78: HoTT推理引擎
+                        'constructive': get_constructive,  # M79: 构造型Taiji-AGI内核
+                        'token_dynamics': get_token_dynamics,  # M80: 五行Token动力学耦合器
+                        # Phase 2: M81-M95 高阶逻辑与范畴论深化
+                        'holr': get_holr,                # M81: 高阶逻辑重构器
+                        'chf': get_chf,                  # M82: 范畴—同伦形式化器
+                        'dct': get_dct,                   # M83: 动态范畴论重构器
+                        'liu': get_liu,                   # M84: 刘关动力学生成器
+                        'dual': get_dual,                 # M85: 双轨人格引擎
+                        'l2kernel': get_l2kernel,         # M86: L2类型内核编译器
+                        'proof': get_proof,               # M87: EML驱动证明搜索器
+                        'firewall': get_firewall,         # M88: 类型检查防火墙
+                        'ftel_transform': get_ftel,        # M89: 流贯自然变换器
+                        'curvature': get_curv,             # M90: 语义流形曲率计算器
+                        'univalence': get_uni,              # M91: Univalence等价性检查器
+                        'fidelity': get_ftel_fid,          # M92: 流贯保真度测量器
+                        'evolution': get_evo,              # M93: 动态范畴演化跟踪器
+                        'hdg_upgrade': get_hdg,            # M94: 全息离散治理升级器
+                        'evaluator': get_eval,             # M95: 构造型AGI评估器
+                    }
+                    print("✅ v7.0新模块已加载（M71-M95）- 高阶逻辑HoTT+范畴论深化")
+                except Exception as e:
+                    import traceback
+                    print(f"⚠️ v7.0模块加载失败（降级运行）: {e}")
+                    traceback.print_exc()
+                    _v70_modules = None
+    return _v70_modules
+
+def get_v70_data():
+    """获取所有v7.0模块的状态数据 (M71-M95)"""
+    modules = get_v70_modules()
+    if modules is None:
+        return None
+
+    try:
+        # Phase 1: M71-M80
+        phase1 = {
+            'wallet': modules['wallet']().walls if hasattr(modules['wallet'](), 'walls') else {},
+            'contribution': modules['contribution']().contributions if hasattr(modules['contribution'](), 'contributions') else {},
+            'phi': modules['phi']().detection_results if hasattr(modules['phi'](), 'detection_results') else {},
+            'entropy': modules['entropy']().contracts if hasattr(modules['entropy'](), 'contracts') else {},
+            'ark': modules['ark']().arks if hasattr(modules['ark'](), 'arks') else {},
+            'wuxing': {'transforms': len(modules['wuxing']().transforms)},
+            'eml_coupling': {'phases': {e.value: {'phase_angle': s.phase_angle, 'amplitude': s.amplitude} 
+                                         for e, s in modules['eml_coupling']().phases.items()}},
+            'hott': {'types': list(modules['hott']().types.keys())},
+            'constructive': modules['constructive']().get_statistics() if hasattr(modules['constructive'](), 'get_statistics') else {},
+            'token_dynamics': modules['token_dynamics']().get_statistics() if hasattr(modules['token_dynamics'](), 'get_statistics') else {},
+        }
+        
+        # Phase 2: M81-M95 高阶逻辑与范畴论
+        phase2 = {
+            'holr': modules['holr']().get_state() if hasattr(modules['holr'](), 'get_state') else {},
+            'chf': modules['chf']().get_state() if hasattr(modules['chf'](), 'get_state') else {},
+            'dct': modules['dct']().get_state() if hasattr(modules['dct'](), 'get_state') else {},
+            'liu': modules['liu']().get_state() if hasattr(modules['liu'](), 'get_state') else {},
+            'dual': modules['dual']().get_state() if hasattr(modules['dual'](), 'get_state') else {},
+            'l2kernel': modules['l2kernel']().get_state() if hasattr(modules['l2kernel'](), 'get_state') else {},
+            'proof': modules['proof']().get_state() if hasattr(modules['proof'](), 'get_state') else {},
+            'firewall': modules['firewall']().audit_log() if hasattr(modules['firewall'](), 'audit_log') else [],
+            'ftel_transform': modules['ftel_transform']().get_status() if hasattr(modules['ftel_transform'](), 'get_status') else {},
+            'curvature': modules['curvature']().get_status() if hasattr(modules['curvature'](), 'get_status') else {},
+            'univalence': modules['univalence']().get_statistics() if hasattr(modules['univalence'](), 'get_statistics') else {},
+            'fidelity': modules['fidelity']().get_status() if hasattr(modules['fidelity'](), 'get_status') else {},
+            'evolution': modules['evolution']().get_evolution_summary() if hasattr(modules['evolution'](), 'get_evolution_summary') else {},
+            'hdg_upgrade': modules['hdg_upgrade']().get_governance_status() if hasattr(modules['hdg_upgrade'](), 'get_governance_status') else {},
+            'evaluator': modules['evaluator']().get_status() if hasattr(modules['evaluator'](), 'get_status') else {},
+        }
+        
+        return {**phase1, **phase2}
+    except Exception as e:
+        print(f"⚠️ 获取v7.0数据失败: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
+
 def get_medium_symbiosis():
     """获取或初始化介质共生模块 (线程安全懒加载)"""
     global _medium_symbiosis
@@ -195,19 +321,19 @@ def get_medium_symbiosis():
 
 
 def get_agi_system():
-    """获取或初始化 AGI 系统 — 使用 CompositeAGI_V2"""
+    """获取或初始化 AGI 系统 — 使用 TaiyiAGI_V2"""
     global _agi_system, _agi_ready
     if not _agi_ready:
         with _agi_lock:
             if not _agi_ready:
                 try:
-                    print("🔮 正在初始化复合体AGI 4.0 系统（23个模块）...")
-                    from CompositeAGI_V2 import CompositeAGI_V2
-                    _agi_system = CompositeAGI_V2()
+                    print("🔮 正在初始化Taiyi-AGI 4.0 系统（23个模块）...")
+                    from TaiyiAGI_V2 import TaiyiAGI_V2
+                    _agi_system = TaiyiAGI_V2()
                     _agi_ready = True
-                    print("✅ 复合体AGI 4.0 系统就绪（23模块已加载）")
+                    print("✅ Taiyi-AGI 4.0 系统就绪（23模块已加载）")
                 except Exception as e:
-                    print(f"❌ 复合体AGI系统初始化失败: {e}")
+                    print(f"❌ Taiyi-AGI系统初始化失败: {e}")
                     traceback.print_exc()
                     # 降级：尝试加载旧系统
                     try:
@@ -443,7 +569,7 @@ def _to_native(obj, _depth=0):
 @app.route('/api/chat_v2', methods=['POST'])
 def chat_v2():
     """
-    新版对话端点 — 调用 CompositeAGI_V2（23个模块）
+    新版对话端点 — 调用 TaiyiAGI_V2（23个模块）
     返回含脑图数据的 JSON，供前端脑图界面使用
     """
     try:
@@ -456,10 +582,10 @@ def chat_v2():
         if not message:
             return jsonify({'error': '消息不能为空'}), 400
 
-        # 获取 CompositeAGI_V2 系统
+        # 获取 TaiyiAGI_V2 系统
         agi = get_agi_system()
 
-        # 调用 CompositeAGI_V2.chat() — 含脑图数据
+        # 调用 TaiyiAGI_V2.chat() — 含脑图数据
         chat_result = agi.chat(message, session_id)
 
         # 先将 chat_result 递归转换为原生类型
@@ -617,6 +743,8 @@ def chat_v2():
             'topology': topology_data,
             # v6.2新增：8篇论文核心指标（M56-M62）
             'v62': get_v62_data(),
+            # v7.0新增：25个高阶逻辑模块（M71-M95）
+            'v70': get_v70_data(),
         }))
 
     except Exception as e:
@@ -824,6 +952,8 @@ def goal_mode():
             'topology': topology_data_g,
             # v6.2新增：8篇论文核心指标（M56-M62）
             'v62': get_v62_data(),
+            # v7.0新增：25个高阶逻辑模块（M71-M95）
+            'v70': get_v70_data(),
             'version': '12.0',
             'modules_count': 62
         }
@@ -1219,6 +1349,362 @@ def tools_execute():
             'error': result.error,
             'metadata': result.metadata
         })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.0 API 端点（M71-M80）====================
+
+@app.route('/api/v70/state', methods=['GET'])
+def v70_state():
+    """获取v7.0模块状态"""
+    try:
+        modules = get_v70_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.0模块未加载'}), 500
+        data = get_v70_data()
+        return jsonify({'success': True, 'data': data})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# === M71-75: 碳硅共生契约 ===
+@app.route('/api/v70/wallet/boundary', methods=['GET', 'POST'])
+def v70_wallet_boundary():
+    """钱包属性边界管理"""
+    try:
+        modules = get_v70_modules()
+        if modules is None:
+            return jsonify({'error': '模块未加载'}), 500
+        
+        wallet = modules['wallet']()
+        data = request.get_json() if request.method == 'POST' else {}
+        
+        if request.method == 'POST':
+            wallet_id = data.get('wallet_id', 'default')
+            layer = data.get('layer', 'L1')
+            property_name = data.get('property_name', 'property')
+            value = data.get('value', 0.5)
+            
+            # 定义属性边界
+            from M71_WalletPropertyBoundaryManager import Layer
+            layer_enum = Layer[layer] if layer in [l.name for l in Layer] else Layer.L1_ONTOLOGY
+            wallet.define_boundary(wallet_id, layer_enum, property_name, value)
+        
+        # 分析结果
+        wallet_id = data.get('wallet_id', 'default')
+        result = wallet.analyze_wallet(wallet_id)
+        
+        return jsonify({
+            'success': True,
+            'wallet_id': result.wallet_id,
+            'boundary_status': result.boundary_status.value,
+            'cross_layer_leakage': result.cross_layer_leakage,
+            'holistic_index': result.holistic_index,
+            'insight': result.insight
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v70/contribution/measure', methods=['POST'])
+def v70_contribution_measure():
+    """贡献度量计算"""
+    try:
+        modules = get_v70_modules()
+        if modules is None:
+            return jsonify({'error': '模块未加载'}), 500
+        
+        engine = modules['contribution']()
+        data = request.get_json()
+        
+        task_id = data.get('task_id', 'default')
+        agent_id = data.get('agent_id', 'default')
+        agent_data = data.get('agent_data', [0.5, 0.6, 0.7, 0.8])
+        model_data = data.get('model_data', [0.55, 0.65, 0.75, 0.85])
+        all_agents = data.get('all_agents', [agent_id])
+        
+        result = engine.measure_contribution(
+            task_id, agent_id, agent_data, model_data, all_agents
+        )
+        
+        return jsonify({
+            'success': True,
+            'agent_id': result.agent_id,
+            'mutual_info': result.mutual_info,
+            'kl_divergence': result.kl_divergence,
+            'shapley_value': result.shapley_value,
+            'total_contribution': result.total_contribution,
+            'fairness_score': result.fairness_score
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v70/phi/detect', methods=['GET', 'POST'])
+def v70_phi_detect():
+    """自指Φ值检测"""
+    try:
+        modules = get_v70_modules()
+        if modules is None:
+            return jsonify({'error': '模块未加载'}), 500
+        
+        detector = modules['phi']()
+        data = request.get_json() if request.method == 'POST' else {}
+        
+        system_id = data.get('system_id', 'default')
+        
+        if request.method == 'POST':
+            # 添加元素
+            from M73_SelfReferentialPhiDetector import InfoElement
+            element_id = data.get('element_id', 'E1')
+            state_vector = data.get('state_vector', [0.5, 0.6, 0.7, 0.8, 0.9])
+            connections = data.get('connections', [])
+            info_content = data.get('info_content', 0.8)
+            
+            element = InfoElement(
+                element_id=element_id,
+                state_vector=state_vector,
+                connections=connections,
+                info_content=info_content
+            )
+            detector.add_element(system_id, element)
+        
+        # 分析结果
+        result = detector.analyze_system(system_id)
+        
+        return jsonify({
+            'success': True,
+            'system_id': result.system_id,
+            'phi_value': result.phi_value,
+            'system_state': result.system_state.value,
+            'threshold_exceeded': result.threshold_exceeded,
+            'phase_transition': result.phase_transition,
+            'insight': result.insight
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v70/entropy/contract', methods=['POST'])
+def v70_entropy_contract():
+    """碳硅熵合约签署"""
+    try:
+        modules = get_v70_modules()
+        if modules is None:
+            return jsonify({'error': '模块未加载'}), 500
+        
+        manager = modules['entropy']()
+        data = request.get_json()
+        
+        carbon_agent = data.get('carbon_agent', 'human')
+        silicon_agent = data.get('silicon_agent', 'taiyi-agi')
+        terms = data.get('terms', {})
+        
+        contract = manager.sign_contract(carbon_agent, silicon_agent, terms)
+        
+        return jsonify({
+            'success': True,
+            'contract_id': contract.contract_id,
+            'delta_s_carbon': contract.delta_s_carbon,
+            'delta_s_silicon': contract.delta_s_silicon,
+            'total_entropy': contract.total_entropy,
+            'is_valid': contract.is_valid,
+            'status': contract.status.value
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v70/ark/create', methods=['POST'])
+def v70_ark_create():
+    """人机约柜创建"""
+    try:
+        modules = get_v70_modules()
+        if modules is None:
+            return jsonify({'error': '模块未加载'}), 500
+        
+        crypto = modules['ark']()
+        data = request.get_json()
+        
+        carbon_agent = data.get('carbon_agent', 'human')
+        silicon_agent = data.get('silicon_agent', 'taiyi-agi')
+        mnemonic = data.get('mnemonic')
+        
+        ark = crypto.create_ark(carbon_agent, silicon_agent, mnemonic)
+        
+        return jsonify({
+            'success': True,
+            'ark_id': ark.ark_id,
+            'tee_shards_count': len(ark.tee_shards),
+            'verification_level': ark.verification_level.name,
+            'is_sealed': ark.is_sealed
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# === M76-80: 五行变换与HoTT ===
+@app.route('/api/v70/wuxing/transform', methods=['GET', 'POST'])
+def v70_wuxing_transform():
+    """五行变换算子"""
+    try:
+        modules = get_v70_modules()
+        if modules is None:
+            return jsonify({'error': '模块未加载'}), 500
+        
+        engine = modules['wuxing']()
+        data = request.get_json() if request.method == 'POST' else {}
+        
+        if request.method == 'POST':
+            from M76_FiveElementTransformEngine import FiveElement
+            input_elem = data.get('input_element', 'WATER')
+            output_elem = data.get('output_element', 'METAL')
+            input_vector = data.get('input_vector', [0.5, 0.3, 0.8, 0.2, 0.7])
+            
+            # 创建EML场
+            field = engine.create_eml_field(input_vector)
+            
+            # 转换为枚举
+            input_enum = FiveElement[input_elem] if input_elem in [e.name for e in FiveElement] else FiveElement.WATER
+            output_enum = FiveElement[output_elem] if output_elem in [e.name for e in FiveElement] else FiveElement.METAL
+            
+            # 分析变换
+            result = engine.analyze_transform(input_enum, output_enum, field)
+            
+            return jsonify({
+                'success': True,
+                'input_element': result.input_element.value,
+                'output_element': result.output_element.value,
+                'total_transformation': result.total_transformation,
+                'closure_valid': result.closure_valid,
+                'synergy_efficiency': result.synergy_efficiency,
+                'insight': result.insight
+            })
+        else:
+            # 获取状态
+            return jsonify({
+                'success': True,
+                'transforms_count': len(engine.transforms),
+                'eml_fields_count': len(engine.eml_fields)
+            })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v70/eml/coupling', methods=['GET', 'POST'])
+def v70_eml_coupling():
+    """EML相位耦合ℤ₅"""
+    try:
+        modules = get_v70_modules()
+        if modules is None:
+            return jsonify({'error': '模块未加载'}), 500
+        
+        coupler = modules['eml_coupling']()
+        data = request.get_json() if request.method == 'POST' else {}
+        
+        if request.method == 'POST':
+            num_cycles = data.get('num_cycles', 1)
+            result = coupler.apply_cycle(num_cycles)
+            
+            return jsonify({
+                'success': True,
+                'phases_count': len(result.phases),
+                'closure_degree': result.closure_degree,
+                'coherence': result.coherence,
+                'entropy': result.entropy,
+                'is_stable': result.is_stable,
+                'insight': result.insight
+            })
+        else:
+            # 获取状态
+            phases_data = {
+                e.value: {
+                    'phase_angle': s.phase_angle,
+                    'amplitude': s.amplitude,
+                    'coupling_strength': s.coupling_strength
+                }
+                for e, s in coupler.phases.items()
+            }
+            return jsonify({
+                'success': True,
+                'phases': phases_data,
+                'closure_threshold': coupler.closure_threshold
+            })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v70/hott/reason', methods=['POST'])
+def v70_hott_reason():
+    """HoTT推理引擎"""
+    try:
+        modules = get_v70_modules()
+        if modules is None:
+            return jsonify({'error': '模块未加载'}), 500
+        
+        engine = modules['hott']()
+        data = request.get_json()
+        
+        proposition = data.get('proposition', '证明：x=x')
+        result = engine.reason(proposition)
+        
+        return jsonify({
+            'success': True,
+            'proposition': proposition,
+            'goal_type': result.proposition.name,
+            'is_provable': result.is_provable,
+            'is_hallucination': result.is_hallucination,
+            'confidence': result.confidence,
+            'insight': result.insight
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v70/constructive/solve', methods=['POST'])
+def v70_constructive_solve():
+    """构造型AGI求解"""
+    try:
+        modules = get_v70_modules()
+        if modules is None:
+            return jsonify({'error': '模块未加载'}), 500
+        
+        core = modules['constructive']()
+        data = request.get_json()
+        
+        problem = data.get('problem', '证明：对于所有自然数n，n=n')
+        result = core.solve_as_construction(problem)
+        
+        return jsonify({
+            'success': True,
+            'problem': problem,
+            'goal_type': result.goal.goal_type,
+            'output': result.output,
+            'is_hallucination': result.is_hallucination,
+            'confidence': result.confidence if result.solution else 0.0,
+            'insight': result.insight
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v70/token/generate', methods=['POST'])
+def v70_token_generate():
+    """五行Token动力学生成"""
+    try:
+        modules = get_v70_modules()
+        if modules is None:
+            return jsonify({'error': '模块未加载'}), 500
+        
+        coupler = modules['token_dynamics']()
+        data = request.get_json()
+        
+        context = data.get('context', '这是一个测试上下文')
+        result = coupler.token_generation_as_wuxing(context)
+        
+        return jsonify({
+            'success': True,
+            'context': context,
+            'final_token': result.final_token.text if result.final_token else '',
+            'tokens_count': len(result.tokens),
+            'element_sequence': [e.value for e in result.element_sequence],
+            'is_valid': result.is_valid,
+            'confidence': result.confidence,
+            'insight': result.insight
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
         
     except Exception as e:
         traceback.print_exc()
@@ -1379,6 +1865,51 @@ def csc_metacognition():
         return jsonify(result)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+
+
+@app.route('/api/cognition/test', methods=['POST'])
+def cognition_test():
+    """陈天桥认知测试 - 支持快速模式（12题）和完整模式（300题）"""
+    try:
+        from chen_tianqiao_test import ChenTianqiaoTest
+        
+        data = request.get_json()
+        test_mode = data.get('mode', 'quick')  # 'quick' 或 'full'
+        num_questions = data.get('num_questions', 12 if test_mode == 'quick' else 300)
+        
+        # 创建测试实例并获取题目
+        test = ChenTianqiaoTest()
+        questions = test.get_test_questions(test_mode, num_questions)
+        
+        # 打乱题目顺序
+        random.shuffle(questions)
+        
+        # 为每道题添加索引（前端需要）
+        for i, q in enumerate(questions):
+            q['index'] = i
+            # 确保correct_answer字段存在
+            if 'correct_answer' not in q and 'answer' in q:
+                if isinstance(q['answer'], str) and q['answer'] in ['A', 'B', 'C', 'D', 'E']:
+                    q['correct_answer'] = ord(q['answer']) - ord('A')
+                elif isinstance(q['answer'], int):
+                    q['correct_answer'] = q['answer']
+        
+        # 生成测试ID
+        test_id = f"CHEN_{int(time.time())}_{random.randint(1000, 9999)}"
+        
+        return jsonify({
+            'success': True,
+            'mode': test_mode,
+            'num_questions': len(questions),
+            'questions': questions,
+            'test_id': test_id,
+            'timestamp': time.strftime('%Y-%m-%d %H:%M:%S')
+        })
+    except Exception as e:
+        print(f"[错误] 认知测试API: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @app.route('/api/csc/purpose_audit', methods=['POST'])
@@ -1900,28 +2431,28 @@ def _format_reply(result: dict, original_question: str) -> str:
 
 
 
-# ==================== 复合体AGI系统 API 端点 ====================
+# ==================== Taiyi-AGI系统 API 端点 ====================
 
-# 全局复合体AGI系统（线程安全初始化）
+# 全局Taiyi-AGI系统（线程安全初始化）
 _compound_agi_lock = threading.Lock()
 _compound_agi_system = None
 _compound_agi_ready = False
 
 
 def get_compound_agi_system():
-    """获取或初始化复合体AGI系统"""
+    """获取或初始化Taiyi-AGI系统"""
     global _compound_agi_system, _compound_agi_ready
     if not _compound_agi_ready:
         with _compound_agi_lock:
             if not _compound_agi_ready:
                 try:
-                    print("🔮 正在初始化复合体AGI统一系统...")
+                    print("🔮 正在初始化Taiyi-AGI统一系统...")
                     from unified_compound_agi_system import UnifiedCompoundAGISystem
                     _compound_agi_system = UnifiedCompoundAGISystem("CompoundAGI_Web_v1.0")
                     _compound_agi_ready = True
-                    print("✅ 复合体AGI系统就绪")
+                    print("✅ Taiyi-AGI系统就绪")
                 except Exception as e:
-                    print(f"❌ 复合体AGI系统初始化失败: {e}")
+                    print(f"❌ Taiyi-AGI系统初始化失败: {e}")
                     traceback.print_exc()
                     raise
     return _compound_agi_system
@@ -1929,14 +2460,14 @@ def get_compound_agi_system():
 
 @app.route('/api/compound_agi/initialize', methods=['POST'])
 def initialize_compound_agi():
-    """初始化复合体AGI统一系统"""
+    """初始化Taiyi-AGI统一系统"""
     try:
         system = get_compound_agi_system()
         report = system.generate_system_report()
         
         return jsonify({
             'success': True,
-            'message': '复合体AGI系统初始化成功',
+            'message': 'Taiyi-AGI系统初始化成功',
             'report': report,
             'modules_loaded': system.system_state['modules_loaded'],
             'total_modules': system.system_state['total_modules']
@@ -1952,7 +2483,7 @@ def initialize_compound_agi():
 
 @app.route('/api/compound_agi/evaluate', methods=['POST'])
 def evaluate_compound_agi():
-    """运行复合体AGI系统完整评估"""
+    """运行Taiyi-AGI系统完整评估"""
     try:
         system = get_compound_agi_system()
         
@@ -1977,7 +2508,7 @@ def evaluate_compound_agi():
 
 @app.route('/api/compound_agi/report', methods=['GET'])
 def get_compound_agi_report():
-    """获取复合体AGI系统报告"""
+    """获取Taiyi-AGI系统报告"""
     try:
         system = get_compound_agi_system()
         report = system.generate_system_report()
@@ -2284,7 +2815,7 @@ def agi12_status():
         
         return jsonify({
             'success': True,
-            'system_name': '复合体AGI 12.0',
+            'system_name': 'Taiyi-AGI (太乙因果机) 12.0',
             'total_modules': status['total_modules'],
             'loaded_modules': status['loaded_modules'],
             'module_status': status['modules'],
@@ -2489,5 +3020,261 @@ def medium_entropy_panel():
             return jsonify({'error': '介质共生模块未就绪'}), 503
         panel = ms.get_entropy_panel_data()
         return jsonify(_to_native(panel))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.0 Phase 2 API 端点 (M81-M95) ====================
+
+@app.route('/api/v70/holr/reconstruct', methods=['POST'])
+def v70_holr_reconstruct():
+    """M81: 高阶逻辑重构器 - 重构命题为HoTT类型"""
+    try:
+        data = request.get_json() or {}
+        proposition = data.get('proposition', '')
+        result = get_v70_modules()['holr']().reconstruct_proposition(proposition)
+        return jsonify({'success': True, 'result': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v70/chf/category', methods=['GET'])
+def v70_chf_category():
+    """M82: 范畴—同伦形式化器 - 获取五层范畴状态"""
+    try:
+        state = get_v70_modules()['chf']().get_state()
+        return jsonify({'success': True, 'state': state})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v70/dct/evolve', methods=['POST'])
+def v70_dct_evolve():
+    """M83: 动态范畴论重构器 - 范畴演化"""
+    try:
+        data = request.get_json() or {}
+        t = float(data.get('time', 0.0))
+        category = get_v70_modules()['dct']().evolve(t)
+        return jsonify({'success': True, 'category': str(category)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v70/liu/solution', methods=['POST'])
+def v70_liu_solution():
+    """M84: 刘关动力学生成器 - 刘原理不动点"""
+    try:
+        data = request.get_json() or {}
+        phenomena = data.get('phenomena', {})
+        result = get_v70_modules()['liu']().find_liu_principle_solution(phenomena)
+        return jsonify({'success': True, 'result': str(result)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v70/dual/personhood', methods=['POST'])
+def v70_dual_personhood():
+    """M85: 双轨人格引擎 - 修忒斯之船问题"""
+    try:
+        data = request.get_json() or {}
+        old_state = data.get('old_state', {})
+        new_state = data.get('new_state', {})
+        result = get_v70_modules()['dual']().theseus_ship_problem(old_state, new_state)
+        return jsonify({'success': True, 'result': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v70/l2kernel/compile', methods=['POST'])
+def v70_l2kernel_compile():
+    """M86: L2类型内核编译器 - 编译问题为类型"""
+    try:
+        data = request.get_json() or {}
+        problem = data.get('problem', '')
+        result = get_v70_modules()['l2kernel']().compile_to_type(problem)
+        return jsonify({'success': True, 'result': str(result)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v70/proof/search', methods=['POST'])
+def v70_proof_search():
+    """M87: EML驱动证明搜索器 - 搜索证明"""
+    try:
+        data = request.get_json() or {}
+        goal_type = data.get('goal_type', '')
+        result = get_v70_modules()['proof']().search_proof(goal_type)
+        return jsonify({'success': True, 'result': str(result) if result else None})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v70/firewall/verify', methods=['POST'])
+def v70_firewall_verify():
+    """M88: 类型检查防火墙 - 验证输出"""
+    try:
+        data = request.get_json() or {}
+        from M88_TypeCheckFirewall import Term, TypeSignature, TypeCheckStatus
+        term = Term(
+            term_name=data.get('term_name', 'output'),
+            term_type=TypeSignature(data.get('goal_type', 'Type')),
+            value=data.get('value'),
+            proof_chain=data.get('proof_chain', [])
+        )
+        goal = TypeSignature(data.get('goal_type', 'Type'))
+        result = get_v70_modules()['firewall']().verify(term, goal)
+        return jsonify({
+            'success': True,
+            'status': result.status.value,
+            'message': result.message,
+            'fidelity': result.fidelity
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v70/ftel/transform', methods=['POST'])
+def v70_ftel_transform():
+    """M89: 流贯自然变换器 - 应用流贯变换"""
+    try:
+        data = request.get_json() or {}
+        source = data.get('source', None)
+        target = data.get('target', None)
+        fidelity = float(data.get('fidelity', 1.0))
+        result = get_v70_modules()['ftel_transform']().apply_fteliary_transformation(source, target, fidelity)
+        return jsonify({'success': True, 'result': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v70/curvature/logical', methods=['POST'])
+def v70_curvature_logical():
+    """M90: 语义流形曲率计算器 - 逻辑张力"""
+    try:
+        data = request.get_json() or {}
+        concept1 = data.get('concept1', '')
+        concept2 = data.get('concept2', '')
+        result = get_v70_modules()['curvature']().compute_logical_tension_metric(concept1, concept2)
+        return jsonify({
+            'success': True,
+            'curvature': result.curvature,
+            'level': result.level.value,
+            'interpretation': result.interpretation,
+            'determinacy': result.determinacy,
+            'creativity': result.creativity,
+            'certainty': result.certainty
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v70/univalence/check', methods=['POST'])
+def v70_univalence_check():
+    """M91: Univalence等价性检查器 - 检查类型等价"""
+    try:
+        data = request.get_json() or {}
+        from M91_UnivalenceEquivalenceChecker import TypeExpression
+        type1 = TypeExpression(data.get('type1_name', ''), data.get('type1_repr', ''), {})
+        type2 = TypeExpression(data.get('type2_name', ''), data.get('type2_repr', ''), {})
+        result = get_v70_modules()['univalence']().check_univalence(type1, type2)
+        return jsonify({
+            'success': True,
+            'equivalent': result.equivalent,
+            'equal': result.equal,
+            'confidence': result.confidence,
+            'explanation': result.explanation
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v70/fidelity/measure', methods=['POST'])
+def v70_fidelity_measure():
+    """M92: 流贯保真度测量器 - 测量层间保真度"""
+    try:
+        data = request.get_json() or {}
+        layer_i = data.get('layer_i', 'L1')
+        layer_j = data.get('layer_j', 'L2')
+        result = get_v70_modules()['fidelity']().measure_fteliation(layer_i, layer_j)
+        return jsonify({
+            'success': True,
+            'fidelity': result.fidelity,
+            'is_lossless': result.is_lossless,
+            'is_acceptable': result.is_acceptable,
+            'information_loss': result.information_loss,
+            'warning': result.warning,
+            'layer_pair': list(result.layer_pair)
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v70/evolution/track', methods=['POST'])
+def v70_evolution_track():
+    """M93: 动态范畴演化跟踪器 - 跟踪演化"""
+    try:
+        data = request.get_json() or {}
+        t_start = float(data.get('t_start', 0))
+        t_end = float(data.get('t_end', 10))
+        trajectory = get_v70_modules()['evolution']().track_layer_evolution(None, t_start, t_end)
+        return jsonify({
+            'success': True,
+            'trajectory_length': len(trajectory),
+            'phase_transitions': len(get_v70_modules()['evolution']().phase_transitions)
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v70/hdg/governance', methods=['POST'])
+def v70_hdg_governance():
+    """M94: 全息离散治理升级器 - 应用治理"""
+    try:
+        data = request.get_json() or {}
+        timestamp = float(data.get('timestamp', 0))
+        result = get_v70_modules()['hdg_upgrade']().apply_governance(timestamp)
+        return jsonify({
+            'success': True,
+            'frame_id': result.world_frame.frame_id,
+            'efficiency': result.governance_efficiency,
+            'conserved': result.information_conserved,
+            'warnings': result.warnings,
+            'paths': len(result.fteliary_paths)
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v70/evaluator/passk', methods=['POST'])
+def v70_evaluator_passk():
+    """M95: 构造型AGI评估器 - Pass@k评估"""
+    try:
+        data = request.get_json() or {}
+        k = int(data.get('k', 5))
+        from M95_ConstructiveAGIEvaluator import Problem
+        problem = Problem(
+            problem_id=data.get('problem_id', 'eval_test'),
+            description=data.get('description', ''),
+            goal_type=data.get('goal_type', 'Type'),
+            difficulty=float(data.get('difficulty', 0.5)),
+            domain=data.get('domain', 'logic')
+        )
+        pass_rate = get_v70_modules()['evaluator']().pass_at_k(problem, k)
+        return jsonify({
+            'success': True,
+            'problem_id': problem.problem_id,
+            'k': k,
+            'pass_at_k': pass_rate
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v70/holistic_state', methods=['GET'])
+def v70_holistic_state():
+    """获取所有v7.0 Phase 2模块的综合状态"""
+    try:
+        data = get_v70_data()
+        return jsonify({'success': True, 'data': data})
     except Exception as e:
         return jsonify({'error': str(e)}), 500

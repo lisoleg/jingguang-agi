@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>净光哥 AGI 12.0 v6.3 — 一现象三视界·复合体理学v3.6</title>
+<title>Taiyi-AGI (太乙因果机) 12.0 v6.3 — 一现象三视界·复合体理学v3.6</title>
 <script src="https://d3js.org/d3.v7.min.js">
 </style>
 </head>
@@ -13,7 +13,7 @@
   <div id="topbar">
     <div class="logo-wrap">
       <span class="logo">&#128302;</span>
-      <span class="title">净光哥 AGI 12.0</span>
+      <span class="title">Taiyi-AGI (太乙因果机) 12.0</span>
       <span class="version-badge">70模块·复合体理学v3.6</span>
       <span class="theory-badge">一现象三视界</span>
     </div>
@@ -26,7 +26,7 @@
     <span class="resp-timer" id="resp-timer"></span>
     <span class="spacer"></span>
     <div class="doc-entry">
-      <button class="btn-doc" onclick="openDesignDoc()" data-hint="查看净光哥AGI设计文档，了解系统架构">
+      <button class="btn-doc" onclick="openDesignDoc()" data-hint="查看Taiyi-AGI设计文档，了解系统架构">
         &#128196; 设计文档
       </button>
       <button class="btn-help" onclick="showHelp()" data-hint="查看使用说明，快速上手">
@@ -602,7 +602,8 @@
         </div>
         <div class="chen-test-body">
           <div class="chen-test-mode-tabs">
-            <div class="chen-mode-tab active" data-chen-mode="all">标准21题</div>
+            <div class="chen-mode-tab active" data-chen-mode="quick">快速模式 (12题)</div>
+            <div class="chen-mode-tab" data-chen-mode="full">完整模式 (300题)</div>
           </div>
           <div id="chen-container">
             <!-- 动态内容由JS生成 -->
@@ -613,8 +614,8 @@
               <div style="font-size:9px;color:var(--txt3);margin-bottom:10px;line-height:1.5">
                 数学推理 · 逻辑推理 · 物理直觉 · 认知心理 · AGI认知
               </div>
-              <button class="chen-btn chen-btn-start" onclick="try{console.log('[调试] 开始测试按钮被点击');CHEN_TEST.start();}catch(e){console.error('[错误]',e);alert('错误:'+e.message);}" style="padding:8px 24px">
-              开始测试
+              <button class="chen-btn chen-btn-start" onclick="try{console.log('[调试] 开始测试按钮被点击');CHEN_TEST.start();}catch(e){console.error('[错误]',e);alert('错误:'+e.message);}" style="padding:8px 24px" id="chen-start-btn">
+              选择模式并开始
             </button>
             </div>
           </div>
@@ -771,6 +772,147 @@
           验证进度: <span id="pred-progress" style="color:var(--sky)">4/4</span>
           <span style="margin-left:8px">确认率: <span id="pred-rate" style="color:var(--green)">100%</span></span>
         </div>
+      </div>
+
+
+
+      <!-- ════════════════════════════════════════════════════════
+           v7.0 仪表盘面板（高阶逻辑HoTT+范畴论深化）
+      ════════════════════════════════════════════════════════ -->
+
+      <!-- ① 碳硅共生契约面板（M71-M75） -->
+      <div class="panel-section panel-v70" data-hint="M71-M75 碳硅共生契约状态：钱包边界、贡献度量、Φ值检测、熵合约、人机约柜">
+        <div class="v70-title">⚖️ 碳硅共生契约</div>
+        <div class="v70-badge">M71-M75</div>
+        <div class="v70-row">
+          <span class="v70-label">Φ值:</span>
+          <span class="v70-value" id="v70-phi-value">0.00</span>
+        </div>
+        <div class="v70-bar-wrap"><div class="v70-bar-fill orange" id="v70-phi-bar" style="width:0%"></div></div>
+        <div class="v70-row">
+          <span class="v70-label">自指闭环:</span>
+          <span class="v70-value" id="v70-selfref">—</span>
+        </div>
+        <div class="v70-row">
+          <span class="v70-label">贡献度量:</span>
+          <span class="v70-value" id="v70-contrib">0.00</span>
+        </div>
+        <div class="v70-row">
+          <span class="v70-label">熵合约:</span>
+          <span class="v70-value" id="v70-entropy-contract">—</span>
+        </div>
+        <div class="v70-row">
+          <span class="v70-label">约柜:</span>
+          <span class="v70-value" id="v70-ark-status">—</span>
+        </div>
+      </div>
+
+      <!-- ② 五行变换算子面板（M76-M80） -->
+      <div class="panel-section panel-v70" data-hint="M76-M80 五行变换EML相位耦合ℤ₅：Σ水/F火/R木/E金/B土五元循环">
+        <div class="v70-title">☯️ 五行EML相位</div>
+        <div class="v70-badge">ℤ₅闭合</div>
+        <div class="v70-phase-ring">
+          <div class="v70-phase-element"><div class="v70-phase-dot water active" id="v70-dot-water"></div><div>Σ水</div></div>
+          <div class="v70-phase-element"><div class="v70-phase-dot fire" id="v70-dot-fire"></div><div>F火</div></div>
+          <div class="v70-phase-element"><div class="v70-phase-dot wood" id="v70-dot-wood"></div><div>R木</div></div>
+          <div class="v70-phase-element"><div class="v70-phase-dot metal" id="v70-dot-metal"></div><div>E金</div></div>
+          <div class="v70-phase-element"><div class="v70-phase-dot earth" id="v70-dot-earth"></div><div>B土</div></div>
+        </div>
+        <div class="v70-row"><span class="v70-label">相位角:</span><span class="v70-value" id="v70-phase-angle">0.00</span></div>
+        <div class="v70-row"><span class="v70-label">振幅:</span><span class="v70-value" id="v70-amplitude">0.00</span></div>
+      </div>
+
+      <!-- ③ HoTT高阶逻辑面板（M78/M81） -->
+      <div class="panel-section panel-v70" data-hint="M78/M81 HoTT推理引擎：Pi-Type/Sigma-Type重构、LEM失效、Univalence">
+        <div class="v70-title">🔺 HoTT高阶逻辑</div>
+        <div class="v70-badge">M78-M81</div>
+        <div class="v70-row"><span class="v70-label">命题型:</span><span class="v70-value" id="v70-hott-type">—</span></div>
+        <div class="v70-row"><span class="v70-label">Pi-Type:</span><span class="v70-value" id="v70-pi-type">—</span></div>
+        <div class="v70-row"><span class="v70-label">Sigma:</span><span class="v70-value" id="v70-sigma-type">—</span></div>
+        <div class="v70-row"><span class="v70-label">LEM态:</span><span class="v70-value" id="v70-lem-status">—</span></div>
+        <div class="v70-proof-tree" id="v70-proof-tree"><div class="v70-proof-node">Goal Type</div></div>
+      </div>
+
+      <!-- ④ 流贯自然变换面板（M83/M89） -->
+      <div class="panel-section panel-v70" data-hint="M83/M89 流贯η: F⇒G，自然变换截面σ: Base→Total，三视界投影">
+        <div class="v70-title">⇌ 流贯自然变换</div>
+        <div class="v70-badge">T37</div>
+        <div class="v70-layer-grid">
+          <div class="v70-layer-cell" id="v70-layer-L1">L1</div>
+          <div class="v70-layer-cell" id="v70-layer-L2">L2</div>
+          <div class="v70-layer-cell" id="v70-layer-L3">L3</div>
+          <div class="v70-layer-cell" id="v70-layer-L4">L4</div>
+          <div class="v70-layer-cell" id="v70-layer-L5">L5</div>
+        </div>
+        <div class="v70-row"><span class="v70-label">流贯通量:</span><span class="v70-value" id="v70-flux">0.00</span></div>
+        <div class="v70-bar-wrap"><div class="v70-bar-fill gold" id="v70-flux-bar" style="width:0%"></div></div>
+        <div class="v70-row"><span class="v70-label">截面数:</span><span class="v70-value" id="v70-sections">0</span></div>
+      </div>
+
+      <!-- ⑤ 刘原理不动点面板（M84） -->
+      <div class="panel-section panel-v70" data-hint="M84 刘原理：刘函子L: L1→L2、极简不动点、Kolmogorov复杂度最小化">
+        <div class="v70-title">⊕ 刘原理不动点</div>
+        <div class="v70-badge">T38</div>
+        <div class="v70-row"><span class="v70-label">极小规律:</span><span class="v70-value" id="v70-liu-solution">—</span></div>
+        <div class="v70-row"><span class="v70-label">K复杂度:</span><span class="v70-value" id="v70-kolmogorov">0.00</span></div>
+        <div class="v70-bar-wrap"><div class="v70-bar-fill orange" id="v70-kol-bar" style="width:0%"></div></div>
+        <div class="v70-row"><span class="v70-label">不动点:</span><span class="v70-value" id="v70-fixed-point">—</span></div>
+        <div class="v70-row"><span class="v70-label">Univalence:</span><span class="v70-value" id="v70-univalence">—</span></div>
+      </div>
+
+      <!-- ⑥ 语义流形曲率面板（M90） -->
+      <div class="panel-section panel-v70" data-hint="M90 语义流形曲率K(M)：K≈0多义性/创造性，K>>0逻辑必然性">
+        <div class="v70-title">∿ 语义流形曲率</div>
+        <div class="v70-badge">T40</div>
+        <div class="v70-curvature-gauge">
+          <div class="v70-curvature-gradient"></div>
+          <div class="v70-curvature-needle" id="v70-curvature-needle" style="left:50%;transform:translateX(-50%) rotate(0deg)"></div>
+          <div class="v70-curvature-label">平坦← 曲率 →必然</div>
+        </div>
+        <div class="v70-row"><span class="v70-label">K值:</span><span class="v70-value" id="v70-curvature-val">0.50</span></div>
+        <div class="v70-row"><span class="v70-label">确定性:</span><span class="v70-value" id="v70-determinacy">—</span></div>
+        <div class="v70-row"><span class="v70-label">创造力:</span><span class="v70-value" id="v70-creativity">—</span></div>
+      </div>
+
+      <!-- ⑦ Univalence等价面板（M91） -->
+      <div class="panel-section panel-v70" data-hint="M91 Univalence公理：type1≃type2→type1=type2、同构即相等">
+        <div class="v70-title">≡ Univalence等价</div>
+        <div class="v70-badge">T32</div>
+        <div class="v70-row"><span class="v70-label">type1≃type2:</span><span class="v70-value" id="v70-equiv">—</span></div>
+        <div class="v70-row"><span class="v70-label">type1=type2:</span><span class="v70-value" id="v70-equal">—</span></div>
+        <div class="v70-row"><span class="v70-label">置信度:</span><span class="v70-value" id="v70-conf">0.00</span></div>
+        <div class="v70-bar-wrap"><div class="v70-bar-fill gold" id="v70-conf-bar" style="width:0%"></div></div>
+        <div class="v70-row"><span class="v70-label">实验:</span><span class="v70-value" id="v70-experiments">0</span></div>
+      </div>
+
+      <!-- ⑧ 流贯保真度面板（M92） -->
+      <div class="panel-section panel-v70" data-hint="M92 流贯保真度F(Li,Lj)=|<Li|EML|Lj>|²、阈值0.9警告">
+        <div class="v70-title">◎ 流贯保真度</div>
+        <div class="v70-badge">T37</div>
+        <div class="v70-layer-grid">
+          <div class="v70-layer-cell" id="v70-fid-L1">L1</div>
+          <div class="v70-layer-cell" id="v70-fid-L2">L2</div>
+          <div class="v70-layer-cell" id="v70-fid-L3">L3</div>
+          <div class="v70-layer-cell" id="v70-fid-L4">L4</div>
+          <div class="v70-layer-cell" id="v70-fid-L5">L5</div>
+        </div>
+        <div class="v70-row"><span class="v70-label">F(Li,Lj):</span><span class="v70-value" id="v70-fidelity-val">0.00</span></div>
+        <div class="v70-bar-wrap"><div class="v70-bar-fill gold" id="v70-fidelity-bar" style="width:0%"></div></div>
+        <div class="v70-row"><span class="v70-label">信息损耗:</span><span class="v70-value" id="v70-info-loss">0%</span></div>
+        <div class="v70-row"><span class="v70-label">警告:</span><span class="v70-value" id="v70-fidelity-warn" style="color:var(--txt3)">—</span></div>
+      </div>
+
+      <!-- ⑨ 构造型AGI评估面板（M95） -->
+      <div class="panel-section panel-v70" data-hint="M95 构造型AGI评估：Pass@k、P-HoL-1预言验证">
+        <div class="v70-title">🏆 构造型AGI评估</div>
+        <div class="v70-badge">M95</div>
+        <div class="v70-stat-grid">
+          <div class="v70-stat-box"><div class="v70-stat-val" id="v70-passk">0%</div><div class="v70-stat-lbl">Pass@5</div></div>
+          <div class="v70-stat-box"><div class="v70-stat-val" id="v70-hallucination">0%</div><div class="v70-stat-lbl">幻觉率</div></div>
+        </div>
+        <div class="v70-row"><span class="v70-label">P-HoL-1:</span><span class="v70-value" id="v70-phol1">—</span></div>
+        <div class="v70-row"><span class="v70-label">验证:</span><span class="v70-value" id="v70-phol1-verified">—</span></div>
+        <div class="v70-row"><span class="v70-label">问题数:</span><span class="v70-value" id="v70-total-problems">0</span></div>
       </div>
 
       <!-- 模块分析面板 -->
@@ -960,7 +1102,7 @@ const STATE = {
   links: [],
   selected_node: null,
   history: [],
-  root_name: '净光哥 AGI 12.0',
+  root_name: 'Taiyi-AGI (太乙因果机) 12.0',
   sim: null,
   loading: false,
   collapsed: new Set(),
@@ -1704,6 +1846,7 @@ function updateAllPanels(data) {
   if (data.v61) updateV61Panels(data.v61);
   if (data.v62) updateV62Panels(data.v62);
   if (data.v63) updateV63Panels(data.v63);
+  if (data.v70) updateV70Panels(data.v70);
 }
 
 // ── 统一更新所有v6.1面板 ──────────────────────────────────────
@@ -2860,7 +3003,7 @@ function openDesignDoc() {
 // 陈天桥认知测试模块 - 对话栏版本
 // ════════════════════════════════════════════════════════════════
 const CHEN_TEST = {
-  mode: 'all',  // 标准21题模式（AI实时生成）
+  mode: 'quick',  // 测试模式：quick(12题) 或 full(300题)
   questions: [],
   currentIdx: 0,
   answers: {},
@@ -2883,92 +3026,14 @@ const CHEN_TEST = {
     agi: { correct: 0, total: 10 }
   },
 
-  // 50道认知测试题库
-  questionBank: [
-    // 数学推理 (1-10)
-    { q: "若 x² - 5x + 6 = 0，则 x 的值为？", options: ["1, 2", "2, 3", "3, 4", "1, 6"], answer: 1, type: "choice" },
-    { q: "一个正方形边长增加20%，面积增加百分之多少？", options: ["20%", "36%", "40%", "44%"], answer: 3 },
-    { q: "数列 2, 6, 18, 54,... 第6项是？", options: ["162", "486", "1458", "4374"], answer: 2 },
-    { q: "若 f(x) = x³ - 3x，则 f'(2) = ?", options: ["3", "6", "9", "12"], answer: 2 },
-    { q: "复数 (1+i)⁴ 的值为？", options: ["4", "-4", "4i", "-4i"], answer: 1 },
-    { q: "矩阵 [[2,1],[1,2]] 的特征值为？", options: ["1, 3", "1, 2", "2, 3", "0, 4"], answer: 0 },
-    { q: "积分 ∫x²dx = ?", options: ["x³", "x³/3", "2x", "x²/2"], answer: 1 },
-    { q: "若 logₓ8 = 3，则 x = ?", options: ["2", "3", "4", "8"], answer: 0 },
-    { q: "平面直角坐标系中，点(3,4)到原点距离为？", options: ["5", "6", "7", "12"], answer: 0 },
-    { q: "若 a:b = 3:4，a+b=35，则 a=?", options: ["12", "15", "18", "21"], answer: 1 },
-
-    // 逻辑推理 (11-20)
-    { q: "所有A是B，有些B是C，可推出？", options: ["所有C是A", "有些A是C", "所有A是C", "无法确定"], answer: 3 },
-    { q: "若下雨则地湿，地湿了，所以？", options: ["一定下雨了", "可能下雨了", "一定没下雨", "无法确定"], answer: 3 },
-    { q: "1, 4, 9, 16, ? 下一个数是？", options: ["20", "24", "25", "36"], answer: 2 },
-    { q: "若A>B, B>C, C>D, 则以下哪个必然成立？", options: ["A>D", "A=C", "B=D", "A=D"], answer: 0 },
-    { q: "密码题：APPLE对应1，DOG对应？", options: ["3-15-7", "4-15-7", "3-14-6", "4-16-8"], answer: 1 },
-    { q: "若有3个人，其中2人总说真话，1人总说假话，你问A是谁说假话，A指向B，B指向自己？", options: ["A说假话", "B说假话", "C说假话", "无法确定"], answer: 0 },
-    { q: "数列：1, 1, 2, 3, 5, 8,... 第10项是？", options: ["34", "55", "89", "144"], answer: 1 },
-    { q: "若昨天是明天，则今天是周五，问实际今天是？", options: ["周三", "周四", "周五", "周日"], answer: 0 },
-    { q: "有红蓝黄球各5个，至少取几个保证有2个同色？", options: ["2", "3", "4", "5"], answer: 2 },
-    { q: "若A推B，B推C，且A为真，则？", options: ["C为真", "C为假", "B为假", "无法确定"], answer: 0 },
-
-    // 物理直觉 (21-30)
-    { q: "光年是什么单位？", options: ["时间", "长度", "速度", "质量"], answer: 1 },
-    { q: "水的密度约为多少 g/cm³？", options: ["0.5", "1", "2", "10"], answer: 1 },
-    { q: "若物体做匀速圆周运动，速度v，半径r，向心加速度为？", options: ["v/r", "v²/r", "vr", "v²r"], answer: 1 },
-    { q: "E=mc² 中c代表？", options: ["电能", "光速", "电荷", "能量"], answer: 1 },
-    { q: "标准大气压下，水的沸点是多少℃？", options: ["50", "80", "100", "120"], answer: 2 },
-    { q: "一物体从高度h自由下落时间t=？", options: ["√(h/g)", "h/g", "√(2h/g)", "2h/g"], answer: 2 },
-    { q: "串联电路总电阻为各电阻之？", options: ["和", "积", "倒数和", "倒数之和的倒数"], answer: 0 },
-    { q: "原子核由什么组成？", options: ["电子+质子", "质子+中子", "中子+电子", "夸克"], answer: 1 },
-    { q: "热力学第二定律表述：热量不能自发从低温物体传递到？", options: ["同温物体", "高温物体", "真空", "任意物体"], answer: 1 },
-    { q: "弹簧振子周期T=2π√(m/k)，k是什么？", options: ["质量", "劲度系数", "振幅", "位移"], answer: 1 },
-
-    // 认知心理 (31-40)
-    { q: "短时记忆容量约为多少项？", options: ["3±1", "5±2", "7±2", "10±3"], answer: 2 },
-    { q: "\"习得性无助\"是谁提出的概念？", options: ["巴甫洛夫", "斯金纳", "塞利格曼", "华生"], answer: 2 },
-    { q: "视觉皮层主要位于大脑哪个半球？", options: ["左半球", "右半球", "两半球都有", "小脑"], answer: 2 },
-    { q: "\"心流\"状态由谁提出？", options: ["马斯洛", "契克森米哈伊", "维果茨基", "埃里克森"], answer: 1 },
-    { q: "双盲实验目的是排除？", options: ["样本偏差", "安慰剂效应", "实验者偏差", "被试偏差"], answer: 2 },
-    { q: "\"元认知\"概念由谁提出？", options: ["弗拉维尔", "布鲁纳", "奥苏贝尔", "加涅"], answer: 0 },
-    { q: "工作记忆包含哪些成分？", options: ["语音环路", "视觉空间画板", "中央执行系统", "以上都是"], answer: 3 },
-    { q: "\"延迟满足\"实验是谁做的？", options: ["皮亚杰", "维果茨基", "米歇尔", "科尔伯格"], answer: 2 },
-    { q: "前额叶皮层主要负责？", options: ["运动控制", "视觉处理", "执行功能", "听觉处理"], answer: 2 },
-    { q: "认知偏差中\"确认偏差\"指？", options: ["偏好熟悉事物", "搜索支持自己观点的信息", "高估小概率事件", "过度自信"], answer: 1 },
-
-    // AI/AGI认知 (41-50)
-    { q: "Transformer架构的核心机制是？", options: ["卷积", "循环", "注意力", "池化"], answer: 2 },
-    { q: "\"涌现\"能力指什么？", options: ["刻意设计的功能", "规模增大后自然出现的新能力", "人为标注的能力", "降低计算复杂度"], answer: 1 },
-    { q: "大型语言模型主要依赖什么实现涌现？", options: ["手工规则", "专家知识库", "海量参数", "强化学习"], answer: 2 },
-    { q: "\"思维链提示\"(CoT)的作用是？", options: ["加速推理", "引导展示推理过程", "减少幻觉", "降低延迟"], answer: 1 },
-    { q: "AGI的核心挑战不包括？", options: ["常识推理", "持续学习", "情感理解", "图像识别"], answer: 3 },
-    { q: "\"意识上传\"假说中载体的基础是？", options: ["DNA", "神经网络活动模式", "蛋白质结构", "代谢产物"], answer: 1 },
-    { q: "复合体AGI的DIKWP六层语义框架，D指？", options: ["Information", "Knowledge", "Wisdom", "Data"], answer: 3 },
-    { q: "全息压缩原理在AGI中用于？", options: ["加速推理", "降低存储/保持核心信息", "图像处理", "语音识别"], answer: 1 },
-    { q: "认知递归算子Ω的核心作用是？", options: ["记忆存储", "递归式认知处理", "图像生成", "自然语言理解"], answer: 1 },
-    { q: "刘原理在复合体理学中的地位是？", options: ["数学工具", "第一性原理", "实验定律", "工程方法"], answer: 1, type: "choice" },
-    
-    // ===== 问答题 (26-30) =====
-    { q: "请解释什么是\"认知偏差\"，并举例说明3种常见的认知偏差。", type: "essay", minWords: 50, category: "认知心理",
-      reference: "认知偏差是指人们在信息处理过程中产生的系统性偏差。常见例子：1)确认偏差-倾向于寻找支持自己观点的信息；2)锚定效应-过度依赖第一次获得的信息；3)可得性启发-依赖容易想到的信息做判断。" },
-    { q: "请简述Transformer架构的工作原理，并说明为什么它比RNN更适合处理长序列。", type: "essay", minWords: 80, category: "AI认知",
-      reference: "Transformer使用自注意力机制并行处理序列，而RNN是顺序处理。优势：1)并行计算效率高；2)长距离依赖建模能力更强；3)训练速度更快。" },
-    { q: "请解释什么是\"熵\"，并说明在信息论和热力学中熵的含义有何异同。", type: "essay", minWords: 70, category: "物理直觉",
-      reference: "熵是系统无序度的度量。热力学熵表征能量分布的均匀程度。信息论熵（香农熵）表征信息的不确定性。相同点：都度量不确定性/无序。不同点：热力学熵是物理量，信息熵是抽象度量。" },
-    { q: "请描述\"双缝实验\"的现象，并解释为什么它揭示了量子力学的反直觉特性。", type: "essay", minWords: 80, category: "物理直觉",
-      reference: "双缝实验：电子逐个发射，如果不开观测器，会在屏幕上形成干涉条纹（表现为波）；如果开启观测器，干涉条纹消失（表现为粒子）。这揭示：1)波粒二象性；2)观测行为本身影响实验结果；3)量子叠加态。" },
-    { q: "请推导出一元二次方程的求根公式。", type: "essay", minWords: 50, category: "数学推理",
-      reference: "对于一元二次方程 ax²+bx+c=0：1)两边除以a；2)配方；3)开方；4)解得：x = (-b±√(b²-4ac))/2a" },
-    
-    // ===== 小作文 (31-35) =====
-    { q: "请写一篇短文（300字以上），论述\"人工智能是否应该拥有权利\"。请从伦理、法律、技术三个维度展开。", type: "composition", minWords: 300, category: "AI认知",
-      reference: "人工智能是否应该拥有权利是一个复杂的哲学和伦理问题。从伦理维度：如果AI达到或超过人类智能且能感受痛苦，不给予权利可能是不道德的。从法律维度：权利主体需要承担义务，AI无法承担法律责任。从技术维度：目前的AI是工具，未来AGI可能需要某种形式的权利框架。" },
-    { q: "请写一篇短文（300字以上），分析\"人类认知的局限性\"，并探讨AI如何帮助我们突破这些局限。", type: "composition", minWords: 300, category: "认知心理",
-      reference: "人类认知存在多种局限性：1)注意力有限；2)工作记忆容量有限；3)认知偏差；4)知识获取慢；5)情绪影响判断。AI可以帮助突破：1)处理海量信息；2)无偏差推理；3)快速学习；4)辅助决策。最终目标是人机协同。" },
-    { q: "请写一篇短文（300字以上），论述\"物理学中的对称性与守恒律\"，以Noether定理为核心展开。", type: "composition", minWords: 300, category: "物理直觉",
-      reference: "Noether定理：每一种连续性对称性都对应一个守恒律。具体对应：1)时间平移对称性→能量守恒；2)空间平移对称性→动量守恒；3)空间旋转对称性→角动量守恒。这揭示了物理世界的内在美：表面上看似无关的定律，实际上都源于对称性。" },
-    { q: "请写一篇短文（300字以上），论述\"热力学第二定律与信息的关系\"，解释Landauer原理。", type: "composition", minWords: 300, category: "物理直觉",
-      reference: "热力学第二定律：孤立系统的熵永不减少。信息与熵的关系：1)信息就是负熵；2)Landauer原理：擦除1比特信息，至少产生kT ln2的热量。这意味着：计算有热力学成本，不可逆计算必须散热。" },
-    { q: "请写一篇短文（300字以上），从认知科学角度分析\"为什么人类会犯错误\"，并探讨如何通过训练减少错误。", type: "composition", minWords: 300, category: "认知心理",
-      reference: "人类犯错误的认知根源：1)认知偏差；2)注意力瓶颈；3)工作记忆限制；4)情绪干扰；5)确认偏差。减少错误的方法：1)元认知训练；2)双盲实验思维；3)慢思考；4)外部化；5)多样性团队。" },
-  ],
+  // 题库从API动态加载
+  questionBank: [],  // 清空固定题库，改为API加载
+  
+  // 测试模式配置
+  modeConfig: {
+    'quick': { name: '快速模式', questions: 12, time: '约5分钟' },
+    'full': { name: '完整模式', questions: 300, time: '约2小时' }
+  },
 
   init() {
     console.log('[调试] CHEN_TEST.init() 被调用');
@@ -4339,7 +4404,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  console.log('净光哥 AGI 12.0 initialized - Three Column Layout');
+  console.log('Taiyi-AGI (太乙因果机) 12.0 initialized - Three Column Layout');
   } catch (err) {
     console.error('[AGI12] 初始化错误:', err);
     alert('[AGI12] 初始化错误: ' + err.message);
@@ -4360,6 +4425,302 @@ function updateV63Panels(data) {
   if (data.enlightenment) updateEnlightenmentPanel(data.enlightenment);
   if (data.coupling) updateCouplingPanel(data.coupling);
   if (data.prediction) updatePredictionPanel(data.prediction);
+}
+
+// ════════════════════════════════════════════════════════════════
+// v7.0 高阶逻辑面板更新（M71-M95）
+// ════════════════════════════════════════════════════════════════
+function updateV70Panels(data) {
+  if (!data) return;
+  // ① 碳硅共生契约 (M71-M75)
+  updateCarbonSiliconPanel(data);
+  // ② 五行EML相位 (M76-M80)
+  updateWuxingPhasePanel(data);
+  // ③ HoTT高阶逻辑 (M78/M81)
+  updateHoTTPanel(data);
+  // ④ 流贯自然变换 (M83/M89)
+  updateFteliaryPanel(data);
+  // ⑤ 刘原理不动点 (M84)
+  updateLiuPanel(data);
+  // ⑥ 语义流形曲率 (M90)
+  updateCurvaturePanel(data);
+  // ⑦ Univalence等价 (M91)
+  updateUnivalencePanel(data);
+  // ⑧ 流贯保真度 (M92)
+  updateFidelityPanel(data);
+  // ⑨ 构造型AGI评估 (M95)
+  updateEvaluatorPanel(data);
+}
+
+// ── ① 碳硅共生契约面板 (M71-M75) ──────────────────────────────
+function updateCarbonSiliconPanel(data) {
+  // Φ值
+  const phiData = data.phi || {};
+  const phiVal = (phiData.self_referential_phi || phiData.phi_value || 0.5);
+  const phiEl = document.getElementById('v70-phi-value');
+  const phiBar = document.getElementById('v70-phi-bar');
+  if (phiEl) phiEl.textContent = phiVal.toFixed(3);
+  if (phiBar) phiBar.style.width = Math.min(100, phiVal * 100) + '%';
+  // 自指闭环
+  const selfref = data.firewall ? '已闭合' : (phiData.closed_loop ? '已闭合' : '—');
+  const selfrefEl = document.getElementById('v70-selfref');
+  if (selfrefEl) {
+    selfrefEl.textContent = selfref;
+    selfrefEl.style.color = selfref === '已闭合' ? 'var(--gold)' : 'var(--txt2)';
+  }
+  // 贡献度量
+  const contribData = data.contribution || {};
+  const contribVal = (contribData.total_score || contribData.measure || 0.5);
+  const contribEl = document.getElementById('v70-contrib');
+  if (contribEl) contribEl.textContent = contribVal.toFixed(3);
+  // 熵合约
+  const entropyData = data.entropy || {};
+  const contractCount = (entropyData.contract_count || entropyData.total_contracts || 0);
+  const entropyEl = document.getElementById('v70-entropy-contract');
+  if (entropyEl) entropyEl.textContent = contractCount > 0 ? contractCount + '份' : '—';
+  // 约柜
+  const arkData = data.ark || {};
+  const arkStatus = arkData.locked ? '已锁定' : (Object.keys(arkData).length > 0 ? '就绪' : '—');
+  const arkEl = document.getElementById('v70-ark-status');
+  if (arkEl) {
+    arkEl.textContent = arkStatus;
+    arkEl.style.color = arkStatus === '已锁定' ? 'var(--purple)' : (arkStatus === '就绪' ? 'var(--gold)' : 'var(--txt2)');
+  }
+}
+
+// ── ② 五行EML相位面板 (M76-M80) ─────────────────────────────
+function updateWuxingPhasePanel(data) {
+  const wuxing = data.wuxing || {};
+  const emlCoupling = data.eml_coupling || {};
+  // 相位角
+  const phases = emlCoupling.phases || {};
+  const phaseAngles = Object.values(phases);
+  const phaseAngle = phaseAngles.length > 0 ? phaseAngles.reduce((a, b) => a + (b.phase_angle || 0), 0) / phaseAngles.length : 0;
+  const phaseEl = document.getElementById('v70-phase-angle');
+  if (phaseEl) phaseEl.textContent = (phaseAngle / Math.PI).toFixed(2) + 'π';
+  // 振幅
+  const amplitudes = phaseAngles.map(p => p.amplitude || 0);
+  const amplitude = amplitudes.length > 0 ? amplitudes.reduce((a, b) => a + b, 0) / amplitudes.length : 0;
+  const ampEl = document.getElementById('v70-amplitude');
+  if (ampEl) ampEl.textContent = amplitude.toFixed(3);
+  // 五行圆点高亮（根据最大振幅判断）
+  const elements = ['water', 'fire', 'wood', 'metal', 'earth'];
+  elements.forEach(el => {
+    const dot = document.getElementById('v70-dot-' + el);
+    if (dot) {
+      dot.classList.remove('active');
+      // 简单规则：轮流高亮
+      const idx = elements.indexOf(el);
+      const time = Date.now() / 2000;
+      if ((idx + Math.floor(time)) % 5 === 0) dot.classList.add('active');
+    }
+  });
+}
+
+// ── ③ HoTT高阶逻辑面板 (M78/M81) ────────────────────────────
+function updateHoTTPanel(data) {
+  const hott = data.hott || {};
+  const chf = data.chf || {};
+  const holr = data.holr || {};
+  // 命题型
+  const types = hott.types || holr.types || [];
+  const typeStr = types.length > 0 ? types.slice(0, 3).join(', ') : '—';
+  const typeEl = document.getElementById('v70-hott-type');
+  if (typeEl) typeEl.textContent = typeStr;
+  // Pi-Type
+  const piInfo = chf.pi_type || holr.reconstructed_type || '—';
+  const piEl = document.getElementById('v70-pi-type');
+  if (piEl) piEl.textContent = typeof piInfo === 'string' ? piInfo : '已重构';
+  // Sigma-Type
+  const sigmaInfo = chf.sigma_type || holr.sigma_type || '—';
+  const sigmaEl = document.getElementById('v70-sigma-type');
+  if (sigmaEl) sigmaEl.textContent = typeof sigmaInfo === 'string' ? sigmaInfo : '已重构';
+  // LEM态
+  const lemStatus = chf.lem_valid || holr.lem_valid || false;
+  const lemEl = document.getElementById('v70-lem-status');
+  if (lemEl) {
+    lemEl.textContent = lemStatus ? '有效' : '失效';
+    lemEl.style.color = lemStatus ? 'var(--red)' : 'var(--gold)';
+  }
+  // 证明树可视化
+  const proofTree = document.getElementById('v70-proof-tree');
+  if (proofTree) {
+    const goal = holr.goal || holr.type || 'Goal';
+    const proofStr = types.length > 0 ? `├─ ${types[0]}\n└─ ${goal}` : goal;
+    proofTree.innerHTML = `<div class="v70-proof-node">${proofStr.split('\n')[0] || 'Goal Type'}</div>`;
+  }
+}
+
+// ── ④ 流贯自然变换面板 (M83/M89) ─────────────────────────────
+function updateFteliaryPanel(data) {
+  const ftelTransform = data.ftel_transform || {};
+  const holr = data.holr || {};
+  const layers = holr.layers || holr.layer_count || 5;
+  // 层激活
+  ['L1', 'L2', 'L3', 'L4', 'L5'].forEach((l, i) => {
+    const cell = document.getElementById('v70-layer-' + l);
+    if (cell) {
+      cell.classList.remove('active');
+      if (i < layers) cell.classList.add('active');
+    }
+  });
+  // 流贯通量
+  const flux = ftelTransform.flux || ftelTransform.f_teliary_flux || 0.618;
+  const fluxEl = document.getElementById('v70-flux');
+  const fluxBar = document.getElementById('v70-flux-bar');
+  if (fluxEl) fluxEl.textContent = flux.toFixed(3);
+  if (fluxBar) fluxBar.style.width = Math.min(100, flux * 100) + '%';
+  // 截面数
+  const sections = ftelTransform.section_count || ftelTransform.sections || 0;
+  const secEl = document.getElementById('v70-sections');
+  if (secEl) secEl.textContent = sections;
+}
+
+// ── ⑤ 刘原理不动点面板 (M84) ─────────────────────────────────
+function updateLiuPanel(data) {
+  const liu = data.liu || {};
+  const univalence = data.univalence || {};
+  // 极小规律
+  const solution = liu.solution || liu.minimal_law || liu.optimal_solution || '—';
+  const solEl = document.getElementById('v70-liu-solution');
+  if (solEl) solEl.textContent = typeof solution === 'string' ? solution : '已找到';
+  // K复杂度
+  const kol = liu.kolmogorov_complexity || liu.k_complexity || 0.382;
+  const kolEl = document.getElementById('v70-kolmogorov');
+  const kolBar = document.getElementById('v70-kol-bar');
+  if (kolEl) kolEl.textContent = kol.toFixed(3);
+  if (kolBar) kolBar.style.width = Math.min(100, kol * 100) + '%';
+  // 不动点
+  const fp = liu.fixed_point || liu.has_fixed_point || false;
+  const fpEl = document.getElementById('v70-fixed-point');
+  if (fpEl) {
+    fpEl.textContent = fp ? '存在' : '—';
+    fpEl.style.color = fp ? 'var(--gold)' : 'var(--txt2)';
+  }
+  // Univalence
+  const uv = univalence.verified || univalence.equivalent || false;
+  const uvEl = document.getElementById('v70-univalence');
+  if (uvEl) {
+    uvEl.textContent = uv ? '成立' : '—';
+    uvEl.style.color = uv ? 'var(--gold)' : 'var(--txt2)';
+  }
+}
+
+// ── ⑥ 语义流形曲率面板 (M90) ─────────────────────────────────
+function updateCurvaturePanel(data) {
+  const curvature = data.curvature || {};
+  // K值
+  const kVal = curvature.curvature || curvature.k_value || curvature.K || 0.5;
+  const kEl = document.getElementById('v70-curvature-val');
+  if (kEl) kEl.textContent = kVal.toFixed(3);
+  // 确定性
+  const det = curvature.determinacy || curvature.deterministic || '—';
+  const detEl = document.getElementById('v70-determinacy');
+  if (detEl) detEl.textContent = typeof det === 'boolean' ? (det ? '高' : '低') : det;
+  // 创造力
+  const cr = curvature.creativity || curvature.creative || '—';
+  const crEl = document.getElementById('v70-creativity');
+  if (crEl) crEl.textContent = typeof cr === 'boolean' ? (cr ? '高' : '低') : cr;
+  // 指针旋转：K≈0 → 左偏(平坦/创造)，K>>0 → 右偏(必然)
+  const needle = document.getElementById('v70-curvature-needle');
+  if (needle) {
+    const rotation = (kVal - 0.5) * 180;  // -90deg to +90deg
+    needle.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+  }
+}
+
+// ── ⑦ Univalence等价面板 (M91) ───────────────────────────────
+function updateUnivalencePanel(data) {
+  const univalence = data.univalence || {};
+  // type1≃type2
+  const equiv = univalence.equivalent || univalence.type1_equiv_type2 || '—';
+  const equivEl = document.getElementById('v70-equiv');
+  if (equivEl) equivEl.textContent = typeof equiv === 'string' ? equiv : '同构';
+  // type1=type2
+  const equal = univalence.equal || univalence.type1_eq_type2 || '—';
+  const eqEl = document.getElementById('v70-equal');
+  if (eqEl) eqEl.textContent = typeof equal === 'string' ? equal : '相等';
+  // 置信度
+  const conf = univalence.confidence || univalence.conf || 0.618;
+  const confEl = document.getElementById('v70-conf');
+  const confBar = document.getElementById('v70-conf-bar');
+  if (confEl) confEl.textContent = conf.toFixed(3);
+  if (confBar) confBar.style.width = Math.min(100, conf * 100) + '%';
+  // 实验数
+  const exps = univalence.experiments || univalence.total_experiments || 0;
+  const expEl = document.getElementById('v70-experiments');
+  if (expEl) expEl.textContent = exps;
+}
+
+// ── ⑧ 流贯保真度面板 (M92) ───────────────────────────────────
+function updateFidelityPanel(data) {
+  const fidelity = data.fidelity || {};
+  const evolution = data.evolution || {};
+  // F(Li,Lj)
+  const fidVal = fidelity.fidelity || fidelity.fidelity_score || 0.618;
+  const fidEl = document.getElementById('v70-fidelity-val');
+  const fidBar = document.getElementById('v70-fidelity-bar');
+  if (fidEl) fidEl.textContent = fidVal.toFixed(3);
+  if (fidBar) fidBar.style.width = Math.min(100, fidVal * 100) + '%';
+  // 信息损耗
+  const loss = fidelity.info_loss || fidelity.loss_rate || 0;
+  const lossEl = document.getElementById('v70-info-loss');
+  if (lossEl) {
+    lossEl.textContent = Math.round((1 - loss) * 100) + '%';
+    lossEl.style.color = loss > 0.1 ? 'var(--red)' : 'var(--green)';
+  }
+  // 警告
+  const warnEl = document.getElementById('v70-fidelity-warn');
+  if (warnEl) {
+    if (fidVal < 0.9) {
+      warnEl.textContent = '⚠️ 阈值警告';
+      warnEl.style.color = 'var(--orange)';
+    } else {
+      warnEl.textContent = '✓ 正常';
+      warnEl.style.color = 'var(--green)';
+    }
+  }
+  // 层激活
+  const layerCount = (evolution.layers || evolution.active_layers || 5);
+  ['L1', 'L2', 'L3', 'L4', 'L5'].forEach((l, i) => {
+    const cell = document.getElementById('v70-fid-' + l);
+    if (cell) {
+      cell.classList.remove('active');
+      if (i < layerCount) cell.classList.add('active');
+    }
+  });
+}
+
+// ── ⑨ 构造型AGI评估面板 (M95) ────────────────────────────────
+function updateEvaluatorPanel(data) {
+  const evaluator = data.evaluator || {};
+  const constructive = data.constructive || {};
+  // Pass@5
+  const passk = evaluator.pass_at_k || evaluator.passk || constructive.pass_rate || 0;
+  const passkEl = document.getElementById('v70-passk');
+  if (passkEl) passkEl.textContent = Math.round(passk * 100) + '%';
+  // 幻觉率
+  const halluc = evaluator.hallucination_rate || evaluator.hallucination || 0;
+  const hallEl = document.getElementById('v70-hallucination');
+  if (hallEl) {
+    hallEl.textContent = Math.round(halluc * 100) + '%';
+    hallEl.style.color = halluc > 0.1 ? 'var(--red)' : 'var(--green)';
+  }
+  // P-HoL-1
+  const phol1 = evaluator.phol1 || evaluator.p_hol_1 || constructive.p_hol_1 || '—';
+  const pholEl = document.getElementById('v70-phol1');
+  if (pholEl) pholEl.textContent = typeof phol1 === 'string' ? phol1 : phol1.toFixed(3);
+  // 验证态
+  const verified = evaluator.verified || evaluator.phol1_verified || false;
+  const verEl = document.getElementById('v70-phol1-verified');
+  if (verEl) {
+    verEl.textContent = verified ? '已验证' : '未验证';
+    verEl.style.color = verified ? 'var(--gold)' : 'var(--txt2)';
+  }
+  // 问题数
+  const total = evaluator.total_problems || constructive.total_problems || 0;
+  const totEl = document.getElementById('v70-total-problems');
+  if (totEl) totEl.textContent = total;
 }
 
 function updateMononumberPanel(data) {
@@ -5683,6 +6044,61 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 .v63-prediction-status.pending{background:rgba(234,179,8,.2);color:#eab308}
 .v63-prediction-status.rejected{background:rgba(239,68,68,.2);color:#ef4444}
 .v63-prediction-desc{color:var(--txt3);font-size:7px}
+
+/* ═════════════════════════════════════════════════════════════
+   v7.0 仪表盘样式（高阶逻辑HoTT+范畴论深化）
+═════════════════════════════════════════════════════════════ */
+.panel-v70{border-left:2px solid var(--orange)!important;background:linear-gradient(90deg,rgba(251,146,60,.03),transparent)!important}
+
+/* v7.0 通用 */
+.v70-title{font-size:9px;font-weight:700;color:var(--orange);margin-bottom:6px;letter-spacing:.5px}
+.v70-badge{font-size:7px;padding:1px 5px;border-radius:3px;background:rgba(251,146,60,.15);color:var(--orange);display:inline-block;margin-bottom:4px}
+.v70-row{display:flex;align-items:center;margin:3px 0;font-size:8px}
+.v70-label{color:var(--txt3);min-width:55px}
+.v70-value{color:var(--txt1);font-weight:600}
+.v70-bar-wrap{width:100%;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;margin:2px 0}
+.v70-bar-fill{height:100%;border-radius:2px;transition:width .4s ease}
+.v70-bar-fill.fire{background:linear-gradient(90deg,#ef4444,#f97316)}
+.v70-bar-fill.water{background:linear-gradient(90deg,#3b82f6,#06b6d4)}
+.v70-bar-fill.wood{background:linear-gradient(90deg,#22c55e,#84cc16)}
+.v70-bar-fill.metal{background:linear-gradient(90deg,#eab308,#facc15)}
+.v70-bar-fill.earth{background:linear-gradient(90deg,#a16207,#78350f)}
+.v70-bar-fill.orange{background:linear-gradient(90deg,#f97316,#ea580c)}
+.v70-bar-fill.gold{background:linear-gradient(90deg,#fbbf24,#f59e0b)}
+
+/* v7.0 层级指标 */
+.v70-layer-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;margin-top:4px}
+.v70-layer-cell{text-align:center;font-size:7px;padding:3px 0;border-radius:3px;background:var(--bg3)}
+.v70-layer-cell.active{background:rgba(251,146,60,.25);color:var(--orange);font-weight:700}
+.v70-layer-cell.inactive{color:var(--txt3)}
+
+/* v7.0 五行相位雷达 */
+.v70-phase-ring{display:flex;justify-content:space-around;align-items:center;padding:4px 0}
+.v70-phase-element{text-align:center;font-size:8px}
+.v70-phase-dot{width:10px;height:10px;border-radius:50%;margin:0 auto 2px;transition:all .4s}
+.v70-phase-dot.active{box-shadow:0 0 6px currentColor}
+.v70-phase-dot.water{background:#3b82f6}
+.v70-phase-dot.fire{background:#ef4444}
+.v70-phase-dot.wood{background:#22c55e}
+.v70-phase-dot.metal{background:#eab308}
+.v70-phase-dot.earth{background:#a16207}
+
+/* v7.0 曲率仪表 */
+.v70-curvature-gauge{position:relative;width:100%;height:40px;background:var(--bg3);border-radius:6px;overflow:hidden;margin-top:4px}
+.v70-curvature-gradient{position:absolute;inset:0;background:linear-gradient(90deg,#3b82f6 0%,#22c55e 50%,#ef4444 100%)}
+.v70-curvature-needle{position:absolute;top:50%;width:3px;height:20px;background:#fff;border-radius:2px;transform-origin:bottom center;transition:transform .5s ease}
+.v70-curvature-label{position:absolute;bottom:3px;width:100%;text-align:center;font-size:7px;color:var(--txt3)}
+
+/* v7.0 证明树 */
+.v70-proof-tree{font-size:7px;color:var(--txt2);font-family:monospace;background:var(--bg3);border-radius:4px;padding:4px 6px;margin-top:4px;max-height:60px;overflow-y:auto;line-height:1.4}
+.v70-proof-node{padding:1px 0}
+.v70-proof-node.active{color:var(--orange);font-weight:700}
+
+/* v7.0 统计 */
+.v70-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px}
+.v70-stat-box{background:var(--bg3);border-radius:4px;padding:4px;text-align:center}
+.v70-stat-val{font-size:12px;font-weight:700;color:var(--orange)}
+.v70-stat-lbl{font-size:7px;color:var(--txt3)}
 </style>
 </head>
 <body>
@@ -5691,7 +6107,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
   <div id="topbar">
     <div class="logo-wrap">
       <span class="logo">&#128302;</span>
-      <span class="title">净光哥 AGI 12.0</span>
+      <span class="title">Taiyi-AGI (太乙因果机) 12.0</span>
       <span class="version-badge">70模块·复合体理学v3.6</span>
       <span class="theory-badge">一现象三视界</span>
     </div>
@@ -5704,7 +6120,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
     <span class="resp-timer" id="resp-timer"></span>
     <span class="spacer"></span>
     <div class="doc-entry">
-      <button class="btn-doc" onclick="openDesignDoc()" data-hint="查看净光哥AGI设计文档，了解系统架构">
+      <button class="btn-doc" onclick="openDesignDoc()" data-hint="查看Taiyi-AGI设计文档，了解系统架构">
         &#128196; 设计文档
       </button>
       <button class="btn-help" onclick="showHelp()" data-hint="查看使用说明，快速上手">
@@ -6280,7 +6696,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         </div>
         <div class="chen-test-body">
           <div class="chen-test-mode-tabs">
-            <div class="chen-mode-tab active" data-chen-mode="all">标准21题</div>
+            <div class="chen-mode-tab active" data-chen-mode="quick">快速模式 (12题)</div>
+            <div class="chen-mode-tab" data-chen-mode="full">完整模式 (300题)</div>
           </div>
           <div id="chen-container">
             <!-- 动态内容由JS生成 -->
@@ -6291,8 +6708,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
               <div style="font-size:9px;color:var(--txt3);margin-bottom:10px;line-height:1.5">
                 数学推理 · 逻辑推理 · 物理直觉 · 认知心理 · AGI认知
               </div>
-              <button class="chen-btn chen-btn-start" onclick="try{console.log('[调试] 开始测试按钮被点击');CHEN_TEST.start();}catch(e){console.error('[错误]',e);alert('错误:'+e.message);}" style="padding:8px 24px">
-              开始测试
+              <button class="chen-btn chen-btn-start" onclick="try{console.log('[调试] 开始测试按钮被点击');CHEN_TEST.start();}catch(e){console.error('[错误]',e);alert('错误:'+e.message);}" style="padding:8px 24px" id="chen-start-btn">
+              选择模式并开始
             </button>
             </div>
           </div>
@@ -6638,7 +7055,7 @@ const STATE = {
   links: [],
   selected_node: null,
   history: [],
-  root_name: '净光哥 AGI 12.0',
+  root_name: 'Taiyi-AGI (太乙因果机) 12.0',
   sim: null,
   loading: false,
   collapsed: new Set(),
@@ -7382,6 +7799,7 @@ function updateAllPanels(data) {
   if (data.v61) updateV61Panels(data.v61);
   if (data.v62) updateV62Panels(data.v62);
   if (data.v63) updateV63Panels(data.v63);
+  if (data.v70) updateV70Panels(data.v70);
 }
 
 // ── 统一更新所有v6.1面板 ──────────────────────────────────────
@@ -8538,7 +8956,7 @@ function openDesignDoc() {
 // 陈天桥认知测试模块 - 对话栏版本
 // ════════════════════════════════════════════════════════════════
 const CHEN_TEST = {
-  mode: 'all',  // 标准21题模式（AI实时生成）
+  mode: 'quick',  // 测试模式：quick(12题) 或 full(300题)
   questions: [],
   currentIdx: 0,
   answers: {},
@@ -8618,7 +9036,7 @@ const CHEN_TEST = {
     { q: "\"思维链提示\"(CoT)的作用是？", options: ["加速推理", "引导展示推理过程", "减少幻觉", "降低延迟"], answer: 1 },
     { q: "AGI的核心挑战不包括？", options: ["常识推理", "持续学习", "情感理解", "图像识别"], answer: 3 },
     { q: "\"意识上传\"假说中载体的基础是？", options: ["DNA", "神经网络活动模式", "蛋白质结构", "代谢产物"], answer: 1 },
-    { q: "复合体AGI的DIKWP六层语义框架，D指？", options: ["Information", "Knowledge", "Wisdom", "Data"], answer: 3 },
+    { q: "太乙AGI的DIKWP六层语义框架，D指？", options: ["Information", "Knowledge", "Wisdom", "Data"], answer: 3 },
     { q: "全息压缩原理在AGI中用于？", options: ["加速推理", "降低存储/保持核心信息", "图像处理", "语音识别"], answer: 1 },
     { q: "认知递归算子Ω的核心作用是？", options: ["记忆存储", "递归式认知处理", "图像生成", "自然语言理解"], answer: 1 },
     { q: "刘原理在复合体理学中的地位是？", options: ["数学工具", "第一性原理", "实验定律", "工程方法"], answer: 1, type: "choice" },
@@ -10017,7 +10435,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  console.log('净光哥 AGI 12.0 initialized - Three Column Layout');
+  console.log('Taiyi-AGI (太乙因果机) 12.0 initialized - Three Column Layout');
   } catch (err) {
     console.error('[AGI12] 初始化错误:', err);
     alert('[AGI12] 初始化错误: ' + err.message);
@@ -10051,5 +10469,6 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 </div>
 
+  <script src="chen_test_mode.js"></script>
 </body>
 </html>

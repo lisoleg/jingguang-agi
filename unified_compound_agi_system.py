@@ -1,6 +1,6 @@
 """
-统一复合体AGI系统 - 简化实用版
-集成10个核心理论模块，构建完整的复合体AGI架构
+统一太乙AGI系统 - 简化实用版
+集成10个核心理论模块，构建完整的太乙AGI架构
 
 模块清单：
 1. 天行力引擎 (tianxing_engine.py) - 论文13
@@ -23,7 +23,7 @@ from typing import Dict, List, Any, Optional
 
 class UnifiedCompoundAGISystem:
     """
-    统一复合体AGI系统（简化实用版）
+    统一太乙AGI系统（简化实用版）
     
     将8个核心理论模块集成为完整的AGI架构
     """
@@ -51,7 +51,7 @@ class UnifiedCompoundAGISystem:
         """初始化所有8个核心模块"""
         
         print(f"\n{'='*80}")
-        print(f"初始化统一复合体AGI系统: {self.system_name}")
+        print(f"初始化统一太乙AGI系统: {self.system_name}")
         print(f"{'='*80}\n")
         
         # 1. 天行力引擎（论文13）
@@ -363,7 +363,7 @@ class UnifiedCompoundAGISystem:
         
         report = f"""
 {'='*80}
-统一复合体AGI系统报告
+统一太乙AGI系统报告
 {'='*80}
 
 系统名称: {self.system_name}
@@ -492,7 +492,7 @@ def main():
     """主函数 - 演示统一系统的使用"""
     
     print("="*80)
-    print("统一复合体AGI系统 - 完整演示")
+    print("统一太乙AGI系统 - 完整演示")
     print("="*80 + "\n")
     
     # 创建统一系统

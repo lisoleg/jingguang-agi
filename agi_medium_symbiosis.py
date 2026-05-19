@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-复合体AGI介质共生模块 (AGI Medium Symbiosis Module)
+太乙AGI介质共生模块 (AGI Medium Symbiosis Module)
 整合介质共振、九卦算法、四象识别
 
 基于文档启发:
@@ -72,7 +72,7 @@ class AGIAnalysisResult:
 
 class AGIMediumSymbiosis:
     """
-    复合体AGI介质共生系统
+    太乙AGI介质共生系统
 
     整合三大核心能力:
     1. 介质共振 - 超越统计的全息认知
@@ -464,7 +464,7 @@ def quick_analyze(query: str, context: Dict = None) -> Dict:
 # 测试代码
 if __name__ == '__main__':
     print("=" * 60)
-    print("复合体AGI介质共生系统测试")
+    print("太乙AGI介质共生系统测试")
     print("=" * 60)
 
     system = AGIMediumSymbiosis()

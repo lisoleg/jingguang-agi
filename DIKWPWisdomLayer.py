@@ -3,7 +3,7 @@
 模块37：DIKWP智慧层（W层）
 风险评估 + 刘原理作用量极值判断
 
-来源：复合体AGI 6.0升级方案（基于12文档深度分析）
+来源：太乙AGI 6.0升级方案（基于12文档深度分析）
 作者：基于高见远指令实现
 日期：2026-05-13
 """
@@ -522,7 +522,7 @@ if __name__ == "__main__":
     
     # 4. 行动方案生成
     print(f"\n✓ 行动方案生成:")
-    plan = wisdom_layer.get_action_plan("分析复合体AGI架构并生成报告")
+    plan = wisdom_layer.get_action_plan("分析太乙AGI架构并生成报告")
     print(f"  目标: {plan['goal']}")
     print(f"  步骤数: {len(plan['steps'])}")
     print(f"  总评分: {plan['total_score']:.2f}")

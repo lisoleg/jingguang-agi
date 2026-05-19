@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 模块42：DIKWPGovernanceLayer —— 六层统一入口
-复合体AGI 6.0的核心架构
+太乙AGI 6.0的核心架构
 
-来源：复合体AGI 6.0升级方案（基于12文档深度分析）
+来源：太乙AGI 6.0升级方案（基于12文档深度分析）
 作者：基于高见远指令实现
 日期：2026-05-13
 
-这是复合体AGI 6.0的核心架构改变：
+这是太乙AGI 6.0的核心架构改变：
 所有推理输出不再是裸字符串，而是DIKWP节点：
 {content, D来源, I关系, K机制, W风险, P目的, R可信度}
 """
@@ -139,7 +139,7 @@ class DIKWPGovernanceLayer:
         受DIKWP治理的输出包装器
         
         每个输出都附带完整的DIKWP元数据。
-        这是复合体AGI 6.0的核心架构改变。
+        这是太乙AGI 6.0的核心架构改变。
         
         Args:
             content: 输出内容
@@ -611,7 +611,7 @@ if __name__ == "__main__":
     print(f"\n✓ 设置会话:")
     governance.set_session(
         session_id="test_session",
-        purpose="复合体AGI 6.0升级开发",
+        purpose="太乙AGI 6.0升级开发",
         scopes=["read", "write", "execute"]
     )
     print(f"  会话已设置: test_session")
@@ -621,7 +621,7 @@ if __name__ == "__main__":
     
     outputs = [
         governance.governed_output(
-            content="复合体AGI 6.0基于DIKWP六层语义治理框架实现升级",
+            content="太乙AGI 6.0基于DIKWP六层语义治理框架实现升级",
             session_id="test_session",
             source="analysis",
             action_scope="read",

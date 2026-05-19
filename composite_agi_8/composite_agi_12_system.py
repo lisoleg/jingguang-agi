@@ -1,5 +1,5 @@
 """
-复合体AGI 12.0 - IAWW统一场论版
+太乙AGI 12.0 - IAWW统一场论版
 ====================================
 
 整合所有24个核心模块（从11.0的18模块升级到24模块）：
@@ -46,7 +46,7 @@
   - 五行耦合矩阵
   - 介质锚定反幻象
 
-Author: 复合体AGI研究团队
+Author: 太乙AGI研究团队
 Version: 12.0
 """
 
@@ -110,7 +110,7 @@ from module23_medium_anchor_validator import (
 
 class CompositeAGI12System:
     """
-    复合体AGI 12.0 - IAWW统一场论版
+    太乙AGI 12.0 - IAWW统一场论版
 
     架构升级：
     - 8.0：认知基础层（IQ/EQ/CQ + 卐氏数模 + 太乙 + CTFP + MVCF）
@@ -145,7 +145,7 @@ class CompositeAGI12System:
         self.version = "12.0"
 
         print("=" * 70)
-        print("复合体AGI 12.0 - IAWW统一场论版（24模块版）")
+        print("太乙AGI 12.0 - IAWW统一场论版（24模块版）")
         print("=" * 70)
 
         # ================================================
@@ -277,7 +277,7 @@ class CompositeAGI12System:
         print(f"     ✅ Goal目标引擎就绪（Goal导向推理）")
 
         print("\n" + "=" * 70)
-        print("✅ 复合体AGI 12.0系统初始化完成！（24模块）")
+        print("✅ 太乙AGI 12.0系统初始化完成！（24模块）")
         print("=" * 70)
         print(f"\n  系统维度: {system_dim}")
         print(f"  核心模块数: 24（8.0九 + 9.0三 + 10.0三 + 11.0三 + 12.0六）")
@@ -609,9 +609,9 @@ class CompositeAGI12System:
 
 
 def demonstrate_agi12():
-    """复合体AGI 12.0完整演示"""
+    """太乙AGI 12.0完整演示"""
     print("\n" + "=" * 70)
-    print("复合体AGI 12.0 - IAWW统一场论版 完整演示")
+    print("太乙AGI 12.0 - IAWW统一场论版 完整演示")
     print("=" * 70)
     
     # 初始化系统
@@ -622,7 +622,7 @@ def demonstrate_agi12():
     print("【演示1: Goal目标模式】")
     print("-" * 50)
     
-    goal_result = agi.goal_mode("分析复合体AGI 12.0的架构创新")
+    goal_result = agi.goal_mode("分析太乙AGI 12.0的架构创新")
     
     print(f"\n  综合得分: {goal_result['final_score']:.4f}")
     print(f"  锚定验证: {'✅' if goal_result['anchor_validation']['consistency_verified'] else '❌'}")
@@ -665,7 +665,7 @@ def demonstrate_agi12():
     print(f"  孤子数: {status['soliton_count']}")
     
     print("\n" + "=" * 70)
-    print("✅ 复合体AGI 12.0演示完成！")
+    print("✅ 太乙AGI 12.0演示完成！")
     print("=" * 70)
     print("""
     12.0版本核心创新（基于IAWW统一场论）：

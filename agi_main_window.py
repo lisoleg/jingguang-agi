@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-复合体AGI 6.0 - 主窗口集成
+太乙AGI 6.0 - 主窗口集成
 Composite AGI 6.0 Main Window Integration
 
 整合所有核心模块：
@@ -78,7 +78,7 @@ class AGIInteractionContext:
 
 class CompositeAGI6:
     """
-    复合体AGI 6.0 核心类
+    太乙AGI 6.0 核心类
     
     整合所有核心模块，实现革命性的人机交互体验：
     
@@ -91,7 +91,7 @@ class CompositeAGI6:
     
     def __init__(self, mbti_type: str = "INTJ"):
         """
-        初始化复合体AGI 6.0
+        初始化太乙AGI 6.0
         
         Args:
             mbti_type: 虚拟人格MBTI类型
@@ -437,7 +437,7 @@ class CompositeAGI6:
     def print_status(self):
         """打印状态"""
         print("\n" + "="*60)
-        print("复合体AGI 6.0 状态报告")
+        print("太乙AGI 6.0 状态报告")
         print("="*60)
         
         # 会话信息
@@ -512,7 +512,7 @@ def main():
         try:
             from agi_pygame_gui import run_gui_mode
             print("\n" + "="*60)
-            print("复合体AGI 6.0 图形界面模式")
+            print("太乙AGI 6.0 图形界面模式")
             print("基于复合体理学 · 意图流形 · 全息投影")
             print("="*60)
 
@@ -526,7 +526,7 @@ def main():
 
     # 控制台演示模式
     print("\n" + "="*60)
-    print("复合体AGI 6.0 革命性人机交互系统")
+    print("太乙AGI 6.0 革命性人机交互系统")
     print("基于复合体理学 · 一现象三视界诠释法")
     print("="*60)
 

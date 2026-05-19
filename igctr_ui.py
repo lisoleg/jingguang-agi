@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 IGCTR v2.3 图形用户界面
-复合体AGI系统的现代化Tkinter界面
+太乙AGI系统的现代化Tkinter界面
 
 功能特性：
 - Tab分页（运行/日志/可视化/文档）
@@ -134,7 +134,7 @@ class IGCTRGui:
     
     def __init__(self, root: tk.Tk):
         self.root = root
-        self.root.title("IGCTR v2.3 - 复合体AGI系统")
+        self.root.title("IGCTR v2.3 - 太乙AGI系统")
         self.root.geometry("1200x800")
         self.root.minsize(900, 600)
         
@@ -358,7 +358,7 @@ class IGCTRGui:
         self.status_indicators = {}
         modules = [
             ("IGCTR框架", "igctr"),
-            ("复合体AGI", "composite"),
+            ("太乙AGI", "composite"),
             ("三元共振", "resonance"),
             ("可审计性", "audit")
         ]
@@ -698,17 +698,17 @@ class IGCTRGui:
             self.log_manager.log(f"IGCTR框架不可用: {IGCTR_IMPORT_ERROR}", "WARNING")
             self._update_status("igctr", False)
         
-        # 初始化复合体AGI
+        # 初始化太乙AGI
         if COMPOSITE_AGI_AVAILABLE:
             try:
                 self.composite_agi = CompositeAGI_V2()
-                self.log_manager.log("复合体AGI系统初始化成功", "SUCCESS")
+                self.log_manager.log("太乙AGI系统初始化成功", "SUCCESS")
                 self._update_status("composite", True)
             except Exception as e:
-                self.log_manager.log(f"复合体AGI初始化失败: {e}", "WARNING")
+                self.log_manager.log(f"太乙AGI初始化失败: {e}", "WARNING")
                 self._update_status("composite", False)
         else:
-            self.log_manager.log(f"复合体AGI不可用: {COMPOSITE_AGI_IMPORT_ERROR}", "WARNING")
+            self.log_manager.log(f"太乙AGI不可用: {COMPOSITE_AGI_IMPORT_ERROR}", "WARNING")
             self._update_status("composite", False)
         
         self.log_manager.log("初始化完成，系统就绪", "SUCCESS")
@@ -814,20 +814,20 @@ class IGCTRGui:
                 
                 self.log_manager.log("IGCTR v2.3处理完成", "SUCCESS")
             
-            # 使用复合体AGI处理
+            # 使用太乙AGI处理
             if self.composite_agi:
                 try:
                     agi_result = self.composite_agi.process_query(query)
                     synthesized = agi_result.get('synthesized_answer', '')
                     
                     result_text += "\n" + "=" * 60 + "\n"
-                    result_text += "复合体AGI综合分析\n"
+                    result_text += "太乙AGI综合分析\n"
                     result_text += "=" * 60 + "\n\n"
                     result_text += synthesized
                     
-                    self.log_manager.log("复合体AGI处理完成", "SUCCESS")
+                    self.log_manager.log("太乙AGI处理完成", "SUCCESS")
                 except Exception as e:
-                    self.log_manager.log(f"复合体AGI处理异常: {e}", "ERROR")
+                    self.log_manager.log(f"太乙AGI处理异常: {e}", "ERROR")
             
             # 更新结果显示
             self.result_text.configure(state=tk.NORMAL)

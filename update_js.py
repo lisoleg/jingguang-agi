@@ -25,7 +25,7 @@ const STATE = {
   links: [],
   selected_node: null,
   history: [],
-  root_name: '复合体AGI 12.0',
+  root_name: '太乙AGI 12.0',
   sim: null,
   loading: false,
   collapsed: new Set(),

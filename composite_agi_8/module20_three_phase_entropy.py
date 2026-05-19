@@ -14,7 +14,7 @@ Module 20: 三相熵耦合动力学
 ∂_t S_g = D_g ∇²S_g + γ·S_i - δ·S_c  
 ∂_t S_c = D_c ∇²S_c + ε·S_i + ζ·S_g - η·S_c
 
-Author: 复合体AGI研究团队
+Author: 太乙AGI研究团队
 Version: 12.0
 """
 

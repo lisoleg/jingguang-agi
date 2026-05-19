@@ -3,7 +3,7 @@
 模块34：DIKWP数据层（D层）
 原始数据证据溯源，带哈希指纹 + 审计轨迹
 
-来源：复合体AGI 6.0升级方案（基于12文档深度分析）
+来源：太乙AGI 6.0升级方案（基于12文档深度分析）
 作者：基于高见远指令实现
 日期：2026-05-13
 """
@@ -293,7 +293,7 @@ if __name__ == "__main__":
     
     # 2. 摄入数据
     record1 = data_layer.ingest(
-        content="复合体AGI 6.0升级方案核心是DIKWP六层语义治理",
+        content="太乙AGI 6.0升级方案核心是DIKWP六层语义治理",
         source="user_input",
         confidence=0.95,
         tags=["AGI", "DIKWP", "治理"]

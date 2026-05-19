@@ -3,7 +3,7 @@
 模块39：DIKWP可靠性层（R层）
 ProofLedger证明账本 + BFT容错 + Lean证明接口
 
-来源：复合体AGI 6.0升级方案（基于12文档深度分析）
+来源：太乙AGI 6.0升级方案（基于12文档深度分析）
 作者：基于高见远指令实现
 日期：2026-05-13
 """
@@ -542,7 +542,7 @@ if __name__ == "__main__":
     
     entries = [
         reliability_layer.add_proof(
-            claim="复合体AGI 6.0基于DIKWP六层语义治理",
+            claim="太乙AGI 6.0基于DIKWP六层语义治理",
             evidence_ids=["D_001", "D_002"],
             r_score=0.85,
             metadata={"source": "analysis"}

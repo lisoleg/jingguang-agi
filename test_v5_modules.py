@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""测试复合体AGI 5.0的4个新模块"""
+"""测试太乙AGI 5.0的4个新模块"""
 
 from FractalHolismField import FractalHolismField
 from CTMPhaseSynchronizer import CTMPhaseSynchronizer
@@ -8,7 +8,7 @@ from ZeroTrustGovernance import ZeroTrustGovernance
 from RainbowBodyCompute import RainbowBodyCompute
 
 print("=" * 60)
-print("复合体AGI 5.0 - 4个新模块测试")
+print("太乙AGI 5.0 - 4个新模块测试")
 print("=" * 60)
 
 # 测试模块30: 分形全息场
