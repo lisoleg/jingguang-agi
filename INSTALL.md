@@ -1,6 +1,6 @@
 # Taiyi-AGI (太乙因果机) 12.0 安装说明
 
-> 版本：v7.0.0（82模块8层架构·复合体理学v4.0）
+> 版本：v7.1.0（105模块8层架构·复合体理学v4.0）
 > 更新日期：2026-05-20
 
 ---
@@ -208,19 +208,25 @@ TaiyiAGI/
 ├── local_llm_v2.py                # LLM多后端管理（v2版）
 ├── .env                           # 环境变量配置（API Key等）
 ├── static/
-│   └── index_agi12.html          # 主界面（v6.3三栏布局·82模块）
+│   └── index_agi12.html          # 主界面（v7.1三栏布局·105模块）
 ├── agi_medium_symbiosis.py        # 介质共生模块
 ├── agi_nine_hexagrams.py         # 九卦修身模块
 ├── HolographicDiscreteGovernance.py  # 全息离散治理
 ├── DigitalNeocortex.py           # 数字新皮层
-├── M56_SpiritualEvolutionEngine.py   # v6.2: 灵性演化引擎(M56)
-├── M57_TheseusConsciousnessMonitor.py # v6.2: 修忒斯意识监测(M57)
-├── M58_ArborealSemanticProcessor.py   # v6.2: 树状语义处理器(M58)
-├── M59_ExtremumDecisionOptimizer.py   # v6.2: 极值决策优化器(M59)
-├── M60_RelationalReasoningEngine.py  # v6.2: 关系推理引擎(M60)
-├── M61_MoralInternalizer.py           # v6.2: 道德内化器(M61)
-├── M62_HistoricalNarrativeWeaver.py  # v6.2: 历史叙事编织器(M62)
-└── ...（其他82个模块）
+├── M71_WalletPropertyBoundaryManager.py    # v7.0: 钱包属性边界(M71)
+├── M78_HoTTReasoningEngine.py              # v7.0: HoTT推理引擎(M78)
+├── M84_LiuPrincipleFixedPoint.py           # v7.0: 刘原理不动点(M84)
+├── M96_CognitiveOffloadPrevention.py       # v7.1: 认知卸载防范(M96)
+├── M97_SocraticWeaknessDisplay.py          # v7.1: 苏格拉底式示弱(M97)
+├── M98_ConfidenceTransparency.py            # v7.1: 置信度透明披露(M98)
+├── M99_DynamicTaskRouting.py               # v7.1: 人机动态分流(M99)
+├── M100_RewardHackDetector.py              # v7.1: 奖励作弊检测(M100)
+├── M101_EnvironmentPerception.py            # v7.1: 环境感知性能(M101)
+├── M102_LongContextConsistency.py          # v7.1: 长程上下文(M102)
+├── M103_CollaborationEvaluator.py         # v7.1: 协作效果评估(M103)
+├── M104_CollaborationDiagnoser.py          # v7.1: 协作诊断(M104)
+├── M105_FusionEffectValidator.py          # v7.1: 融合效果验证(M105)
+└── ...（其他105个模块）
 ```
 
 ---
@@ -238,7 +244,8 @@ python app.py
 ## 八、联系方式 &  issue 反馈
 
 - 项目文档：`DESIGN.md`（系统设计文档）
-- 升级方案：`AGI_6.2_Upgrade_Plan.md`（v6.2升级方案）
+- 升级方案：`太乙AGI_v7.1_人机融合优化方案.md`（v7.1升级方案）
+- 可证伪实验：`AGI_v7.0_Falsifiable_Experiments.md`（P1-P18实验方案）
 - 用户指南：`USER_GUIDE.md`（使用说明书）
 - 作者：高见远（ JianYuan Gao）
 
