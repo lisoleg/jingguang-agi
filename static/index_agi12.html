@@ -593,34 +593,7 @@
         </div>
       </div>
 
-      <!-- 陈天桥测试模块 - 拖动到面板顶部更醒目位置 -->
-      <div id="chen-test-panel" class="chen-panel-highlight" data-hint="陈天桥认知测试：7道综合认知能力测试题，涵盖数学推理、逻辑推理、物理直觉、认知心理和AGI认知">
-        <div class="chen-test-header">
-          <span style="font-size:16px">&#127920;</span>
-          <span class="chen-test-title">陈天桥认知测试</span>
-          <span class="chen-test-badge" id="chen-status">未开始</span>
-        </div>
-        <div class="chen-test-body">
-          <div class="chen-test-mode-tabs">
-            <div class="chen-mode-tab active" data-chen-mode="quick">快速模式 (12题)</div>
-            <div class="chen-mode-tab" data-chen-mode="full">完整模式 (300题)</div>
-          </div>
-          <div id="chen-container">
-            <!-- 动态内容由JS生成 -->
-            <div style="text-align:center;padding:12px 0">
-              <div style="font-size:32px;margin-bottom:8px">&#129504;</div>
-              <div style="font-size:11px;color:var(--txt2);margin-bottom:4px;font-weight:600">陈天桥认知能力测试</div>
-              <div style="font-size:10px;color:var(--txt3);margin-bottom:8px">标准21题测试 · AI实时生成</div>
-              <div style="font-size:9px;color:var(--txt3);margin-bottom:10px;line-height:1.5">
-                数学推理 · 逻辑推理 · 物理直觉 · 认知心理 · AGI认知
-              </div>
-              <button class="chen-btn chen-btn-start" onclick="try{console.log('[调试] 开始测试按钮被点击');CHEN_TEST.start();}catch(e){console.error('[错误]',e);alert('错误:'+e.message);}" style="padding:8px 24px" id="chen-start-btn">
-              选择模式并开始
-            </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- 陈天桥测试模块 - 已移至右侧对话关系链面板 -->
 
       <!-- ═══════════════════════════════════════════════════════════
             v6.3 新增面板（基于数学完备化论文）
@@ -966,6 +939,34 @@
         <span class="right-icon">&#128279;</span>
         <span class="right-title">对话关系链</span>
         <span class="rel-badge" id="rel-badge">0 节点</span>
+        <button class="btn-dag-toggle" id="btn-dag-toggle" onclick="toggleDAG()" title="折叠/展开">▼</button>
+      </div>
+      <!-- 陈天桥认知测试 - 移至对话关系链上方 -->
+      <div id="chen-test-panel" class="chen-panel-highlight" data-hint="陈天桥认知测试：21道综合认知能力测试题。诘辩涌现定理案例 · 苏格拉底助产士模式">
+        <div class="chen-test-header">
+          <span style="font-size:14px">&#127920;</span>
+          <span class="chen-test-title">陈天桥认知测试</span>
+          <span class="chen-test-badge" id="chen-status">未开始</span>
+        </div>
+        <div class="chen-test-body">
+          <div class="chen-test-mode-tabs">
+            <div class="chen-mode-tab active" data-chen-mode="quick">快速 (12题)</div>
+            <div class="chen-mode-tab" data-chen-mode="full">完整 (21题)</div>
+          </div>
+          <div id="chen-container">
+            <div style="text-align:center;padding:8px 0">
+              <div style="font-size:24px;margin-bottom:6px">&#129504;</div>
+              <div style="font-size:10px;color:var(--txt2);margin-bottom:3px;font-weight:600">陈天桥认知能力测试</div>
+              <div style="font-size:9px;color:var(--txt3);margin-bottom:6px">AI实时生成 · 苏格拉底诘辩模式</div>
+              <div style="font-size:8px;color:var(--txt3);margin-bottom:8px;line-height:1.4">
+                数学推理 · 逻辑推理 · 物理直觉 · 认知心理 · AGI认知
+              </div>
+              <button class="chen-btn chen-btn-start" onclick="try{console.log('[调试] 开始测试按钮被点击');CHEN_TEST.start();}catch(e){console.error('[错误]',e);alert('错误:'+e.message);}" style="padding:6px 16px" id="chen-start-btn">
+              开始测试
+            </button>
+            </div>
+          </div>
+        </div>
       </div>
       <div id="dag-container">
         <svg id="dag-svg">
@@ -989,41 +990,13 @@
         <div id="tooltip"></div>
       </div>
       <div id="dag-footer">
-        <div class="dag-stat"><div class="dag-dot dot-q"></div><span>问题</span></div>
-        <div class="dag-stat"><div class="dag-dot dot-a"></div><span>答案</span></div>
-        <div class="dag-stat"><div class="dag-dot dot-ref"></div><span>引用</span></div>
-        <div class="dag-stat"><div class="dag-dot dot-follow"></div><span>追问</span></div>
+        <!-- 苏格拉底关系类型（T3.1诘辩涌现定理） -->
+        <div class="dag-stat" title="问答关系：问-答基本关系"><div class="dag-dot dot-q"></div><span>问答</span></div>
+        <div class="dag-stat" title="引用关系：引用之前的问答"><div class="dag-dot dot-ref"></div><span>引用</span></div>
+        <div class="dag-stat" title="整合关系：横向整合多线索"><div class="dag-dot dot-follow"></div><span>整合</span></div>
+        <div class="dag-stat" title="诘辩关系：苏格拉底诘辩追问"><div style="width:8px;height:8px;border-radius:50%;background:#f97316;display:inline-block"></div><span>诘辩</span></div>
       </div>
-      <!-- 四象模态展示区 -->
-      <div id="four-modes-panel" data-hint="四象相干模态识别：基于四大名著理论框架，识别当前对话的宏观相干模态">
-        <div class="four-modes-title">&#9888; 四象相干模态</div>
-        <div class="four-modes-grid">
-          <div class="mode-card mode-rigid" id="mcard-rigid" data-hint="刚性耦合模态（三国）：博弈论+联盟动力学，适用于竞争博弈场景">
-            <div class="mode-icon">&#9876;</div>
-            <div class="mode-name">刚性耦合</div>
-            <div class="mode-desc">三国·博弈</div>
-            <div class="mode-conf" id="mconf-rigid">—</div>
-          </div>
-          <div class="mode-card mode-boil" id="mcard-boil" data-hint="沸腾反抗模态（水浒）：复杂网络+自组织临界，适用于社会动荡场景">
-            <div class="mode-icon">&#9876;</div>
-            <div class="mode-name">沸腾反抗</div>
-            <div class="mode-desc">水浒·变革</div>
-            <div class="mode-conf" id="mconf-boil">—</div>
-          </div>
-          <div class="mode-card mode-pilgrim" id="mcard-pilgrim" data-hint="取经相干模态（西游）：自指算子演化+路径优化，适用于成长目标场景">
-            <div class="mode-icon">&#128278;</div>
-            <div class="mode-name">取经相干</div>
-            <div class="mode-desc">西游·成长</div>
-            <div class="mode-conf" id="mconf-pilgrim">—</div>
-          </div>
-          <div class="mode-card mode-entropy" id="mcard-entropy" data-hint="熵增终局模态（红楼）：趋势外推+熵减干预，适用于衰退预警场景">
-            <div class="mode-icon">&#127801;</div>
-            <div class="mode-name">熵增终局</div>
-            <div class="mode-desc">红楼·终局</div>
-            <div class="mode-conf" id="mconf-entropy">—</div>
-          </div>
-        </div>
-      </div>
+      <!-- 四象相干模态已移至左侧分析仪表盘 -->
     </div>
   </div>
 
@@ -1054,13 +1027,14 @@
           <div class="help-item"><strong>介质锚定</strong>：验证语义一致性（能量/语义/因果/经验四重约束）</div>
           <div class="help-item"><strong>介质共振</strong>：<code>g_C</code>相位锁定度表示认知场与现实场耦合强度，心斋状态(S_C&lt;0.15)为最佳认知</div>
           <div class="help-item"><strong>九卦修身</strong>：履→谦→复→恒→损→益→困→井→巽，九步降熵从高S_C到心斋</div>
-          <div class="help-item"><strong>陈天桥测试</strong>：7道认知能力综合测试，由AI实时生成题目</div>
+          <div class="help-item"><strong>陈天桥测试</strong>：21道认知能力综合测试，由AI实时生成题目（苏格拉底诘辩模式）</div>
+          <div class="help-item"><strong>四象相干模态</strong>：刚性耦合(三国)、沸腾反抗(水浒)、取经相干(西游)、熵增终局(红楼)</div>
         </div>
         <div class="help-section">
-          <div class="help-section-title">&#128279; 右侧DAG+四象面板</div>
+          <div class="help-section-title">&#128279; 右侧对话关系链（苏格拉底拓扑）</div>
           <div class="help-item"><strong>节点</strong>：Q=问题, A=回答，点击节点跳转对应对话</div>
-          <div class="help-item"><strong>线索</strong>：不同颜色代表不同话题线索（追问/新话题）</div>
-          <div class="help-item"><strong>四象模态</strong>：刚性耦合(三国)、沸腾反抗(水浒)、取经相干(西游)、熵增终局(红楼)</div>
+          <div class="help-item"><strong>关系类型</strong>：问答/引用/整合/诘辩（T3.1诘辩涌现定理）</div>
+          <div class="help-item"><strong>折叠</strong>：点击&#9660;按钮折叠/展开对话关系链</div>
         </div>
         <div class="help-section">
           <div class="help-section-title">&#128187; 快捷键 &amp; 技巧</div>
@@ -2189,6 +2163,37 @@ function getThreadKeywords(thread) {
   if (!firstQ) return '';
   const keywords = extractKeywords(firstQ.content).slice(0, 3);
   return keywords.join(' · ');
+}
+
+// ════════════════════════════════════════════════════════════════
+// 对话关系链折叠/展开控制 + 苏格拉底关系类型标注
+// 基于《学习苏格拉底》论文：问-答/引用/整合/诘辩四种关系
+// ════════════════════════════════════════════════════════════════
+let DAG_COLLAPSED = false;
+function toggleDAG() {
+  const container = document.getElementById('dag-container');
+  const btn = document.getElementById('btn-dag-toggle');
+  if (!container || !btn) return;
+  DAG_COLLAPSED = !DAG_COLLAPSED;
+  container.style.display = DAG_COLLAPSED ? 'none' : 'flex';
+  btn.innerHTML = DAG_COLLAPSED ? '&#9658;' : '&#9660;';
+  btn.title = DAG_COLLAPSED ? '展开对话关系链' : '折叠对话关系链';
+}
+
+// 苏格拉底对话关系类型定义（T3.1 诘辩涌现定理）
+const SOCRATIC_RELATIONS = {
+  QA:        { label: '问答',   color: 'var(--acc)',  icon: '?' },
+  REF:       { label: '引用',   color: 'var(--sky)',  icon: '&#8617;' },
+  INTEGRATE: { label: '整合',   color: 'var(--goal)', icon: '&#10067;' },
+  ELENCHUS:  { label: '诘辩',   color: '#f97316',     icon: '&#9876;' },
+};
+
+function getRelationType(thread, qa, qidx) {
+  const content = (qa.content || '').toLowerCase();
+  if (/真的|确定|如果|会怎样|为什么|何以见得|请证明/i.test(content)) return 'ELENCHUS';
+  if (qidx > 0 && /上述|之前|刚才|如前所述|引用|参照/i.test(content)) return 'REF';
+  if (/整合|综合|总结|综上|基于以上/i.test(content)) return 'INTEGRATE';
+  return 'QA';
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -3741,8 +3746,9 @@ const CHEN_TEST = {
             }
           });
       } else if (isEssay || isComposition) {
-        // 问答题或小作文：使用AI生成的答案
-        const aiAnswer = aiReply;
+        // 问答题或小作文：使用AI生成的答案，AI空时fallback到参考答案
+        const rawAnswer = aiReply && aiReply.trim().length > 0 ? aiReply.trim() : (q.reference || '');
+        const aiAnswer = rawAnswer;
         this.answers[qidx] = aiAnswer;
 
         // 在界面上显示AI的答案
@@ -4000,11 +4006,11 @@ const CHEN_TEST = {
     }
     
     const q = this.questions[qidx];
-    const wordCount = answer.split(/\s+/).filter(w => w.length > 0).length;
+    const charCount = answer.length;
     const minWords = q.minWords || 50;
     
-    if (!skipConfirm && wordCount < minWords) {
-      if (!confirm(`字数不足${minWords}字（当前${wordCount}字），确定提交吗？`)) {
+    if (!skipConfirm && charCount < minWords) {
+      if (!confirm(`字数不足${minWords}字（当前${charCount}字），确定提交吗？`)) {
         return;
       }
     }
@@ -4128,7 +4134,7 @@ const CHEN_TEST = {
 
       if (isTextQ) {
         // 问答题/小作文：有内容且字数达标即算正确（不比较answer字段）
-        const minWords = q.minWords || 30;
+        const minWords = q.minWords || 50;
         const charCount = ans ? ans.trim().length : 0;
         isCorrect = charCount >= minWords;
       } else if (isChoiceQ) {
@@ -4222,7 +4228,7 @@ const CHEN_TEST = {
 
       let isCorrect = false;
       if (isTextQ) {
-        const minWords = q.minWords || 30;
+        const minWords = q.minWords || 50;
         isCorrect = userAns && userAns.trim().length >= minWords;
       } else if (isChoiceQ) {
         const numAns = Number(userAns);
@@ -5575,6 +5581,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
   background:var(--sky);color:#000;padding:2px 7px;border-radius:10px;
   font-size:9px;font-weight:600;
 }
+.btn-dag-toggle{
+  margin-left:auto;background:none;border:none;color:var(--txt2);
+  font-size:10px;cursor:pointer;padding:2px 6px;border-radius:4px;
+  transition:all .15s;
+}
+.btn-dag-toggle:hover{background:var(--bg4);color:var(--txt)}
 
 #dag-container{flex:1;position:relative;overflow-y:auto;overflow-x:hidden;background:var(--bg)}
 #dag-svg{width:100%;height:100%}
@@ -6696,34 +6708,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         </div>
       </div>
 
-      <!-- 陈天桥测试模块 - 拖动到面板顶部更醒目位置 -->
-      <div id="chen-test-panel" class="chen-panel-highlight" data-hint="陈天桥认知测试：7道综合认知能力测试题，涵盖数学推理、逻辑推理、物理直觉、认知心理和AGI认知">
-        <div class="chen-test-header">
-          <span style="font-size:16px">&#127920;</span>
-          <span class="chen-test-title">陈天桥认知测试</span>
-          <span class="chen-test-badge" id="chen-status">未开始</span>
-        </div>
-        <div class="chen-test-body">
-          <div class="chen-test-mode-tabs">
-            <div class="chen-mode-tab active" data-chen-mode="quick">快速模式 (12题)</div>
-            <div class="chen-mode-tab" data-chen-mode="full">完整模式 (300题)</div>
-          </div>
-          <div id="chen-container">
-            <!-- 动态内容由JS生成 -->
-            <div style="text-align:center;padding:12px 0">
-              <div style="font-size:32px;margin-bottom:8px">&#129504;</div>
-              <div style="font-size:11px;color:var(--txt2);margin-bottom:4px;font-weight:600">陈天桥认知能力测试</div>
-              <div style="font-size:10px;color:var(--txt3);margin-bottom:8px">标准21题测试 · AI实时生成</div>
-              <div style="font-size:9px;color:var(--txt3);margin-bottom:10px;line-height:1.5">
-                数学推理 · 逻辑推理 · 物理直觉 · 认知心理 · AGI认知
-              </div>
-              <button class="chen-btn chen-btn-start" onclick="try{console.log('[调试] 开始测试按钮被点击');CHEN_TEST.start();}catch(e){console.error('[错误]',e);alert('错误:'+e.message);}" style="padding:8px 24px" id="chen-start-btn">
-              选择模式并开始
-            </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- 陈天桥测试模块 - 已移至右侧对话关系链面板 -->
 
       <!-- ═══════════════════════════════════════════════════════════
             v6.3 新增面板（基于数学完备化论文）
@@ -6928,6 +6913,34 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         <span class="right-icon">&#128279;</span>
         <span class="right-title">对话关系链</span>
         <span class="rel-badge" id="rel-badge">0 节点</span>
+        <button class="btn-dag-toggle" id="btn-dag-toggle" onclick="toggleDAG()" title="折叠/展开">▼</button>
+      </div>
+      <!-- 陈天桥认知测试 - 移至对话关系链上方 -->
+      <div id="chen-test-panel" class="chen-panel-highlight" data-hint="陈天桥认知测试：21道综合认知能力测试题。诘辩涌现定理案例 · 苏格拉底助产士模式">
+        <div class="chen-test-header">
+          <span style="font-size:14px">&#127920;</span>
+          <span class="chen-test-title">陈天桥认知测试</span>
+          <span class="chen-test-badge" id="chen-status">未开始</span>
+        </div>
+        <div class="chen-test-body">
+          <div class="chen-test-mode-tabs">
+            <div class="chen-mode-tab active" data-chen-mode="quick">快速 (12题)</div>
+            <div class="chen-mode-tab" data-chen-mode="full">完整 (21题)</div>
+          </div>
+          <div id="chen-container">
+            <div style="text-align:center;padding:8px 0">
+              <div style="font-size:24px;margin-bottom:6px">&#129504;</div>
+              <div style="font-size:10px;color:var(--txt2);margin-bottom:3px;font-weight:600">陈天桥认知能力测试</div>
+              <div style="font-size:9px;color:var(--txt3);margin-bottom:6px">AI实时生成 · 苏格拉底诘辩模式</div>
+              <div style="font-size:8px;color:var(--txt3);margin-bottom:8px;line-height:1.4">
+                数学推理 · 逻辑推理 · 物理直觉 · 认知心理 · AGI认知
+              </div>
+              <button class="chen-btn chen-btn-start" onclick="try{console.log('[调试] 开始测试按钮被点击');CHEN_TEST.start();}catch(e){console.error('[错误]',e);alert('错误:'+e.message);}" style="padding:6px 16px" id="chen-start-btn">
+              开始测试
+            </button>
+            </div>
+          </div>
+        </div>
       </div>
       <div id="dag-container">
         <svg id="dag-svg">
@@ -6951,41 +6964,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         <div id="tooltip"></div>
       </div>
       <div id="dag-footer">
-        <div class="dag-stat"><div class="dag-dot dot-q"></div><span>问题</span></div>
-        <div class="dag-stat"><div class="dag-dot dot-a"></div><span>答案</span></div>
-        <div class="dag-stat"><div class="dag-dot dot-ref"></div><span>引用</span></div>
-        <div class="dag-stat"><div class="dag-dot dot-follow"></div><span>追问</span></div>
+        <!-- 苏格拉底关系类型（T3.1诘辩涌现定理） -->
+        <div class="dag-stat" title="问答关系：问-答基本关系"><div class="dag-dot dot-q"></div><span>问答</span></div>
+        <div class="dag-stat" title="引用关系：引用之前的问答"><div class="dag-dot dot-ref"></div><span>引用</span></div>
+        <div class="dag-stat" title="整合关系：横向整合多线索"><div class="dag-dot dot-follow"></div><span>整合</span></div>
+        <div class="dag-stat" title="诘辩关系：苏格拉底诘辩追问"><div style="width:8px;height:8px;border-radius:50%;background:#f97316;display:inline-block"></div><span>诘辩</span></div>
       </div>
-      <!-- 四象模态展示区 -->
-      <div id="four-modes-panel" data-hint="四象相干模态识别：基于四大名著理论框架，识别当前对话的宏观相干模态">
-        <div class="four-modes-title">&#9888; 四象相干模态</div>
-        <div class="four-modes-grid">
-          <div class="mode-card mode-rigid" id="mcard-rigid" data-hint="刚性耦合模态（三国）：博弈论+联盟动力学，适用于竞争博弈场景">
-            <div class="mode-icon">&#9876;</div>
-            <div class="mode-name">刚性耦合</div>
-            <div class="mode-desc">三国·博弈</div>
-            <div class="mode-conf" id="mconf-rigid">—</div>
-          </div>
-          <div class="mode-card mode-boil" id="mcard-boil" data-hint="沸腾反抗模态（水浒）：复杂网络+自组织临界，适用于社会动荡场景">
-            <div class="mode-icon">&#9876;</div>
-            <div class="mode-name">沸腾反抗</div>
-            <div class="mode-desc">水浒·变革</div>
-            <div class="mode-conf" id="mconf-boil">—</div>
-          </div>
-          <div class="mode-card mode-pilgrim" id="mcard-pilgrim" data-hint="取经相干模态（西游）：自指算子演化+路径优化，适用于成长目标场景">
-            <div class="mode-icon">&#128278;</div>
-            <div class="mode-name">取经相干</div>
-            <div class="mode-desc">西游·成长</div>
-            <div class="mode-conf" id="mconf-pilgrim">—</div>
-          </div>
-          <div class="mode-card mode-entropy" id="mcard-entropy" data-hint="熵增终局模态（红楼）：趋势外推+熵减干预，适用于衰退预警场景">
-            <div class="mode-icon">&#127801;</div>
-            <div class="mode-name">熵增终局</div>
-            <div class="mode-desc">红楼·终局</div>
-            <div class="mode-conf" id="mconf-entropy">—</div>
-          </div>
-        </div>
-      </div>
+      <!-- 四象相干模态已移至左侧分析仪表盘 -->
     </div>
   </div>
 
@@ -7016,13 +7001,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <div class="help-item"><strong>介质锚定</strong>：验证语义一致性（能量/语义/因果/经验四重约束）</div>
           <div class="help-item"><strong>介质共振</strong>：<code>g_C</code>相位锁定度表示认知场与现实场耦合强度，心斋状态(S_C&lt;0.15)为最佳认知</div>
           <div class="help-item"><strong>九卦修身</strong>：履→谦→复→恒→损→益→困→井→巽，九步降熵从高S_C到心斋</div>
-          <div class="help-item"><strong>陈天桥测试</strong>：7道认知能力综合测试，由AI实时生成题目</div>
+          <div class="help-item"><strong>陈天桥测试</strong>：21道认知能力综合测试，由AI实时生成题目（苏格拉底诘辩模式）</div>
+          <div class="help-item"><strong>四象相干模态</strong>：刚性耦合(三国)、沸腾反抗(水浒)、取经相干(西游)、熵增终局(红楼)</div>
         </div>
         <div class="help-section">
-          <div class="help-section-title">&#128279; 右侧DAG+四象面板</div>
+          <div class="help-section-title">&#128279; 右侧对话关系链（苏格拉底拓扑）</div>
           <div class="help-item"><strong>节点</strong>：Q=问题, A=回答，点击节点跳转对应对话</div>
-          <div class="help-item"><strong>线索</strong>：不同颜色代表不同话题线索（追问/新话题）</div>
-          <div class="help-item"><strong>四象模态</strong>：刚性耦合(三国)、沸腾反抗(水浒)、取经相干(西游)、熵增终局(红楼)</div>
+          <div class="help-item"><strong>关系类型</strong>：问答/引用/整合/诘辩（T3.1诘辩涌现定理）</div>
+          <div class="help-item"><strong>折叠</strong>：点击&#9660;按钮折叠/展开对话关系链</div>
         </div>
         <div class="help-section">
           <div class="help-section-title">&#128187; 快捷键 &amp; 技巧</div>
@@ -8151,6 +8137,37 @@ function getThreadKeywords(thread) {
   if (!firstQ) return '';
   const keywords = extractKeywords(firstQ.content).slice(0, 3);
   return keywords.join(' · ');
+}
+
+// ════════════════════════════════════════════════════════════════
+// 对话关系链折叠/展开控制 + 苏格拉底关系类型标注
+// 基于《学习苏格拉底》论文：问-答/引用/整合/诘辩四种关系
+// ════════════════════════════════════════════════════════════════
+let DAG_COLLAPSED = false;
+function toggleDAG() {
+  const container = document.getElementById('dag-container');
+  const btn = document.getElementById('btn-dag-toggle');
+  if (!container || !btn) return;
+  DAG_COLLAPSED = !DAG_COLLAPSED;
+  container.style.display = DAG_COLLAPSED ? 'none' : 'flex';
+  btn.innerHTML = DAG_COLLAPSED ? '&#9658;' : '&#9660;';
+  btn.title = DAG_COLLAPSED ? '展开对话关系链' : '折叠对话关系链';
+}
+
+// 苏格拉底对话关系类型定义（T3.1 诘辩涌现定理）
+const SOCRATIC_RELATIONS = {
+  QA:        { label: '问答',   color: 'var(--acc)',  icon: '?' },
+  REF:       { label: '引用',   color: 'var(--sky)',  icon: '&#8617;' },
+  INTEGRATE: { label: '整合',   color: 'var(--goal)', icon: '&#10067;' },
+  ELENCHUS:  { label: '诘辩',   color: '#f97316',     icon: '&#9876;' },
+};
+
+function getRelationType(thread, qa, qidx) {
+  const content = (qa.content || '').toLowerCase();
+  if (/真的|确定|如果|会怎样|为什么|何以见得|请证明/i.test(content)) return 'ELENCHUS';
+  if (qidx > 0 && /上述|之前|刚才|如前所述|引用|参照/i.test(content)) return 'REF';
+  if (/整合|综合|总结|综上|基于以上/i.test(content)) return 'INTEGRATE';
+  return 'QA';
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -9781,8 +9798,9 @@ const CHEN_TEST = {
             }
           });
       } else if (isEssay || isComposition) {
-        // 问答题或小作文：使用AI生成的答案
-        const aiAnswer = aiReply;
+        // 问答题或小作文：使用AI生成的答案，AI空时fallback到参考答案
+        const rawAnswer = aiReply && aiReply.trim().length > 0 ? aiReply.trim() : (q.reference || '');
+        const aiAnswer = rawAnswer;
         this.answers[qidx] = aiAnswer;
 
         // 在界面上显示AI的答案
@@ -10040,11 +10058,11 @@ const CHEN_TEST = {
     }
     
     const q = this.questions[qidx];
-    const wordCount = answer.split(/\s+/).filter(w => w.length > 0).length;
+    const charCount = answer.length;
     const minWords = q.minWords || 50;
     
-    if (!skipConfirm && wordCount < minWords) {
-      if (!confirm(`字数不足${minWords}字（当前${wordCount}字），确定提交吗？`)) {
+    if (!skipConfirm && charCount < minWords) {
+      if (!confirm(`字数不足${minWords}字（当前${charCount}字），确定提交吗？`)) {
         return;
       }
     }
@@ -10168,7 +10186,7 @@ const CHEN_TEST = {
 
       if (isTextQ) {
         // 问答题/小作文：有内容且字数达标即算正确（不比较answer字段）
-        const minWords = q.minWords || 30;
+        const minWords = q.minWords || 50;
         const charCount = ans ? ans.trim().length : 0;
         isCorrect = charCount >= minWords;
       } else if (isChoiceQ) {
@@ -10262,7 +10280,7 @@ const CHEN_TEST = {
 
       let isCorrect = false;
       if (isTextQ) {
-        const minWords = q.minWords || 30;
+        const minWords = q.minWords || 50;
         isCorrect = userAns && userAns.trim().length >= minWords;
       } else if (isChoiceQ) {
         const numAns = Number(userAns);
