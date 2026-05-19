@@ -328,7 +328,7 @@ def get_agi_system():
             if not _agi_ready:
                 try:
                     print("🔮 正在初始化Taiyi-AGI 4.0 系统（23个模块）...")
-                    from TaiyiAGI_V2 import TaiyiAGI_V2
+                    from CompositeAGI_V2 import CompositeAGI_V2 as TaiyiAGI_V2
                     _agi_system = TaiyiAGI_V2()
                     _agi_ready = True
                     print("✅ Taiyi-AGI 4.0 系统就绪（23模块已加载）")

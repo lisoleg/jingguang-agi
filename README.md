@@ -131,10 +131,10 @@ docker run -d -p 5001:5001 -p 5003:5003 jingguang-agi12:local
 ### 标准对话模式
 
 ```python
-from TaiyiAGI_V2 import TaiyiAGI_V2
+from CompositeAGI_V2 import CompositeAGI_V2
 
-# 初始化系统（62模块）
-agi = TaiyiAGI_V2()
+# 初始化系统（82模块）
+agi = CompositeAGI_V2()
 
 # 标准对话
 result = agi.process("什么是IAWW统一场论？")
@@ -189,8 +189,8 @@ jingguang-agi/
 ├── app_mindmap_v2.py              # 脑图服务（端口5003）
 ├── local_llm.py                   # LLM多后端管理
 ├── static/
-│   └── index_agi12.html          # 主界面（v6.2三栏布局·62模块）
-├── TaiyiAGI_V2.py            # 主系统类（62模块）
+│   └── index_agi12.html          # 主界面（v6.3三栏布局·82模块）
+├── CompositeAGI_V2.py        # 主系统类（82模块）
 ├── HolographicDiscreteGovernance.py  # 全息离散治理（M29）
 ├── M71_WalletPropertyBoundaryManager.py    # 钱包属性边界(M71)
 ├── M73_SelfReferentialPhiDetector.py        # 自指Φ值检测(M73)
@@ -205,7 +205,7 @@ jingguang-agi/
 ├── M90_SemanticManifoldCurvature.py        # 语义流形曲率(M90)
 ├── M91_UnivalenceEquivalenceChecker.py     # Univalence等价检查(M91)
 ├── M95_ConstructiveAGIEvaluator.py        # 构造型AGI评估(M95)
-├── ...（其他62个核心模块）
+├── ...（其他82个核心模块）
 ├── DESIGN.md                            # 系统设计文档（82模块详解）
 ├── USER_GUIDE.md                       # 用户使用说明书
 ├── INSTALL.md                          # 安装说明

@@ -208,7 +208,7 @@ TaiyiAGI/
 ├── local_llm_v2.py                # LLM多后端管理（v2版）
 ├── .env                           # 环境变量配置（API Key等）
 ├── static/
-│   └── index_agi12.html          # 主界面（v6.2三栏布局·62模块）
+│   └── index_agi12.html          # 主界面（v6.3三栏布局·82模块）
 ├── agi_medium_symbiosis.py        # 介质共生模块
 ├── agi_nine_hexagrams.py         # 九卦修身模块
 ├── HolographicDiscreteGovernance.py  # 全息离散治理
@@ -220,7 +220,7 @@ TaiyiAGI/
 ├── M60_RelationalReasoningEngine.py  # v6.2: 关系推理引擎(M60)
 ├── M61_MoralInternalizer.py           # v6.2: 道德内化器(M61)
 ├── M62_HistoricalNarrativeWeaver.py  # v6.2: 历史叙事编织器(M62)
-└── ...（其他55个模块）
+└── ...（其他82个模块）
 ```
 
 ---

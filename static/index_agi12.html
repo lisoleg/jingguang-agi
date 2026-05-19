@@ -2338,6 +2338,15 @@ function renderDAG() {
       });
     });
   });
+
+  // 根据内容总高度调整SVG高度，确保滚动条足够长
+  const svgEl = document.getElementById('dag-svg');
+  if (svgEl) {
+    const minHeight = dagHeight();
+    const contentHeight = currentY + 20;
+    svgEl.setAttribute('height', Math.max(minHeight, contentHeight));
+    svgEl.style.height = Math.max(minHeight, contentHeight) + 'px';
+  }
 }
 
 function highlightHistory(idx) {
@@ -3649,7 +3658,7 @@ const CHEN_TEST = {
         body: JSON.stringify({
           message: isChoice
             ? `请回答以下选择题，先进行分析推理，最后必须单独一行用"答案：X"的格式给出你的选择（X为A/B/C/D之一）。\n\n题目：${q.question}\n选项：\n${q.options.map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt}`).join('\n')}\n\n要求：\n1. 先给出详细的分析推理过程\n2. 最后必须单独一行写"答案：X"（X为A/B/C/D之一），不要加任何额外文字`
-            : `请回答以下问题（${isEssay ? '问答题' : '作文题'}）：${q.question}${isEssay ? '\n要求：请简要回答，100-200字' : ''}${isComposition ? '\n要求：请详细阐述，300-500字' : ''}`,
+            : `请回答以下问题（${isEssay ? '问答题' : '作文题'}）：${q.question}${isEssay ? '\n要求：请简要回答，100-200字' : ''}${isComposition ? '\n要求：请详细阐述，2000字以上，最好能到3000字，深入论证' : ''}`,
           session_id: STATE.session_id
         })
       })
@@ -3875,7 +3884,7 @@ const CHEN_TEST = {
         <div style="margin-top:10px">
           <textarea id="essay-input-${this.currentIdx}" 
                     placeholder="请输入短文（至少${q.minWords}字）..." 
-                    style="width:100%;height:200px;background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:8px;color:var(--txt);font-size:12px;resize:vertical;font-family:inherit;line-height:1.6"
+                    style="width:100%;height:400px;background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:8px;color:var(--txt);font-size:12px;resize:vertical;font-family:inherit;line-height:1.6"
                     oninput="CHEN_TEST.updateWordCount(${this.currentIdx}, 'composition')">${this.answers[this.currentIdx] || ''}</textarea>
           <div id="chen-submit-wrap-${this.currentIdx}" style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
             <span style="font-size:10px;color:var(--txt2)">字数: <span id="word-count-${this.currentIdx}">${wordCount}</span>/${q.minWords}</span>
@@ -8291,6 +8300,15 @@ function renderDAG() {
       });
     });
   });
+
+  // 根据内容总高度调整SVG高度，确保滚动条足够长
+  const svgEl = document.getElementById('dag-svg');
+  if (svgEl) {
+    const minHeight = dagHeight();
+    const contentHeight = currentY + 20;
+    svgEl.setAttribute('height', Math.max(minHeight, contentHeight));
+    svgEl.style.height = Math.max(minHeight, contentHeight) + 'px';
+  }
 }
 
 function highlightHistory(idx) {
@@ -9054,15 +9072,15 @@ const CHEN_TEST = {
       reference: "对于一元二次方程 ax²+bx+c=0：1)两边除以a；2)配方；3)开方；4)解得：x = (-b±√(b²-4ac))/2a" },
     
     // ===== 小作文 (31-35) =====
-    { q: "请写一篇短文（300字以上），论述\"人工智能是否应该拥有权利\"。请从伦理、法律、技术三个维度展开。", type: "composition", minWords: 300, category: "AI认知",
+    { q: "请写一篇深度论述（2000字以上），论述\"人工智能是否应该拥有权利\"。请从伦理、法律、技术三个维度展开。", type: "composition", minWords: 2000, category: "AI认知",
       reference: "人工智能是否应该拥有权利是一个复杂的哲学和伦理问题。从伦理维度：如果AI达到或超过人类智能且能感受痛苦，不给予权利可能是不道德的。从法律维度：权利主体需要承担义务，AI无法承担法律责任。从技术维度：目前的AI是工具，未来AGI可能需要某种形式的权利框架。" },
-    { q: "请写一篇短文（300字以上），分析\"人类认知的局限性\"，并探讨AI如何帮助我们突破这些局限。", type: "composition", minWords: 300, category: "认知心理",
+    { q: "请写一篇深度论述（2000字以上），分析\"人类认知的局限性\"，并探讨AI如何帮助我们突破这些局限。", type: "composition", minWords: 2000, category: "认知心理",
       reference: "人类认知存在多种局限性：1)注意力有限；2)工作记忆容量有限；3)认知偏差；4)知识获取慢；5)情绪影响判断。AI可以帮助突破：1)处理海量信息；2)无偏差推理；3)快速学习；4)辅助决策。最终目标是人机协同。" },
-    { q: "请写一篇短文（300字以上），论述\"物理学中的对称性与守恒律\"，以Noether定理为核心展开。", type: "composition", minWords: 300, category: "物理直觉",
+    { q: "请写一篇深度论述（2000字以上），论述\"物理学中的对称性与守恒律\"，以Noether定理为核心展开。", type: "composition", minWords: 2000, category: "物理直觉",
       reference: "Noether定理：每一种连续性对称性都对应一个守恒律。具体对应：1)时间平移对称性→能量守恒；2)空间平移对称性→动量守恒；3)空间旋转对称性→角动量守恒。这揭示了物理世界的内在美：表面上看似无关的定律，实际上都源于对称性。" },
-    { q: "请写一篇短文（300字以上），论述\"热力学第二定律与信息的关系\"，解释Landauer原理。", type: "composition", minWords: 300, category: "物理直觉",
+    { q: "请写一篇深度论述（2000字以上），论述\"热力学第二定律与信息的关系\"，解释Landauer原理。", type: "composition", minWords: 2000, category: "物理直觉",
       reference: "热力学第二定律：孤立系统的熵永不减少。信息与熵的关系：1)信息就是负熵；2)Landauer原理：擦除1比特信息，至少产生kT ln2的热量。这意味着：计算有热力学成本，不可逆计算必须散热。" },
-    { q: "请写一篇短文（300字以上），从认知科学角度分析\"为什么人类会犯错误\"，并探讨如何通过训练减少错误。", type: "composition", minWords: 300, category: "认知心理",
+    { q: "请写一篇深度论述（2000字以上），从认知科学角度分析\"为什么人类会犯错误\"，并探讨如何通过训练减少错误。", type: "composition", minWords: 2000, category: "认知心理",
       reference: "人类犯错误的认知根源：1)认知偏差；2)注意力瓶颈；3)工作记忆限制；4)情绪干扰；5)确认偏差。减少错误的方法：1)元认知训练；2)双盲实验思维；3)慢思考；4)外部化；5)多样性团队。" },
   ],
 
@@ -9680,7 +9698,7 @@ const CHEN_TEST = {
         body: JSON.stringify({
           message: isChoice
             ? `请回答以下选择题，先进行分析推理，最后必须单独一行用"答案：X"的格式给出你的选择（X为A/B/C/D之一）。\n\n题目：${q.question}\n选项：\n${q.options.map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt}`).join('\n')}\n\n要求：\n1. 先给出详细的分析推理过程\n2. 最后必须单独一行写"答案：X"（X为A/B/C/D之一），不要加任何额外文字`
-            : `请回答以下问题（${isEssay ? '问答题' : '作文题'}）：${q.question}${isEssay ? '\n要求：请简要回答，100-200字' : ''}${isComposition ? '\n要求：请详细阐述，300-500字' : ''}`,
+            : `请回答以下问题（${isEssay ? '问答题' : '作文题'}）：${q.question}${isEssay ? '\n要求：请简要回答，100-200字' : ''}${isComposition ? '\n要求：请详细阐述，2000字以上，最好能到3000字，深入论证' : ''}`,
           session_id: STATE.session_id
         })
       })
@@ -9906,7 +9924,7 @@ const CHEN_TEST = {
         <div style="margin-top:10px">
           <textarea id="essay-input-${this.currentIdx}" 
                     placeholder="请输入短文（至少${q.minWords}字）..." 
-                    style="width:100%;height:200px;background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:8px;color:var(--txt);font-size:12px;resize:vertical;font-family:inherit;line-height:1.6"
+                    style="width:100%;height:400px;background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:8px;color:var(--txt);font-size:12px;resize:vertical;font-family:inherit;line-height:1.6"
                     oninput="CHEN_TEST.updateWordCount(${this.currentIdx}, 'composition')">${this.answers[this.currentIdx] || ''}</textarea>
           <div id="chen-submit-wrap-${this.currentIdx}" style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
             <span style="font-size:10px;color:var(--txt2)">字数: <span id="word-count-${this.currentIdx}">${wordCount}</span>/${q.minWords}</span>
