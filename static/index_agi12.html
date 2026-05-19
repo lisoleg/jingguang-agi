@@ -1817,10 +1817,23 @@ function updateAllPanels(data) {
   if (data.five_phase) updateFivePhasePanel(data.five_phase);
   if (data.anchor) updateAnchorPanel(data.anchor);
   if (data.medium) updateMediumPanel(data.medium);
-  if (data.v61) updateV61Panels(data.v61);
-  if (data.v62) updateV62Panels(data.v62);
-  if (data.v63) updateV63Panels(data.v63);
-  if (data.v70) updateV70Panels(data.v70);
+  // v6.1/v6.2/v6.3/v7.0数据可能在顶层或嵌套在v61/v62/v63/v70对象中
+  const v61Data = data.v61 || data;
+  const v62Data = data.v62 || data;
+  const v63Data = data.v63 || data;
+  const v70Data = data.v70 || data;
+  if (v61Data.eml || v61Data.relational || v61Data.pseudo_revolution || v61Data.emergence || v61Data.topology) {
+    updateV61Panels(v61Data);
+  }
+  if (v62Data.spiritual || v62Data.theseus || v62Data.extremum || v62Data.eml_add || v62Data.moral || v62Data.narrative || v62Data.arboreal) {
+    updateV62Panels(v62Data);
+  }
+  if (v63Data.monist || v63Data.narrative_action || v63Data.consciousness_flow || v63Data.self_identity || v63Data.insight || v63Data.falsifiable) {
+    updateV63Panels(v63Data);
+  }
+  if (v70Data.carbon_silicon || v70Data.wuxing || v70Data.hott || v70Data.functor || v70Data.liu_fixed_point || v70Data.axiom || v70Data.token_dynamics) {
+    updateV70Panels(v70Data);
+  }
 }
 
 // ── 统一更新所有v6.1面板 ──────────────────────────────────────
@@ -7811,10 +7824,23 @@ function updateAllPanels(data) {
   if (data.five_phase) updateFivePhasePanel(data.five_phase);
   if (data.anchor) updateAnchorPanel(data.anchor);
   if (data.medium) updateMediumPanel(data.medium);
-  if (data.v61) updateV61Panels(data.v61);
-  if (data.v62) updateV62Panels(data.v62);
-  if (data.v63) updateV63Panels(data.v63);
-  if (data.v70) updateV70Panels(data.v70);
+  // v6.1/v6.2/v6.3/v7.0数据可能在顶层或嵌套在v61/v62/v63/v70对象中
+  const v61Data = data.v61 || data;
+  const v62Data = data.v62 || data;
+  const v63Data = data.v63 || data;
+  const v70Data = data.v70 || data;
+  if (v61Data.eml || v61Data.relational || v61Data.pseudo_revolution || v61Data.emergence || v61Data.topology) {
+    updateV61Panels(v61Data);
+  }
+  if (v62Data.spiritual || v62Data.theseus || v62Data.extremum || v62Data.eml_add || v62Data.moral || v62Data.narrative || v62Data.arboreal) {
+    updateV62Panels(v62Data);
+  }
+  if (v63Data.monist || v63Data.narrative_action || v63Data.consciousness_flow || v63Data.self_identity || v63Data.insight || v63Data.falsifiable) {
+    updateV63Panels(v63Data);
+  }
+  if (v70Data.carbon_silicon || v70Data.wuxing || v70Data.hott || v70Data.functor || v70Data.liu_fixed_point || v70Data.axiom || v70Data.token_dynamics) {
+    updateV70Panels(v70Data);
+  }
 }
 
 // ── 统一更新所有v6.1面板 ──────────────────────────────────────
