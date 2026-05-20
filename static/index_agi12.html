@@ -5771,7 +5771,7 @@ const CHEN_TEST = {
       return; // 防止DOM未加载完成
     }
     console.log('[调试] renderStart 容器:', container, '内容:', container.innerHTML.substring(0, 100));
-    const title = '标准21题测试';
+    const title = this.mode === 'full' ? '标准21题测试' : '快速12题测试';
     container.innerHTML = `
       <div style="text-align:center;padding:12px 0">
         <div style="font-size:32px;margin-bottom:8px">&#129504;</div>
@@ -5879,6 +5879,11 @@ const CHEN_TEST = {
 
   start() {
     this.reset();
+    // 清除对话区中旧的陈天桥测试消息（题目、答案、报告）
+    const history = document.getElementById('history');
+    if (history) {
+      history.querySelectorAll('.msg-chen-test, .msg-chen-report, .msg-chen-ai, #chen-ai-thinking').forEach(el => el.remove());
+    }
     this.inTest = true;
     this.aiAutoMode = true;  // 启用AI自动答题模式
     this.paused = false;
@@ -5964,13 +5969,13 @@ const CHEN_TEST = {
   // 调用AI API生成新题目
   async generateQuestions() {
     this.aiCancelled = false;
-    const totalQuestions = 21;
+    const totalQuestions = this.mode === 'full' ? 21 : 12;  // 根据模式决定题数
     const questionsPerBatch = 7;  // 一次生成最多7题
     const batches = Math.ceil(totalQuestions / questionsPerBatch);
 
     // 显示进度弹窗
     this.showProgress('AI正在生成题目', '正在启动AI生成引擎...');
-    this.updateProgress(0, '准备生成 <span>21</span> 道题目');
+    this.updateProgress(0, `准备生成 <span>${totalQuestions}</span> 道题目`);
 
     for (let batch = 0; batch < batches; batch++) {
       if (this.aiCancelled) break;
