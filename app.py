@@ -4497,11 +4497,11 @@ def get_v77_data():
 # v7.7 静态状态（降级模式）
 _v77_state = {
     'game': {
-        'total_games': 0, 'total_equilibria': 0, 'dominant_rate': 0.0,
-        'bayesian_updates': 0, 'signal_games': 0, 'pd_rounds': 0,
+        'total_games_analyzed': 0, 'total_equilibria_found': 0, 'dominant_rate': 0.0,
+        'total_bayesian_updates': 0, 'total_signal_games': 0, 'total_pd_games': 0,
     },
     'bayes': {
-        'total_hypotheses': 0, 'total_updates': 0, 'convergence_rate': 0.0,
+        'total_updates': 0, 'convergence_rate': 0.0,
         'entropy': 1.0, 'is_converged': False, 't81_status': 'not_converged',
     },
     'mech': {
@@ -4509,11 +4509,11 @@ _v77_state = {
         'ir_satisfaction_rate': 0.0, 'avg_welfare': 0.0,
     },
     'icps': {
-        'total_problems': 0, 'current_maturity': 0.0, 'current_stage': 'sandbox',
-        'sally_anne_passed': False, 't83_satisfied': True, 't84_satisfied': False,
+        'total_problems_solved': 0, 'current_maturity': 0.0, 'current_stage': 'sandbox',
+        'total_sally_anne_tests': 0, 'maturity_monotonic_T83': True, 'theorem_T84': '',
     },
     'emotion': {
-        'vocabulary_size': 0, 'avg_granularity': 0.0, 'current_granularity': 0.0,
+        'vocabulary_size': 0, 'avg_granularity_EG': 0.0, 'current_granularity': 0.0,
         'emotional_range': 0.0, 'dominant_emotion': None,
     },
     'sandbox': {

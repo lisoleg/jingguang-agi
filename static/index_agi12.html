@@ -5916,11 +5916,11 @@ const CHEN_TEST = {
       // 12.5. v7.7 面板（M120-M125）
       if (typeof updateV77Panels === 'function') {
         try { updateV77Panels({
-          game: { total_games: Math.round(3 + s * 12), total_equilibria: Math.round(2 + s * 10), dominant_rate: 0.2 + s * 0.5, bayesian_updates: Math.round(2 + s * 8), signal_games: Math.round(1 + s * 5), pd_rounds: Math.round(5 + s * 30) },
-          bayes: { total_hypotheses: Math.round(2 + s * 6), total_updates: Math.round(3 + s * 15), convergence_rate: 0.3 + s * 0.5, entropy: Math.max(0.1, 1.0 - s * 0.7), is_converged: s > 0.7, t81_status: s > 0.7 ? 'converged' : 'not_converged' },
+          game: { total_games_analyzed: Math.round(3 + s * 12), total_equilibria_found: Math.round(2 + s * 10), dominant_rate: 0.2 + s * 0.5, total_bayesian_updates: Math.round(2 + s * 8), total_signal_games: Math.round(1 + s * 5), total_pd_games: Math.round(5 + s * 30) },
+          bayes: { total_updates: Math.round(3 + s * 15), convergence_rate: 0.3 + s * 0.5, entropy: Math.max(0.1, 1.0 - s * 0.7), is_converged: s > 0.7, t81_status: s > 0.7 ? 'converged' : 'not_converged' },
           mech: { total_designs: Math.round(2 + s * 8), vcg_count: Math.round(1 + s * 5), ic_satisfaction_rate: 0.6 + s * 0.3, ir_satisfaction_rate: 0.7 + s * 0.25, avg_welfare: 0.4 + s * 0.5 },
-          icps: { total_problems: Math.round(2 + s * 10), current_maturity: 0.2 + s * 0.7, current_stage: s > 0.8 ? 'open_world' : (s > 0.5 ? 'icps' : (s > 0.2 ? 'rules' : 'sandbox')), sally_anne_passed: s > 0.7, t83_satisfied: true, t84_satisfied: s > 0.7 },
-          emotion: { vocabulary_size: Math.round(10 + s * 30), avg_granularity: 0.3 + s * 0.5, current_granularity: 0.2 + s * 0.6, emotional_range: 0.3 + s * 0.5, dominant_emotion: s > 0.5 ? '好奇' : '平静' },
+          icps: { total_problems_solved: Math.round(2 + s * 10), current_maturity: 0.2 + s * 0.7, current_stage: s > 0.8 ? 'open_world' : (s > 0.5 ? 'icps' : (s > 0.2 ? 'rules' : 'sandbox')), total_sally_anne_tests: s > 0.7 ? 1 : 0, maturity_monotonic_T83: true, theorem_T84: s > 0.7 },
+          emotion: { vocabulary_size: Math.round(10 + s * 30), avg_granularity_EG: 0.3 + s * 0.5, current_granularity: 0.2 + s * 0.6, emotional_range: 0.3 + s * 0.5, dominant_emotion: s > 0.5 ? '好奇' : '平静' },
           sandbox: { current_stage: s > 0.8 ? 'open_world' : (s > 0.5 ? 'icps' : (s > 0.2 ? 'rules' : 'sandbox')), total_explorations: Math.round(5 + s * 40), curiosity_index: 0.4 + s * 0.5, safety_score: 0.7 + s * 0.25, stage_progress: s, t85_satisfied: true }
         }); } catch(e) { console.warn('v7.7面板更新失败:', e); }
       }
@@ -8472,8 +8472,8 @@ function updateV77Panels(data) {
 // M120+M121+M122: 博弈论推理面板
 function updateGameTheoryPanel(game, bayes) {
   if (!game) return;
-  _v77_set('v77-game-total', game.total_games || 0);
-  _v77_set('v77-game-eq', game.total_equilibria || 0);
+  _v77_set('v77-game-total', game.total_games_analyzed || game.total_games || 0);
+  _v77_set('v77-game-eq', game.total_equilibria_found || game.total_equilibria || 0);
   const domRate = game.dominant_rate || 0;
   _v77_bar('v77-game-dominant-bar', domRate * 100);
   _v77_set('v77-game-dominant-val', domRate.toFixed ? domRate.toFixed(2) : '0.00');
@@ -8486,7 +8486,7 @@ function updateGameTheoryPanel(game, bayes) {
   // T79/T80判定
   const thBadge = document.getElementById('v77-game-theorem');
   if (thBadge) {
-    const hasEq = (game.total_equilibria || 0) > 0;
+    const hasEq = (game.total_equilibria_found || game.total_equilibria || 0) > 0;
     thBadge.textContent = hasEq ? 'NE存在✓' : '—';
     thBadge.style.color = hasEq ? '#34d399' : '#888';
   }
@@ -8505,27 +8505,29 @@ function updateICPSPanel(icps) {
     stageBadge.textContent = stageMap[icps.current_stage] || '沙盒';
     stageBadge.style.color = icps.current_stage === 'open_world' ? '#f472b6' : (icps.current_stage === 'icps' ? '#38bdf8' : '#34d399');
   }
-  _v77_set('v77-icps-problems', icps.total_problems || 0);
+  _v77_set('v77-icps-problems', icps.total_problems_solved || icps.total_problems || 0);
   // Sally-Anne
   const sallyBadge = document.getElementById('v77-icps-sally');
   if (sallyBadge) {
-    sallyBadge.textContent = icps.sally_anne_passed ? '已通过✓' : '未测试';
-    sallyBadge.style.color = icps.sally_anne_passed ? '#34d399' : '#888';
+    const sallyPassed = (icps.total_sally_anne_tests || 0) > 0 && icps.maturity_monotonic_T83 !== false;
+    sallyBadge.textContent = sallyPassed ? '已通过✓' : '未测试';
+    sallyBadge.style.color = sallyPassed ? '#34d399' : '#888';
   }
   // T83/T84
   const thBadge = document.getElementById('v77-icps-theorem');
   if (thBadge) {
-    const t83 = icps.t83_satisfied;
-    const t84 = icps.t84_satisfied;
-    thBadge.textContent = t84 ? 'ToM觉醒✓' : (t83 ? 'Ψ递增✓' : '—');
-    thBadge.style.color = t84 ? '#34d399' : (t83 ? '#fbbf24' : '#888');
+    const t83 = icps.maturity_monotonic_T83 || icps.t83_satisfied;
+    const t84 = icps.theorem_T84 || icps.t84_satisfied;
+    const t84Passed = typeof t84 === 'string' ? t84.includes('通过') || t84.includes('觉醒') : !!t84;
+    thBadge.textContent = t84Passed ? 'ToM觉醒✓' : (t83 ? 'Ψ递增✓' : '—');
+    thBadge.style.color = t84Passed ? '#34d399' : (t83 ? '#fbbf24' : '#888');
   }
 }
 
 // M124+M125: 情绪粒度·沙盒探索面板
 function updateEmotionSandboxPanel(emotion, sandbox) {
   if (!emotion) return;
-  const eg = emotion.current_granularity || emotion.avg_granularity || 0;
+  const eg = emotion.avg_granularity_EG || emotion.current_granularity || emotion.avg_granularity || 0;
   _v77_bar('v77-emo-granularity-bar', eg * 100);
   _v77_set('v77-emo-granularity-val', eg.toFixed ? eg.toFixed(2) : '0.00');
   _v77_set('v77-emo-vocab', emotion.vocabulary_size || 0);
