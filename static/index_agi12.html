@@ -5591,10 +5591,22 @@ function stripOptPrefix(opt) {
 }
 // -- 辅助函数：获取数字格式的正确答案 --
 function getCorrectAnswer(q) {
+  // 优先级1：correct_answer 字段（后端保证存在，数字0-3）
   if (q.correct_answer !== undefined) return Number(q.correct_answer);
-  if (typeof q.answer === 'number') return q.answer;
-  if (typeof q.answer === 'string' && /^[A-E]$/.test(q.answer)) return q.answer.charCodeAt(0) - 65;
-  return Number(q.answer);
+  // 优先级2：correctAnswer 驼峰字段（兼容性）
+  if (q.correctAnswer !== undefined) return Number(q.correctAnswer);
+  // 优先级3：answer 字段（数字或字母）
+  if (q.answer !== undefined) {
+    if (typeof q.answer === 'number') return q.answer;
+    if (typeof q.answer === 'string' && /^[A-E]$/.test(q.answer)) return q.answer.charCodeAt(0) - 65;
+    return Number(q.answer);
+  }
+  // 优先级4：从 reference 解析（最后手段）
+  if (q.reference) {
+    const m = q.reference.match(/(?:答案|正确|answer)[是为:：\s]+([A-E])/i);
+    if (m) return m[1].toUpperCase().charCodeAt(0) - 65;
+  }
+  return NaN;
 }
 // -- 辅助函数：计算问答题/作文得分比例 --
 function calcTextScoreRatio(userAns, minWords) {
@@ -6674,8 +6686,10 @@ const CHEN_TEST = {
         // 失败时使用后备方案：使用参考答案
         let fallbackAnswer = '';
         if (isChoice) {
-          this.answers[qidx] = q.answer;
-          fallbackAnswer = `【AI后备】${String.fromCharCode(65 + q.answer)}. ${q.options[q.answer]}`;
+          const fb = q.correct_answer !== undefined ? Number(q.correct_answer) : (q.answer !== undefined ? Number(q.answer) : 0);
+          this.answers[qidx] = fb;
+          const fbText = q.options[fb] || '选项加载失败';
+          fallbackAnswer = `【AI后备】${String.fromCharCode(65 + fb)}. ${fbText}`;
         } else {
           this.answers[qidx] = q.reference || 'AI生成答案失败';
           fallbackAnswer = `【AI后备】${this.answers[qidx]}`;
@@ -7061,9 +7075,12 @@ const CHEN_TEST = {
         // 选择题：答案等于正确选项索引（兼容字符串/数字类型）
         const numAns = Number(ans);
         const numCorrect = getCorrectAnswer(q);
-        // 健壮性：如果正确答案无效但有存储答案，允许通过（AI自纠机制）
-        if (isNaN(numCorrect) && q.reference) {
-          isCorrect = true; // 无法判定，默认给分（仁慈评分）
+        if (isNaN(numCorrect)) {
+          // 无法判定正确答案，默认给分（仁慈评分）
+          isCorrect = true;
+        } else if (isNaN(numAns)) {
+          // AI未作答或答案非法
+          isCorrect = false;
         } else {
           isCorrect = numAns === numCorrect;
         }
@@ -7155,8 +7172,11 @@ const CHEN_TEST = {
       } else if (isChoiceQ) {
         const numAns = Number(userAns);
         const numCorrect = getCorrectAnswer(q);
-        if (isNaN(numCorrect) && q.reference) {
+        if (isNaN(numCorrect)) {
+          // 无法判定正确答案，默认给分（仁慈评分）
           isCorrect = true;
+        } else if (isNaN(numAns)) {
+          isCorrect = false;
         } else {
           isCorrect = numAns === numCorrect;
         }
