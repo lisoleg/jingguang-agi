@@ -93,7 +93,10 @@ phase_lock, medium_state, four_mode, four_mode_cn, S_C, xinzhai, hexagram_name, 
 - **M85 f-string反斜杠**：Python 3.10不支持f-string内反斜杠。修复：改用字符串拼接
 - **M83缺Tuple import**：`from typing`未包含Tuple。修复：添加Tuple到import列表
 - **app.py M118 record_state类型**：observation和action被转为float()但应为str()。修复：改为str()
-- **schedule包安装路径**：pip安装到D:/Apps/Python不在sys.path中。需手动拷贝到site-packages
+- **schedule包安装路径**：pip安装到D:/Apps/Python不在sys.path中。修复：app.py启动时自动添加D:/Apps/Python到sys.path
+- **M106 Φ值精度低**：短对话(3-5轮)Φ值总返回0.0。修复v7.6.1：sigmoid软激活+Laplace平滑+余弦距离多样性熵+短对话整合度补偿。3轮: 0.0→0.1005
+- **M81-M85 API不统一**：缺get_instance()+get_state()。修复：全部添加，M81委托get_tree_state(), M82/M84委托get_stats()
+- **论文文档未同步**：太乙AGI论文v7.1→v7.6。修复：摘要/架构图/模块表/定理(T52-T78)/预言(P19-P22)/结论全面更新
 
 ## 服务启动
 ```bash
