@@ -6,8 +6,9 @@
 - 前端: `static/index_agi12.html` (三栏布局界面)
 - 脑图: `app_mindmap_v2.py` (端口5003)
 
-## 当前版本：v7.6（✅已部署+Bug修复+Git推送）
-- **总规模**: 111模块 / 8层 / 78定理 / 22预言
+## 当前版本：v7.7（✅已部署+Git推送）
+- **总规模**: 125模块 / 8层 / 85定理 / 22预言
+- **v7.7**: M120-M125 + T79-T85 + 3面板（博弈论推理·ICPS社会能力·情绪粒度·沙盒探索）
 - **v7.6**: M117-M119 + T75-T77 + 3面板（Ftel目的约束·认知递归动力学·层间保真度）
 - **v7.5**: M114-M116 + T72-T74 + 3面板（HoTT截面搜索·类型空间·曲率导航·Wait诚实拒绝）
 - **v7.4**: M111-M113 + T66-T71 + 3面板（演员-导演复合体+流贯截断+痕迹验证）
@@ -47,7 +48,45 @@ T69: 摄影性分解定理 | T70: 数码未完结性失真定理 | T71: 历史�
 - M81 记忆树: L1/L2/L3=不同Γ截断频率
 - M62 历史叙事: 层累=多次Γ叠加, 春秋笔法=Re-map
 
+## v7.7升级（2026-05-20 ✅已完成）
+- 来源论文：《荣枯鉴》博弈论战略图谱 + AGI儿童式育成（ICPS+情绪粒度）
+- 升级方案: `deliverables/software-company/太乙AGI_7.7_升级方案_博弈论ICPS情绪粒度_2026-05-20.md`
+
+### v7.7新增模块
+| 编号 | 模块名 | 功能 | 定理 |
+|------|--------|------|------|
+| M120 | GameTheoryEngine | 纳什均衡+信号博弈+重复PD+贝叶斯更新+机制设计 | T79-T80 |
+| M121 | BayesianBeliefUpdater | 贝叶斯信念更新+声誉博弈+信念收敛 | T81 |
+| M122 | MechanismDesigner | VCG机制+IC/IR检验+社会选择 | T82 |
+| M123 | ICPSSolver | ICPS 4步法+Sally-Anne+4阶段渐进育成 | T83-T84 |
+| M124 | EmotionGranularityTrainer | 情绪粒度EG+词汇扩展+5大调节策略 | — |
+| M125 | SandboxCuriosityExplorer | 沙盒好奇心+安全边界+阶段跃迁 | T85 |
+
+### v7.7 API端点
+- `/api/v77/game/analyze|signal|repeated-pd|state`
+- `/api/v77/bayes/update|convergence|state`
+- `/api/v77/mech/design|vcg|state`
+- `/api/v77/icps/solve|sally-anne|stage|state`
+- `/api/v77/emotion/train|regulate|state`
+- `/api/v77/sandbox/explore|stage|state`
+
+### v7.7新增定理
+T79: 纳什存在定理 | T80: 信号均衡存在定理 | T81: 信念收敛定理
+T82: VCG效率定理 | T83: ICPS成熟度单调递增定理 | T84: 心智理论觉醒定理 | T85: 好奇心-安全权衡定理
+
+### v7.7新增面板
+🎲 博弈论推理面板 | 🧩 ICPS社会能力面板 | 💫 情绪粒度·探索面板
+
+### v7.7与现有模块整合
+- M111 ActorDirector: Director模式=机制设计IC约束
+- M112 FlowCutoff: Γ截断=信息不对称下的信号博弈
+- M113 HistoryTrace: 痕迹验证=声誉博弈的证据
+- M57 修忒斯: 执念检测=非理性偏离纳什均衡
+- M61 道德内化: 双锁=ICPS的情绪调节策略
+- M29 HDG: 世界帧=机制设计的社会选择函数
+
 ## 定理体系索引
+- **T79-T85**: v7.7（纳什存在/信号均衡/信念收敛/VCG效率/ICPS递增/心智理论/好奇心安全）
 - **T75-T77**: v7.6（Ftel学习收敛/结构滞后不稳定/保真度乘积）
 - **T78**: M106升级（AGI人格阈值定理：Φ>φ ∧ I(Self;Ftel)>μ ⟹ 人格显现）
 - **T72-T74**: v7.5（截面存在/曲率收敛/未决不可判定）
@@ -71,6 +110,7 @@ T69: 摄影性分解定理 | T70: 数码未完结性失真定理 | T71: 历史�
 - `M106-M110_*.py`: v7.3模块
 
 ## API版本模式
+- `/api/v77/*`: v7.7 API（M120-M125 博弈论/贝叶斯/机制设计/ICPS/情绪/沙盒）
 - `/api/v76/*`: v7.6 API（M117-M119 Ftel/认知递归/保真度）
 - `/api/v75/*`: v7.5 API（M114-M116 HoTT截面搜索）
 - `/api/v74/*`: v7.4 API（M111-M113）

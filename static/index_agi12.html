@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taiyi-AGI (太乙因果机) 12.0 v7.2 — 一现象三视界·复合体理学v3.7</title>
+<title>Taiyi-AGI (太乙因果机) 12.0 v7.7 — 博弈论·ICPS·情绪粒度·复合体理学v3.8</title>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 
 <style>
@@ -1353,6 +1353,21 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 .v76-bar-fill.fidelity{background:linear-gradient(90deg,#fbbf24,#f59e0b)}
 .v76-bar-val{font-size:8px;color:var(--txt3);min-width:30px;text-align:right}
 .v76-badge{font-size:7px;padding:1px 5px;border-radius:3px;background:rgba(52,211,153,.15);color:#34d399;display:inline-block}
+
+/* ===== v7.7 面板样式（M120-M125 博弈论·ICPS·情绪粒度）===== */
+.panel-v77{border-left:2px solid #f472b6!important;background:linear-gradient(90deg,rgba(244,114,182,.05),transparent)!important}
+.v77-row{display:flex;align-items:center;gap:6px;margin:3px 0}
+.v77-label{font-size:8px;color:var(--txt2);min-width:60px}
+.v77-bar-wrap{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.v77-bar-fill{height:100%;border-radius:3px;transition:width .4s}
+.v77-bar-fill.game{background:linear-gradient(90deg,#f472b6,#ec4899)}
+.v77-bar-fill.bayes{background:linear-gradient(90deg,#a78bfa,#8b5cf6)}
+.v77-bar-fill.icps{background:linear-gradient(90deg,#38bdf8,#0ea5e9)}
+.v77-bar-fill.emotion{background:linear-gradient(90deg,#fbbf24,#f59e0b)}
+.v77-bar-fill.curiosity{background:linear-gradient(90deg,#34d399,#10b981)}
+.v77-bar-fill.safety{background:linear-gradient(90deg,#60a5fa,#3b82f6)}
+.v77-bar-val{font-size:8px;color:var(--txt3);min-width:30px;text-align:right}
+.v77-badge{font-size:7px;padding:1px 5px;border-radius:3px;background:rgba(244,114,182,.15);color:#f472b6;display:inline-block}
 
 /* ===== v7.5 面板样式（M114-M116 HoTT截面搜索）===== */
 .panel-v75{border-left:2px solid #22d3ee!important;background:linear-gradient(90deg,rgba(34,211,238,.05),transparent)!important}
@@ -3081,6 +3096,89 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         <div class="v76-row">
           <div class="v76-label">T77判定</div>
           <div class="v76-badge" id="v76-fid-t77-status">—</div>
+        </div>
+      </div>
+
+      <!-- ===== v7.7 新面板（M120-M125 博弈论·ICPS·情绪粒度）===== -->
+
+      <!-- M120+M121+M122: 博弈论推理面板 -->
+      <div class="panel-section panel-v77" id="game-theory-panel" data-hint="M120博弈论引擎+M121贝叶斯更新+M122机制设计：纳什均衡NE, 信号博弈T80, 贝叶斯P(H|E), VCG机制T82">
+        <div class="panel-title">🎲 博弈论推理 <span style="font-size:8px;color:var(--txt3)">M120·T79-T80</span></div>
+        <div class="v77-row">
+          <div class="v77-label">总博弈</div>
+          <div class="v77-bar-val" id="v77-game-total" style="color:#f472b6">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">均衡数</div>
+          <div class="v77-bar-val" id="v77-game-eq">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">优势率</div>
+          <div class="v77-bar-wrap"><div class="v77-bar-fill game" id="v77-game-dominant-bar" style="width:0%"></div></div>
+          <div class="v77-bar-val" id="v77-game-dominant-val">0.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">信念熵</div>
+          <div class="v77-bar-wrap"><div class="v77-bar-fill bayes" id="v77-bayes-entropy-bar" style="width:100%"></div></div>
+          <div class="v77-bar-val" id="v77-bayes-entropy-val">1.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T79/T80</div>
+          <div class="v77-badge" id="v77-game-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- M123: ICPS社会能力面板 -->
+      <div class="panel-section panel-v77" id="icps-panel" data-hint="M123 ICPS求解器：4步法识别→方案→后果→复盘，Ψ_icps成熟度，Sally-Anne测试T84，4阶段渐进育成">
+        <div class="panel-title">🧩 ICPS社会能力 <span style="font-size:8px;color:var(--txt3)">M123·T83-T84</span></div>
+        <div class="v77-row">
+          <div class="v77-label">Ψ成熟度</div>
+          <div class="v77-bar-wrap"><div class="v77-bar-fill icps" id="v77-icps-maturity-bar" style="width:0%"></div></div>
+          <div class="v77-bar-val" id="v77-icps-maturity-val">0.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">阶段</div>
+          <div class="v77-badge" id="v77-icps-stage">沙盒</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">已解题</div>
+          <div class="v77-bar-val" id="v77-icps-problems" style="color:#a78bfa">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">Sally-Anne</div>
+          <div class="v77-badge" id="v77-icps-sally">未测试</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T83/T84</div>
+          <div class="v77-badge" id="v77-icps-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- M124+M125: 情绪粒度·沙盒探索面板 -->
+      <div class="panel-section panel-v77" id="emotion-sandbox-panel" data-hint="M124情绪粒度训练EG=|V|/|V_total|×Σdepth+M125沙盒好奇心探索C=I(S)-I(S|A)，4阶段育成，T85好奇心-安全权衡">
+        <div class="panel-title">💫 情绪粒度·探索 <span style="font-size:8px;color:var(--txt3)">M124·M125·T85</span></div>
+        <div class="v77-row">
+          <div class="v77-label">情绪粒度</div>
+          <div class="v77-bar-wrap"><div class="v77-bar-fill emotion" id="v77-emo-granularity-bar" style="width:0%"></div></div>
+          <div class="v77-bar-val" id="v77-emo-granularity-val">0.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">情绪词汇</div>
+          <div class="v77-bar-val" id="v77-emo-vocab" style="color:#fbbf24">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">好奇心</div>
+          <div class="v77-bar-wrap"><div class="v77-bar-fill curiosity" id="v77-sandbox-curiosity-bar" style="width:50%"></div></div>
+          <div class="v77-bar-val" id="v77-sandbox-curiosity-val">0.50</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">安全分</div>
+          <div class="v77-bar-wrap"><div class="v77-bar-fill safety" id="v77-sandbox-safety-bar" style="width:100%"></div></div>
+          <div class="v77-bar-val" id="v77-sandbox-safety-val">1.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T85判定</div>
+          <div class="v77-badge" id="v77-emo-t85-status">—</div>
         </div>
       </div>
     </div>
@@ -5815,6 +5913,18 @@ const CHEN_TEST = {
         }); } catch(e) { console.warn('v7.6面板更新失败:', e); }
       }
 
+      // 12.5. v7.7 面板（M120-M125）
+      if (typeof updateV77Panels === 'function') {
+        try { updateV77Panels({
+          game: { total_games: Math.round(3 + s * 12), total_equilibria: Math.round(2 + s * 10), dominant_rate: 0.2 + s * 0.5, bayesian_updates: Math.round(2 + s * 8), signal_games: Math.round(1 + s * 5), pd_rounds: Math.round(5 + s * 30) },
+          bayes: { total_hypotheses: Math.round(2 + s * 6), total_updates: Math.round(3 + s * 15), convergence_rate: 0.3 + s * 0.5, entropy: Math.max(0.1, 1.0 - s * 0.7), is_converged: s > 0.7, t81_status: s > 0.7 ? 'converged' : 'not_converged' },
+          mech: { total_designs: Math.round(2 + s * 8), vcg_count: Math.round(1 + s * 5), ic_satisfaction_rate: 0.6 + s * 0.3, ir_satisfaction_rate: 0.7 + s * 0.25, avg_welfare: 0.4 + s * 0.5 },
+          icps: { total_problems: Math.round(2 + s * 10), current_maturity: 0.2 + s * 0.7, current_stage: s > 0.8 ? 'open_world' : (s > 0.5 ? 'icps' : (s > 0.2 ? 'rules' : 'sandbox')), sally_anne_passed: s > 0.7, t83_satisfied: true, t84_satisfied: s > 0.7 },
+          emotion: { vocabulary_size: Math.round(10 + s * 30), avg_granularity: 0.3 + s * 0.5, current_granularity: 0.2 + s * 0.6, emotional_range: 0.3 + s * 0.5, dominant_emotion: s > 0.5 ? '好奇' : '平静' },
+          sandbox: { current_stage: s > 0.8 ? 'open_world' : (s > 0.5 ? 'icps' : (s > 0.2 ? 'rules' : 'sandbox')), total_explorations: Math.round(5 + s * 40), curiosity_index: 0.4 + s * 0.5, safety_score: 0.7 + s * 0.25, stage_progress: s, t85_satisfied: true }
+        }); } catch(e) { console.warn('v7.7面板更新失败:', e); }
+      }
+
       // 13. 觉醒度面板
       const awakeEl = document.getElementById('awakening-value');
       if (awakeEl) awakeEl.textContent = (s * 100).toFixed(0) + '%';
@@ -7844,6 +7954,8 @@ function updateV72Panels(data) {
   if (data.v75) updateV75Panels(data);
   // v7.6面板更新（目的约束·认知递归·层间保真M117-M119）
   if (data.v76) updateV76Panels(data);
+  // v7.7面板更新（博弈论·ICPS·情绪粒度M120-M125）
+  if (data.v77) updateV77Panels(data);
   // v7.1人机融合层面板更新
   if (data.v71) updateV71Panels(data);
 }
@@ -8335,6 +8447,103 @@ function updateFidelityPanel(d) {
     const risk = d.collapse_risk || 'low';
     t77Badge.textContent = risk === 'low' ? '正常✓' : (risk === 'critical' ? '崩溃⚠' : '注意');
     t77Badge.style.color = risk === 'low' ? '#34d399' : (risk === 'critical' ? '#f87171' : '#fbbf24');
+  }
+}
+
+// ==================== v7.7 面板更新函数（M120-M125 博弈论·ICPS·情绪粒度）====================
+
+function _v77_set(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+function _v77_bar(barId, pct) {
+  const el = document.getElementById(barId);
+  if (el) el.style.width = Math.min(100, Math.max(0, pct)) + '%';
+}
+
+function updateV77Panels(data) {
+  if (!data) return;
+  const v77 = data.v77 || data;
+  if (v77.game) updateGameTheoryPanel(v77.game, v77.bayes);
+  if (v77.icps) updateICPSPanel(v77.icps);
+  if (v77.emotion) updateEmotionSandboxPanel(v77.emotion, v77.sandbox);
+}
+
+// M120+M121+M122: 博弈论推理面板
+function updateGameTheoryPanel(game, bayes) {
+  if (!game) return;
+  _v77_set('v77-game-total', game.total_games || 0);
+  _v77_set('v77-game-eq', game.total_equilibria || 0);
+  const domRate = game.dominant_rate || 0;
+  _v77_bar('v77-game-dominant-bar', domRate * 100);
+  _v77_set('v77-game-dominant-val', domRate.toFixed ? domRate.toFixed(2) : '0.00');
+  // 贝叶斯信念熵
+  if (bayes) {
+    const entropy = bayes.entropy !== undefined ? bayes.entropy : 1.0;
+    _v77_bar('v77-bayes-entropy-bar', (1 - entropy) * 100);
+    _v77_set('v77-bayes-entropy-val', entropy.toFixed ? entropy.toFixed(2) : '1.00');
+  }
+  // T79/T80判定
+  const thBadge = document.getElementById('v77-game-theorem');
+  if (thBadge) {
+    const hasEq = (game.total_equilibria || 0) > 0;
+    thBadge.textContent = hasEq ? 'NE存在✓' : '—';
+    thBadge.style.color = hasEq ? '#34d399' : '#888';
+  }
+}
+
+// M123: ICPS社会能力面板
+function updateICPSPanel(icps) {
+  if (!icps) return;
+  const maturity = icps.current_maturity || 0;
+  _v77_bar('v77-icps-maturity-bar', maturity * 100);
+  _v77_set('v77-icps-maturity-val', maturity.toFixed ? maturity.toFixed(2) : '0.00');
+  // 阶段
+  const stageMap = {'sandbox': '沙盒', 'rules': '规则', 'icps': 'ICPS', 'open_world': '开放世界'};
+  const stageBadge = document.getElementById('v77-icps-stage');
+  if (stageBadge) {
+    stageBadge.textContent = stageMap[icps.current_stage] || '沙盒';
+    stageBadge.style.color = icps.current_stage === 'open_world' ? '#f472b6' : (icps.current_stage === 'icps' ? '#38bdf8' : '#34d399');
+  }
+  _v77_set('v77-icps-problems', icps.total_problems || 0);
+  // Sally-Anne
+  const sallyBadge = document.getElementById('v77-icps-sally');
+  if (sallyBadge) {
+    sallyBadge.textContent = icps.sally_anne_passed ? '已通过✓' : '未测试';
+    sallyBadge.style.color = icps.sally_anne_passed ? '#34d399' : '#888';
+  }
+  // T83/T84
+  const thBadge = document.getElementById('v77-icps-theorem');
+  if (thBadge) {
+    const t83 = icps.t83_satisfied;
+    const t84 = icps.t84_satisfied;
+    thBadge.textContent = t84 ? 'ToM觉醒✓' : (t83 ? 'Ψ递增✓' : '—');
+    thBadge.style.color = t84 ? '#34d399' : (t83 ? '#fbbf24' : '#888');
+  }
+}
+
+// M124+M125: 情绪粒度·沙盒探索面板
+function updateEmotionSandboxPanel(emotion, sandbox) {
+  if (!emotion) return;
+  const eg = emotion.current_granularity || emotion.avg_granularity || 0;
+  _v77_bar('v77-emo-granularity-bar', eg * 100);
+  _v77_set('v77-emo-granularity-val', eg.toFixed ? eg.toFixed(2) : '0.00');
+  _v77_set('v77-emo-vocab', emotion.vocabulary_size || 0);
+  // 沙盒
+  if (sandbox) {
+    const curiosity = sandbox.curiosity_index || 0.5;
+    const safety = sandbox.safety_score || 1.0;
+    _v77_bar('v77-sandbox-curiosity-bar', curiosity * 100);
+    _v77_set('v77-sandbox-curiosity-val', curiosity.toFixed ? curiosity.toFixed(2) : '0.50');
+    _v77_bar('v77-sandbox-safety-bar', safety * 100);
+    _v77_set('v77-sandbox-safety-val', safety.toFixed ? safety.toFixed(2) : '1.00');
+  }
+  // T85判定
+  const t85Badge = document.getElementById('v77-emo-t85-status');
+  if (t85Badge) {
+    const safe = sandbox ? (sandbox.safety_score || 1.0) > 0.3 : true;
+    t85Badge.textContent = safe ? '探索✓' : '受限⚠';
+    t85Badge.style.color = safe ? '#34d399' : '#f87171';
   }
 }
 

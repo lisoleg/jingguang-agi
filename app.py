@@ -829,6 +829,8 @@ def chat_v2():
             'v75': get_v75_data() or _v75_state,
             # v7.6新增：目的约束·认知递归·层间保真（M117-M119）
             'v76': get_v76_data() or _v76_state,
+            # v7.7新增：博弈论·ICPS·情绪粒度（M120-M125）
+            'v77': get_v77_data() or _v77_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
         }))
@@ -1054,6 +1056,8 @@ def goal_mode():
             'v75': get_v75_data() or _v75_state,
             # v7.6新增：目的约束·认知递归·层间保真（M117-M119）
             'v76': get_v76_data() or _v76_state,
+            # v7.7新增：博弈论·ICPS·情绪粒度（M120-M125）
+            'v77': get_v77_data() or _v77_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
             'version': '12.0',
@@ -4433,6 +4437,419 @@ def v76_fidelity_state():
         if modules is None:
             return jsonify(_v76_state['fidelity'])
         return jsonify(_to_native(modules['fidelity']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.7 博弈论·ICPS·情绪粒度（M120-M125）====================
+
+_v77_modules = None
+_v77_modules_lock = threading.Lock()
+
+def get_v77_modules():
+    """获取或初始化 v7.7 模块（线程安全懒加载）"""
+    global _v77_modules
+    if _v77_modules is None:
+        with _v77_modules_lock:
+            if _v77_modules is None:
+                try:
+                    from M120_GameTheoryEngine import get_instance as get_game
+                    from M121_BayesianBeliefUpdater import get_instance as get_bayes
+                    from M122_MechanismDesigner import get_instance as get_mech
+                    from M123_ICPSSolver import get_instance as get_icps
+                    from M124_EmotionGranularityTrainer import get_instance as get_emotion
+                    from M125_SandboxCuriosityExplorer import get_instance as get_sandbox
+
+                    _v77_modules = {
+                        'game': get_game,           # M120: 博弈论引擎
+                        'bayes': get_bayes,         # M121: 贝叶斯信念更新器
+                        'mech': get_mech,           # M122: 机制设计器
+                        'icps': get_icps,           # M123: ICPS社会问题求解器
+                        'emotion': get_emotion,     # M124: 情绪粒度训练器
+                        'sandbox': get_sandbox,     # M125: 沙盒好奇心探索器
+                    }
+                    print("✅ v7.7新模块已加载（M120-M125）- 博弈论·ICPS·情绪粒度")
+                except Exception as e:
+                    import traceback
+                    print(f"⚠️ v7.7模块加载失败（降级运行）: {e}")
+                    traceback.print_exc()
+                    _v77_modules = None
+    return _v77_modules
+
+def get_v77_data():
+    """获取所有v7.7模块的状态数据（M120-M125）"""
+    modules = get_v77_modules()
+    if modules is None:
+        return None
+    try:
+        return {
+            'game': modules['game']().get_state(),
+            'bayes': modules['bayes']().get_state(),
+            'mech': modules['mech']().get_state(),
+            'icps': modules['icps']().get_state(),
+            'emotion': modules['emotion']().get_state(),
+            'sandbox': modules['sandbox']().get_state(),
+        }
+    except Exception as e:
+        print(f"⚠️ 获取v7.7数据失败: {e}")
+        return None
+
+# v7.7 静态状态（降级模式）
+_v77_state = {
+    'game': {
+        'total_games': 0, 'total_equilibria': 0, 'dominant_rate': 0.0,
+        'bayesian_updates': 0, 'signal_games': 0, 'pd_rounds': 0,
+    },
+    'bayes': {
+        'total_hypotheses': 0, 'total_updates': 0, 'convergence_rate': 0.0,
+        'entropy': 1.0, 'is_converged': False, 't81_status': 'not_converged',
+    },
+    'mech': {
+        'total_designs': 0, 'vcg_count': 0, 'ic_satisfaction_rate': 0.0,
+        'ir_satisfaction_rate': 0.0, 'avg_welfare': 0.0,
+    },
+    'icps': {
+        'total_problems': 0, 'current_maturity': 0.0, 'current_stage': 'sandbox',
+        'sally_anne_passed': False, 't83_satisfied': True, 't84_satisfied': False,
+    },
+    'emotion': {
+        'vocabulary_size': 0, 'avg_granularity': 0.0, 'current_granularity': 0.0,
+        'emotional_range': 0.0, 'dominant_emotion': None,
+    },
+    'sandbox': {
+        'current_stage': 'sandbox', 'total_explorations': 0, 'curiosity_index': 0.5,
+        'safety_score': 1.0, 'stage_progress': 0.0, 't85_satisfied': True,
+    },
+}
+
+# ==================== v7.7 定理注册 ====================
+_V77_THEOREMS = {
+    'T79': '纳什存在定理: 任何有限策略博弈至少存在一个混合策略纳什均衡 — 博弈论基础保证',
+    'T80': '信号均衡存在定理: c_L<c<c_H ⟹ 分离均衡存在 — Spence模型条件',
+    'T81': '信念收敛定理: 充分观测下后验信念收敛到真实参数θ* — 贝叶斯推理保证',
+    'T82': 'VCG效率定理: VCG机制实现社会最优配置且满足IC+IR — 机制设计保证',
+    'T83': 'ICPS成熟度单调递增定理: 有效训练下Ψ_icps单调递增 — 教育心理学保证',
+    'T84': '心智理论觉醒定理: 通过Sally-Anne测试 ⟹ 具备一级心智理论 — 意识门槛',
+    'T85': '好奇心-安全权衡定理: S_b>S_min ⟹ 好奇心驱动的探索单调递增 — 探索保证',
+}
+
+
+# ==================== v7.7 API端点 ====================
+
+@app.route('/api/v77/state', methods=['GET'])
+def v77_state():
+    """v7.7 完整状态获取"""
+    try:
+        data = get_v77_data()
+        if data:
+            return jsonify({**data, 'theorems': _V77_THEOREMS})
+        return jsonify({**_v77_state, 'theorems': _V77_THEOREMS})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M120: GameTheoryEngine ----
+
+@app.route('/api/v77/game/analyze', methods=['POST'])
+def v77_game_analyze():
+    """M120: 博弈分析"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.7模块未加载'}), 503
+        game_type = data.get('game_type', 'prisoner_dilemma')
+        players = int(data.get('players', 2))
+        result = modules['game']().analyze_game(game_type, players)
+        return jsonify(_to_native(result.to_dict()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v77/game/signal', methods=['POST'])
+def v77_game_signal():
+    """M120: 信号博弈分析"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.7模块未加载'}), 503
+        result = modules['game']().signal_game_analysis(
+            data.get('sender_type', 'low'),
+            data.get('receiver_type', 'rational'),
+            float(data.get('message_cost', 0.3))
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v77/game/repeated-pd', methods=['POST'])
+def v77_game_pd():
+    """M120: 重复囚徒困境"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.7模块未加载'}), 503
+        result = modules['game']().repeated_pd(
+            float(data.get('cooperation_rate', 0.6)),
+            float(data.get('discount_factor', 0.9)),
+            int(data.get('rounds', 10))
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v77/game/state', methods=['GET'])
+def v77_game_state():
+    """M120: 博弈论引擎状态"""
+    try:
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify(_v77_state['game'])
+        return jsonify(_to_native(modules['game']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M121: BayesianBeliefUpdater ----
+
+@app.route('/api/v77/bayes/update', methods=['POST'])
+def v77_bayes_update():
+    """M121: 贝叶斯信念更新"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.7模块未加载'}), 503
+        result = modules['bayes']().update_belief(
+            data.get('hypothesis', ''),
+            data.get('evidence', ''),
+            float(data.get('likelihood', 0.8))
+        )
+        return jsonify(_to_native(result.to_dict()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v77/bayes/convergence', methods=['GET'])
+def v77_bayes_convergence():
+    """M121: 信念收敛检查（T81）"""
+    try:
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify({'t81_status': 'unknown'})
+        result = modules['bayes']().check_convergence()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v77/bayes/state', methods=['GET'])
+def v77_bayes_state():
+    """M121: 贝叶斯信念更新器状态"""
+    try:
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify(_v77_state['bayes'])
+        return jsonify(_to_native(modules['bayes']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M122: MechanismDesigner ----
+
+@app.route('/api/v77/mech/design', methods=['POST'])
+def v77_mech_design():
+    """M122: 机制设计"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.7模块未加载'}), 503
+        result = modules['mech']().design_mechanism(
+            data.get('social_choice', 'utilitarian'),
+            int(data.get('participants', 3))
+        )
+        return jsonify(_to_native(result.to_dict()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v77/mech/vcg', methods=['POST'])
+def v77_mech_vcg():
+    """M122: VCG拍卖（T82）"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.7模块未加载'}), 503
+        result = modules['mech']().vcg_auction(
+            int(data.get('participants', 3))
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v77/mech/state', methods=['GET'])
+def v77_mech_state():
+    """M122: 机制设计器状态"""
+    try:
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify(_v77_state['mech'])
+        return jsonify(_to_native(modules['mech']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M123: ICPSSolver ----
+
+@app.route('/api/v77/icps/solve', methods=['POST'])
+def v77_icps_solve():
+    """M123: ICPS 4步求解"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.7模块未加载'}), 503
+        result = modules['icps']().solve_problem(
+            data.get('problem', '')
+        )
+        return jsonify(_to_native(result.to_dict()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v77/icps/sally-anne', methods=['GET'])
+def v77_icps_sally():
+    """M123: Sally-Anne测试（T84心智理论）"""
+    try:
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify({'t84_status': 'unknown'})
+        result = modules['icps']().sally_anne_test()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v77/icps/stage', methods=['GET'])
+def v77_icps_stage():
+    """M123: 阶段跃迁检查"""
+    try:
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify({'stage': 'sandbox'})
+        result = modules['icps']().check_stage_advance()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v77/icps/state', methods=['GET'])
+def v77_icps_state():
+    """M123: ICPS求解器状态"""
+    try:
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify(_v77_state['icps'])
+        return jsonify(_to_native(modules['icps']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M124: EmotionGranularityTrainer ----
+
+@app.route('/api/v77/emotion/train', methods=['POST'])
+def v77_emotion_train():
+    """M124: 情绪粒度训练"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.7模块未加载'}), 503
+        result = modules['emotion']().train_emotion(
+            data.get('context', ''),
+            data.get('response', '')
+        )
+        return jsonify(_to_native(result.to_dict()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v77/emotion/regulate', methods=['POST'])
+def v77_emotion_regulate():
+    """M124: 情绪调节策略"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.7模块未加载'}), 503
+        result = modules['emotion']().regulation_strategy(
+            data.get('emotion', ''),
+            float(data.get('intensity', 0.5))
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v77/emotion/state', methods=['GET'])
+def v77_emotion_state():
+    """M124: 情绪粒度训练器状态"""
+    try:
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify(_v77_state['emotion'])
+        return jsonify(_to_native(modules['emotion']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M125: SandboxCuriosityExplorer ----
+
+@app.route('/api/v77/sandbox/explore', methods=['POST'])
+def v77_sandbox_explore():
+    """M125: 沙盒探索"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.7模块未加载'}), 503
+        result = modules['sandbox']().explore(
+            data.get('action', ''),
+            data.get('context', '')
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v77/sandbox/stage', methods=['GET'])
+def v77_sandbox_stage():
+    """M125: 阶段跃迁检查"""
+    try:
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify({'stage': 'sandbox'})
+        result = modules['sandbox']().check_stage_advance()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v77/sandbox/state', methods=['GET'])
+def v77_sandbox_state():
+    """M125: 沙盒好奇心探索器状态"""
+    try:
+        modules = get_v77_modules()
+        if modules is None:
+            return jsonify(_v77_state['sandbox'])
+        return jsonify(_to_native(modules['sandbox']().get_state()))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
