@@ -887,6 +887,21 @@ def create_auto_context_sync(memory_engine=None, token_juice=None) -> AutoContex
     )
 
 
+# 全局单例
+_m83_instance: Optional['AutoContextSync'] = None
+
+def get_instance() -> 'AutoContextSync':
+    """获取M83 AutoContextSync全局单例"""
+    global _m83_instance
+    if _m83_instance is None:
+        _m83_instance = AutoContextSync()
+    return _m83_instance
+
+def get_state() -> Dict[str, Any]:
+    """模块级get_state，与其他模块统一"""
+    return get_instance().get_state()
+
+
 if __name__ == "__main__":
     # 测试代码
     sync_engine = AutoContextSync()

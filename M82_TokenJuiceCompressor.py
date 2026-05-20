@@ -489,6 +489,10 @@ class TokenJuiceCompressor:
             'theorem_T55_satisfied': True  # 实现保证
         }
 
+    def get_state(self) -> Dict[str, Any]:
+        """获取状态（与其他模块一致的接口，委托给get_stats）"""
+        return self.get_stats()
+
 
 # ==================== 批量处理 ====================
 
@@ -542,6 +546,21 @@ class BatchTokenJuice:
 def create_token_juice_compressor(mode: str = 'balanced') -> TokenJuiceCompressor:
     """工厂函数"""
     return TokenJuiceCompressor(compression_mode=mode)
+
+
+# 全局单例
+_m82_instance: Optional['TokenJuiceCompressor'] = None
+
+def get_instance() -> 'TokenJuiceCompressor':
+    """获取M82 TokenJuiceCompressor全局单例"""
+    global _m82_instance
+    if _m82_instance is None:
+        _m82_instance = TokenJuiceCompressor()
+    return _m82_instance
+
+def get_state() -> Dict[str, Any]:
+    """模块级get_state，与其他模块统一"""
+    return get_instance().get_state()
 
 
 if __name__ == "__main__":

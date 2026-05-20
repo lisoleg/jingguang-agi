@@ -717,8 +717,26 @@ tags: {', '.join(chunk.tags)}
             'updated_at': self.memory_tree.updated_at
         }
 
+    def get_state(self) -> Dict[str, Any]:
+        """获取状态（与其他模块一致的接口，委托给get_tree_state）"""
+        return self.get_tree_state()
+
 
 # ==================== API端点函数 ====================
+
+# 全局单例
+_m81_instance: Optional['MemoryTreeEngine'] = None
+
+def get_instance() -> 'MemoryTreeEngine':
+    """获取M81 MemoryTreeEngine全局单例"""
+    global _m81_instance
+    if _m81_instance is None:
+        _m81_instance = MemoryTreeEngine()
+    return _m81_instance
+
+def get_state() -> Dict[str, Any]:
+    """模块级get_state，与其他模块统一"""
+    return get_instance().get_state()
 
 def create_memory_tree_engine(user_id: str = "default") -> MemoryTreeEngine:
     """工厂函数"""

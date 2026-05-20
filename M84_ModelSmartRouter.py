@@ -542,6 +542,10 @@ class ModelSmartRouter:
         if static == 0:
             return 0
         return (dynamic - static) / static * 100
+
+    def get_state(self) -> Dict[str, Any]:
+        """获取状态（与其他模块一致的接口，委托给get_stats）"""
+        return self.get_stats()
     
     def get_model_loads(self) -> Dict[str, float]:
         """获取所有模型负载"""
@@ -609,6 +613,21 @@ def create_model_smart_router() -> ModelSmartRouter:
 def create_taiji_router() -> TaijiModelRouter:
     """太乙专用路由工厂"""
     return TaijiModelRouter()
+
+
+# 全局单例
+_m84_instance: Optional['ModelSmartRouter'] = None
+
+def get_instance() -> 'ModelSmartRouter':
+    """获取M84 ModelSmartRouter全局单例"""
+    global _m84_instance
+    if _m84_instance is None:
+        _m84_instance = ModelSmartRouter()
+    return _m84_instance
+
+def get_state() -> Dict[str, Any]:
+    """模块级get_state，与其他模块统一"""
+    return get_instance().get_state()
 
 
 if __name__ == "__main__":

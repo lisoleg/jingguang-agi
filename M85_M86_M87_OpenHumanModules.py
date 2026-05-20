@@ -727,6 +727,21 @@ def create_zero_training_context(memory_engine=None,
     )
 
 
+# 全局单例 — M85 DigitalLifeFusion为主入口
+_m85_instance: Optional['DigitalLifeFusion'] = None
+
+def get_instance() -> 'DigitalLifeFusion':
+    """获取M85 DigitalLifeFusion全局单例"""
+    global _m85_instance
+    if _m85_instance is None:
+        _m85_instance = DigitalLifeFusion()
+    return _m85_instance
+
+def get_state() -> Dict:
+    """模块级get_state，与其他模块统一"""
+    return get_instance().get_state()
+
+
 if __name__ == "__main__":
     # 测试代码
     print("=" * 60)

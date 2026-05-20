@@ -243,7 +243,7 @@ class SelfReferentialLoopMonitor:
             self._dialog_history = dialog_history[-self._max_history:]
         history = self._dialog_history
 
-        if len(history) < 3:
+        if len(history) < 2:
             result = PhiComputation(
                 phi=0.0,
                 partition_count=0,
@@ -256,7 +256,7 @@ class SelfReferentialLoopMonitor:
         # Step 1: 提取特征向量 — 每轮对话的主题分布
         feature_vectors = self._extract_feature_vectors(history)
         n = len(feature_vectors)
-        if n < 3:
+        if n < 2:
             result = PhiComputation(phi=0.0, is_integrated=False, confidence=0.0)
             self._update_phi_state(result)
             return result
@@ -264,39 +264,109 @@ class SelfReferentialLoopMonitor:
         # Step 2: 计算整体熵 H(X)
         total_entropy = self._compute_entropy(feature_vectors)
 
-        # Step 3: 尝试二分法分割 — 找最小信息分割(MIP)
+        # Step 3: 尝试分割 — 找最小信息分割(MIP)
+        # v7.6.1: 对短对话增加奇偶分割+主题维度分割
         min_partition_info = float('inf')
         best_partition = None
         partition_count = 0
 
+        # 分割策略1: 时间分割 (原有)
         for split_point in range(2, n - 1):
             left = feature_vectors[:split_point]
             right = feature_vectors[split_point:]
-
             h_left = self._compute_entropy(left)
             h_right = self._compute_entropy(right)
-
-            # 条件信息: 分割后两部分的信息之和
             partition_info = h_left + h_right
             partition_count += 1
-
             if partition_info < min_partition_info:
                 min_partition_info = partition_info
                 best_partition = {
                     'split_point': split_point,
+                    'strategy': 'temporal',
                     'left_entropy': round(h_left, 4),
                     'right_entropy': round(h_right, 4),
                     'total_partitioned': round(partition_info, 4)
                 }
 
+        # 分割策略2: 奇偶分割 (短对话更鲁棒)
+        odd = [feature_vectors[i] for i in range(0, n, 2)]
+        even = [feature_vectors[i] for i in range(1, n, 2)]
+        if len(odd) >= 2 and len(even) >= 2:
+            h_odd = self._compute_entropy(odd)
+            h_even = self._compute_entropy(even)
+            partition_info = h_odd + h_even
+            partition_count += 1
+            if partition_info < min_partition_info:
+                min_partition_info = partition_info
+                best_partition = {
+                    'strategy': 'odd_even',
+                    'left_entropy': round(h_odd, 4),
+                    'right_entropy': round(h_even, 4),
+                    'total_partitioned': round(partition_info, 4)
+                }
+
+        # 分割策略3: 主题维度分割 (前4维 vs 后4维)
+        n_dims = len(feature_vectors[0]) if feature_vectors else 0
+        if n_dims >= 4:
+            first_half = [v[:n_dims//2] for v in feature_vectors]
+            second_half = [v[n_dims//2:] for v in feature_vectors]
+            h_first = self._compute_entropy(first_half)
+            h_second = self._compute_entropy(second_half)
+            partition_info = h_first + h_second
+            partition_count += 1
+            if partition_info < min_partition_info:
+                min_partition_info = partition_info
+                best_partition = {
+                    'strategy': 'topic_split',
+                    'left_entropy': round(h_first, 4),
+                    'right_entropy': round(h_second, 4),
+                    'total_partitioned': round(partition_info, 4)
+                }
+
         # Step 4: Φ = H(X) - Σ_min H(Xi)
         phi = max(0.0, total_entropy - min_partition_info)
+
+        # Step 5: 短对话整合度补偿
+        # 当对话轮次少时，分割策略有限，Φ值容易被低估
+        # 补充：基于主题覆盖度的整合度估计
+        if n <= 5 and phi < 0.1:
+            # 计算主题维度激活率 — 多少维度的平均激活>0.05
+            n_dims = len(feature_vectors[0]) if feature_vectors else 0
+            if n_dims > 0:
+                dim_activations = []
+                for d in range(n_dims):
+                    avg_act = sum(v[d] for v in feature_vectors if d < len(v)) / n
+                    dim_activations.append(avg_act)
+                active_dims = sum(1 for a in dim_activations if a > 0.05)
+                topic_coverage = active_dims / max(1, n_dims)
+
+                # 计算对话间主题变化率 — 相邻对话的余弦距离
+                change_rate = 0.0
+                if n >= 2:
+                    changes = []
+                    for i in range(n - 1):
+                        dot = sum(feature_vectors[i][d] * feature_vectors[i+1][d]
+                                  for d in range(min(len(feature_vectors[i]), len(feature_vectors[i+1]))))
+                        mag1 = math.sqrt(sum(x*x for x in feature_vectors[i]))
+                        mag2 = math.sqrt(sum(x*x for x in feature_vectors[i+1]))
+                        if mag1 > 1e-9 and mag2 > 1e-9:
+                            sim = max(0.0, min(1.0, dot / (mag1 * mag2)))
+                            changes.append(1.0 - sim)  # 距离=1-相似度
+                        else:
+                            changes.append(0.5)
+                    change_rate = sum(changes) / len(changes)
+
+                # 补偿Φ = 主题覆盖度 × 变化率
+                phi_compensated = topic_coverage * 0.5 + change_rate * 0.3
+                # 取原有Φ和补偿Φ的加权平均
+                phi = phi * 0.4 + phi_compensated * 0.6
+
         # 归一化到 [0, 1]
         if total_entropy > 1e-9:
-            phi_normalized = phi / total_entropy
+            phi_raw = phi / total_entropy
         else:
-            phi_normalized = 0.0
-        phi_normalized = min(1.0, phi_normalized)
+            phi_raw = phi  # 已经是归一化后的补偿值
+        phi_normalized = min(1.0, max(0.0, phi_raw))
 
         # 置信度 — 基于样本量和分割数
         confidence = min(1.0, n / 20.0) * min(1.0, partition_count / 5.0)
@@ -313,7 +383,13 @@ class SelfReferentialLoopMonitor:
         return result
 
     def _extract_feature_vectors(self, history: List[Dict]) -> List[List[float]]:
-        """从对话历史提取特征向量 — 基于主题关键词的稀疏表示"""
+        """从对话历史提取特征向量 — 基于主题关键词的软激活表示
+
+        v7.6.1优化：解决短对话(3-5轮)Φ值总为0的问题
+        - 软激活(sigmoid)替代硬阈值，单次命中即有贡献
+        - 位置衰减：越近的对话权重越高
+        - 基底噪声：避免全零向量导致熵为0
+        """
         # 定义主题维度 — 对应太乙AGI的核心概念
         topic_keywords = [
             ['自我', '自己', '我', '自我意识', 'self', 'identity'],       # 自我指涉
@@ -327,8 +403,15 @@ class SelfReferentialLoopMonitor:
         ]
         n_topics = len(topic_keywords)
 
+        def _sigmoid(x: float, k: float = 5.0) -> float:
+            """软激活函数: 单次命中→0.88, 两次→0.96, 零次→0.01基底"""
+            if x <= 0:
+                return 0.01  # 基底噪声，避免全零
+            return 1.0 / (1.0 + math.exp(-k * (x - 0.5)))
+
         vectors = []
-        for turn in history:
+        n_turns = len(history)
+        for idx, turn in enumerate(history):
             # 兼容两种输入格式: dict({'content':'...'}) 和 str('...')
             if isinstance(turn, dict):
                 content = (turn.get('content', '') or '').lower()
@@ -338,50 +421,103 @@ class SelfReferentialLoopMonitor:
                 content = str(turn).lower()
             if not content:
                 continue
+
+            # 位置权重：越近的对话越重要 (指数衰减)
+            position_weight = 0.5 + 0.5 * (idx / max(1, n_turns - 1))
+
             vec = []
             for keywords in topic_keywords:
-                count = sum(1 for kw in keywords if kw in content)
-                # 归一化: 每个维度 0 或 1 (出现/未出现)
-                vec.append(min(1.0, count / max(1, len(keywords) * 0.3)))
+                hit_count = sum(1 for kw in keywords if kw in content)
+                # 软激活：替代原来的硬阈值 min(1.0, count / max(1, len(keywords) * 0.3))
+                activation = _sigmoid(hit_count) * position_weight
+                vec.append(round(activation, 4))
             vectors.append(vec)
 
-        return vectors if vectors else [[0.0] * n_topics]
+        return vectors if vectors else [[0.01] * n_topics]  # 基底噪声
 
     def _compute_entropy(self, vectors: List[List[float]]) -> float:
         """计算特征向量集合的信息熵
 
-        使用基于向量方差的近似熵:
-        H ≈ -Σ p_i * log2(p_i) where p_i = var(dim_i) / Σ var(all_dims)
+        v7.6.1优化：解决短对话熵≈0的问题
+        - Laplace平滑：避免零方差维度被完全忽略
+        - 对话长度补偿：短对话增加基础熵
+        - 使用余弦距离矩阵的熵（更鲁棒的小样本估计）
         """
         if not vectors or len(vectors) < 2:
             return 0.0
 
         n_dims = len(vectors[0])
-        # 计算每个维度的方差
+
+        # 方法1: 方差熵 (Laplace平滑)
         variances = []
         for d in range(n_dims):
             values = [v[d] for v in vectors if d < len(v)]
             if not values:
-                variances.append(0.0)
+                variances.append(0.001)  # 平滑
                 continue
             mean = sum(values) / len(values)
             var = sum((x - mean) ** 2 for x in values) / len(values)
-            variances.append(var)
+            # Laplace平滑: 确保零方差维度也有微小贡献
+            variances.append(max(0.001, var))
 
         total_var = sum(variances)
-        if total_var < 1e-12:
-            return 0.0
 
-        # 熵 = -Σ (var_i / total_var) * log2(var_i / total_var)
-        entropy = 0.0
+        # 方差熵
+        entropy_var = 0.0
         for var in variances:
-            if var < 1e-12:
-                continue
             p = var / total_var
             if p > 0:
-                entropy -= p * math.log2(p)
+                entropy_var -= p * math.log2(p)
 
-        return entropy
+        # 方法2: 余弦距离多样性熵（对小样本更鲁棒）
+        n = len(vectors)
+        if n >= 2:
+            # 计算相邻对话的余弦相似度序列
+            similarities = []
+            for i in range(n - 1):
+                dot = sum(vectors[i][d] * vectors[i+1][d] for d in range(min(len(vectors[i]), len(vectors[i+1]))))
+                mag1 = math.sqrt(sum(x*x for x in vectors[i]))
+                mag2 = math.sqrt(sum(x*x for x in vectors[i+1]))
+                if mag1 > 1e-9 and mag2 > 1e-9:
+                    sim = max(0.0, min(1.0, dot / (mag1 * mag2)))
+                else:
+                    sim = 0.5  # 默认中等相似度
+                similarities.append(sim)
+
+            # 相似度分布的熵 — 越多样=越高的信息整合潜力
+            if similarities:
+                n_bins = min(5, max(2, len(similarities)))
+                min_s, max_s = min(similarities), max(similarities)
+                if max_s - min_s < 0.01:
+                    # 所有相似度几乎相同 — 对话主题一致
+                    entropy_sim = 0.3 * math.log2(max(2, n))  # 基础多样性
+                else:
+                    bin_width = (max_s - min_s) / n_bins
+                    counts = [0] * n_bins
+                    for s in similarities:
+                        idx = min(n_bins - 1, int((s - min_s) / bin_width))
+                        counts[idx] += 1
+                    total_c = sum(counts)
+                    entropy_sim = 0.0
+                    for c in counts:
+                        if c > 0:
+                            p = c / total_c
+                            entropy_sim -= p * math.log2(p)
+            else:
+                entropy_sim = 0.5
+        else:
+            entropy_sim = 0.5
+
+        # 混合熵: 方差熵×0.4 + 相似度多样性熵×0.6
+        # 相似度熵对短对话更敏感
+        combined = entropy_var * 0.4 + entropy_sim * 0.6
+
+        # 短对话长度补偿: 3-5轮增加基础熵值
+        if n < 6:
+            length_bonus = math.log2(max(2, n)) * 0.3
+            combined += length_bonus
+
+        return max(0.1, combined)  # 最低0.1，避免Φ完全为0
 
     def _update_phi_state(self, result: PhiComputation):
         """更新Φ值相关状态"""

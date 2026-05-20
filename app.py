@@ -24,6 +24,16 @@ import time  # 新增：认知测试需要
 # 添加当前目录到路径
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# 添加pip备用安装路径（pip配置global.target=D:/Apps/Python时，包会装到这里）
+_alt_python_path = 'D:/Apps/Python'
+if os.path.isdir(_alt_python_path) and _alt_python_path not in sys.path:
+    sys.path.append(_alt_python_path)
+    # 也添加其site-packages子目录（如果存在）
+    for _sp in [os.path.join(_alt_python_path, 'site-packages'),
+                os.path.join(_alt_python_path, 'Lib', 'site-packages')]:
+        if os.path.isdir(_sp) and _sp not in sys.path:
+            sys.path.append(_sp)
+
 app = Flask(__name__, static_folder='static')
 app.config['JSON_AS_ASCII'] = False
 

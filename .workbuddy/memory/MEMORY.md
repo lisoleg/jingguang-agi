@@ -6,7 +6,8 @@
 - 前端: `static/index_agi12.html` (三栏布局界面)
 - 脑图: `app_mindmap_v2.py` (端口5003)
 
-## 当前版本：v7.6（✅已部署）
+## 当前版本：v7.6（✅已部署+Bug修复+Git推送）
+- **总规模**: 111模块 / 8层 / 78定理 / 22预言
 - **v7.6**: M117-M119 + T75-T77 + 3面板（Ftel目的约束·认知递归动力学·层间保真度）
 - **v7.5**: M114-M116 + T72-T74 + 3面板（HoTT截面搜索·类型空间·曲率导航·Wait诚实拒绝）
 - **v7.4**: M111-M113 + T66-T71 + 3面板（演员-导演复合体+流贯截断+痕迹验证）
@@ -70,8 +71,11 @@ T69: 摄影性分解定理 | T70: 数码未完结性失真定理 | T71: 历史�
 - `M106-M110_*.py`: v7.3模块
 
 ## API版本模式
+- `/api/v76/*`: v7.6 API（M117-M119 Ftel/认知递归/保真度）
 - `/api/v75/*`: v7.5 API（M114-M116 HoTT截面搜索）
 - `/api/v74/*`: v7.4 API（M111-M113）
+- `/api/v73/*`: v7.3 API（M106-M110, 含srloop/phi/mutual-info/metacognitive-test）
+- `/api/v71/*`: v7.1 API（M96-M105）
 - `/api/chat_v2`: 主对话 | `/api/goal`: 目标模式
 
 ## 介质数据字段（MediumResponse）
@@ -84,6 +88,12 @@ phase_lock, medium_state, four_mode, four_mode_cn, S_C, xinzhai, hexagram_name, 
 - **定理编号冲突**：T59-T65已被v7.3使用，v7.4定理从T66开始
 - **黑屏bug**：index_agi12.html的`<script>`缺少`</script>`+CSS `<style>`块放在JS `<script>`之后而非`<head>`内，导致浏览器解析错乱。修复：闭合script标签+将CSS移入head
 - **`/api/state` 500错误**：CompositeAGI_V2用`self.system_state`，app.py引用`agi.state`不存在。修复：添加`@property state`映射到`self.system_state`
+- **M106 compute_phi字符串崩溃**：`_extract_feature_vectors`只支持dict格式，纯str列表报AttributeError。修复：添加isinstance判断兼容str/dict
+- **M111缺get_state()**：只有get_complex_state()，与其他23个模块不一致。修复：添加get_state()委托到get_complex_state()
+- **M85 f-string反斜杠**：Python 3.10不支持f-string内反斜杠。修复：改用字符串拼接
+- **M83缺Tuple import**：`from typing`未包含Tuple。修复：添加Tuple到import列表
+- **app.py M118 record_state类型**：observation和action被转为float()但应为str()。修复：改为str()
+- **schedule包安装路径**：pip安装到D:/Apps/Python不在sys.path中。需手动拷贝到site-packages
 
 ## 服务启动
 ```bash
