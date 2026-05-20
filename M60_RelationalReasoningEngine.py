@@ -41,6 +41,13 @@ class RelationalReasoningEngine:
             'conserved': True
         }
 
+        # ===== v7.3新增: 模n守恒计算（论文3）=====
+        self.mod_n_phases = []             # 相位列表
+        self.mod_n_sum = 0.0               # 相位总和
+        self.mod_n_residual = 0.0          # 模n残差
+        self.mod_n_conservation = 1.0      # 模n守恒度
+        self.mod_n_operations = 0          # 模n运算次数
+
     def eml_add(self, a: float, b: float, n: int = None) -> Tuple[float, Dict[str, Any]]:
         """
         EML加法运算
@@ -147,6 +154,33 @@ class RelationalReasoningEngine:
         if len(self.relation_network) > 20:
             self.relation_network.pop(0)
 
+    def compute_mod_n_conservation(self, phases=None, n=None):
+        """v7.3新增: 模n守恒计算（论文3）
+        T63: ∑φ_i ≡ 0 (mod n) — 模n相位守恒定理
+        """
+        if phases is not None:
+            self.mod_n_phases = phases
+        if n is not None:
+            self.symmetry_group_n = n
+
+        if not self.mod_n_phases:
+            return {'conserved': True, 'residual': 0.0, 'n': self.symmetry_group_n}
+
+        n = self.symmetry_group_n
+        self.mod_n_sum = sum(self.mod_n_phases)
+        self.mod_n_residual = self.mod_n_sum % n if n > 0 else self.mod_n_sum
+        self.mod_n_conservation = round(1.0 - abs(self.mod_n_residual) / max(1, n), 4)
+        self.mod_n_operations += 1
+
+        return {
+            'conserved': self.mod_n_residual < 0.1 * n,
+            'phase_sum': round(self.mod_n_sum, 4),
+            'residual': round(self.mod_n_residual, 4),
+            'n': n,
+            'conservation_score': self.mod_n_conservation,
+            'theorem': 'T63: ∑φ_i ≡ 0 (mod n)'
+        }
+
     def get_state(self) -> Dict[str, Any]:
         """获取当前关系推理状态"""
         # 生成表达式显示
@@ -189,7 +223,16 @@ class RelationalReasoningEngine:
                 't21_formula': 'C₂: 1 ⊕ 1 = -1 | C_n(n>2): 1 ⊕ 1 ≠ -1',
                 'critical_condition': '翻转仅在 n=2 时发生'
             },
-            'conservation_status': '✓ 角动量守恒验证通过' if self.angular_momentum['conserved'] else '⚠ 守恒偏差'
+            'conservation_status': '✓ 角动量守恒验证通过' if self.angular_momentum['conserved'] else '⚠ 守恒偏差',
+            # v7.3新增: 模n守恒数据
+            'mod_n_conservation': {
+                'phase_sum': round(self.mod_n_sum, 4),
+                'residual': round(self.mod_n_residual, 4),
+                'n': self.symmetry_group_n,
+                'conservation_score': self.mod_n_conservation,
+                'operations': self.mod_n_operations,
+                'theorem': 'T63: ∑φ_i ≡ 0 (mod n)'
+            }
         }
 
     def simulate(self) -> Dict[str, Any]:

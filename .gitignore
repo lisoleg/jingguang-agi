@@ -67,3 +67,4 @@ stdout.txt
 # Wechat article crawler
 wechat-article-claw/
 debug*.txt
+nul

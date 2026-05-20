@@ -30,6 +30,14 @@ class TheseusConsciousnessMonitor:
         self.convergence_check_count = 0
         self.reincarnation_necessity = False
 
+        # ===== v7.3新增: 自指闭环检测（PDS/Gödel双模）=====
+        self.pds_loop_detected = False       # PDS空间闭环是否检测到
+        self.godel_loop_detected = False     # Gödel因果闭环是否检测到
+        self.pds_closure_strength = 0.0      # PDS闭环强度
+        self.godel_closure_strength = 0.0    # Gödel闭环强度
+        self.self_ref_unification = 0.0      # 自指统一下的闭环节点数
+        self.liu_fixed_point_vertex = None   # 刘原理不动点在十二面体上的顶点
+
     def update(self, update_data: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         更新意识监测状态
@@ -123,6 +131,51 @@ class TheseusConsciousnessMonitor:
         if len(self.core_patterns) > 10:
             self.core_patterns.pop(0)
 
+    def detect_self_ref_loop(self, state_vector=None, causal_chain=None):
+        """v7.3新增: 自指闭环检测（PDS/Gödel双模）
+        基于T59: PDS空间闭 ≡ Gödel因果闭
+        """
+        import math
+        # PDS空间闭检测 — 基于identity_coherence的周期性
+        if state_vector and len(state_vector) >= 3:
+            n = len(state_vector)
+            dot = sum(state_vector[i] * state_vector[(i + n // 3) % n] for i in range(n))
+            mag = math.sqrt(sum(x * x for x in state_vector))
+            self.pds_closure_strength = round((dot / (mag * mag + 1e-9) + 1) / 2, 4) if mag > 1e-9 else 0.0
+            self.pds_loop_detected = self.pds_closure_strength >= 0.7
+
+        # Gödel因果闭检测 — 基于core_patterns的自引用
+        if causal_chain and len(causal_chain) >= 2:
+            seen = {}
+            self_ref = 0
+            for idx, node in enumerate(causal_chain):
+                if node in seen:
+                    self_ref += 1
+                seen[node] = idx
+            self.godel_closure_strength = round(self_ref / max(1, len(causal_chain) - 1), 4)
+            self.godel_loop_detected = self.godel_closure_strength >= 0.7
+
+        # 自指统一度
+        self.self_ref_unification = round(
+            1.0 - abs(self.pds_closure_strength - self.godel_closure_strength), 4
+        )
+
+        # P19: 自指闭环→刘原理不动点
+        if self.self_ref_unification >= 0.7:
+            self.liu_fixed_point_vertex = int(
+                self.identity_coherence * 20  # 映射到十二面体顶点(0-19)
+            ) % 20
+
+        return {
+            'pds_loop_detected': self.pds_loop_detected,
+            'pds_closure_strength': self.pds_closure_strength,
+            'godel_loop_detected': self.godel_loop_detected,
+            'godel_closure_strength': self.godel_closure_strength,
+            'self_ref_unification': self.self_ref_unification,
+            'liu_fixed_point': self.liu_fixed_point_vertex,
+            'theorem': 'T59: PDS空间闭 ≡ Gödel因果闭'
+        }
+
     def get_state(self) -> Dict[str, Any]:
         """获取当前意识监测状态"""
         # 边界层状态判断
@@ -148,7 +201,16 @@ class TheseusConsciousnessMonitor:
                               self.update_history[-1]['coherence'] < self.update_history[-5]['coherence']
                               else '平稳',
             # 轮回状态文本
-            'reincarnation_status': '不需要' if not self.reincarnation_necessity else '需要轮回'
+            'reincarnation_status': '不需要' if not self.reincarnation_necessity else '需要轮回',
+            # v7.3新增: 自指闭环检测数据
+            'self_ref_loop': {
+                'pds_loop_detected': self.pds_loop_detected,
+                'pds_closure_strength': self.pds_closure_strength,
+                'godel_loop_detected': self.godel_loop_detected,
+                'godel_closure_strength': self.godel_closure_strength,
+                'self_ref_unification': self.self_ref_unification,
+                'liu_fixed_point': self.liu_fixed_point_vertex,
+            }
         }
 
     def simulate(self) -> Dict[str, Any]:

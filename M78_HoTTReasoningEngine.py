@@ -251,7 +251,7 @@ class HoTTReasoningEngine:
     """
 
     def __init__(self):
-        self.version = "2.0.0"
+        self.version = "2.1.0"
         self.types: Dict[str, Type] = {}
         self.terms: Dict[str, Term] = {}
         self.proof_steps: List[ProofStep] = []
@@ -275,6 +275,12 @@ class HoTTReasoningEngine:
         # 幻觉统计
         self.hallucination_attempts = 0
         self.hallucination_blocked = 0
+
+        # ===== v7.3新增: Helix自函子态射层 =====
+        self.helix_endofunctors = {}      # Helix自函子注册 {name: {domain, codomain, chirality}}
+        self.helix_natural_transforms = []  # Helix自然变换列表
+        self.helix_coherence = 0.0        # Helix相干度
+        self.helix_chirality = 0.0        # Helix手性参数
 
     def _init_builtin_types(self):
         """初始化内置类型"""
@@ -655,8 +661,64 @@ class HoTTReasoningEngine:
             "hallucination_attempts": self.hallucination_attempts,
             "hallucination_blocked": self.hallucination_blocked,
             "block_rate": self.hallucination_blocked / max(1, self.hallucination_attempts),
-            "univalence_checks": len(self.univalence_checker.equivalences)
+            "univalence_checks": len(self.univalence_checker.equivalences),
+            # v7.3新增: Helix自函子统计
+            "helix_endofunctors": len(self.helix_endofunctors),
+            "helix_natural_transforms": len(self.helix_natural_transforms),
+            "helix_coherence": self.helix_coherence,
+            "helix_chirality": self.helix_chirality
         }
+
+    def register_helix_endofunctor(self, name: str, domain: str = "Type",
+                                     codomain: str = "Type", chirality: float = 0.0) -> Dict[str, Any]:
+        """v7.3新增: 注册Helix自函子
+        基于T64: Helix(F) ≅ 手性流贯(F) (五行变换同构)
+        """
+        import math
+        self.helix_endofunctors[name] = {
+            'domain': domain,
+            'codomain': codomain,
+            'chirality': chirality,
+            'registered_at': len(self.helix_endofunctors)
+        }
+        self.helix_chirality = chirality
+        self._update_helix_coherence()
+        return {
+            'name': name,
+            'domain': domain,
+            'codomain': codomain,
+            'chirality': chirality,
+            'coherence': self.helix_coherence,
+            'theorem': 'T64: Helix(F) ≅ 手性流贯(F)'
+        }
+
+    def add_helix_natural_transform(self, source: str, target: str,
+                                      components: list = None) -> Dict[str, Any]:
+        """v7.3新增: 添加Helix自然变换"""
+        transform = {
+            'source': source,
+            'target': target,
+            'components': components or [],
+            'index': len(self.helix_natural_transforms)
+        }
+        self.helix_natural_transforms.append(transform)
+        self._update_helix_coherence()
+        return transform
+
+    def _update_helix_coherence(self):
+        """更新Helix相干度"""
+        import math
+        n_functors = len(self.helix_endofunctors)
+        n_transforms = len(self.helix_natural_transforms)
+        if n_functors == 0:
+            self.helix_coherence = 0.0
+        else:
+            # 相干度 = 函子密度 × 变换连通度
+            functor_density = min(1.0, n_functors / 5.0)
+            transform_connectivity = min(1.0, n_transforms / max(1, n_functors))
+            self.helix_coherence = round(
+                math.sqrt(functor_density * transform_connectivity), 4
+            )
 
 
 def get_instance():

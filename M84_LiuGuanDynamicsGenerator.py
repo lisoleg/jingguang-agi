@@ -89,6 +89,10 @@ class LiuGuanDynamicsGenerator:
         self.found_laws: List[CandidateLaw] = []
         self.univalence_checks: List[UnivalenceCheck] = []
         self.liu_functor_calls = 0
+        # ===== v7.3新增: 自指闭环可视化（十二面体图）=====
+        self.dodecahedron_fixed_points = []  # 十二面体上的不动点位置(0-19)
+        self.self_ref_loop_vertices = []     # 自指闭环经过的顶点
+        self.dodecahedron_graph = None       # 十二面体图数据
     
     def _compute_kolmogorov_complexity(self, description: str) -> float:
         """
@@ -281,7 +285,56 @@ class LiuGuanDynamicsGenerator:
             "found_laws": len(self.found_laws),
             "univalence_checks": len(self.univalence_checks),
             "latest_law": self.found_laws[-1].name if self.found_laws else None,
-            "status": "active"
+            "status": "active",
+            # v7.3新增: 自指闭环可视化
+            "self_ref_viz": {
+                "dodecahedron_fixed_points": self.dodecahedron_fixed_points[-5:],
+                "self_ref_loop_vertices": self.self_ref_loop_vertices[-10:],
+                "total_fixed_points": len(self.dodecahedron_fixed_points),
+                "total_loop_vertices": len(self.self_ref_loop_vertices)
+            }
+        }
+
+    def visualize_self_ref_on_dodecahedron(self, self_ref_data: Dict = None) -> Dict:
+        """v7.3新增: 自指闭环在十二面体上的可视化
+        将自指闭环映射到正十二面体的顶点和边上
+        P19: 自指闭环→刘原理不动点收敛
+        """
+        import math
+        # 十二面体20个顶点
+        V = 20
+        adj = {}
+        for v in range(V):
+            adj[v] = [(v + 1) % V, (v + 5) % V, (v + 10) % V]
+
+        # 将不动点映射到十二面体
+        if self_ref_data and 'liu_fixed_point' in self_ref_data:
+            fp = self_ref_data['liu_fixed_point']
+            if fp is not None and 0 <= fp < V:
+                self.dodecahedron_fixed_points.append(fp)
+                self.dodecahedron_fixed_points = self.dodecahedron_fixed_points[-20:]
+
+        # 将自指闭环路径映射
+        if self_ref_data and 'loop_path' in self_ref_data:
+            path = self_ref_data['loop_path']
+            mapped = [v % V for v in path if isinstance(v, int)]
+            self.self_ref_loop_vertices.extend(mapped)
+            self.self_ref_loop_vertices = self.self_ref_loop_vertices[-50:]
+
+        # 构建图数据
+        self.dodecahedron_graph = {
+            'vertices': V,
+            'edges': sum(len(v_list) for v_list in adj.values()) // 2,
+            'faces': 12,
+            'fixed_points': self.dodecahedron_fixed_points[-5:],
+            'loop_vertices': self.self_ref_loop_vertices[-10:]
+        }
+
+        return {
+            'graph': self.dodecahedron_graph,
+            'euler_characteristic': V - sum(len(v_list) for v_list in adj.values()) // 2 + 12,
+            'fixed_point_count': len(self.dodecahedron_fixed_points),
+            'theorem': 'P19: 自指闭环→刘原理不动点收敛'
         }
 
 

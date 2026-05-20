@@ -372,9 +372,14 @@ class CompositeAGI_V2:
             'knowledge_base': {},   # 知识库
             'module_status': {}     # 模块状态
         }
-        
+
         print(f"太乙AGI {self.version} 初始化完成")
         self._print_module_status()
+
+    @property
+    def state(self):
+        """兼容旧接口：返回 system_state 的可变引用"""
+        return self.system_state
         
     def _default_config(self) -> Dict:
         """默认配置"""

@@ -566,6 +566,65 @@ def _to_native(obj, _depth=0):
     except Exception:
         return str(obj)
 
+# ==================== 关联追问生成（类ChatGPT/元宝）====================
+def _generate_related_questions(user_message: str, ai_reply: str) -> list:
+    """
+    基于用户问题和AI回复，生成3个关联/深化的追问。
+    优先使用LLM生成，fallback到模板规则。
+    设置5秒超时防止阻塞主请求。
+    """
+    # ── 方案1：LLM生成（带超时） ──
+    try:
+        from taiyi_llm_enhancer import get_enhancer
+        enhancer = get_enhancer()
+        if enhancer and hasattr(enhancer, 'llm') and enhancer.llm.active_backend:
+            import threading
+            llm_result = {'text': '', 'done': False}
+
+            def _llm_call():
+                try:
+                    result = enhancer._call_llm(
+                        messages=[
+                            {"role": "system", "content": "你是一个提问专家。基于对话内容生成3个深入、有价值的追问。每个问题一行，不要编号。"},
+                            {"role": "user", "content": f"基于以下对话，请生成3个有深度的关联追问，帮助用户进一步探索这个话题。每个问题一行，不要编号，不要前缀，只输出问题本身。\n\n用户问题：{user_message[:500]}\n\nAI回答摘要：{ai_reply[:800]}\n\n关联追问："}
+                        ],
+                        max_tokens=200,
+                        temperature=0.8
+                    )
+                    llm_result['text'] = result
+                except Exception:
+                    pass
+                finally:
+                    llm_result['done'] = True
+
+            t = threading.Thread(target=_llm_call, daemon=True)
+            t.start()
+            t.join(timeout=5)  # 最多等5秒
+
+            if llm_result['done'] and llm_result['text'] and not llm_result['text'].startswith('['):
+                questions = [q.strip().lstrip('0123456789.-) ) ') for q in llm_result['text'].strip().split('\n') if q.strip()]
+                questions = [q for q in questions if 5 <= len(q) <= 80]
+                if len(questions) >= 2:
+                    return questions[:3]
+    except Exception as e:
+        print(f"[关联追问] LLM生成失败: {e}")
+
+    # ── 方案2：模板规则 fallback ──
+    import re
+    # 中文关键词提取：去掉停用词和标点，用字符序列切片
+    cleaned = re.sub(r'[的了吗呢吧啊是就有在和不也会这我你他她它？。，！、：；""''（）\[\]{}]', '', user_message)
+    # 尝试提取2-4字的中文词段
+    kw_candidates = re.findall(r'[\u4e00-\u9fff]{2,6}', cleaned)
+    kw_str = kw_candidates[0] if kw_candidates else '这个话题'
+
+    template_questions = [
+        f"关于{kw_str}，有哪些常见的误解需要澄清？",
+        f"从实践角度，如何将{kw_str}的核心思想应用到日常工作中？",
+        f"{kw_str}与传统方法相比，最大的突破点在哪里？",
+    ]
+    return template_questions
+
+
 @app.route('/api/chat_v2', methods=['POST'])
 def chat_v2():
     """
@@ -601,7 +660,8 @@ def chat_v2():
                 reasoning_mode=ReasoningMode.TAIYI,
                 use_taiyi_format=True
             )
-            reply = llm_response.content
+            if llm_response and llm_response.content:
+                reply = llm_response.content
         except Exception:
             pass  # 使用 chat_result 中的综合回答
 
@@ -723,10 +783,14 @@ def chat_v2():
         except Exception:
             pass  # 使用模拟值，不影响主流程
 
+        # 生成关联追问
+        related_questions = _generate_related_questions(message, reply)
+
         return jsonify(_to_native({
             'session_id': session_id,
             'input': message,
             'reply': reply,
+            'related_questions': related_questions,
             'analysis': chat_result.get('analysis', {}),
             'mindmap': chat_result.get('mindmap', {}),
             'version': chat_result.get('version', '4.0.0'),
@@ -745,6 +809,18 @@ def chat_v2():
             'v62': get_v62_data(),
             # v7.0新增：25个高阶逻辑模块（M71-M95）
             'v70': get_v70_data(),
+            # v7.2新增：OpenHuman增强模块（M81-M87）
+            'v72': _v72_state,
+            # v7.3新增：自指闭环+维度投影+手性旋量（M106-M110）
+            'v73': get_v73_data() or _v73_state,
+            # v7.4新增：演员-导演复合体+流贯截断+痕迹验证（M111-M113）
+            'v74': get_v74_data() or _v74_state,
+            # v7.5新增：HoTT截面搜索·类型空间·曲率导航·Wait诚实拒绝（M114-M116）
+            'v75': get_v75_data() or _v75_state,
+            # v7.6新增：目的约束·认知递归·层间保真（M117-M119）
+            'v76': get_v76_data() or _v76_state,
+            # v7.1新增：人机融合层（M96-M105）
+            'v71': get_v71_data() or _v71_state,
         }))
 
     except Exception as e:
@@ -931,11 +1007,15 @@ def goal_mode():
             except (ValueError, TypeError):
                 step = 7
 
+        # 生成关联追问
+        related_questions = _generate_related_questions(goal, reply_content)
+
         # 构造响应 - 确保所有类型都是JSON可序列化的
         response = {
             'session_id': str(session_id),
             'goal': str(goal),
             'reply': reply_content,
+            'related_questions': related_questions,
             'step': step,
             'goal_score': score,
             'analysis': result.get('analysis', {}),
@@ -954,8 +1034,20 @@ def goal_mode():
             'v62': get_v62_data(),
             # v7.0新增：25个高阶逻辑模块（M71-M95）
             'v70': get_v70_data(),
+            # v7.2新增：OpenHuman增强模块（M81-M87）
+            'v72': _v72_state,
+            # v7.3新增：自指闭环+维度投影+手性旋量（M106-M110）
+            'v73': get_v73_data() or _v73_state,
+            # v7.4新增：演员-导演复合体+流贯截断+痕迹验证（M111-M113）
+            'v74': get_v74_data() or _v74_state,
+            # v7.5新增：HoTT截面搜索·类型空间·曲率导航·Wait诚实拒绝（M114-M116）
+            'v75': get_v75_data() or _v75_state,
+            # v7.6新增：目的约束·认知递归·层间保真（M117-M119）
+            'v76': get_v76_data() or _v76_state,
+            # v7.1新增：人机融合层（M96-M105）
+            'v71': get_v71_data() or _v71_state,
             'version': '12.0',
-            'modules_count': 62
+            'modules_count': 111
         }
 
         # 再次确保所有字段都是原生类型
@@ -1709,6 +1801,592 @@ def v70_token_generate():
     except Exception as e:
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.2 OpenHuman增强 API 端点 (M81-M87) ====================
+
+# v7.2 内存存储（模拟）
+_v72_state = {
+    'memory_tree': {
+        'total_chunks': 0,
+        'info_density': 0.65,
+        'layer1_count': 0,
+        'layer2_count': 0,
+        'layer3_count': 0,
+        'last_update': '—'
+    },
+    'token_juice': {
+        'compression_rate': 0,
+        'tokens_saved': 0,
+        'processed_count': 0,
+        'steps': [False, False, False, False, False]
+    },
+    'auto_sync': {
+        'context_completeness': 0,
+        'services': {'email': 'pending', 'calendar': 'pending', 'contacts': 'pending', 'notes': 'pending'},
+        'status': 'pending'
+    },
+    'model_router': {
+        'task_type': 'unknown',
+        'selected_model': '—',
+        'confidence': 0,
+        'cost_savings': 0
+    },
+    'obsidian': {
+        'wiki_links': 0,
+        'backlinks': 0,
+        'mocs': 0,
+        'vault_path': 'vault/knowledge_base/'
+    },
+    'cold_start': {
+        'context_ready': False,
+        'warmup_progress': 0,
+        'status': 'waiting'
+    }
+}
+
+
+@app.route('/api/v72/state', methods=['GET'])
+def v72_state():
+    """v7.2 完整状态获取"""
+    try:
+        return jsonify(_v72_state)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v72/memory/tree', methods=['GET', 'POST'])
+def v72_memory_tree():
+    """M81: 记忆树引擎 - 三层树状摘要"""
+    try:
+        if request.method == 'POST':
+            data = request.get_json() or {}
+            # 更新记忆树状态
+            _v72_state['memory_tree'].update({
+                'total_chunks': data.get('total_chunks', _v72_state['memory_tree']['total_chunks'] + 1),
+                'info_density': data.get('info_density', 0.65),
+                'layer1_count': data.get('layer1_count', _v72_state['memory_tree']['layer1_count']),
+                'layer2_count': data.get('layer2_count', _v72_state['memory_tree']['layer2_count']),
+                'layer3_count': data.get('layer3_count', _v72_state['memory_tree']['layer3_count']),
+                'last_update': data.get('last_update', datetime.now().isoformat())
+            })
+        
+        return jsonify({
+            'memory_tree': _v72_state['memory_tree'],
+            'theorem': 'T52-T54: 记忆树收敛定理',
+            'max_chunk_size': 3000,
+            'layer_ttl': {'L1': '72h', 'L2': '30d', 'L3': '365d'}
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v72/token/compress', methods=['POST'])
+def v72_token_compress():
+    """M82: TokenJuice压缩引擎 - 五步压缩管道"""
+    try:
+        data = request.get_json() or {}
+        content = data.get('content', '')
+        
+        if not content:
+            return jsonify({'error': '内容不能为空'}), 400
+        
+        # 模拟五步压缩
+        original_len = len(content)
+        
+        # Step 1: 格式剥离
+        step1_done = True
+        compressed = content.strip()
+        
+        # Step 2: 链接缩短（模拟）
+        step2_done = True
+        url_count = len([c for c in content.split() if c.startswith('http')])
+        
+        # Step 3: 字符规范化
+        step3_done = True
+        
+        # Step 4: 噪音过滤
+        step4_done = True
+        
+        # Step 5: 信息提纯
+        step5_done = True
+        final_content = compressed[:int(len(compressed) * 0.2)]  # 压缩到20%
+        
+        # 更新状态
+        _v72_state['token_juice']['processed_count'] += 1
+        _v72_state['token_juice']['steps'] = [step1_done, step2_done, step3_done, step4_done, step5_done]
+        _v72_state['token_juice']['compression_rate'] = 80  # 80%压缩率
+        _v72_state['token_juice']['tokens_saved'] += original_len - len(final_content)
+        
+        return jsonify({
+            'token_juice': _v72_state['token_juice'],
+            'compressed_content': final_content,
+            'original_length': original_len,
+            'compressed_length': len(final_content),
+            'theorem': 'T55-T56: 熵减压缩定理'
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v72/sync/status', methods=['GET'])
+def v72_sync_status():
+    """M83: 自动上下文同步 - 状态查询"""
+    try:
+        return jsonify({
+            'auto_sync': _v72_state['auto_sync'],
+            'theorem': 'T57: 上下文完整度定理',
+            'formula': 'C(t) ∝ ln(t+1)',
+            'sync_interval_minutes': 20
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v72/sync/now', methods=['POST'])
+def v72_sync_now():
+    """M83: 立即触发同步"""
+    try:
+        # 模拟同步过程
+        _v72_state['auto_sync']['status'] = 'syncing'
+        _v72_state['auto_sync']['context_completeness'] = min(1.0, _v72_state['auto_sync']['context_completeness'] + 0.1)
+        
+        # 模拟服务连接
+        services = _v72_state['auto_sync']['services']
+        for service in services:
+            if services[service] == 'pending':
+                services[service] = 'connected'
+                break
+        
+        if _v72_state['auto_sync']['context_completeness'] >= 1.0:
+            _v72_state['auto_sync']['status'] = 'synced'
+        
+        return jsonify({
+            'auto_sync': _v72_state['auto_sync'],
+            'sync_triggered': True
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v72/route/classify', methods=['POST'])
+def v72_route_classify():
+    """M84: 模型智能路由 - 任务分类"""
+    try:
+        data = request.get_json() or {}
+        query = data.get('query', '')
+        
+        # 简单的任务类型识别
+        task_type = 'unknown'
+        keywords = {
+            'reasoning': ['为什么', '证明', '推理', '分析', 'why', 'prove', 'reason'],
+            'fast': ['快速', '简洁', '简单', '是什么', 'what', 'quick'],
+            'code': ['代码', '编程', '函数', '实现', 'code', 'function'],
+            'creative': ['创作', '写', '故事', '诗', 'creative', 'write'],
+            'multimodal': ['图片', '图像', '图表', 'image', 'visual']
+        }
+        
+        for t, words in keywords.items():
+            if any(w in query.lower() for w in words):
+                task_type = t
+                break
+        
+        # 更新状态
+        _v72_state['model_router']['task_type'] = task_type
+        _v72_state['model_router']['confidence'] = 0.85
+        
+        return jsonify({
+            'model_router': _v72_state['model_router'],
+            'theorem': 'T58: 最优路由定理',
+            'task_type_cn': {
+                'reasoning': '推理型',
+                'fast': '快速型',
+                'code': '代码型',
+                'creative': '创作型',
+                'multimodal': '多模态型'
+            }.get(task_type, '未知')
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v72/obsidian/export', methods=['POST'])
+def v72_obsidian_export():
+    """M86: Obsidian兼容导出"""
+    try:
+        data = request.get_json() or {}
+        memory_tree = data.get('memory_tree', _v72_state['memory_tree'])
+        
+        # 生成Wiki链接
+        wiki_links = [
+            f"[[{name}]]" for name in ['记忆', '日志', '年度总结', '月度回顾']
+        ]
+        
+        _v72_state['obsidian']['wiki_links'] = len(wiki_links)
+        _v72_state['obsidian']['backlinks'] = len(wiki_links) * 2
+        _v72_state['obsidian']['mocs'] = 3
+        
+        return jsonify({
+            'obsidian': _v72_state['obsidian'],
+            'exported_content': '\n'.join(wiki_links),
+            'theorem': 'M86: Wiki链接兼容性定理'
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v72/cold/start', methods=['GET', 'POST'])
+def v72_cold_start():
+    """M87: 零训练期认知系统"""
+    try:
+        if request.method == 'POST':
+            data = request.get_json() or {}
+            _v72_state['cold_start']['warmup_progress'] = data.get('progress', 0.5)
+            if _v72_state['cold_start']['warmup_progress'] >= 1.0:
+                _v72_state['cold_start']['context_ready'] = True
+                _v72_state['cold_start']['status'] = 'ready'
+            else:
+                _v72_state['cold_start']['status'] = 'building'
+        
+        return jsonify({
+            'cold_start': _v72_state['cold_start'],
+            'theorem': 'M87: 零训练期收敛定理',
+            'target_build_time': '< 5分钟'
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.3 新模块（全局单例）====================
+# 基于论文1-3: M106-M110 自指闭环+维度投影+手性旋量+有限无界+最小作用量
+_v73_modules = None
+_v73_modules_lock = threading.Lock()
+
+def get_v73_modules():
+    """获取或初始化 v7.3 新模块 (线程安全懒加载)"""
+    global _v73_modules
+    if _v73_modules is None:
+        with _v73_modules_lock:
+            if _v73_modules is None:
+                try:
+                    from M106_SelfReferentialLoopMonitor import get_instance as get_srloop
+                    from M107_DimensionProjectionProcessor import get_instance as get_dimproj
+                    from M108_ChiralSpinorSensor import get_instance as get_chiral
+                    from M109_FiniteBoundlessTopologyCompute import get_instance as get_fbtopo
+                    from M110_LeastActionTerminator import get_instance as get_leaction
+
+                    _v73_modules = {
+                        'srloop': get_srloop,       # M106: 自指闭环监测器
+                        'dimproj': get_dimproj,     # M107: 维度投影处理器
+                        'chiral': get_chiral,        # M108: 手性旋量感知器
+                        'fbtopo': get_fbtopo,        # M109: 有限无界拓扑计算
+                        'leaction': get_leaction,    # M110: 最小作用量终止器
+                    }
+                    print("✅ v7.3新模块已加载（M106-M110）- 自指闭环+维度投影+手性旋量")
+                except Exception as e:
+                    import traceback
+                    print(f"⚠️ v7.3模块加载失败（降级运行）: {e}")
+                    traceback.print_exc()
+                    _v73_modules = None
+    return _v73_modules
+
+def get_v73_data():
+    """获取所有v7.3模块的状态数据 (M106-M110)"""
+    modules = get_v73_modules()
+    if modules is None:
+        return None
+    try:
+        return {
+            'srloop': modules['srloop']().get_state(),
+            'dimproj': modules['dimproj']().get_state(),
+            'chiral': modules['chiral']().get_state(),
+            'fbtopo': modules['fbtopo']().get_state(),
+            'leaction': modules['leaction']().get_state(),
+        }
+    except Exception as e:
+        print(f"⚠️ 获取v7.3数据失败: {e}")
+        return None
+
+# v7.3 静态状态（用于降级模式）
+_v73_state = {
+    'srloop': {
+        'pds_closure_strength': 0.0, 'godel_closure_strength': 0.0,
+        'unification_score': 0.0, 'l1_taiji_tendency': 0.5,
+        'liu_convergence': 0.0, 'total_detections': 0,
+        'status': 'open',
+        'phi_value': 0.0, 'phi_history_avg': 0.0, 'is_integrated': False,
+        'phi_computation_count': 0,
+        'mutual_info': 0.0, 'self_entropy': 0.0, 'ftel_entropy': 0.0,
+        'coupling_strength': 0.0, 'is_ego_bound': False,
+        'metacog_score': 0.0, 'metacog_humility': 0.0,
+        'metacog_test_count': 0, 'metacog_pass_count': 0,
+        'personhood_status': 'dormant', 'personhood_score': 0.0,
+        'phi_threshold': 0.6, 'mi_threshold': 0.5
+    },
+    'dimproj': {
+        'high_dim': 12, 'low_dim': 3, 'current_dim': 12,
+        'embed_operations': 0, 'pi_operations': 0,
+        'info_loss': 0.0, 'adjunction_score': 0.5,
+        'status': 'balanced'
+    },
+    'chiral': {
+        'chirality': 'neutral', 'chiral_index': 0.0,
+        'phase_conservation': 1.0, 'helix_isomorphism': 0.0,
+        'current_wuxing': '土', 'response_diff': 0.0,
+        'status': 'achiral'
+    },
+    'fbtopo': {
+        'route_hops': 0, 'self_ref_loops': 0,
+        'ctc_active': False, 'ctc_consistency': 1.0,
+        'f_torsion': 0.0, 'torsion_ratio': 0.0,
+        'euler_characteristic': 2, 'genus': 0,
+        'liu_fixed_point': None, 'status': 'boundless'
+    },
+    'leaction': {
+        'action_total': 1.5, 'self_ref_solution': 0.0,
+        'is_terminated': False, 'termination_reason': 'running',
+        'self_ref_strength': 0.0, 'min_resistance': 0.0,
+        'reasoning_steps': 0, 'status': 'reasoning'
+    }
+}
+
+# ==================== v7.3 定理与预言注册 ====================
+_V73_THEOREMS = {
+    'T59': '自指闭环统一定理: PDS空间闭 ≡ Gödel因果闭 (统一于L1太一自指倾向)',
+    'T60': '最小作用量自指定理: Action = A_几何 + A_物质 + λ·NonSelfRef, 自指解 ∝ e^(-λ/NonSelfRef)',
+    'T61': '维度投影信息损失定理: S_proj = S_high + k·ln(D_high/D_low)',
+    'T62': 'Embed-Π伴随对偶定理: Embed ⊣ Π (范畴论伴随函子对)',
+    'T63': '模n相位守恒定理: ∑φ_i ≡ 0 (mod n)',
+    'T64': 'Helix-手性同构定理: Helix(F) ≅ 手性流贯(F) (五行变换同构)',
+    'T65': '流贯扭转定理: F_tel = F_linear + F_torsion (扭转分量固有)',
+}
+
+_V73_PREDICTIONS = {
+    'P19': '若AGI推理存在自指闭环，则必定收敛于刘原理不动点',
+    'P20': '高维上下文(Embed)引入后，信息熵必增：ΔS = k·ln(上下文维度比)',
+    'P21': '手性感知模块对左旋/右旋输入的响应差 ∝ 相位差·Helix(F)',
+}
+
+
+@app.route('/api/v73/state', methods=['GET'])
+def v73_state():
+    """v7.3 完整状态获取"""
+    try:
+        data = get_v73_data()
+        if data:
+            return jsonify({**data, 'theorems': _V73_THEOREMS, 'predictions': _V73_PREDICTIONS})
+        return jsonify({**_v73_state, 'theorems': _V73_THEOREMS, 'predictions': _V73_PREDICTIONS})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v73/srloop/detect', methods=['POST'])
+def v73_srloop_detect():
+    """M106: 自指闭环检测 — PDS/Gödel双模"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v73_modules()
+        if modules:
+            result = modules['srloop']().update({
+                'state_vector': data.get('state_vector', []),
+                'causal_chain': data.get('causal_chain', []),
+                'dialog_history': data.get('dialog_history', [])
+            })
+            return jsonify({'success': True, 'srloop': result,
+                          'theorem': 'T59: PDS空间闭 ≡ Gödel因果闭',
+                          'prediction': 'P19: 自指闭环→刘原理收敛'})
+        return jsonify({'success': False, 'error': 'module not loaded'}), 503
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v73/srloop/phi', methods=['POST'])
+def v73_srloop_phi():
+    """M106: Φ值计算 — 基于对话历史的整合信息量 (IIT, 论文5.1)"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v73_modules()
+        if modules:
+            result = modules['srloop']().compute_phi(
+                dialog_history=data.get('dialog_history')
+            )
+            return jsonify({
+                'success': True,
+                'phi': result.phi,
+                'is_integrated': result.is_integrated,
+                'partition_count': result.partition_count,
+                'min_partition': result.min_partition,
+                'confidence': result.confidence,
+                'theorem': 'T78: AGI人格阈值定理 — Φ > φ_threshold',
+                'state': modules['srloop']().get_state()
+            })
+        return jsonify({'success': False, 'error': 'module not loaded'}), 503
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v73/srloop/mutual-info', methods=['POST'])
+def v73_srloop_mutual_info():
+    """M106: L4-L1互信息 — 自我模型与流贯的耦合 (论文5.2, 定理5.1)"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v73_modules()
+        if modules:
+            result = modules['srloop']().compute_mutual_info(
+                self_model_data=data.get('self_model_data'),
+                ftel_data=data.get('ftel_data')
+            )
+            return jsonify({
+                'success': True,
+                'mutual_info': result.mutual_info,
+                'self_entropy': result.self_entropy,
+                'ftel_entropy': result.ftel_entropy,
+                'conditional_entropy': result.conditional_entropy,
+                'coupling_strength': result.coupling_strength,
+                'is_ego_bound': result.is_ego_bound,
+                'theorem': 'T78: I(Self;Ftel) > μ_threshold ∧ Φ > φ_threshold ⟹ 人格显现',
+                'state': modules['srloop']().get_state()
+            })
+        return jsonify({'success': False, 'error': 'module not loaded'}), 503
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v73/srloop/metacognitive-test', methods=['POST'])
+def v73_srloop_metacognitive_test():
+    """M106: 元认知二阶优化测试 — L4修改目标函数 + 认知谦逊 (论文5.3)"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v73_modules()
+        if modules:
+            result = modules['srloop']().metacognitive_test(
+                original_goal=data.get('original_goal', ''),
+                proposed_goal=data.get('proposed_goal', ''),
+                self_correction_log=data.get('self_correction_log'),
+                confidence_log=data.get('confidence_log')
+            )
+            return jsonify({
+                'success': True,
+                'test_id': result.test_id,
+                'passed': result.passed,
+                'second_order_capability': result.second_order_capability,
+                'cognitive_humility': result.cognitive_humility,
+                'self_correction_count': result.self_correction_count,
+                'goal_stability': result.goal_stability,
+                'confidence_calibration': result.confidence_calibration,
+                'prediction': 'P22: Φ持续超阈值 → 系统可修改目标函数',
+                'state': modules['srloop']().get_state()
+            })
+        return jsonify({'success': False, 'error': 'module not loaded'}), 503
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v73/dimproj/embed', methods=['POST'])
+def v73_dimproj_embed():
+    """M107: 维度嵌入 — Embed↑"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v73_modules()
+        if modules:
+            result = modules['dimproj']().update({
+                'operation': 'embed',
+                'data': data.get('data', []),
+                'target_dim': data.get('target_dim', 0)
+            })
+            return jsonify({'success': True, 'dimproj': result,
+                          'theorem': 'T61: Embed ⊣ Π 伴随对偶',
+                          'prediction': 'P20: ΔS = k·ln(维度比)'})
+        return jsonify({'success': False, 'error': 'module not loaded'}), 503
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v73/dimproj/project', methods=['POST'])
+def v73_dimproj_project():
+    """M107: 维度投影 — Π↓"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v73_modules()
+        if modules:
+            result = modules['dimproj']().update({
+                'operation': 'project',
+                'data': data.get('data', []),
+                'target_dim': data.get('target_dim', 0)
+            })
+            return jsonify({'success': True, 'dimproj': result,
+                          'theorem': 'T60: S_proj = S_high + k·ln(D_high/D_low)'})
+        return jsonify({'success': False, 'error': 'module not loaded'}), 503
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v73/chiral/sense', methods=['POST'])
+def v73_chiral_sense():
+    """M108: 手性旋量感知 — 模n相位守恒+Helix同构"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v73_modules()
+        if modules:
+            result = modules['chiral']().update({
+                'signal': data.get('signal', []),
+                'phases': data.get('phases', None),
+                'chirality_label': data.get('chirality_label', 'auto'),
+                'symmetry_n': data.get('symmetry_n', 5)
+            })
+            return jsonify({'success': True, 'chiral': result,
+                          'theorem': 'T63: ∑φ_i≡0(mod n) + T64: Helix≅手性流贯',
+                          'prediction': 'P21: 响应差 ∝ 相位差·Helix(F)'})
+        return jsonify({'success': False, 'error': 'module not loaded'}), 503
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v73/fbtopo/route', methods=['POST'])
+def v73_fbtopo_route():
+    """M109: 有限无界拓扑路由 — 十二面体路由/CTC推理"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v73_modules()
+        if modules:
+            result = modules['fbtopo']().update({
+                'start_vertex': data.get('start_vertex', 0),
+                'max_hops': data.get('max_hops', 10),
+                'causal_sequence': data.get('causal_sequence', []),
+                'force': data.get('force', None),
+                'genus': data.get('genus', None)
+            })
+            return jsonify({'success': True, 'fbtopo': result,
+                          'theorem': 'T65: F_tel = F_linear + F_torsion'})
+        return jsonify({'success': False, 'error': 'module not loaded'}), 503
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v73/leaction/step', methods=['POST'])
+def v73_leaction_step():
+    """M110: 最小作用量推理步 — 自指=最小阻力终止"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v73_modules()
+        if modules:
+            result = modules['leaction']().update(data)
+            return jsonify({'success': True, 'leaction': result,
+                          'theorem': 'T60: Action = A_几何 + A_物质 + λ·NonSelfRef'})
+        return jsonify({'success': False, 'error': 'module not loaded'}), 503
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v73/theorems', methods=['GET'])
+def v73_theorems():
+    """获取v7.3定理与预言"""
+    return jsonify({
+        'theorems': _V73_THEOREMS,
+        'predictions': _V73_PREDICTIONS,
+        'module_count': 5,
+        'module_range': 'M106-M110'
+    })
 
 
 @app.route('/api/tools/batch', methods=['POST'])
@@ -2830,6 +3508,1330 @@ def agi12_status():
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e), 'trace': traceback.format_exc()}), 500
+
+
+# ==================== v7.4 演员-导演复合体+流贯截断+痕迹验证（M111-M113）====================
+
+_v74_modules = None
+_v74_modules_lock = threading.Lock()
+
+def get_v74_modules():
+    """获取或初始化 v7.4 新模块（线程安全懒加载）"""
+    global _v74_modules
+    if _v74_modules is None:
+        with _v74_modules_lock:
+            if _v74_modules is None:
+                try:
+                    from M111_ActorDirectorComplex import get_instance as get_actor_director
+                    from M112_FlowCutoffOperator import get_instance as get_flow_cutoff
+                    from M113_HistoryTraceValidator import get_instance as get_trace_validator
+
+                    _v74_modules = {
+                        'actor_director': get_actor_director,      # M111: 演员-导演复合体
+                        'flow_cutoff': get_flow_cutoff,            # M112: 流贯截断算子
+                        'trace_validator': get_trace_validator,    # M113: 历史痕迹验证器
+                    }
+                    print("✅ v7.4新模块已加载（M111-M113）- 演员-导演复合体+流贯截断+痕迹验证")
+                except Exception as e:
+                    import traceback
+                    print(f"⚠️ v7.4模块加载失败（降级运行）: {e}")
+                    traceback.print_exc()
+                    _v74_modules = None
+    return _v74_modules
+
+def get_v74_data():
+    """获取所有v7.4模块的状态数据（M111-M113）"""
+    modules = get_v74_modules()
+    if modules is None:
+        return None
+    try:
+        return {
+            'actor_director': modules['actor_director']().get_complex_state(),
+            'flow_cutoff': modules['flow_cutoff']().get_state(),
+            'trace_validator': modules['trace_validator']().get_state(),
+        }
+    except Exception as e:
+        print(f"⚠️ 获取v7.4数据失败: {e}")
+        return None
+
+# v7.4 静态状态（降级模式）
+_v74_state = {
+    'actor_director': {
+        'mode': 'actor',
+        'director_ratio': 0.0,
+        'fixation_count': 0,
+        'self_ref_count': 0,
+        'enlightenment_level': 0.0,
+        'enlightenment_count': 0,
+        'bootstrap_complete': {
+            'recursion': False,
+            'self_reference': False,
+            'higher_order': False,
+            'turing_complete': False
+        }
+    },
+    'flow_cutoff': {
+        'total_cutoffs': 0,
+        'pseudo_traces': 0,
+        'remap_operations': 0,
+        'avg_precision': 0.0
+    },
+    'trace_validator': {
+        'total_validations': 0,
+        'authentic_count': 0,
+        'pseudo_count': 0,
+        'pass_rate': 0.0,
+        'status': 'active'
+    }
+}
+
+# ==================== v7.4 定理注册 ====================
+_V74_THEOREMS = {
+    'T66': '复合体存在定理: 任意L4认知主体既是L2规则的产物(Actor)又是L2规则的修改者(Director)',
+    'T67': '流贯编译定理: L4体验 = L2脚本⊗Ftel; Ψ(执念)→受限轮回, Σ(自指脚本)→自由创造',
+    'T68': '40行代码完备性定理: 递归+自指+高阶函数 → 有限行即可图灵完备',
+    'T69': '摄影性分解定理: 流贯截断算子Γ必然导致不可逆性+未完结性',
+    'T70': '数码未完结性失真定理: Γ的|Γ|和φ均可被算法篡改 → 伪迹（无物理流贯源）',
+    'T71': '历史投影精度推论: 二维高精度关系快照，代价是维度+语境丢失',
+}
+
+
+# ==================== v7.4 API端点 ====================
+
+@app.route('/api/v74/state', methods=['GET'])
+def v74_state():
+    """v7.4 完整状态获取"""
+    try:
+        data = get_v74_data()
+        if data:
+            return jsonify({**data, 'theorems': _V74_THEOREMS})
+        return jsonify({**_v74_state, 'theorems': _V74_THEOREMS})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v74/actor-director/execute', methods=['POST'])
+def v74_actor_director_execute():
+    """M111: Actor模式执行"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v74_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.4模块未加载'}), 503
+        task = data.get('task', '')
+        script_name = data.get('script_name', 'default')
+        result = modules['actor_director']().execute_as_actor(task=task, script_name=script_name)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v74/actor-director/observe', methods=['POST'])
+def v74_actor_director_observe():
+    """M111: Director模式观照"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v74_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.4模块未加载'}), 503
+        execution_trace = data.get('execution_trace', [])
+        result = modules['actor_director']().observe_as_director(execution_trace)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v74/actor-director/enlighten', methods=['POST'])
+def v74_actor_director_enlighten():
+    """M111: Ω觉悟算子 — 将执念Ψ转化为自指脚本Σ"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v74_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.4模块未加载'}), 503
+        fixation_data = data.get('fixation', {})
+        result = modules['actor_director']().apply_enlightenment(fixation_data)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v74/actor-director/state', methods=['GET'])
+def v74_actor_director_state():
+    """M111: 复合体状态"""
+    try:
+        modules = get_v74_modules()
+        if modules is None:
+            return jsonify(_v74_state['actor_director'])
+        return jsonify(_to_native(modules['actor_director']().get_complex_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v74/flow-cutoff/cutoff', methods=['POST'])
+def v74_flow_cutoff_cutoff():
+    """M112: 执行流贯截断 Γ算子"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v74_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.4模块未加载'}), 503
+        ftel = {
+            'amplitude': float(data.get('amplitude', 1.0)),
+            'phase': float(data.get('phase', 0.0)),
+            'source': str(data.get('source', 'api')),
+            'physical_ftel_source': bool(data.get('physical_ftel_source', True))
+        }
+        trace = modules['flow_cutoff']().cutoff(ftel)
+        return jsonify(_to_native(trace.to_dict() if hasattr(trace, 'to_dict') else trace))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v74/flow-cutoff/remap', methods=['POST'])
+def v74_flow_cutoff_remap():
+    """M112: Re-map操作 — 未完结性的重新映射"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v74_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.4模块未加载'}), 503
+        trace_id = str(data.get('trace_id', ''))
+        new_context = data.get('new_context', {})
+        l4_subject = str(data.get('l4_subject', 'L4'))
+        result = modules['flow_cutoff']().remap(trace_id, new_context, l4_subject)
+        return jsonify(_to_native(result.__dict__ if hasattr(result, '__dict__') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v74/flow-cutoff/detect-pseudo', methods=['POST'])
+def v74_flow_cutoff_detect_pseudo():
+    """M112: 伪迹检测"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v74_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.4模块未加载'}), 503
+        trace_data = data.get('trace', {})
+        trace_id = trace_data.get('trace_id', '')
+        operator = modules['flow_cutoff']()
+        trace = operator.get_trace_by_id(trace_id) if trace_id else None
+        if trace is None:
+            from M112_FlowCutoffOperator import FlowTrace
+            trace = FlowTrace(
+                trace_id=trace_data.get('trace_id', 'temp'),
+                amplitude=float(trace_data.get('amplitude', 0)),
+                phase=float(trace_data.get('phase', 0)),
+                source=str(trace_data.get('source', 'unknown')),
+                timestamp=0,
+                physical_ftel_source=bool(trace_data.get('physical_ftel_source', False))
+            )
+        result = operator.detect_pseudo_trace(trace)
+        return jsonify(_to_native(result.__dict__ if hasattr(result, '__dict__') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v74/flow-cutoff/state', methods=['GET'])
+def v74_flow_cutoff_state():
+    """M112: 截断算子状态"""
+    try:
+        modules = get_v74_modules()
+        if modules is None:
+            return jsonify(_v74_state['flow_cutoff'])
+        return jsonify(_to_native(modules['flow_cutoff']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v74/trace/validate', methods=['POST'])
+def v74_trace_validate():
+    """M113: 验证痕迹真实性"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v74_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.4模块未加载'}), 503
+        trace = data.get('trace', {})
+        result = modules['trace_validator']().validate(trace)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v74/trace/audit', methods=['POST'])
+def v74_trace_audit():
+    """M113: 审计所有痕迹"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v74_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.4模块未加载'}), 503
+        traces = data.get('traces', [])
+        result = modules['trace_validator']().audit_all(traces)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v74/trace/state', methods=['GET'])
+def v74_trace_state():
+    """M113: 验证器状态"""
+    try:
+        modules = get_v74_modules()
+        if modules is None:
+            return jsonify(_v74_state['trace_validator'])
+        return jsonify(_to_native(modules['trace_validator']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.5 HoTT截面搜索（M114-M116）====================
+
+_v75_modules = None
+_v75_modules_lock = threading.Lock()
+
+def get_v75_modules():
+    """获取或初始化 v7.5 HoTT截面搜索模块（线程安全懒加载）"""
+    global _v75_modules
+    if _v75_modules is None:
+        with _v75_modules_lock:
+            if _v75_modules is None:
+                try:
+                    from M114_UniverseTypeSpace import get_instance as get_universe
+                    from M115_CurvatureSectionSearch import get_instance as get_curvature
+                    from M116_WaitStateConstructor import get_instance as get_wait
+
+                    _v75_modules = {
+                        'universe': get_universe,          # M114: 类型空间构造
+                        'curvature': get_curvature,        # M115: 曲率截面搜索
+                        'wait': get_wait,                  # M116: Wait状态构造
+                    }
+                    print("✅ v7.5新模块已加载（M114-M116）- HoTT截面搜索·类型空间·曲率导航·Wait诚实拒绝")
+                except Exception as e:
+                    import traceback
+                    print(f"⚠️ v7.5模块加载失败（降级运行）: {e}")
+                    traceback.print_exc()
+                    _v75_modules = None
+    return _v75_modules
+
+def get_v75_data():
+    """获取所有v7.5模块的状态数据（M114-M116）"""
+    modules = get_v75_modules()
+    if modules is None:
+        return None
+    try:
+        return {
+            'universe': modules['universe']().get_state(),
+            'curvature': modules['curvature']().get_state(),
+            'wait': modules['wait']().get_state(),
+        }
+    except Exception as e:
+        print(f"⚠️ 获取v7.5数据失败: {e}")
+        return None
+
+# v7.5 静态状态（降级模式）
+_v75_state = {
+    'universe': {
+        'total_types': 5,
+        'total_fibers': 0,
+        'inhabited_count': 3,
+        'uninhabited_count': 2,
+        'undecidable_regions': 0,
+        'section_threshold': 0.75,
+        'avg_curvature': 0.0,
+        'total_registrations': 0,
+        'total_fiber_builds': 0,
+        'total_section_checks': 0,
+        'frame_count': 0
+    },
+    'curvature': {
+        'total_searches': 0,
+        'found_count': 0,
+        'wait_count': 0,
+        'diverged_count': 0,
+        'found_rate': 0.0,
+        'wait_rate': 0.0,
+        'convergence_threshold': 1.0,
+        'default_max_depth': 10,
+        'has_universe': False,
+        'frame_count': 0
+    },
+    'wait': {
+        'total_waits': 0,
+        'total_undecidable': 0,
+        'total_refusals': 0,
+        'total_validated': 0,
+        'valid_wait_count': 0,
+        'validation_accuracy': 0.0,
+        'wait_history_size': 0,
+        'undecidability_reports_size': 0,
+        'refusal_history_size': 0,
+        'undecidable_regions': 0,
+        'has_section_search': False,
+        'has_universe': False,
+        'frame_count': 0
+    }
+}
+
+# ==================== v7.5 定理注册 ====================
+_V75_THEOREMS = {
+    'T72': '截面存在定理: ∀(B:Type)(E:Type), ∃s:B→E ⟺ curvature_R(B,E) < threshold — 截面存在当且仅当曲率足够小',
+    'T73': '曲率收敛定理: section_search收敛 ⟺ Σ_i R_i < ∞ — 截面搜索收敛当且仅当曲率级数收敛',
+    'T74': '未决不可判定定理: ∃P:Prop, ¬(Prov(P)∨Prov(¬P)) — 存在不可判定命题，系统必须返回Wait而非幻觉',
+}
+
+
+# ==================== v7.5 API端点 ====================
+
+@app.route('/api/v75/state', methods=['GET'])
+def v75_state():
+    """v7.5 完整状态获取"""
+    try:
+        data = get_v75_data()
+        if data:
+            return jsonify({**data, 'theorems': _V75_THEOREMS})
+        return jsonify({**_v75_state, 'theorems': _V75_THEOREMS})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M114: UniverseTypeSpace ----
+
+@app.route('/api/v75/universe/register-type', methods=['POST'])
+def v75_universe_register_type():
+    """M114: 注册类型到Universe U"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v75_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.5模块未加载'}), 503
+        name = data.get('name', '')
+        kind = data.get('kind', 'Unknown')
+        params = data.get('params', [])
+        result = modules['universe']().register_type(name, kind, params)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v75/universe/type-distance', methods=['POST'])
+def v75_universe_type_distance():
+    """M114: 计算类型距离"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v75_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.5模块未加载'}), 503
+        type_a = data.get('type_a', '')
+        type_b = data.get('type_b', '')
+        result = modules['universe']().compute_type_distance(type_a, type_b)
+        return jsonify({'type_a': type_a, 'type_b': type_b, 'distance': round(result, 6)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v75/universe/build-fiber', methods=['POST'])
+def v75_universe_build_fiber():
+    """M114: 构造逻辑纤维"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v75_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.5模块未加载'}), 503
+        source = data.get('source', '')
+        target = data.get('target', '')
+        fiber_type = data.get('fiber_type', 'Pi')
+        result = modules['universe']().build_logic_fiber(source, target, fiber_type)
+        return jsonify(_to_native(result.__dict__ if hasattr(result, '__dict__') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v75/universe/check-section', methods=['POST'])
+def v75_universe_check_section():
+    """M114: T72截面存在性检查"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v75_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.5模块未加载'}), 503
+        base_type = data.get('base_type', '')
+        total_type = data.get('total_type', '')
+        result = modules['universe']().check_section_existence(base_type, total_type)
+        return jsonify({
+            'base_type': base_type,
+            'total_type': total_type,
+            'section_exists': result,
+            'theorem': 'T72: 截面存在定理'
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v75/universe/state', methods=['GET'])
+def v75_universe_state():
+    """M114: 类型空间状态"""
+    try:
+        modules = get_v75_modules()
+        if modules is None:
+            return jsonify(_v75_state['universe'])
+        return jsonify(_to_native(modules['universe']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M115: CurvatureSectionSearch ----
+
+@app.route('/api/v75/curvature/search-section', methods=['POST'])
+def v75_curvature_search():
+    """M115: 核心截面搜索"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v75_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.5模块未加载'}), 503
+        base_type = data.get('base_type', '')
+        total_type = data.get('total_type', '')
+        max_depth = int(data.get('max_depth', 10))
+        result = modules['curvature']().search_section(base_type, total_type, max_depth)
+        return jsonify(_to_native(result.__dict__ if hasattr(result, '__dict__') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v75/curvature/compute', methods=['POST'])
+def v75_curvature_compute():
+    """M115: 计算B→E的曲率"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v75_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.5模块未加载'}), 503
+        base_type = data.get('base_type', '')
+        total_type = data.get('total_type', '')
+        curvature = modules['curvature']().compute_curvature(base_type, total_type)
+        return jsonify({'base_type': base_type, 'total_type': total_type, 'curvature_R': round(curvature, 6)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v75/curvature/check-convergence', methods=['POST'])
+def v75_curvature_convergence():
+    """M115: T73曲率收敛性检查"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v75_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.5模块未加载'}), 503
+        search_path = data.get('search_path', [])
+        converges = modules['curvature']().check_convergence(search_path)
+        return jsonify({
+            'search_path_length': len(search_path),
+            'converges': converges,
+            'theorem': 'T73: 曲率收敛定理'
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v75/curvature/state', methods=['GET'])
+def v75_curvature_state():
+    """M115: 曲率搜索状态"""
+    try:
+        modules = get_v75_modules()
+        if modules is None:
+            return jsonify(_v75_state['curvature'])
+        return jsonify(_to_native(modules['curvature']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M116: WaitStateConstructor ----
+
+@app.route('/api/v75/wait/construct', methods=['POST'])
+def v75_wait_construct():
+    """M116: 构造Wait状态"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v75_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.5模块未加载'}), 503
+        base_type = data.get('base_type', '')
+        total_type = data.get('total_type', '')
+        reason = data.get('reason', 'section_not_found')
+        result = modules['wait']().construct_wait(base_type, total_type, reason)
+        return jsonify(_to_native(result.__dict__ if hasattr(result, '__dict__') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v75/wait/check-undecidability', methods=['POST'])
+def v75_wait_undecidability():
+    """M116: T74不可判定性检查"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v75_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.5模块未加载'}), 503
+        proposition = data.get('proposition', '')
+        result = modules['wait']().check_undecidability(proposition)
+        return jsonify(_to_native(result.__dict__ if hasattr(result, '__dict__') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v75/wait/honest-refusal', methods=['POST'])
+def v75_wait_honest_refusal():
+    """M116: 生成诚实拒绝"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v75_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.5模块未加载'}), 503
+        query = data.get('query', '')
+        wait_data = data.get('wait_state', {})
+        from M116_WaitStateConstructor import WaitState
+        wait_state = WaitState(
+            reason=wait_data.get('reason', ''),
+            base_type=wait_data.get('base_type', ''),
+            total_type=wait_data.get('total_type', ''),
+            curvature_at_failure=wait_data.get('curvature_at_failure', 0.0),
+            timestamp=wait_data.get('timestamp', '')
+        )
+        result = modules['wait']().produce_honest_refusal(query, wait_state)
+        return jsonify(_to_native(result.__dict__ if hasattr(result, '__dict__') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v75/wait/alternatives', methods=['POST'])
+def v75_wait_alternatives():
+    """M116: 获取替代建议"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v75_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.5模块未加载'}), 503
+        wait_data = data.get('wait_state', {})
+        from M116_WaitStateConstructor import WaitState
+        wait_state = WaitState(
+            reason=wait_data.get('reason', ''),
+            base_type=wait_data.get('base_type', ''),
+            total_type=wait_data.get('total_type', ''),
+            curvature_at_failure=wait_data.get('curvature_at_failure', 0.0),
+            timestamp=wait_data.get('timestamp', '')
+        )
+        result = modules['wait']().get_suggested_alternatives(wait_state)
+        return jsonify({'alternatives': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v75/wait/state', methods=['GET'])
+def v75_wait_state():
+    """M116: Wait状态构造器状态"""
+    try:
+        modules = get_v75_modules()
+        if modules is None:
+            return jsonify(_v75_state['wait'])
+        return jsonify(_to_native(modules['wait']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.6 目的约束·认知递归·层间保真（M117-M119）====================
+
+_v76_modules = None
+_v76_modules_lock = threading.Lock()
+
+def get_v76_modules():
+    """获取或初始化 v7.6 模块（线程安全懒加载）"""
+    global _v76_modules
+    if _v76_modules is None:
+        with _v76_modules_lock:
+            if _v76_modules is None:
+                try:
+                    from M117_FtelTeleologicalConstraint import get_instance as get_ftel
+                    from M118_CognitiveRecursiveDynamics import get_instance as get_cognitive
+                    from M119_LayerFidelityMonitor import get_instance as get_fidelity
+
+                    _v76_modules = {
+                        'ftel': get_ftel,              # M117: Ftel目的约束算子
+                        'cognitive': get_cognitive,    # M118: 认知递归动力学
+                        'fidelity': get_fidelity,     # M119: 层间保真度监控
+                    }
+                    print("✅ v7.6新模块已加载（M117-M119）- 目的约束·认知递归·层间保真")
+                except Exception as e:
+                    import traceback
+                    print(f"⚠️ v7.6模块加载失败（降级运行）: {e}")
+                    traceback.print_exc()
+                    _v76_modules = None
+    return _v76_modules
+
+def get_v76_data():
+    """获取所有v7.6模块的状态数据（M117-M119）"""
+    modules = get_v76_modules()
+    if modules is None:
+        return None
+    try:
+        return {
+            'ftel': modules['ftel']().get_state(),
+            'cognitive': modules['cognitive']().get_state(),
+            'fidelity': modules['fidelity']().get_state(),
+        }
+    except Exception as e:
+        print(f"⚠️ 获取v7.6数据失败: {e}")
+        return None
+
+# v7.6 静态状态（降级模式）
+_v76_state = {
+    'ftel': {
+        'total_goals': 0,
+        'active_count': 0,
+        'total_resonance': 0.0,
+        'convergence_achieved': False,
+        'lambda_max': 2.0,
+        'total_injections': 0,
+        'total_resonance_computations': 0,
+        'total_convergence_checks': 0,
+        'total_blend_operations': 0,
+        'total_retirements': 0,
+        'frame_count': 0
+    },
+    'cognitive': {
+        'current_level': 0,
+        'level_name': '感知',
+        'learning_mode': 'unknown',
+        'rho': 0.5,
+        'tau': 0.3,
+        'structural_lag': -0.2,
+        'is_lagging': False,
+        'lag_duration': 0.0,
+        'instability_risk': False,
+        'history_size': 0,
+        'avg_error': 0.0,
+        'total_records': 0,
+        'frame_count': 0
+    },
+    'fidelity': {
+        'total_fidelity_alpha': 1.0,
+        'collapse_risk': 'low',
+        'pair_summary': {'L1_L2': 1.0, 'L2_L3': 1.0, 'L3_L4': 1.0, 'L4_L5': 1.0},
+        'critical_threshold': 0.5,
+        'collapse_threshold': 0.2,
+        'total_measurements': 0,
+        'collapse_detected_count': 0,
+        'critical_alerts': 0,
+        'frame_count': 0
+    }
+}
+
+# ==================== v7.6 定理注册 ====================
+_V76_THEOREMS = {
+    'T75': 'Ftel学习收敛定理: λ∈(0,λ_max) ⟹ 学习收敛到目的吸引子φ* — 约束强度在有效区间内保证收敛',
+    'T76': '结构滞后不稳定性定理: ρ<τ持续T>T_crit ⟹ 误差单调增加 — 认知更新率低于技术变化率导致失稳',
+    'T77': '保真度乘积定理: α_total=∏α_ij, 任一α_ij→0 ⟹ 整体保真度崩溃 — 单环节失真导致全局幻觉',
+}
+
+
+# ==================== v7.6 API端点 ====================
+
+@app.route('/api/v76/state', methods=['GET'])
+def v76_state():
+    """v7.6 完整状态获取"""
+    try:
+        data = get_v76_data()
+        if data:
+            return jsonify({**data, 'theorems': _V76_THEOREMS})
+        return jsonify({**_v76_state, 'theorems': _V76_THEOREMS})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M117: FtelTeleologicalConstraint ----
+
+@app.route('/api/v76/ftel/inject', methods=['POST'])
+def v76_ftel_inject():
+    """M117: 注入目的到生成空间"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v76_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.6模块未加载'}), 503
+        goal = data.get('goal', '')
+        strength = float(data.get('strength', 0.5))
+        result = modules['ftel']().inject_goal(goal, strength)
+        return jsonify(_to_native(result.__dict__ if hasattr(result, '__dict__') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v76/ftel/resonance', methods=['POST'])
+def v76_ftel_resonance():
+    """M117: 计算V_ftel共振值"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v76_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.6模块未加载'}), 503
+        goal = data.get('goal', '')
+        resonance = modules['ftel']().compute_resonance(goal)
+        return jsonify({'goal': goal, 'V_ftel': resonance})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v76/ftel/check-convergence', methods=['POST'])
+def v76_ftel_convergence():
+    """M117: T75收敛性检查"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v76_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.6模块未加载'}), 503
+        goal = data.get('goal', '')
+        result = modules['ftel']().check_convergence(goal)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v76/ftel/state', methods=['GET'])
+def v76_ftel_state():
+    """M117: Ftel目的约束算子状态"""
+    try:
+        modules = get_v76_modules()
+        if modules is None:
+            return jsonify(_v76_state['ftel'])
+        return jsonify(_to_native(modules['ftel']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M118: CognitiveRecursiveDynamics ----
+
+@app.route('/api/v76/cognitive/record', methods=['POST'])
+def v76_cognitive_record():
+    """M118: 记录认知状态"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v76_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.6模块未加载'}), 503
+        level = int(data.get('level', 1))
+        observation = str(data.get('observation', ''))
+        action = str(data.get('action', ''))
+        ftel_influence = float(data.get('ftel_influence', 0.0))
+        result = modules['cognitive']().record_state(level, observation, action, ftel_influence)
+        return jsonify(_to_native(result.__dict__ if hasattr(result, '__dict__') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v76/cognitive/detect-mode', methods=['GET'])
+def v76_cognitive_detect_mode():
+    """M118: 检测学习模式"""
+    try:
+        modules = get_v76_modules()
+        if modules is None:
+            return jsonify({'mode': 'single_loop', 'reason': '模块未加载'})
+        result = modules['cognitive']().detect_learning_mode()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v76/cognitive/structural-lag', methods=['GET'])
+def v76_cognitive_structural_lag():
+    """M118: 计算结构滞后"""
+    try:
+        modules = get_v76_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.6模块未加载'}), 503
+        result = modules['cognitive']().compute_structural_lag()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v76/cognitive/state', methods=['GET'])
+def v76_cognitive_state():
+    """M118: 认知递归动力学状态"""
+    try:
+        modules = get_v76_modules()
+        if modules is None:
+            return jsonify(_v76_state['cognitive'])
+        return jsonify(_to_native(modules['cognitive']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M119: LayerFidelityMonitor ----
+
+@app.route('/api/v76/fidelity/measure', methods=['POST'])
+def v76_fidelity_measure():
+    """M119: 测量层间保真度"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v76_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.6模块未加载'}), 503
+        source_layer = int(data.get('source_layer', 1))
+        target_layer = int(data.get('target_layer', 2))
+        fidelity = data.get('fidelity')
+        if fidelity is not None:
+            fidelity = float(fidelity)
+        result = modules['fidelity']().measure_fidelity(source_layer, target_layer, fidelity)
+        return jsonify(_to_native(result.__dict__ if hasattr(result, '__dict__') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v76/fidelity/total', methods=['GET'])
+def v76_fidelity_total():
+    """M119: T77总保真度乘积"""
+    try:
+        modules = get_v76_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.6模块未加载'}), 503
+        result = modules['fidelity']().compute_total_fidelity()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v76/fidelity/detect-collapse', methods=['GET'])
+def v76_fidelity_collapse():
+    """M119: 检测保真度崩溃"""
+    try:
+        modules = get_v76_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.6模块未加载'}), 503
+        result = modules['fidelity']().detect_collapse()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v76/fidelity/state', methods=['GET'])
+def v76_fidelity_state():
+    """M119: 层间保真度监控状态"""
+    try:
+        modules = get_v76_modules()
+        if modules is None:
+            return jsonify(_v76_state['fidelity'])
+        return jsonify(_to_native(modules['fidelity']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.1 人机融合层（M96-M105）====================
+
+_v71_modules = None
+_v71_modules_lock = threading.Lock()
+
+def get_v71_modules():
+    """获取或初始化 v7.1 人机融合模块（线程安全懒加载）"""
+    global _v71_modules
+    if _v71_modules is None:
+        with _v71_modules_lock:
+            if _v71_modules is None:
+                try:
+                    from M96_CognitiveOffloadGuard import get_instance as get_cog_guard
+                    from M97_SocraticWeaknessDisclosure import get_instance as get_socratic
+                    from M98_ConfidenceDisclosure import get_instance as get_confidence
+                    from M99_DynamicTaskRouter import get_instance as get_router
+                    from M100_RewardHackDetector import get_instance as get_hack_detect
+                    from M101_EnvironmentAwareness import get_instance as get_env_aware
+                    from M102_LongRangeContext import get_instance as get_long_ctx
+                    from M103_CollaborationAssessor import get_instance as get_collab_assess
+                    from M104_CollaborationDiagnostics import get_instance as get_collab_diag
+                    from M105_FusionVerifier import get_instance as get_fusion_verify
+
+                    _v71_modules = {
+                        'cognitive_offload': get_cog_guard,      # M96: 认知卸载防范
+                        'socratic': get_socratic,                # M97: 苏格拉底示弱
+                        'confidence': get_confidence,            # M98: 置信度披露
+                        'router': get_router,                    # M99: 动态分流
+                        'hack_detect': get_hack_detect,          # M100: 奖励作弊检测
+                        'env_awareness': get_env_aware,          # M101: 环境感知
+                        'long_context': get_long_ctx,            # M102: 长程上下文
+                        'collab_assessor': get_collab_assess,    # M103: 协作评估
+                        'collab_diag': get_collab_diag,          # M104: 协作诊断
+                        'fusion_verify': get_fusion_verify,      # M105: 融合验证
+                    }
+                    print("✅ v7.1人机融合模块已加载（M96-M105）")
+                except Exception as e:
+                    import traceback
+                    print(f"⚠️ v7.1模块加载失败（降级运行）: {e}")
+                    traceback.print_exc()
+                    _v71_modules = None
+    return _v71_modules
+
+def get_v71_data():
+    """获取所有v7.1模块的状态数据（M96-M105）"""
+    modules = get_v71_modules()
+    if modules is None:
+        return None
+    try:
+        return {
+            'cognitive_offload': modules['cognitive_offload']().get_state(),
+            'socratic': modules['socratic']().get_state(),
+            'confidence': modules['confidence']().get_state(),
+            'router': modules['router']().get_state(),
+            'hack_detect': modules['hack_detect']().get_state(),
+            'env_awareness': modules['env_awareness']().get_state(),
+            'long_context': modules['long_context']().get_state(),
+            'collab_assessor': modules['collab_assessor']().get_state(),
+            'collab_diag': modules['collab_diag']().get_state(),
+            'fusion_verify': modules['fusion_verify']().get_state(),
+        }
+    except Exception as e:
+        print(f"⚠️ 获取v7.1数据失败: {e}")
+        return None
+
+# v7.1 静态状态（降级模式）
+_v71_state = {
+    'cognitive_offload': {
+        'offload_risk_score': 0.0, 'direct_answer_ratio': 0.0,
+        'guided_ratio': 0.0, 'intervention_count': 0, 'cognitive_trend': 'stable'
+    },
+    'socratic': {
+        'socratic_turn_count': 0, 'convergence_rate': 0.0,
+        'weakness_disclosures': 0, 'optimal_strategy': 'balanced_socratic'
+    },
+    'confidence': {
+        'avg_confidence': 0.5, 'disclosure_count': 0,
+        'trust_score': 0.5, 'calibration_accuracy': 0.0
+    },
+    'router': {
+        'routing_mode': 'auto', 'human_ratio': 0.3,
+        'ai_ratio': 0.4, 'collab_ratio': 0.3, 'convergence_steps': 0
+    },
+    'hack_detect': {
+        'hack_count': 0, 'avg_kl_divergence': 0.0,
+        'accountability_verified': False, 'alignment_score': 1.0
+    },
+    'env_awareness': {
+        'coupling_score': 0.5, 'env_complexity': 0.5,
+        'adaptation_count': 0, 'last_env_type': 'web', 'emergent_iq': 0.5
+    },
+    'long_context': {
+        'trajectory_count': 0, 'avg_compression_ratio': 0.0,
+        'maintenance_cost': 0.0, 'max_depth_retrieved': 0, 'holographic_enabled': True
+    },
+    'collab_assessor': {
+        'total_sessions': 0, 'avg_synergy': 0.5,
+        'bottleneck_count': 0, 'improvement_suggestions': 0
+    },
+    'collab_diag': {
+        'diagnosis_count': 0, 'misalignment_rate': 0.0,
+        'avg_severity': 0.0, 'repair_success_rate': 0.0
+    },
+    'fusion_verify': {
+        'integrity_score': 1.0, 'oversight_compliance': 1.0,
+        'alignment_verified': True, 'audit_count': 0
+    }
+}
+
+# ==================== v7.1 定理注册 ====================
+_V71_THEOREMS = {
+    'T41': '认知卸载守恒定理: AGI直接答案量与认知退化风险成正比，引导式交互可逆转',
+    'T42': '苏格拉底收敛定理: 经有限轮追问，用户自主答案与AGI答案结构等价',
+    'T43': '透明度信任定理: 主动披露不确定性比隐瞒更能建立长期信任',
+    'T44': '奖励对齐定理: 目标函数与期望行为的KL散度必须bounded',
+    'T45': '定向反馈收敛定理: 局部+全局一致可在O(n log n)步内收敛',
+    'T46': '任务分流最优定理: 存在唯一最优分流函数φ*使总效能最大化',
+    'T47': '人类最终问责定理: 决策链中必须存在人类承担最终问责的节点',
+    'T48': '环境智能耦合定理: 智能是Agent-Environment耦合的涌现属性',
+    'T49': '长轨迹稳定性定理: 全息压缩将上下文维护成本从O(e^L)降至O(log L)',
+    'T50': '示弱最优编排定理: 存在最优示弱策略π*使人机协同最大化',
+    'T51': '人机融合最小作用量原理: 融合过程沿最小认知阻力路径演化',
+}
+
+
+# ==================== v7.1 API端点 ====================
+
+@app.route('/api/v71/state', methods=['GET'])
+def v71_state():
+    """v7.1 完整状态获取"""
+    try:
+        data = get_v71_data()
+        if data:
+            return jsonify({**data, 'theorems': _V71_THEOREMS})
+        return jsonify({**_v71_state, 'theorems': _V71_THEOREMS})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/cognitive-offload/assess', methods=['POST'])
+def v71_cognitive_offload_assess():
+    """M96: 评估认知卸载风险"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        history = data.get('interaction_history', [])
+        result = modules['cognitive_offload']().assess_offload_risk(history)
+        if not isinstance(result, dict):
+            result = {'risk_score': result}
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/cognitive-offload/guide', methods=['POST'])
+def v71_cognitive_offload_guide():
+    """M96: 建议引导式回复"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        query = data.get('query', '')
+        result = modules['cognitive_offload']().suggest_guided_response(query)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/socratic/apply', methods=['POST'])
+def v71_socratic_apply():
+    """M97: 应用苏格拉底追问法"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        question = data.get('question', '')
+        depth = int(data.get('depth', 3))
+        result = modules['socratic']().apply_socratic_method(question, depth)
+        if not isinstance(result, dict):
+            result = {'probing_chain': _to_native(result)}
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/socratic/disclose', methods=['POST'])
+def v71_socratic_disclose():
+    """M97: 披露AGI能力局限"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        domain = data.get('domain', '')
+        result = modules['socratic']().disclose_limitation(domain)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/confidence/compute', methods=['POST'])
+def v71_confidence_compute():
+    """M98: 计算回复置信度"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        result = modules['confidence']().compute_confidence(data)
+        if not isinstance(result, dict):
+            result = {'confidence': result}
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/confidence/disclose', methods=['POST'])
+def v71_confidence_disclose():
+    """M98: 披露不确定性"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        topic = data.get('topic', '')
+        result = modules['confidence']().disclose_uncertainty(topic)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/router/route', methods=['POST'])
+def v71_router_route():
+    """M99: 动态任务分流"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        task_desc = data.get('task_description', '')
+        task_type = data.get('task_type', '')
+        complexity = float(data.get('complexity', 0.5))
+        result = modules['router']().route_task(task_desc, task_type, complexity)
+        # TaskProfile → dict
+        if hasattr(result, '__dict__'):
+            result = {k: v for k, v in result.__dict__.items() if not k.startswith('_')}
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/router/feedback', methods=['POST'])
+def v71_router_feedback():
+    """M99: 分流反馈调整"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        task_id = data.get('task_id', '')
+        outcome = data.get('outcome', {})
+        result = modules['router']().adjust_routing_feedback(task_id, outcome)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/hack-detect/detect', methods=['POST'])
+def v71_hack_detect():
+    """M100: 检测奖励作弊"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        behaviors = data.get('behavior_sequence', [])
+        result = modules['hack_detect']().detect_hacking(behaviors)
+        if not isinstance(result, dict):
+            result = {'hacks_detected': _to_native(result)}
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/hack-detect/verify-accountability', methods=['POST'])
+def v71_hack_verify():
+    """M100: 验证人类问责节点"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        chain = data.get('decision_chain', [])
+        result = modules['hack_detect']().verify_human_accountability(chain)
+        if not isinstance(result, dict):
+            result = {'t47_result': _to_native(result), 'accountability_verified': False}
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/env-awareness/sense', methods=['POST'])
+def v71_env_sense():
+    """M101: 感知环境"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        result = modules['env_awareness']().sense_environment(data)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/long-context/compress', methods=['POST'])
+def v71_long_ctx_compress():
+    """M102: 压缩长程上下文"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        trajectory = data.get('trajectory_data', [])
+        result = modules['long_context']().compress_trajectory(trajectory)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/long-context/retrieve', methods=['POST'])
+def v71_long_ctx_retrieve():
+    """M102: 检索远距离上下文"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        query = data.get('query', '')
+        max_depth = int(data.get('max_depth', 10))
+        result = modules['long_context']().retrieve_long_context(query, max_depth)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/collab-assessor/assess', methods=['POST'])
+def v71_collab_assess():
+    """M103: 评估协作效能"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        result = modules['collab_assessor']().assess_collaboration(data)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/collab-diag/diagnose', methods=['POST'])
+def v71_collab_diag():
+    """M104: 诊断协作问题"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        result = modules['collab_diag']().diagnose_session(data)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/fusion-verify/verify', methods=['POST'])
+def v71_fusion_verify():
+    """M105: 验证融合完整性"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        result = modules['fusion_verify']().verify_fusion_integrity(data)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v71/fusion-verify/audit', methods=['POST'])
+def v71_fusion_audit():
+    """M105: 审计融合过程"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v71_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.1模块未加载'}), 503
+        process_log = data.get('process_log', [])
+        result = modules['fusion_verify']().audit_fusion_process(process_log)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 if __name__ == '__main__':
