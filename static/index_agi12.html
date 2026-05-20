@@ -6442,14 +6442,47 @@ const CHEN_TEST = {
           const aiOptText = q.options[aiChoice] || '选项加载失败';
           this.pushTestQA('ai', `【AI选择】${String.fromCharCode(65 + aiChoice)}. ${aiOptText}`, { qidx: qidx, qtype: q.type });
 
-          // 在界面上显示AI选择的答案
+          // 在题目卡片上标记AI选择的选项
           const optEls = document.querySelectorAll(`[data-qidx="${qidx}"]`);
           optEls.forEach(el => {
             if (parseInt(el.dataset.opt) === aiChoice) {
               el.classList.add('selected', 'ai-selected');
-              el.innerHTML = `<span class="chen-opt-letter">${String.fromCharCode(65 + aiChoice)}</span><span class="chen-opt-text">${q.options[aiChoice]}</span> <span style="color:var(--green);font-size:10px">&#10004; AI选</span>`;
+              el.style.opacity = '1';
+              el.style.background = 'var(--green-dim, rgba(46,204,113,0.15))';
+              el.innerHTML = `<span class="chen-opt-letter">${String.fromCharCode(65 + aiChoice)}</span><span class="chen-opt-text">${q.options[aiChoice]}</span> <span style="color:var(--green);font-size:10px">&#10004;</span>`;
+            } else {
+              el.style.opacity = '0.5';
             }
           });
+          // 更新题目卡片上的等待提示
+          const answerPlaceholder = document.getElementById(`chen-ai-answer-${qidx}`);
+          if (answerPlaceholder) {
+            answerPlaceholder.innerHTML = `<span style="color:var(--green)">&#10004; AI选择：${String.fromCharCode(65 + aiChoice)}. ${aiOptText}</span>`;
+          }
+
+          // 在对话区显示AI的推理过程和最终答案
+          {
+            const history = document.getElementById('history');
+            const aiDiv = document.createElement('div');
+            aiDiv.className = 'msg msg-ai msg-chen-ai';
+            // 提取推理过程（去掉最后的"答案：X"行）
+            const reasoning = aiReply.replace(/^[^\n]*答案[是为：:\s]*[A-D][.)]?\s*$/mi, '').trim();
+            const letter = String.fromCharCode(65 + aiChoice);
+            aiDiv.innerHTML = `
+              <div class="msg-meta">
+                <span style="color:var(--acc);font-weight:600">&#129302; AI回答</span>
+                <span style="color:var(--txt3);margin-left:8px">第 ${qidx + 1} 题</span>
+              </div>
+              <div style="margin-top:4px">
+                ${reasoning ? `<div style="font-size:12px;color:var(--txt2);margin-bottom:8px;line-height:1.6;white-space:pre-wrap;max-height:200px;overflow-y:auto">${reasoning.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>` : ''}
+                <div style="font-size:13px;font-weight:600;color:var(--green);padding:6px 10px;background:var(--green-dim, rgba(46,204,113,0.1));border-radius:6px">
+                  &#10004; 答案：${letter}. ${aiOptText}
+                </div>
+              </div>
+            `;
+            history.appendChild(aiDiv);
+            history.scrollTop = history.scrollHeight;
+          }
       } else if (isEssay || isComposition) {
         // 问答题或小作文：使用AI生成的答案，AI空时fallback到参考答案
         let rawAnswer = aiReply && aiReply.trim().length > 0 ? aiReply.trim() : (q.reference || '');
@@ -6457,33 +6490,44 @@ const CHEN_TEST = {
         const minLen = q.minWords || (isComposition ? 500 : 80);
         const isTooShort = rawAnswer.length < Math.max(minLen * 0.3, 20);
         if (rawAnswer.length === 0) {
-          rawAnswer = '⚠️ AI未能生成有效答案（返回为空）。请手动作答。';
+          rawAnswer = '⚠️ AI未能生成有效答案（返回为空）。';
         } else if (isTooShort && rawAnswer.length > 0) {
-          rawAnswer += '\n\n⚠️ AI回答可能不完整（字数不足最低要求的30%），建议补充作答。';
+          rawAnswer += '\n\n⚠️ AI回答可能不完整（字数不足最低要求的30%）。';
         }
         const aiAnswer = rawAnswer;
         this.answers[qidx] = aiAnswer;
 
-        // 在界面上显示AI的答案
-        const textarea = document.getElementById(`essay-input-${qidx}`);
-        if (textarea) {
-          textarea.value = aiAnswer;
-          this.updateWordCount(qidx, isEssay ? 'essay' : 'composition');
-
-          // 显示已提交状态
-          const qDiv = document.getElementById('chen-test-' + qidx);
-          if (qDiv) {
-            const nav = qDiv.querySelector('.chen-test-nav');
-            if (nav) {
-              nav.innerHTML = `<div style="color:var(--green);font-size:11px">&#10004; AI已提交</div>`;
-            }
-          }
-
-          // 方案A：AI自动提交，不需要用户点击"确认提交"
-          setTimeout(() => {
-            this.saveTextAnswer(qidx, true);
-          }, 500 + Math.random() * 1000);  // 500-1500ms后自动提交，更自然
+        // 更新题目卡片上的等待提示
+        const answerPlaceholder = document.getElementById(`chen-ai-answer-${qidx}`);
+        if (answerPlaceholder) {
+          answerPlaceholder.innerHTML = `<span style="color:var(--green)">&#10004; AI已作答（见下方）</span>`;
         }
+
+        // 在对话区显示AI的答案
+        {
+          const history = document.getElementById('history');
+          const aiDiv = document.createElement('div');
+          aiDiv.className = 'msg msg-ai msg-chen-ai';
+          const charCount = aiAnswer.replace(/\s/g, '').length;
+          const truncated = charCount > 600;
+          const displayText = truncated ? aiAnswer.substring(0, 600) + '...' : aiAnswer;
+          aiDiv.innerHTML = `
+            <div class="msg-meta">
+              <span style="color:var(--acc);font-weight:600">&#129302; AI回答</span>
+              <span style="color:var(--txt3);margin-left:8px">第 ${qidx + 1} 题 · ${isComposition ? '小作文' : '问答题'}</span>
+              <span style="color:var(--txt3);margin-left:8px;font-size:10px">${charCount}字</span>
+            </div>
+            <div style="margin-top:4px;font-size:12px;line-height:1.7;white-space:pre-wrap;max-height:300px;overflow-y:auto">${displayText.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+            ${truncated ? `<div style="font-size:10px;color:var(--txt3);margin-top:4px;cursor:pointer" onclick="this.previousElementSibling.style.maxHeight='none';this.style.display='none'">&#128196; 点击展开全文</div>` : ''}
+          `;
+          history.appendChild(aiDiv);
+          history.scrollTop = history.scrollHeight;
+        }
+
+        // AI自动提交
+        setTimeout(() => {
+          this.saveTextAnswer(qidx, true);
+        }, 300);
       }
 
         // 更新左侧进度
@@ -6567,50 +6611,81 @@ const CHEN_TEST = {
     div.id = 'chen-test-' + this.currentIdx;
     
     let questionContent = '';
+    const isAiMode = this.aiAutoMode;
     
     if (isChoice) {
-      // 选择题
-      questionContent = `
-        <div class="chen-test-options">
-          ${q.options.map((opt, i) => `
-            <div class="chen-test-option ${this.answers[this.currentIdx] === i ? 'selected' : ''}"
-                 data-qidx="${this.currentIdx}" data-opt="${i}" onclick="CHEN_TEST.selectAnswer(${this.currentIdx}, ${i})">
-              <span class="chen-opt-letter">${String.fromCharCode(65 + i)}</span>
-              <span class="chen-opt-text">${stripOptPrefix(opt)}</span>
-            </div>
-          `).join('')}
-        </div>
-      `;
+      if (isAiMode) {
+        // AI模式：选项只读展示，不可点击
+        questionContent = `
+          <div class="chen-test-options" style="pointer-events:none">
+            ${q.options.map((opt, i) => `
+              <div class="chen-test-option" id="chen-opt-${this.currentIdx}-${i}"
+                   data-qidx="${this.currentIdx}" data-opt="${i}" style="cursor:default;opacity:0.85">
+                <span class="chen-opt-letter">${String.fromCharCode(65 + i)}</span>
+                <span class="chen-opt-text">${stripOptPrefix(opt)}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div id="chen-ai-answer-${this.currentIdx}" style="margin-top:6px;font-size:11px;color:var(--txt3)">&#8987; 等待AI回答...</div>
+        `;
+      } else {
+        // 用户模式：选项可点击
+        questionContent = `
+          <div class="chen-test-options">
+            ${q.options.map((opt, i) => `
+              <div class="chen-test-option ${this.answers[this.currentIdx] === i ? 'selected' : ''}"
+                   data-qidx="${this.currentIdx}" data-opt="${i}" onclick="CHEN_TEST.selectAnswer(${this.currentIdx}, ${i})">
+                <span class="chen-opt-letter">${String.fromCharCode(65 + i)}</span>
+                <span class="chen-opt-text">${stripOptPrefix(opt)}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
     } else if (isEssay) {
-      // 问答题
-      const charCount = this.answers[this.currentIdx] ? this.answers[this.currentIdx].replace(/\s/g, '').length : 0;
-      questionContent = `
-        <div style="margin-top:10px">
-          <textarea id="essay-input-${this.currentIdx}"
-                    placeholder="请输入答案（${q.minWords}-${q.maxWords}字）..."
-                    style="width:100%;height:80px;background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:8px;color:var(--txt);font-size:12px;resize:vertical;font-family:inherit"
-                    oninput="CHEN_TEST.updateWordCount(${this.currentIdx}, 'essay')">${this.answers[this.currentIdx] || ''}</textarea>
-          <div id="chen-submit-wrap-${this.currentIdx}" style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
-            <span style="font-size:10px;color:var(--txt2)">字数: <span id="word-count-${this.currentIdx}">${charCount}</span> / ${q.minWords}-${q.maxWords}</span>
-            <button class="chen-btn chen-btn-submit" onclick="CHEN_TEST.saveTextAnswer(${this.currentIdx})">确认提交</button>
+      if (isAiMode) {
+        // AI模式：不显示textarea，显示等待AI回答提示
+        questionContent = `
+          <div id="chen-ai-answer-${this.currentIdx}" style="margin-top:10px;font-size:11px;color:var(--txt3)">&#8987; 等待AI回答...</div>
+        `;
+      } else {
+        // 问答题
+        const charCount = this.answers[this.currentIdx] ? this.answers[this.currentIdx].replace(/\s/g, '').length : 0;
+        questionContent = `
+          <div style="margin-top:10px">
+            <textarea id="essay-input-${this.currentIdx}"
+                      placeholder="请输入答案（${q.minWords}-${q.maxWords}字）..."
+                      style="width:100%;height:80px;background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:8px;color:var(--txt);font-size:12px;resize:vertical;font-family:inherit"
+                      oninput="CHEN_TEST.updateWordCount(${this.currentIdx}, 'essay')">${this.answers[this.currentIdx] || ''}</textarea>
+            <div id="chen-submit-wrap-${this.currentIdx}" style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+              <span style="font-size:10px;color:var(--txt2)">字数: <span id="word-count-${this.currentIdx}">${charCount}</span> / ${q.minWords}-${q.maxWords}</span>
+              <button class="chen-btn chen-btn-submit" onclick="CHEN_TEST.saveTextAnswer(${this.currentIdx})">确认提交</button>
+            </div>
           </div>
-        </div>
-      `;
+        `;
+      }
     } else if (isComposition) {
-      // 小作文
-      const charCount = this.answers[this.currentIdx] ? this.answers[this.currentIdx].replace(/\s/g, '').length : 0;
-      questionContent = `
-        <div style="margin-top:10px">
-          <textarea id="essay-input-${this.currentIdx}"
-                    placeholder="请输入短文（${q.minWords}-${q.maxWords}字）..."
-                    style="width:100%;height:400px;background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:8px;color:var(--txt);font-size:12px;resize:vertical;font-family:inherit;line-height:1.6"
-                    oninput="CHEN_TEST.updateWordCount(${this.currentIdx}, 'composition')">${this.answers[this.currentIdx] || ''}</textarea>
-          <div id="chen-submit-wrap-${this.currentIdx}" style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
-            <span style="font-size:10px;color:var(--txt2)">字数: <span id="word-count-${this.currentIdx}">${charCount}</span> / ${q.minWords}-${q.maxWords}</span>
-            <button class="chen-btn chen-btn-submit" onclick="CHEN_TEST.saveTextAnswer(${this.currentIdx})">确认提交</button>
+      if (isAiMode) {
+        // AI模式：不显示textarea，显示等待AI回答提示
+        questionContent = `
+          <div id="chen-ai-answer-${this.currentIdx}" style="margin-top:10px;font-size:11px;color:var(--txt3)">&#8987; 等待AI回答...</div>
+        `;
+      } else {
+        // 小作文
+        const charCount = this.answers[this.currentIdx] ? this.answers[this.currentIdx].replace(/\s/g, '').length : 0;
+        questionContent = `
+          <div style="margin-top:10px">
+            <textarea id="essay-input-${this.currentIdx}"
+                      placeholder="请输入短文（${q.minWords}-${q.maxWords}字）..."
+                      style="width:100%;height:400px;background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:8px;color:var(--txt);font-size:12px;resize:vertical;font-family:inherit;line-height:1.6"
+                      oninput="CHEN_TEST.updateWordCount(${this.currentIdx}, 'composition')">${this.answers[this.currentIdx] || ''}</textarea>
+            <div id="chen-submit-wrap-${this.currentIdx}" style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+              <span style="font-size:10px;color:var(--txt2)">字数: <span id="word-count-${this.currentIdx}">${charCount}</span> / ${q.minWords}-${q.maxWords}</span>
+              <button class="chen-btn chen-btn-submit" onclick="CHEN_TEST.saveTextAnswer(${this.currentIdx})">确认提交</button>
+            </div>
           </div>
-        </div>
-      `;
+        `;
+      }
     }
     
     div.innerHTML = `
@@ -6625,10 +6700,10 @@ const CHEN_TEST = {
         ${(q.type === 'essay' || q.type === 'composition') ? '<div style="font-size:10px;color:var(--amber);margin-top:4px">&#9998; 字数要求：' + (q.minWords || 80) + '-' + (q.maxWords || 300) + ' 字</div>' : ''}
         ${questionContent}
       </div>
-      <div class="chen-test-nav">
+      ${isAiMode ? '' : `<div class="chen-test-nav">
         ${this.currentIdx > 0 ? `<button class="chen-nav-btn" onclick="CHEN_TEST.gotoQuestion(${this.currentIdx - 1})">&#9664; 上一题</button>` : '<div></div>'}
         ${this.currentIdx < total - 1 ? `<button class="chen-nav-btn" onclick="CHEN_TEST.gotoQuestion(${this.currentIdx + 1})">下一题 &#9654;</button>` : ''}
-      </div>
+      </div>`}
     `;
     history.appendChild(div);
     history.scrollTop = history.scrollHeight;
@@ -6711,7 +6786,22 @@ const CHEN_TEST = {
 
   saveTextAnswer(qidx, skipConfirm = false) {
     const input = document.getElementById(`essay-input-${qidx}`);
-    if (!input) return;
+    
+    // AI模式：无textarea，答案已在this.answers中，直接处理提交逻辑
+    if (!input) {
+      if (this.aiAutoMode && this.answers[qidx] !== undefined) {
+        // AI已作答，执行提交后的流程
+        this.pushTestQA('ai', `【答案】${this.answers[qidx]}`, { qidx: qidx, qtype: this.questions[qidx]?.type });
+        this.updateLeftPanel();
+        // 自动跳转到下一题
+        if (qidx < this.questions.length - 1) {
+          setTimeout(() => {
+            this.gotoQuestion(qidx + 1);
+          }, 300);
+        }
+      }
+      return;
+    }
     
     const answer = input.value.trim();
     if (!answer) {
