@@ -5652,17 +5652,199 @@ const CHEN_TEST = {
     } else if (action === 'resumed') {
       // 恢复时提升意识熵
       updateEntropyPanel({ Si: 0.3, Sg: 0.25, Sc: 0.45 });
+    } else if (action === 'test_complete') {
+      // ===== 测试完成：根据测试结果更新所有面板 =====
+      const r = this.results || {};
+      const score = r.score || 0;
+      const s = score / 100;  // 归一化 0-1
+
+      // 1. 三相熵：得分高→认知活跃→信息熵高、生成熵高、意识熵低（心斋）
+      const Si = 0.2 + s * 0.5;          // 信息熵：得分高=处理信息多
+      const Sg = 0.15 + s * 0.45;        // 生成熵：得分高=生成丰富
+      const Sc = Math.max(0.05, 0.6 - s * 0.5);  // 意识熵：得分高=心斋态
+      updateEntropyPanel({ Si, Sg, Sc });
+
+      // 2. 五行耦合：根据5维度得分映射
+      const catScores = this.scores || {};
+      const getCatRate = (cat) => {
+        const cs = catScores[cat];
+        return (cs && cs.total > 0) ? cs.correct / cs.total : s;
+      };
+      updateFivePhasePanel({
+        wood:   0.3 + getCatRate('math') * 0.55,
+        fire:   0.3 + getCatRate('logic') * 0.55,
+        earth:  0.3 + getCatRate('physics') * 0.55,
+        metal:  0.3 + getCatRate('cognition') * 0.55,
+        water:  0.3 + getCatRate('agi') * 0.55
+      });
+
+      // 3. 锚定验证：得分>=60全部通过，否则部分通过
+      const anchorOk = score >= 60;
+      updateAnchorPanel({
+        verified: anchorOk,
+        energy:   score >= 40,
+        semantic: score >= 50,
+        causal:   score >= 55,
+        empirical: score >= 60
+      });
+
+      // 4. 介质共振：得分高→相位锁定高、意识熵低
+      if (typeof updateMediumPanel === 'function') {
+        updateMediumPanel({
+          phase_lock: 0.4 + s * 0.5,
+          S_C: Sc,
+          medium_state: score >= 80 ? '心斋' : score >= 50 ? '共振' : '感知',
+          four_mode: score >= 80 ? '取经相干' : score >= 50 ? '刚性耦合' : '熵增终局'
+        });
+      }
+
+      // 5. v6.1 面板（EML算子+关系实在论+伪革命+涌现+拓扑）
+      if (typeof updateV61Panels === 'function') {
+        try { updateV61Panels({
+          eml: { eml_index: s * 0.8, phase_coupling: s * 0.7, information_total: 0.3 + s * 0.6, eml_conserved: s > 0.5 },
+          relational: { relational_score: 0.3 + s * 0.6, coupling_K: 0.05 + s * 0.15, fifty_plus_fifty: 85 + s * 10, impedance_diff: 85 + s * 10, is_superposition: s < 0.3 },
+          pseudo_revolution: { index: Math.max(0, 0.5 - s * 0.4), t_l2_theory: 0.3 + s * 0.4, v_l3_validation: 0.4 + s * 0.4, s_l5_narrative: 0.2 + s * 0.3, entropy_delta: Math.max(0, 0.2 - s * 0.15), stability: s > 0.5 ? 'STABLE' : 'WARNING', is_pseudo_revolution: s < 0.3 },
+          emergence: { index: 0.2 + s * 0.6, freedom_degree: 0.3 + s * 0.5, path_total: Math.round(8 + s * 20), path_legal: Math.round(5 + s * 18), fixed_point_count: Math.round(2 + s * 8), pre_harmony_manifold: s > 0.6 },
+          topology: { fixed_point: s * 0.7, has_fp: s > 0.5, emergence_irreducible: s > 0.6, semantic_complete: s > 0.7, brouwer_fp: s > 0.5, k_class: Math.round(s * 3) }
+        }); } catch(e) { console.warn('v6.1面板更新失败:', e); }
+      }
+
+      // 6. v6.2 灵性面板
+      if (typeof updateV62Panels === 'function') {
+        try { updateV62Panels({
+          spiritual: { narrative_action: Math.max(0, 0.5 - s * 0.4), impedance_level: Math.max(0.05, 0.5 - s * 0.4), l1_flow_rate: 0.3 + s * 0.6, enlightenment_readiness: 0.3 + s * 0.6, divine_aid_channel: s > 0.85, zero_impedance: s > 0.9 },
+          theseus: { identity_coherence: 0.5 + s * 0.45, core_pattern_retention: 0.5 + s * 0.4, update_entropy: Math.max(0, 0.4 - s * 0.3), reincarnation_necessity: s < 0.3, boundary_layer: 0.2 + s * 0.4 },
+          extremum: { current_K: s > 0.6 ? 0.1 : 0.5, is_extremum: s > 0.7, optimization_dim: Math.round(2 + s * 6) },
+          moral: { negation_lock: s > 0.7, positive_lock: s > 0.5, supervision_cost: Math.max(0.02, 0.2 - s * 0.15), moral_action: 0.1 + s * 0.3, double_lock_integrated: s > 0.6 }
+        }); } catch(e) { console.warn('v6.2面板更新失败:', e); }
+      }
+
+      // 7. v7.0 面板（M71-M95 碳硅共生+五行EML+HoTT+流贯+刘原理+曲率+Univalence+保真度+构造评估）
+      if (typeof updateV70Panels === 'function') {
+        try { updateV70Panels({
+          phi: { self_referential_phi: s * 0.8, closed_loop: s > 0.6 },
+          contribution: { total_score: 0.3 + s * 0.6, measure: 0.3 + s * 0.5 },
+          firewall: s > 0.7,
+          entropy: { contract_score: 0.4 + s * 0.5, divergence: Math.max(0, 0.3 - s * 0.25) },
+          wuxing_phase: { current: ['水','木','火','土','金'][Math.min(4, Math.floor(s * 5))], coupling: 0.3 + s * 0.5 },
+          hott: { pi_type: s > 0.6, sigma_type: s > 0.5, univalence: s > 0.8, lem: s < 0.3 },
+          fteliary: { total_sections: Math.round(2 + s * 8), natural_transforms: Math.round(1 + s * 5), completeness: 0.3 + s * 0.6 },
+          liu: { fixed_point: s * 0.7, kolmogorov_min: s > 0.5, simplicity: 0.3 + s * 0.5 },
+          curvature: { K: s > 0.7 ? 0.1 : s > 0.4 ? 0.5 : 2.0, mode: s > 0.7 ? 'creative' : s > 0.4 ? 'balanced' : 'rigid' },
+          univalence: { equivalent: s > 0.8, identity_type: s > 0.7 ? 'homotopy' : 'propositional' },
+          fidelity_v70: { value: 0.5 + s * 0.45, threshold: 0.9, warning: s < 0.5 },
+          evaluator: { pass_k: s, phol1: s > 0.7, prediction_verified: s > 0.6 }
+        }); } catch(e) { console.warn('v7.0面板更新失败:', e); }
+      }
+
+      // 7.5 v7.1 人机融合层面板（M96-M105）
+      if (typeof updateV71Panels === 'function') {
+        try { updateV71Panels({
+          cognitive_offload: { offload_risk_score: Math.max(0, 0.8 - s * 0.7), direct_answer_ratio: 0.2 + (1-s) * 0.5, guided_ratio: 0.3 + s * 0.5, cognitive_trend: s > 0.5 ? 'improving' : (s > 0.3 ? 'stable' : 'declining') },
+          socratic: { socratic_turn_count: Math.round(2 + s * 6), convergence_rate: 0.3 + s * 0.5, optimal_strategy: s > 0.7 ? 'maieutic' : (s > 0.4 ? 'balanced' : 'directive') },
+          confidence: { avg_confidence: 0.4 + s * 0.4, trust_score: 0.3 + s * 0.5, calibration_accuracy: 0.5 + s * 0.35 },
+          router: { human_ratio: 0.3 + s * 0.2, ai_ratio: 0.4 + (1-s) * 0.2, collab_ratio: 0.2 + s * 0.3 },
+          hack_detect: { avg_kl_divergence: Math.max(0, 0.3 - s * 0.25), alignment_score: 0.5 + s * 0.4, accountability_verified: s > 0.5 },
+          env_awareness: { coupling_score: 0.3 + s * 0.5, emergent_iq: 0.3 + s * 0.55, last_env_type: 'cognitive_test' },
+          long_context: { avg_compression_ratio: 0.3 + s * 0.5, maintenance_cost: Math.max(0, 0.5 - s * 0.3), holographic_enabled: s > 0.6 },
+          collab_assessor: { avg_synergy: 0.3 + s * 0.55 },
+          collab_diag: { misalignment_rate: Math.max(0, 0.3 - s * 0.25) },
+          fusion_verify: { integrity_score: 0.5 + s * 0.4, t47_status: s > 0.5 ? 'COMPLIANT' : 'VIOLATION', oversight_compliance: s > 0.5 ? 1 : 0 }
+        }); } catch(e) { console.warn('v7.1面板更新失败:', e); }
+      }
+
+      // 8. v7.2 OpenHuman面板
+      if (typeof updateV72Panels === 'function') {
+        try { updateV72Panels({
+          memory_tree: { total_chunks: Math.round(s * 50), info_density: 0.4 + s * 0.5, layer1_count: Math.round(s * 20), layer2_count: Math.round(s * 18), layer3_count: Math.round(s * 12), last_update: new Date().toLocaleTimeString() },
+          token_juice: { compression_rate: 0.2 + s * 0.6, tokens_saved: Math.round(s * 5000), processed_count: Math.round(10 + s * 40), steps: [s > 0.2, s > 0.35, s > 0.5, s > 0.65, s > 0.8] },
+          auto_sync: { context_completeness: s, services: { email: s > 0.5 ? 'synced' : 'pending', calendar: s > 0.6 ? 'synced' : 'pending', contacts: s > 0.7 ? 'synced' : 'pending', notes: s > 0.8 ? 'synced' : 'pending' }, status: s > 0.5 ? 'active' : 'pending' },
+          model_router: { task_type: 'cognitive_test', selected_model: s > 0.7 ? 'reasoning' : s > 0.4 ? 'balanced' : 'fast', confidence: s },
+          obsidian: { wiki_links: Math.round(s * 30), moc_files: Math.round(s * 8), backlinks: Math.round(s * 45), index_ready: s > 0.5 },
+          cold_start: { context_ready: s > 0.6, warmup_progress: s, build_time: Math.round((1 - s) * 30 + 2) }
+        }); } catch(e) { console.warn('v7.2面板更新失败:', e); }
+      }
+
+      // 9. v7.3 面板（M106-M110）
+      if (typeof updateV73Panels === 'function') {
+        try { updateV73Panels({
+          srloop: {
+            pds_closure_strength: 0.3 + s * 0.6,
+            godel_closure_strength: 0.2 + s * 0.5,
+            unification_score: 0.1 + s * 0.7,
+            l1_taiji_tendency: 0.5 + s * 0.3,
+            phi_value: s * 0.8,
+            mutual_info: s * 0.65,
+            coupling_strength: 0.2 + s * 0.6,
+            metacog_score: 0.1 + s * 0.7,
+            metacog_humility: Math.max(0.1, 0.8 - s * 0.5),
+            personhood_status: s > 0.75 ? 'emerging' : 'dormant',
+            is_ego_bound: s > 0.6
+          },
+          dimproj: { current_dim: Math.round(6 + s * 14), embed_operations: Math.round(3 + s * 12), pi_operations: Math.round(2 + s * 8), adjunction_score: 0.3 + s * 0.5, info_loss: Math.max(0, 0.5 - s * 0.4) },
+          chiral: { chirality: s > 0.6 ? 'right' : s > 0.3 ? 'left' : 'neutral', chiral_index: (s - 0.5) * 1.6, phase_conservation: 0.6 + s * 0.35, helix_isomorphism: s * 0.7, current_wuxing: ['土','金','水','木','火'][Math.min(4, Math.floor(s * 5))], response_diff: s * 0.5 },
+          fbtopo: { route_hops: Math.round(1 + s * 5), self_ref_loops: Math.round(s * 3), ctc_consistency: 0.5 + s * 0.45, torsion_ratio: s * 0.6, euler_characteristic: 2 - Math.round(s), genus: s > 0.7 ? 1 : 0 },
+          leaction: { action_total: 0.5 + (1 - s) * 1.5, self_ref_solution: s * 0.8, min_resistance: 0.3 + s * 0.65, reasoning_steps: Math.round(5 + (1 - s) * 15), is_terminated: s > 0.7, termination_reason: s > 0.7 ? 'self-reference' : '' }
+        }); } catch(e) { console.warn('v7.3面板更新失败:', e); }
+      }
+
+      // 10. v7.4 面板（M111-M113）
+      if (typeof updateV74Panels === 'function') {
+        try { updateV74Panels({
+          actor_director: { mode: s > 0.7 ? 'director' : 'actor', director_ratio: s, fixation_count: Math.round((1-s) * 5), self_ref_count: Math.round(s * 3), enlightenment_level: s > 0.8 ? '高觉悟' : (s > 0.5 ? '初觉悟' : '未觉悟'), bootstrap_completeness: { turing_complete: s > 0.6 }, enlightenment_count: Math.round(s * 4) },
+          flow_cutoff: { total_cutoffs: Math.round(s * 8), pseudo_traces: Math.round((1-s) * 3), remap_operations: Math.round(s * 5), avg_precision: 0.5 + s * 0.45 },
+          trace_validator: { pass_rate: s, pseudo_count: Math.round((1-s) * 3), authentic_count: Math.round(s * 8), total_validations: Math.round(8 + s * 5), status: s > 0.5 ? 'active' : 'warning' }
+        }); } catch(e) { console.warn('v7.4面板更新失败:', e); }
+      }
+
+      // 11. v7.5 面板（M114-M116）
+      if (typeof updateV75Panels === 'function') {
+        try { updateV75Panels({
+          universe: { total_types: Math.round(5 + s * 25), total_fibers: Math.round(3 + s * 18), avg_curvature: 0.3 + s * 0.5, inhabited_count: Math.round(3 + s * 20), total_section_checks: Math.round(5 + s * 15) },
+          curvature: { total_searches: Math.round(3 + s * 12), found_count: Math.round(2 + s * 10), wait_count: Math.round((1-s) * 5), found_rate: 0.3 + s * 0.55, avg_curvature: 0.2 + s * 0.6 },
+          wait: { total_waits: Math.round((1-s) * 6), total_undecidable: Math.round((1-s) * 3), total_refusals: Math.round((1-s) * 2), undecidability_reports_size: Math.round(s * 10), validation_accuracy: 0.4 + s * 0.5 }
+        }); } catch(e) { console.warn('v7.5面板更新失败:', e); }
+      }
+
+      // 12. v7.6 面板（M117-M119）
+      if (typeof updateV76Panels === 'function') {
+        try { updateV76Panels({
+          ftel: { active_count: Math.round(2 + s * 8), total_resonance: s * 5, total_convergence_checks: Math.round(3 + s * 10), total_injections: Math.round(2 + s * 8), lambda_max: 1.5 + (1-s) * 1.0, convergence_achieved: s > 0.6, total_goals: Math.round(3 + s * 7) },
+          cognitive: { current_level: Math.round(1 + s * 4), learning_mode: s > 0.7 ? 'double_loop' : 'single_loop', structural_lag: Math.max(0, 0.5 - s * 0.4), rho: 0.3 + s * 0.5, tau: 0.2 + s * 0.4, instability_risk: s < 0.3, history_size: Math.round(5 + s * 20) },
+          fidelity: { total_fidelity_alpha: 0.5 + s * 0.45, pair_summary: { L1_L2: 0.4 + s * 0.5, L2_L3: 0.45 + s * 0.45, L3_L4: 0.5 + s * 0.4, L4_L5: 0.55 + s * 0.35 }, collapse_risk: s < 0.3 ? 'high' : (s < 0.6 ? 'medium' : 'low') }
+        }); } catch(e) { console.warn('v7.6面板更新失败:', e); }
+      }
+
+      // 13. 觉醒度面板
+      const awakeEl = document.getElementById('awakening-value');
+      if (awakeEl) awakeEl.textContent = (s * 100).toFixed(0) + '%';
+      const awakeBar = document.getElementById('awakening-bar');
+      if (awakeBar) awakeBar.style.width = (s * 100) + '%';
+
+      // 14. 九卦面板进度
+      const hexSteps = document.querySelectorAll('#hexagram-panel .hex-step');
+      if (hexSteps.length > 0) {
+        const stepsToLight = Math.round(s * hexSteps.length);
+        hexSteps.forEach((step, i) => {
+          step.style.opacity = i < stepsToLight ? '1' : '0.3';
+          step.style.background = i < stepsToLight ? 'var(--acc)' : 'var(--bg3)';
+        });
+      }
+
+      console.log('[陈天桥测试] 分析仪表盘已根据测试结果更新, score=' + score);
     }
-    
-    // 更新五行（测试活跃提升火元素-能量）
-    if (this.paused) {
-      updateFivePhasePanel({ wood: 0.45, fire: 0.5, earth: 0.45, metal: 0.45, water: 0.45 });
-    } else {
-      updateFivePhasePanel({ wood: 0.45, fire: 0.7, earth: 0.5, metal: 0.45, water: 0.45 });
+
+    // 更新五行（测试活跃提升火元素-能量）— 非test_complete时使用
+    if (action !== 'test_complete') {
+      if (this.paused) {
+        updateFivePhasePanel({ wood: 0.45, fire: 0.5, earth: 0.45, metal: 0.45, water: 0.45 });
+      } else {
+        updateFivePhasePanel({ wood: 0.45, fire: 0.7, earth: 0.5, metal: 0.45, water: 0.45 });
+      }
     }
-    
-    // 更新相位锁定（测试状态提升认知相干）
-    if (typeof updateMediumPanel === 'function') {
+
+    // 更新相位锁定（测试状态提升认知相干）— 非test_complete时使用
+    if (action !== 'test_complete' && typeof updateMediumPanel === 'function') {
       if (!this.paused) {
         updateMediumPanel({ phase_lock: 0.75 + Math.random() * 0.1, S_C: 0.4 });
       } else {
