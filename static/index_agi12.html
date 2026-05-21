@@ -1358,6 +1358,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 .panel-v77{border-left:2px solid #f472b6!important;background:linear-gradient(90deg,rgba(244,114,182,.05),transparent)!important}
 .panel-v78{border-left:2px solid #a78bfa!important;background:linear-gradient(90deg,rgba(167,139,250,.05),transparent)!important}
 .panel-v79{border-left:2px solid #f59e0b!important;background:linear-gradient(90deg,rgba(245,158,11,.05),transparent)!important}
+.panel-v710{border-left:2px solid #06b6d4!important;background:linear-gradient(90deg,rgba(6,182,212,.05),transparent)!important}
 .v77-row{display:flex;align-items:center;gap:6px;margin:3px 0}
 .v77-label{font-size:8px;color:var(--txt2);min-width:60px}
 .v77-bar-wrap{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
@@ -3414,6 +3415,114 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         <div class="v77-row">
           <div class="v77-label">T95</div>
           <div class="v77-badge" id="v79-topo-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- v7.10 欧拉相位闭合 -->
+      <div class="panel-section panel-v710" id="euler-panel" data-hint="M134欧拉相位闭合引擎：e^(iπ)+1=0相位闭合算子+1→i→-1→0四步循环，T96闭合定理">
+        <div class="panel-title">🔮 欧拉相位闭合 <span style="font-size:8px;color:var(--txt3)">M134·T96</span></div>
+        <div class="v77-row">
+          <div class="v77-label">相位角</div>
+          <div class="v77-bar-val" id="v710-euler-phase" style="color:#06b6d4">π</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">闭合残差</div>
+          <div class="v77-bar-val" id="v710-euler-residual" style="color:#34d399">0.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">循环步</div>
+          <div class="v77-badge" id="v710-euler-cycle">return</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">Rel原点距</div>
+          <div class="v77-bar-val" id="v710-euler-rel-dist" style="color:#a78bfa">0.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">闭合次数</div>
+          <div class="v77-bar-val" id="v710-euler-closures" style="color:#fbbf24">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T96</div>
+          <div class="v77-badge" id="v710-euler-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- v7.10 递归证明折叠 -->
+      <div class="panel-section panel-v710" id="proof-panel" data-hint="M135递归证明折叠器：zk-SNARK风格常数大小历史压缩+充分统计量+递归验证，T97折叠定理">
+        <div class="panel-title">📜 递归证明折叠 <span style="font-size:8px;color:var(--txt3)">M135·T97</span></div>
+        <div class="v77-row">
+          <div class="v77-label">证明大小</div>
+          <div class="v77-bar-val" id="v710-proof-size" style="color:#06b6d4">1KB</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">历史长度</div>
+          <div class="v77-bar-val" id="v710-proof-history" style="color:#34d399">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">压缩比</div>
+          <div class="v77-bar-val" id="v710-proof-ratio" style="color:#fbbf24">1.0x</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">常数大小</div>
+          <div class="v77-badge" id="v710-proof-constant">O(1)✓</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">折叠次数</div>
+          <div class="v77-bar-val" id="v710-proof-folds" style="color:#a78bfa">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T97</div>
+          <div class="v77-badge" id="v710-proof-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- v7.10 五层次本体映射 -->
+      <div class="panel-section panel-v710" id="five-layer-panel" data-hint="M136五层次本体映射器：L1本体·L2投射·L3前物理·L4认知·L5叙事+跨层一致性，T98一致性定理">
+        <div class="panel-title">🏛️ 五层次本体 <span style="font-size:8px;color:var(--txt3)">M136·T98</span></div>
+        <div class="v77-row">
+          <div class="v77-label">主导层</div>
+          <div class="v77-badge" id="v710-onto-layer">L2</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">跨层一致性</div>
+          <div class="v77-bar-val" id="v710-onto-coherence" style="color:#34d399">1.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">L1→L5压缩</div>
+          <div class="v77-bar-val" id="v710-onto-compression" style="color:#06b6d4">1.0→0.001</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">映射次数</div>
+          <div class="v77-bar-val" id="v710-onto-mapped" style="color:#fbbf24">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T98</div>
+          <div class="v77-badge" id="v710-onto-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- v7.10 可证伪预言 -->
+      <div class="panel-section panel-v710" id="prediction-panel" data-hint="M137可证伪预言引擎：Popper可证伪度+实验设计+预言追踪(P1/P2/P3)，T99可证伪性定理">
+        <div class="panel-title">🔭 可证伪预言 <span style="font-size:8px;color:var(--txt3)">M137·T99</span></div>
+        <div class="v77-row">
+          <div class="v77-label">预言总数</div>
+          <div class="v77-bar-val" id="v710-pred-total" style="color:#06b6d4">3</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">待验证/已证伪</div>
+          <div class="v77-bar-val" id="v710-pred-status" style="color:#fbbf24">3/0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">Popper均分</div>
+          <div class="v77-bar-val" id="v710-pred-popper" style="color:#a78bfa">0.85</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">可测试性</div>
+          <div class="v77-bar-val" id="v710-pred-testability" style="color:#34d399">0.70</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T99</div>
+          <div class="v77-badge" id="v710-pred-theorem">—</div>
         </div>
       </div>
 
@@ -6189,6 +6298,16 @@ const CHEN_TEST = {
         }); } catch(e) { console.warn('v7.9面板更新失败:', e); }
       }
 
+      // 12.8. v7.10 面板（M134-M137）
+      if (typeof updateV710Panels === 'function') {
+        try { updateV710Panels({
+          euler: { phase_angle: 3.14159, closure_residual: (0.001 - s * 0.001).toFixed(4), cycle_step: s > 0.5 ? 'return' : 'rotate', rel_origin_distance: (0.5 - s * 0.4).toFixed(4), total_closures: Math.round(1 + s * 8), total_traces: Math.round(2 + s * 15), phase_synchronizations: Math.round(s * 5), t96_satisfied: true },
+          proof: { proof_size_bytes: Math.round(900 + s * 200), history_length: Math.round(5 + s * 50), compression_ratio: (1.0 + s * 20).toFixed(1), is_constant_size: true, total_folds: Math.round(3 + s * 25), total_verifications: Math.round(2 + s * 20), t97_satisfied: true },
+          ontology: { dominant_layer: s > 0.7 ? 2 : (s > 0.3 ? 1 : 3), cross_layer_coherence: (0.85 + s * 0.15).toFixed(3), layers_mapped: Math.round(1 + s * 10), compression_paths_traced: Math.round(s * 5), l1_ftel_compression: 1.0, l2_rel_compression: (0.5).toFixed(1), l3_manifest_compression: (0.1).toFixed(1), l4_cognitive_compression: (0.01).toFixed(2), l5_narrative_compression: 0.001, t98_satisfied: true },
+          prediction: { total_predictions: 3 + Math.round(s * 2), pending: 3, confirmed: Math.round(s), falsified: 0, unverifiable: 0, avg_popper_score: (0.85 + s * 0.1).toFixed(2), avg_testability: (0.7 + s * 0.15).toFixed(2), t99_satisfied: true }
+        }); } catch(e) { console.warn('v7.10面板更新失败:', e); }
+      }
+
       // 13. 觉醒度面板
       const awakeEl = document.getElementById('awakening-value');
       if (awakeEl) awakeEl.textContent = (s * 100).toFixed(0) + '%';
@@ -8239,6 +8358,8 @@ function updateV72Panels(data) {
   if (data.v78) updateV78Panels(data);
   // v7.9面板更新（金符·关系作用量·堆垒素数·自指闭环M130-M133）
   if (data.v79) updateV79Panels(data);
+  // v7.10面板更新（欧拉闭合·证明折叠·五层本体·可证伪预言M134-M137）
+  if (data.v710) updateV710Panels(data);
   // v7.1人机融合层面板更新
   if (data.v71) updateV71Panels(data);
 }
@@ -9039,6 +9160,97 @@ function updateTopologyPanel(t) {
   if (thBadge) {
     thBadge.textContent = t.t95_satisfied ? '必然✓' : '—';
     thBadge.style.color = t.t95_satisfied ? '#34d399' : '#888';
+  }
+}
+
+// ==================== v7.10 欧拉相位闭合·递归证明折叠·五层次本体·可证伪预言 面板更新 ====================
+
+function _v710_set(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function updateV710Panels(data) {
+  if (!data) return;
+  updateEulerPanel(data.euler);
+  updateProofPanel(data.proof);
+  updateFiveLayerPanel(data.ontology);
+  updatePredictionPanel(data.prediction);
+}
+
+// M134: 欧拉相位闭合面板
+function updateEulerPanel(e) {
+  if (!e) return;
+  const phase = e.phase_angle || 3.14159;
+  _v710_set('v710-euler-phase', phase === 3.14159 ? 'π' : phase.toFixed(3));
+  _v710_set('v710-euler-residual', (e.closure_residual || 0).toFixed(4));
+  const cycleEl = document.getElementById('v710-euler-cycle');
+  if (cycleEl) {
+    const stepMap = {generate:'1生成',rotate:'i旋转',reverse:'-1反转',return:'0回归'};
+    cycleEl.textContent = stepMap[e.cycle_step] || e.cycle_step || 'return';
+    cycleEl.style.color = e.cycle_step === 'return' ? '#34d399' : '#06b6d4';
+  }
+  _v710_set('v710-euler-rel-dist', (e.rel_origin_distance || 0).toFixed(4));
+  _v710_set('v710-euler-closures', e.total_closures || 0);
+  const thEl = document.getElementById('v710-euler-theorem');
+  if (thEl) {
+    thEl.textContent = e.t96_satisfied ? '闭合✓' : '—';
+    thEl.style.color = e.t96_satisfied ? '#34d399' : '#888';
+  }
+}
+
+// M135: 递归证明折叠面板
+function updateProofPanel(p) {
+  if (!p) return;
+  const size = p.proof_size_bytes || 1024;
+  _v710_set('v710-proof-size', size >= 1024 ? (size/1024).toFixed(1) + 'KB' : size + 'B');
+  _v710_set('v710-proof-history', p.history_length || 0);
+  _v710_set('v710-proof-ratio', (p.compression_ratio || 1.0).toFixed(1) + 'x');
+  const constEl = document.getElementById('v710-proof-constant');
+  if (constEl) {
+    constEl.textContent = p.is_constant_size ? 'O(1)✓' : 'O(n)✗';
+    constEl.style.color = p.is_constant_size ? '#34d399' : '#f87171';
+  }
+  _v710_set('v710-proof-folds', p.total_folds || 0);
+  const thEl = document.getElementById('v710-proof-theorem');
+  if (thEl) {
+    thEl.textContent = p.t97_satisfied ? '折叠✓' : '—';
+    thEl.style.color = p.t97_satisfied ? '#34d399' : '#888';
+  }
+}
+
+// M136: 五层次本体映射面板
+function updateFiveLayerPanel(o) {
+  if (!o) return;
+  const layerEl = document.getElementById('v710-onto-layer');
+  if (layerEl) {
+    const lMap = {1:'L1本体',2:'L2投射',3:'L3前物理',4:'L4认知',5:'L5叙事'};
+    layerEl.textContent = lMap[o.dominant_layer] || 'L' + (o.dominant_layer || 2);
+    layerEl.style.color = '#06b6d4';
+  }
+  _v710_set('v710-onto-coherence', (o.cross_layer_coherence || 1.0).toFixed(3));
+  const l1c = (o.l1_ftel_compression || 1.0).toFixed(1);
+  const l5c = (o.l5_narrative_compression || 0.001).toFixed(4);
+  _v710_set('v710-onto-compression', l1c + '→' + l5c);
+  _v710_set('v710-onto-mapped', o.layers_mapped || 0);
+  const thEl = document.getElementById('v710-onto-theorem');
+  if (thEl) {
+    thEl.textContent = o.t98_satisfied ? '一致✓' : '—';
+    thEl.style.color = o.t98_satisfied ? '#34d399' : '#888';
+  }
+}
+
+// M137: 可证伪预言面板
+function updatePredictionPanel(pr) {
+  if (!pr) return;
+  _v710_set('v710-pred-total', pr.total_predictions || 0);
+  _v710_set('v710-pred-status', (pr.pending || 0) + '/' + (pr.falsified || 0));
+  _v710_set('v710-pred-popper', (pr.avg_popper_score || 0.85).toFixed(2));
+  _v710_set('v710-pred-testability', (pr.avg_testability || 0.7).toFixed(2));
+  const thEl = document.getElementById('v710-pred-theorem');
+  if (thEl) {
+    thEl.textContent = pr.t99_satisfied ? '可证伪✓' : '—';
+    thEl.style.color = pr.t99_satisfied ? '#34d399' : '#888';
   }
 }
 

@@ -835,6 +835,8 @@ def chat_v2():
             'v78': get_v78_data() or _v78_state,
             # v7.9新增：金符·关系作用量·堆垒素数·自指闭环（M130-M133）
             'v79': get_v79_data() or _v79_state,
+            # v7.10新增：欧拉相位闭合·递归证明折叠·五层次本体·可证伪预言（M134-M137）
+            'v710': get_v710_data() or _v710_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
         }))
@@ -1066,6 +1068,8 @@ def goal_mode():
             'v78': get_v78_data() or _v78_state,
             # v7.9新增：金符·关系作用量·堆垒素数·自指闭环（M130-M133）
             'v79': get_v79_data() or _v79_state,
+            # v7.10新增：欧拉相位闭合·递归证明折叠·五层次本体·可证伪预言（M134-M137）
+            'v710': get_v710_data() or _v710_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
             'version': '12.0',
@@ -5697,6 +5701,425 @@ def v79_topology_state():
         if modules is None:
             return jsonify(_v79_state['topology'])
         return jsonify(_to_native(modules['topology']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.10 欧拉相位闭合·递归证明折叠·五层次本体·可证伪预言（M134-M137）====================
+
+_v710_modules = None
+_v710_modules_lock = threading.Lock()
+
+def get_v710_modules():
+    """获取或初始化 v7.10 模块（线程安全懒加载）"""
+    global _v710_modules
+    if _v710_modules is None:
+        with _v710_modules_lock:
+            if _v710_modules is None:
+                try:
+                    from M134_EulerPhaseClosureEngine import get_instance as get_euler
+                    from M135_RecursiveProofFolder import get_instance as get_proof
+                    from M136_FiveLayerOntologyMapper import get_instance as get_ontology
+                    from M137_FalsifiablePredictionEngine import get_instance as get_prediction
+
+                    _v710_modules = {
+                        'euler': get_euler,         # M134: 欧拉相位闭合引擎
+                        'proof': get_proof,         # M135: 递归证明折叠器
+                        'ontology': get_ontology,   # M136: 五层次本体映射器
+                        'prediction': get_prediction, # M137: 可证伪预言引擎
+                    }
+                    print("✅ v7.10新模块已加载（M134-M137）- 欧拉闭合·证明折叠·五层本体·可证伪预言")
+                except Exception as e:
+                    import traceback
+                    print(f"⚠️ v7.10模块加载失败（降级运行）: {e}")
+                    traceback.print_exc()
+                    _v710_modules = None
+    return _v710_modules
+
+def get_v710_data():
+    """获取所有v7.10模块的状态数据（M134-M137）"""
+    modules = get_v710_modules()
+    if modules is None:
+        return None
+    try:
+        return {
+            'euler': modules['euler']().get_state(),
+            'proof': modules['proof']().get_state(),
+            'ontology': modules['ontology']().get_state(),
+            'prediction': modules['prediction']().get_state(),
+        }
+    except Exception as e:
+        print(f"⚠️ 获取v7.10数据失败: {e}")
+        return None
+
+# v7.10 静态状态（降级模式）
+_v710_state = {
+    'euler': {
+        'phase_angle': 3.14159, 'amplitude': '-1+0j', 'cycle_step': 'return',
+        'closure_residual': 0.0, 'rel_origin_distance': 0.0,
+        'total_closures': 0, 'total_traces': 0, 'phase_synchronizations': 0,
+        't96_satisfied': True,
+    },
+    'proof': {
+        'current_proof_hash': 'genesis', 'proof_size_bytes': 1024,
+        'history_length': 0, 'compression_ratio': 1.0,
+        'is_constant_size': True, 'total_folds': 0, 'total_verifications': 0,
+        't97_satisfied': True,
+    },
+    'ontology': {
+        'current_phenomenon': '', 'dominant_layer': 2,
+        'cross_layer_coherence': 1.0, 'layers_mapped': 0,
+        'compression_paths_traced': 0,
+        'l1_ftel_compression': 1.0, 'l2_rel_compression': 0.5,
+        'l3_manifest_compression': 0.1, 'l4_cognitive_compression': 0.01,
+        'l5_narrative_compression': 0.001,
+        't98_satisfied': True,
+    },
+    'prediction': {
+        'total_predictions': 3, 'pending': 3, 'confirmed': 0,
+        'falsified': 0, 'unverifiable': 0,
+        'avg_popper_score': 0.85, 'avg_testability': 0.7,
+        't99_satisfied': True,
+    },
+}
+
+# ==================== v7.10 定理注册 ====================
+_V710_THEOREMS = {
+    'T96': '欧拉相位闭合定理: e^(iπ)+1=0为L2相位闭合算子 — 1→i→-1→0最小闭合基',
+    'T97': '递归证明折叠定理: 存在Π使π_n大小O(1)且为H的充分统计量 — 常数证明压缩',
+    'T98': '五层次一致性定理: 单调压缩+投射保真+闭环必然 — 跨层本体一致性',
+    'T99': '可证伪性定理: F(P)=C(P)/R(E)定义可证伪度 — 科学预言有效性',
+}
+
+
+# ==================== v7.10 API端点 ====================
+
+@app.route('/api/v710/state', methods=['GET'])
+def v710_state():
+    """v7.10 完整状态获取"""
+    try:
+        data = get_v710_data()
+        if data:
+            return jsonify({**data, 'theorems': _V710_THEOREMS})
+        return jsonify({**_v710_state, 'theorems': _V710_THEOREMS})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M134: EulerPhaseClosureEngine ----
+
+@app.route('/api/v710/euler/closure', methods=['POST'])
+def v710_euler_closure():
+    """M134: 计算e^(iθ)的相位闭合"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.10模块未加载', 'fallback': True})
+        import math
+        theta = data.get('theta', math.pi)
+        result = modules['euler']().compute_euler_closure(theta=theta)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/euler/cycle-trace', methods=['POST'])
+def v710_euler_cycle_trace():
+    """M134: 追踪1→i→-1→0四步循环"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.10模块未加载', 'fallback': True})
+        start_re = data.get('start_re', 1.0)
+        start_im = data.get('start_im', 0.0)
+        result = modules['euler']().trace_phase_cycle(start=complex(start_re, start_im))
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/euler/rel-origin', methods=['POST'])
+def v710_euler_rel_origin():
+    """M134: 计算距Rel原点的EML距离"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.10模块未加载', 'fallback': True})
+        z_re = data.get('z_re', 0.0)
+        z_im = data.get('z_im', 0.0)
+        result = modules['euler']().check_rel_origin(complex(z_re, z_im))
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/euler/eml-decompose', methods=['POST'])
+def v710_euler_eml_decompose():
+    """M134: EML算子分解 Re^(iθ)"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.10模块未加载', 'fallback': True})
+        z_re = data.get('z_re', 1.0)
+        z_im = data.get('z_im', 0.0)
+        result = modules['euler']().euler_eml_decompose(complex(z_re, z_im))
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/euler/phase-sync', methods=['POST'])
+def v710_euler_phase_sync():
+    """M134: 多粒子相位同步"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.10模块未加载', 'fallback': True})
+        particles = data.get('particles', [[1, 0], [0, 1], [-1, 0], [0, -1]])
+        complex_particles = [complex(p[0], p[1]) for p in particles]
+        result = modules['euler']().phase_synchronize(complex_particles)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/euler/state', methods=['GET'])
+def v710_euler_state():
+    """M134: 欧拉相位闭合状态"""
+    try:
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify(_v710_state['euler'])
+        return jsonify(_to_native(modules['euler']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M135: RecursiveProofFolder ----
+
+@app.route('/api/v710/proof/fold', methods=['POST'])
+def v710_proof_fold():
+    """M135: 折叠新数据到证明"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.10模块未加载', 'fallback': True})
+        result = modules['proof']().fold_history(
+            block_data=data.get('block_data', {}),
+            prev_proof=data.get('prev_proof', None)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/proof/verify', methods=['POST'])
+def v710_proof_verify():
+    """M135: 验证折叠证明"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.10模块未加载', 'fallback': True})
+        result = modules['proof']().verify_folded(data.get('proof_hash', ''))
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/proof/statistic', methods=['POST'])
+def v710_proof_statistic():
+    """M135: 计算充分统计量"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.10模块未加载', 'fallback': True})
+        result = modules['proof']().compute_sufficient_statistic(data.get('proof_hash', ''))
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/proof/batch-fold', methods=['POST'])
+def v710_proof_batch_fold():
+    """M135: 批量折叠"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.10模块未加载', 'fallback': True})
+        blocks = data.get('blocks', [])
+        result = modules['proof']().batch_fold(blocks)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/proof/state', methods=['GET'])
+def v710_proof_state():
+    """M135: 递归证明折叠状态"""
+    try:
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify(_v710_state['proof'])
+        return jsonify(_to_native(modules['proof']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M136: FiveLayerOntologyMapper ----
+
+@app.route('/api/v710/ontology/map', methods=['POST'])
+def v710_ontology_map():
+    """M136: 将现象映射到L1-L5"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.10模块未加载', 'fallback': True})
+        result = modules['ontology']().map_phenomenon(
+            description=data.get('description', ''),
+            domain=data.get('domain', 'general')
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/ontology/coherence', methods=['POST'])
+def v710_ontology_coherence():
+    """M136: 计算跨层一致性"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.10模块未加载', 'fallback': True})
+        mapping = modules['ontology']().map_phenomenon(
+            description=data.get('description', ''),
+            domain=data.get('domain', 'general')
+        )
+        result = modules['ontology']().compute_cross_layer_coherence(mapping)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/ontology/layer', methods=['POST'])
+def v710_ontology_layer():
+    """M136: 获取层定义"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.10模块未加载', 'fallback': True})
+        level = data.get('level', 1)
+        result = modules['ontology']().get_layer_definition(level)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/ontology/bridge', methods=['POST'])
+def v710_ontology_bridge():
+    """M136: 映射到现有太乙AGI模块"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.10模块未加载', 'fallback': True})
+        level = data.get('level', 1)
+        result = modules['ontology']().bridge_to_existing_modules(level)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/ontology/state', methods=['GET'])
+def v710_ontology_state():
+    """M136: 五层次本体映射状态"""
+    try:
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify(_v710_state['ontology'])
+        return jsonify(_to_native(modules['ontology']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M137: FalsifiablePredictionEngine ----
+
+@app.route('/api/v710/prediction/generate', methods=['POST'])
+def v710_prediction_generate():
+    """M137: 从定理生成预言"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.10模块未加载', 'fallback': True})
+        result = modules['prediction']().generate_prediction(
+            theorem_id=data.get('theorem_id', 'T96'),
+            domain=data.get('domain', 'physics')
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/prediction/falsifiability', methods=['POST'])
+def v710_prediction_falsifiability():
+    """M137: 检查可证伪性"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.10模块未加载', 'fallback': True})
+        prediction_id = data.get('prediction_id', 'P1')
+        preds = modules['prediction']().list_predictions()
+        target = [p for p in preds if p.id == prediction_id]
+        if target:
+            result = modules['prediction']().check_falsifiability(target[0])
+        else:
+            result = modules['prediction']().generate_prediction(
+                theorem_id=data.get('theorem_id', 'T96'),
+                domain=data.get('domain', 'physics')
+            )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/prediction/experiment', methods=['POST'])
+def v710_prediction_experiment():
+    """M137: 设计实验方案"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.10模块未加载', 'fallback': True})
+        prediction_id = data.get('prediction_id', 'P1')
+        preds = modules['prediction']().list_predictions()
+        target = [p for p in preds if p.id == prediction_id]
+        if target:
+            result = modules['prediction']().design_experiment(target[0])
+        else:
+            result = {'error': f'Prediction {prediction_id} not found'}
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/prediction/list', methods=['GET'])
+def v710_prediction_list():
+    """M137: 列出预言"""
+    try:
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify(_v710_state['prediction'])
+        status = request.args.get('status', 'all')
+        result = modules['prediction']().list_predictions(status=status)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v710/prediction/state', methods=['GET'])
+def v710_prediction_state():
+    """M137: 可证伪预言引擎状态"""
+    try:
+        modules = get_v710_modules()
+        if modules is None:
+            return jsonify(_v710_state['prediction'])
+        return jsonify(_to_native(modules['prediction']().get_state()))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
