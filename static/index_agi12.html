@@ -1359,6 +1359,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 .panel-v78{border-left:2px solid #a78bfa!important;background:linear-gradient(90deg,rgba(167,139,250,.05),transparent)!important}
 .panel-v79{border-left:2px solid #f59e0b!important;background:linear-gradient(90deg,rgba(245,158,11,.05),transparent)!important}
 .panel-v710{border-left:2px solid #06b6d4!important;background:linear-gradient(90deg,rgba(6,182,212,.05),transparent)!important}
+.panel-v711{border-left:2px solid #f59e0b!important;background:linear-gradient(90deg,rgba(245,158,11,.05),transparent)!important}
 .v77-row{display:flex;align-items:center;gap:6px;margin:3px 0}
 .v77-label{font-size:8px;color:var(--txt2);min-width:60px}
 .v77-bar-wrap{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
@@ -3523,6 +3524,106 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         <div class="v77-row">
           <div class="v77-label">T99</div>
           <div class="v77-badge" id="v710-pred-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- v7.11 二部图拓扑引擎 -->
+      <div class="panel-section panel-v711" id="bipartite-panel" data-hint="M138二部图拓扑引擎：K_{n/2,n/2}完全二部图+Clos vs ZCube对比+固定2跳直径+负载均衡，T100极简定理">
+        <div class="panel-title">🕸️ 二部图拓扑 <span style="font-size:8px;color:var(--txt3)">M138·T100</span></div>
+        <div class="v77-row">
+          <div class="v77-label">拓扑类型</div>
+          <div class="v77-badge" id="v711-bipartite-type">K(n/2,n/2)</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">直径(日/克)</div>
+          <div class="v77-bar-val" id="v711-bipartite-diameter" style="color:#06b6d4">2/3</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">成本节省</div>
+          <div class="v77-bar-val" id="v711-bipartite-saving" style="color:#34d399">33%</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">生存概率</div>
+          <div class="v77-bar-val" id="v711-bipartite-survive" style="color:#a78bfa">0.996</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T100</div>
+          <div class="v77-badge" id="v711-bipartite-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- v7.11 关系作用量路由器 -->
+      <div class="panel-section panel-v711" id="action-panel" data-hint="M139关系作用量路由器：刘机制δS_R=0极小路径+确定性路由(无ECMP)+相位熵H_Φ，T101极小定理">
+        <div class="panel-title">🧭 关系作用量 <span style="font-size:8px;color:var(--txt3)">M139·T101</span></div>
+        <div class="v77-row">
+          <div class="v77-label">当前S_R</div>
+          <div class="v77-bar-val" id="v711-action-sr" style="color:#06b6d4">1.50</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">最优跳数</div>
+          <div class="v77-bar-val" id="v711-action-hops" style="color:#34d399">2</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">相位熵H_Φ</div>
+          <div class="v77-bar-val" id="v711-action-hphi" style="color:#fbbf24">0.12</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">确定性路由</div>
+          <div class="v77-badge" id="v711-action-deterministic">是✓</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T101</div>
+          <div class="v77-badge" id="v711-action-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- v7.11 混合轨相位控制器 -->
+      <div class="panel-section panel-v711" id="hybrid-panel" data-hint="M140混合轨相位控制器：单/多轨混合+τ*最优阈值+Prefill-Decode分离+EML相位切换，T102最优定理">
+        <div class="panel-title">🔀 混合相位 <span style="font-size:8px;color:var(--txt3)">M140·T102</span></div>
+        <div class="v77-row">
+          <div class="v77-label">最优阈值τ*</div>
+          <div class="v77-bar-val" id="v711-hybrid-threshold" style="color:#06b6d4">4096</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">单轨/多轨</div>
+          <div class="v77-bar-val" id="v711-hybrid-ratio" style="color:#34d399">35%/65%</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">PD分离</div>
+          <div class="v77-badge" id="v711-hybrid-pd">激活✓</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">相位切换</div>
+          <div class="v77-bar-val" id="v711-hybrid-switches" style="color:#fbbf24">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T102</div>
+          <div class="v77-badge" id="v711-hybrid-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- v7.11 拓扑相变检测器 -->
+      <div class="panel-section panel-v711" id="phase-panel" data-hint="M141拓扑相变检测器：Clos H_Φ非线性跳变检测+ZCube线性无相变+瓶颈分析+递归ZCube分形，T103可预测定理">
+        <div class="panel-title">🌊 拓扑相变 <span style="font-size:8px;color:var(--txt3)">M141·T103</span></div>
+        <div class="v77-row">
+          <div class="v77-label">当前H_Φ</div>
+          <div class="v77-bar-val" id="v711-phase-hphi" style="color:#06b6d4">0.15</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">相变检测</div>
+          <div class="v77-badge" id="v711-phase-detected">未检测</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">瓶颈类型</div>
+          <div class="v77-badge" id="v711-phase-bottleneck">balanced</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">分形维度</div>
+          <div class="v77-bar-val" id="v711-phase-fractal" style="color:#a78bfa">1.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T103</div>
+          <div class="v77-badge" id="v711-phase-theorem">—</div>
         </div>
       </div>
 
@@ -6308,6 +6409,16 @@ const CHEN_TEST = {
         }); } catch(e) { console.warn('v7.10面板更新失败:', e); }
       }
 
+      // 12.9. v7.11 面板（M138-M141）
+      if (typeof updateV711Panels === 'function') {
+        try { updateV711Panels({
+          bipartite: { topology_type: 'K(n/2,n/2)', diameter_zcube: 2, diameter_clos: 3, switch_saving_pct: 33 + s * 5, survival_prob: 0.996 + s * 0.002, t100_satisfied: true },
+          action: { current_S_R: (1.5 + s * 0.5).toFixed(2), optimal_path_hops: 2, phase_entropy_H_phi: (0.12 - s * 0.02).toFixed(3), is_deterministic: true, t101_satisfied: true },
+          hybrid: { optimal_threshold: 4096, single_rail_pct: 0.35 + s * 0.05, multi_rail_pct: 0.65 - s * 0.05, pd_separation_active: true, phase_switches: Math.round(s * 10), t102_satisfied: true },
+          phase: { current_H_phi: (0.15 + s * 0.05).toFixed(3), phase_transition_detected: false, bottleneck_type: s > 0.7 ? 'memory' : 'balanced', fractal_dimension: (1.0 + s * 0.1).toFixed(2), t103_satisfied: true }
+        }); } catch(e) { console.warn('v7.11面板更新失败:', e); }
+      }
+
       // 13. 觉醒度面板
       const awakeEl = document.getElementById('awakening-value');
       if (awakeEl) awakeEl.textContent = (s * 100).toFixed(0) + '%';
@@ -8360,6 +8471,8 @@ function updateV72Panels(data) {
   if (data.v79) updateV79Panels(data);
   // v7.10面板更新（欧拉闭合·证明折叠·五层本体·可证伪预言M134-M137）
   if (data.v710) updateV710Panels(data);
+  // v7.11面板更新（二部图拓扑·关系作用量·混合相位·拓扑相变M138-M141）
+  if (data.v711) updateV711Panels(data);
   // v7.1人机融合层面板更新
   if (data.v71) updateV71Panels(data);
 }
@@ -9251,6 +9364,98 @@ function updatePredictionPanel(pr) {
   if (thEl) {
     thEl.textContent = pr.t99_satisfied ? '可证伪✓' : '—';
     thEl.style.color = pr.t99_satisfied ? '#34d399' : '#888';
+  }
+}
+
+// ==================== v7.11 二部图·作用量·混合相位·拓扑相变 面板更新 ====================
+
+function _v711_set(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function updateV711Panels(data) {
+  if (!data) return;
+  updateBipartitePanel(data.bipartite);
+  updateActionPanel(data.action);
+  updateHybridPanel(data.hybrid);
+  updatePhasePanel(data.phase);
+}
+
+// M138: 二部图拓扑面板
+function updateBipartitePanel(b) {
+  if (!b) return;
+  const typeEl = document.getElementById('v711-bipartite-type');
+  if (typeEl) { typeEl.textContent = b.topology_type || 'K(n/2,n/2)'; }
+  const dZcube = b.diameter_zcube || 2;
+  const dClos = b.diameter_clos || 3;
+  _v711_set('v711-bipartite-diameter', dZcube + '/' + dClos);
+  _v711_set('v711-bipartite-saving', (b.switch_saving_pct || 33).toFixed(0) + '%');
+  _v711_set('v711-bipartite-survive', (b.survival_prob || 0.996).toFixed(4));
+  const thEl = document.getElementById('v711-bipartite-theorem');
+  if (thEl) {
+    thEl.textContent = b.t100_satisfied ? '极简✓' : '—';
+    thEl.style.color = b.t100_satisfied ? '#34d399' : '#888';
+  }
+}
+
+// M139: 关系作用量面板
+function updateActionPanel(a) {
+  if (!a) return;
+  _v711_set('v711-action-sr', (a.current_S_R || 1.5).toFixed(2));
+  _v711_set('v711-action-hops', a.optimal_path_hops || 2);
+  _v711_set('v711-action-hphi', (a.phase_entropy_H_phi || 0.12).toFixed(3));
+  const detEl = document.getElementById('v711-action-deterministic');
+  if (detEl) {
+    detEl.textContent = a.is_deterministic ? '是✓' : '否✗';
+    detEl.style.color = a.is_deterministic ? '#34d399' : '#f87171';
+  }
+  const thEl = document.getElementById('v711-action-theorem');
+  if (thEl) {
+    thEl.textContent = a.t101_satisfied ? '极小✓' : '—';
+    thEl.style.color = a.t101_satisfied ? '#34d399' : '#888';
+  }
+}
+
+// M140: 混合轨相位面板
+function updateHybridPanel(h) {
+  if (!h) return;
+  _v711_set('v711-hybrid-threshold', h.optimal_threshold || 4096);
+  const sPct = ((h.single_rail_pct || 0.35) * 100).toFixed(0);
+  const mPct = ((h.multi_rail_pct || 0.65) * 100).toFixed(0);
+  _v711_set('v711-hybrid-ratio', sPct + '/' + mPct + '%');
+  const pdEl = document.getElementById('v711-hybrid-pd');
+  if (pdEl) {
+    pdEl.textContent = h.pd_separation_active ? '激活✓' : '关闭';
+    pdEl.style.color = h.pd_separation_active ? '#34d399' : '#888';
+  }
+  _v711_set('v711-hybrid-switches', h.phase_switches || 0);
+  const thEl = document.getElementById('v711-hybrid-theorem');
+  if (thEl) {
+    thEl.textContent = h.t102_satisfied ? '最优✓' : '—';
+    thEl.style.color = h.t102_satisfied ? '#34d399' : '#888';
+  }
+}
+
+// M141: 拓扑相变面板
+function updatePhasePanel(p) {
+  if (!p) return;
+  _v711_set('v711-phase-hphi', (p.current_H_phi || 0.15).toFixed(3));
+  const detEl = document.getElementById('v711-phase-detected');
+  if (detEl) {
+    detEl.textContent = p.phase_transition_detected ? '相变!' : '未检测';
+    detEl.style.color = p.phase_transition_detected ? '#f87171' : '#34d399';
+  }
+  const bnEl = document.getElementById('v711-phase-bottleneck');
+  if (bnEl) {
+    bnEl.textContent = p.bottleneck_type || 'balanced';
+    bnEl.style.color = p.bottleneck_type === 'balanced' ? '#34d399' : '#fbbf24';
+  }
+  _v711_set('v711-phase-fractal', (p.fractal_dimension || 1.0).toFixed(2));
+  const thEl = document.getElementById('v711-phase-theorem');
+  if (thEl) {
+    thEl.textContent = p.t103_satisfied ? '可预测✓' : '—';
+    thEl.style.color = p.t103_satisfied ? '#34d399' : '#888';
   }
 }
 

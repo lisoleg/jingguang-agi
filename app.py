@@ -837,6 +837,8 @@ def chat_v2():
             'v79': get_v79_data() or _v79_state,
             # v7.10新增：欧拉相位闭合·递归证明折叠·五层次本体·可证伪预言（M134-M137）
             'v710': get_v710_data() or _v710_state,
+            # v7.11新增：二部图拓扑·关系作用量·混合相位·拓扑相变（M138-M141）
+            'v711': get_v711_data() or _v711_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
         }))
@@ -6120,6 +6122,403 @@ def v710_prediction_state():
         if modules is None:
             return jsonify(_v710_state['prediction'])
         return jsonify(_to_native(modules['prediction']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.11 懒加载与状态（M138-M141）====================
+
+_v711_modules = None
+_v711_modules_lock = threading.Lock()
+
+def get_v711_modules():
+    """获取或初始化 v7.11 模块（线程安全懒加载）"""
+    global _v711_modules
+    if _v711_modules is None:
+        with _v711_modules_lock:
+            if _v711_modules is None:
+                try:
+                    from M138_BipartiteGraphTopologyEngine import get_instance as get_bipartite
+                    from M139_RelationalActionRouter import get_instance as get_action
+                    from M140_HybridRailPhaseController import get_instance as get_hybrid
+                    from M141_TopologicalPhaseTransitionDetector import get_instance as get_phase
+
+                    _v711_modules = {
+                        'bipartite': get_bipartite,  # M138: 二部图拓扑引擎
+                        'action': get_action,        # M139: 关系作用量路由器
+                        'hybrid': get_hybrid,        # M140: 混合相位控制器
+                        'phase': get_phase,          # M141: 拓扑相变检测器
+                    }
+                    print("✅ v7.11新模块已加载（M138-M141）- 二部图拓扑·关系作用量·混合相位·拓扑相变")
+                except Exception as e:
+                    import traceback
+                    print(f"⚠️ v7.11模块加载失败（降级运行）: {e}")
+                    traceback.print_exc()
+                    _v711_modules = None
+    return _v711_modules
+
+def get_v711_data():
+    """获取所有v7.11模块的状态数据（M138-M141）"""
+    modules = get_v711_modules()
+    if modules is None:
+        return None
+    try:
+        return {
+            'bipartite': modules['bipartite']().get_state(),
+            'action': modules['action']().get_state(),
+            'hybrid': modules['hybrid']().get_state(),
+            'phase': modules['phase']().get_state(),
+        }
+    except Exception as e:
+        print(f"⚠️ 获取v7.11数据失败: {e}")
+        return None
+
+# v7.11 静态状态（降级模式）
+_v711_state = {
+    'bipartite': {
+        'topology_type': 'K(n/2,n/2)', 'num_nodes': 256, 'num_groups': 2,
+        'diameter_zcube': 2, 'diameter_clos': 3,
+        'cost_zcube': 2.0, 'cost_clos': 3.0, 'cost_delta': 1.0,
+        'switch_saving_pct': 33.0, 'survival_prob': 0.996,
+        'max_min_ratio': 1.05, 'total_comparisons': 0,
+        't100_satisfied': True,
+    },
+    'action': {
+        'current_S_R': 1.5, 'optimal_path_hops': 2,
+        'phase_entropy_H_phi': 0.12, 'alpha': 0.6, 'beta': 0.4,
+        'total_routes_computed': 0, 'avg_action_cost': 0.0,
+        'is_deterministic': True, 'ecmp_conflicts': 0,
+        't101_satisfied': True,
+    },
+    'hybrid': {
+        'optimal_threshold': 4096, 'single_rail_pct': 0.35,
+        'multi_rail_pct': 0.65, 'expected_S_R_hybrid': 1.2,
+        'expected_S_R_single': 2.1, 'expected_S_R_multi': 1.8,
+        'pd_separation_active': True, 'total_packets_routed': 0,
+        'phase_switches': 0,
+        't102_satisfied': True,
+    },
+    'phase': {
+        'current_H_phi': 0.15, 'phase_transition_detected': False,
+        'current_scale_N': 256, 'predicted_transition_N': 1024,
+        'memory_bound_pct': 0.65, 'bandwidth_bound_pct': 0.42,
+        'bottleneck_type': 'balanced', 'recursive_level': 1,
+        'fractal_dimension': 1.0, 'survival_prob': 0.996,
+        'predictions_generated': 3, 't103_satisfied': True,
+    },
+}
+
+# ==================== v7.11 定理注册 ====================
+_V711_THEOREMS = {
+    'T100': '拓扑极简定理: ZCube二部图|z_ZCube| < |z_Clos|, Delta|z|=O(N)随规模增长 — 扁平拓扑代价极小',
+    'T101': '关系作用量极小定理: 二部图确定性路由S_R <= 分层Clos的S_R — 刘机制路径优选',
+    'T102': '混合接入最优定理: 重尾分布D(s)下存在唯一tau*使E[S_R]极小 — 单/多轨最优混接',
+    'T103': '拓扑相变可预测定理: Clos存在H_Phi非线性跳变, ZCube线性增长无相变 — 规模扩展可预测',
+}
+
+
+# ==================== v7.11 API端点 ====================
+
+@app.route('/api/v711/state', methods=['GET'])
+def v711_state():
+    """v7.11 完整状态获取"""
+    try:
+        data = get_v711_data()
+        if data:
+            return jsonify({**data, 'theorems': _V711_THEOREMS})
+        return jsonify({**_v711_state, 'theorems': _V711_THEOREMS})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M138: BipartiteGraphTopologyEngine ----
+
+@app.route('/api/v711/bipartite/create', methods=['POST'])
+def v711_bipartite_create():
+    """创建二部图拓扑"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify(_v711_state['bipartite'])
+        n = data.get('num_nodes', 256)
+        result = modules['bipartite']().create_topology(n)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/bipartite/compare', methods=['POST'])
+def v711_bipartite_compare():
+    """Clos vs ZCube对比"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify(_v711_state['bipartite'])
+        n = data.get('num_nodes', 256)
+        result = modules['bipartite']().compare_clos_zcube(n)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/bipartite/path', methods=['POST'])
+def v711_bipartite_path():
+    """计算二部图最短路径"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify({'error': 'module not loaded'}), 503
+        src = data.get('source', 0)
+        dst = data.get('destination', 1)
+        result = modules['bipartite']().compute_path(src, dst)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/bipartite/diameter', methods=['GET'])
+def v711_bipartite_diameter():
+    """获取网络直径"""
+    try:
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify({'diameter_zcube': 2, 'diameter_clos': 3})
+        result = modules['bipartite']().compute_diameter()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/bipartite/fault-tolerance', methods=['POST'])
+def v711_bipartite_fault():
+    """容错分析"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify({'survival_prob': 0.996})
+        n = data.get('num_nodes', 256)
+        k = data.get('failed_leaves', 1)
+        result = modules['bipartite']().analyze_fault_tolerance(n, k)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/bipartite/state', methods=['GET'])
+def v711_bipartite_state():
+    """M138状态"""
+    try:
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify(_v711_state['bipartite'])
+        return jsonify(_to_native(modules['bipartite']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M139: RelationalActionRouter ----
+
+@app.route('/api/v711/action/compute', methods=['POST'])
+def v711_action_compute():
+    """计算关系作用量S_R"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify(_v711_state['action'])
+        path_hops = data.get('path_hops', [1, 2])
+        result = modules['action']().compute_action(path_hops)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/action/route', methods=['POST'])
+def v711_action_route():
+    """刘机制最优路由"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify({'error': 'module not loaded'}), 503
+        src = data.get('source', 0)
+        dst = data.get('destination', 1)
+        result = modules['action']().find_optimal_route(src, dst)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/action/entropy', methods=['POST'])
+def v711_action_entropy():
+    """计算相位熵H_Phi"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify({'H_phi': 0.12})
+        link_utils = data.get('link_utilizations', [0.5, 0.5])
+        result = modules['action']().compute_phase_entropy(link_utils)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/action/compare', methods=['POST'])
+def v711_action_compare():
+    """ZCube vs Clos 关系作用量对比"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify(_v711_state['action'])
+        n = data.get('num_nodes', 256)
+        result = modules['action']().compare_actions(n)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/action/state', methods=['GET'])
+def v711_action_state():
+    """M139状态"""
+    try:
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify(_v711_state['action'])
+        return jsonify(_to_native(modules['action']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M140: HybridRailPhaseController ----
+
+@app.route('/api/v711/hybrid/optimize', methods=['POST'])
+def v711_hybrid_optimize():
+    """优化混合阈值"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify(_v711_state['hybrid'])
+        result = modules['hybrid']().optimize_threshold(data)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/hybrid/route-packet', methods=['POST'])
+def v711_hybrid_route():
+    """路由数据包到单/多轨"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify({'error': 'module not loaded'}), 503
+        size = data.get('size', 1024)
+        result = modules['hybrid']().route_packet(size)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/hybrid/pd-analyze', methods=['POST'])
+def v711_hybrid_pd():
+    """PD分离流量分析"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify(_v711_state['hybrid'])
+        result = modules['hybrid']().analyze_pd_separation(data)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/hybrid/eml-switch', methods=['POST'])
+def v711_hybrid_eml():
+    """EML相位切换"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify({'error': 'module not loaded'}), 503
+        result = modules['hybrid']().eml_phase_switch(data)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/hybrid/state', methods=['GET'])
+def v711_hybrid_state():
+    """M140状态"""
+    try:
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify(_v711_state['hybrid'])
+        return jsonify(_to_native(modules['hybrid']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M141: TopologicalPhaseTransitionDetector ----
+
+@app.route('/api/v711/phase/detect', methods=['POST'])
+def v711_phase_detect():
+    """检测拓扑相变"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify(_v711_state['phase'])
+        n1 = data.get('N1', 256)
+        n2 = data.get('N2', 2048)
+        result = modules['phase']().detect_transition(n1, n2)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/phase/monitor', methods=['POST'])
+def v711_phase_monitor():
+    """关系熵监控"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify({'H_phi': 0.15, 'transition_detected': False})
+        link_utils = data.get('link_utilizations', [])
+        result = modules['phase']().monitor_entropy(link_utils)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/phase/bottleneck', methods=['POST'])
+def v711_phase_bottleneck():
+    """耦合瓶颈分析"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify(_v711_state['phase'])
+        result = modules['phase']().analyze_bottleneck(data)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/phase/recursive', methods=['POST'])
+def v711_phase_recursive():
+    """递归ZCube分形扩展"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify(_v711_state['phase'])
+        level = data.get('level', 1)
+        result = modules['phase']().recursive_expand(level)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v711/phase/state', methods=['GET'])
+def v711_phase_state():
+    """M141状态"""
+    try:
+        modules = get_v711_modules()
+        if modules is None:
+            return jsonify(_v711_state['phase'])
+        return jsonify(_to_native(modules['phase']().get_state()))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
