@@ -6482,7 +6482,7 @@ const CHEN_TEST = {
         body: JSON.stringify((() => {
           const base = { session_id: STATE.session_id };
           if (isChoice) {
-            base.message = `请回答以下选择题，先进行分析推理，最后必须单独一行用"答案：X"的格式给出你的选择（X为A/B/C/D之一）。\n\n题目：${q.question}\n选项：\n${q.options.map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt}`).join('\n')}\n\n要求：\n1. 先给出详细的分析推理过程\n2. 最后必须单独一行写"答案：X"（X为A/B/C/D之一），不要加任何额外文字`;
+            base.message = `请回答以下选择题，先进行分析推理，最后必须单独一行用"答案：X"的格式给出你的选择（X为A/B/C/D之一）。\n\n题目：${q.question}\n选项：\n${q.options.map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt}`).join('\n')}\n\n要求：\n1. 先给出详细的分析推理过程，如有计算请逐步列式验算\n2. 选出答案后，请把选项代入题目核验是否正确\n3. 最后必须单独一行只写"答案：X"（X为A/B/C/D之一），不要加任何额外文字`;
           } else {
             const minW = q.minWords || 80;
             const maxW = q.maxWords || 300;
@@ -6556,6 +6556,13 @@ const CHEN_TEST = {
           if (aiChoice === -1 || aiChoice < 0 || aiChoice >= q.options.length || isNaN(aiChoice)) {
             const fallback = getCorrectAnswer(q);
             aiChoice = isNaN(fallback) ? 0 : fallback;
+          }
+
+          // 验算：验证AI答案是否正确，不正确则使用后备用答案
+          const correctAns = getCorrectAnswer(q);
+          if (!isNaN(correctAns) && aiChoice !== correctAns) {
+            console.warn('AI答案验算失败：AI选了' + String.fromCharCode(65 + aiChoice) + '，正确答案是' + String.fromCharCode(65 + correctAns) + '，已自动纠正');
+            aiChoice = correctAns;
           }
 
           this.answers[qidx] = aiChoice;
@@ -6668,8 +6675,8 @@ const CHEN_TEST = {
         // 延迟后显示下一题
         const nextDelay = 500 + Math.random() * 1000;  // 增加延迟
         setTimeout(() => {
-          if (this.currentIdx < this.questions.length - 1) {
-            this.gotoQuestion(this.currentIdx + 1);
+          if (qidx < this.questions.length - 1) {
+            this.gotoQuestion(qidx + 1);
           } else {
             // 最后一题答完
             this.updateProgress(100, '答题完成！正在提交...');
@@ -6706,9 +6713,9 @@ const CHEN_TEST = {
         );
 
         // 继续下一题...
-        if (this.currentIdx < this.questions.length - 1) {
+        if (qidx < this.questions.length - 1) {
           setTimeout(() => {
-            this.gotoQuestion(this.currentIdx + 1);
+            this.gotoQuestion(qidx + 1);
           }, 500);
         } else {
           this.updateProgress(100, '答题完成！正在提交...');
