@@ -831,6 +831,8 @@ def chat_v2():
             'v76': get_v76_data() or _v76_state,
             # v7.7新增：博弈论·ICPS·情绪粒度（M120-M125）
             'v77': get_v77_data() or _v77_state,
+            # v7.8新增：护栏·推测·KV·本体（M126-M129）
+            'v78': get_v78_data() or _v78_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
         }))
@@ -1058,6 +1060,8 @@ def goal_mode():
             'v76': get_v76_data() or _v76_state,
             # v7.7新增：博弈论·ICPS·情绪粒度（M120-M125）
             'v77': get_v77_data() or _v77_state,
+            # v7.8新增：护栏·推测·KV·本体（M126-M129）
+            'v78': get_v78_data() or _v78_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
             'version': '12.0',
@@ -4850,6 +4854,404 @@ def v77_sandbox_state():
         if modules is None:
             return jsonify(_v77_state['sandbox'])
         return jsonify(_to_native(modules['sandbox']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.8 护栏·推测·KV·本体（M126-M129）====================
+
+_v78_modules = None
+_v78_modules_lock = threading.Lock()
+
+def get_v78_modules():
+    """获取或初始化 v7.8 模块（线程安全懒加载）"""
+    global _v78_modules
+    if _v78_modules is None:
+        with _v78_modules_lock:
+            if _v78_modules is None:
+                try:
+                    from M126_GuardrailOrchestrator import get_instance as get_guardrail
+                    from M127_SpeculativeReasoner import get_instance as get_speculative
+                    from M128_KVCacheGovernor import get_instance as get_kvcache
+                    from M129_OntologyAutoForge import get_instance as get_ontology
+
+                    _v78_modules = {
+                        'guardrail': get_guardrail,     # M126: 护栏编排器
+                        'speculative': get_speculative, # M127: 推测推理器
+                        'kvcache': get_kvcache,          # M128: KV缓存治理器
+                        'ontology': get_ontology,        # M129: 本体自锻造
+                    }
+                    print("✅ v7.8新模块已加载（M126-M129）- 护栏·推测·KV·本体")
+                except Exception as e:
+                    import traceback
+                    print(f"⚠️ v7.8模块加载失败（降级运行）: {e}")
+                    traceback.print_exc()
+                    _v78_modules = None
+    return _v78_modules
+
+def get_v78_data():
+    """获取所有v7.8模块的状态数据（M126-M129）"""
+    modules = get_v78_modules()
+    if modules is None:
+        return None
+    try:
+        return {
+            'guardrail': modules['guardrail']().get_state(),
+            'speculative': modules['speculative']().get_state(),
+            'kvcache': modules['kvcache']().get_state(),
+            'ontology': modules['ontology']().get_state(),
+        }
+    except Exception as e:
+        print(f"⚠️ 获取v7.8数据失败: {e}")
+        return None
+
+# v7.8 静态状态（降级模式）
+_v78_state = {
+    'guardrail': {
+        'l1_rescue_count': 0, 'l1_rescue_success': 0, 'l2_retry_count': 0,
+        'l2_retry_success': 0, 'l3_enforce_count': 0, 'l3_enforce_blocked': 0,
+        'total_orchestrations': 0, 'overall_success_rate': 0.0,
+    },
+    'speculative': {
+        'total_drafts': 0, 'total_hypotheses': 0, 'total_verifications': 0,
+        'total_accepted': 0, 'total_rejected': 0, 'avg_acceptance_rate': 0.0,
+        'avg_speedup': 1.0, 'loops_detected': 0, 't88_satisfied': False,
+    },
+    'kvcache': {
+        'total_quantizations': 0, 'total_compactions': 0, 'total_budget_allocations': 0,
+        'total_govern_cycles': 0, 'total_bytes_saved': 0, 'avg_compression_ratio': 1.0,
+        'avg_fidelity': 1.0, 't89_satisfied': True,
+    },
+    'ontology': {
+        'total_nodes': 0, 'total_edges': 0, 'total_snapshots': 0,
+        'current_version': 'v7.8', 'total_generations': 0, 'total_corrections': 0,
+        'total_rollbacks': 0, 'graph_diameter': 0, 't90_satisfied': False, 't91_satisfied': True,
+    },
+}
+
+# ==================== v7.8 定理注册 ====================
+_V78_THEOREMS = {
+    'T86': '护栏完备性定理: L1⊂L2⊂L3 ⟹ 推理失效全覆盖 — 可靠性保证',
+    'T87': '概率纠正定理: P(correct) ≥ Φ×S_C — 全息置信度纠正保证',
+    'T88': '推测加速定理: α>α_min ⟹ 加速比≥1/(1-α) — 推测推理加速保证',
+    'T89': '记忆保真-压缩权衡: max Σ(F_i×log₂(q_i)) s.t. Σb_i≤B — 量化优化保证',
+    'T90': '本体自洽性定理: 图直径≤log₂(N) — 本体可达性保证',
+    'T91': '时间晶体守恒定理: ∀v, T1-T7∈Core(v) — 核心公理跨版本守恒',
+}
+
+
+# ==================== v7.8 API端点 ====================
+
+@app.route('/api/v78/state', methods=['GET'])
+def v78_state():
+    """v7.8 完整状态获取"""
+    try:
+        data = get_v78_data()
+        if data:
+            return jsonify({**data, 'theorems': _V78_THEOREMS})
+        return jsonify({**_v78_state, 'theorems': _V78_THEOREMS})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M126: GuardrailOrchestrator ----
+
+@app.route('/api/v78/guardrail/rescue', methods=['POST'])
+def v78_guardrail_rescue():
+    """M126: L1 Rescue解析"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.8模块未加载'}), 503
+        output = data.get('output', '')
+        expected_format = data.get('expected_format', 'auto')
+        result = modules['guardrail']().rescue_parse(output, expected_format)
+        return jsonify(_to_native(result.to_dict() if hasattr(result, 'to_dict') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/guardrail/retry', methods=['POST'])
+def v78_guardrail_retry():
+    """M126: L2 Retry引导"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.8模块未加载'}), 503
+        failed_reasoning = data.get('failed_reasoning', '')
+        context = data.get('context', {})
+        result = modules['guardrail']().retry_guide(failed_reasoning, context)
+        return jsonify(_to_native(result.to_dict() if hasattr(result, 'to_dict') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/guardrail/enforce', methods=['POST'])
+def v78_guardrail_enforce():
+    """M126: L3 Step强制"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.8模块未加载'}), 503
+        step_id = data.get('step_id', '')
+        result = modules['guardrail']().enforce_step(step_id)
+        return jsonify(_to_native(result.to_dict() if hasattr(result, 'to_dict') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/guardrail/orchestrate', methods=['POST'])
+def v78_guardrail_orchestrate():
+    """M126: 全链路护栏编排"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.8模块未加载'}), 503
+        output = data.get('output', '')
+        context = data.get('context', {})
+        steps = data.get('steps', [])
+        result = modules['guardrail']().orchestrate(output, context, steps)
+        return jsonify(_to_native(result.to_dict() if hasattr(result, 'to_dict') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/guardrail/state', methods=['GET'])
+def v78_guardrail_state():
+    """M126: 护栏编排器状态"""
+    try:
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify(_v78_state['guardrail'])
+        return jsonify(_to_native(modules['guardrail']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M127: SpeculativeReasoner ----
+
+@app.route('/api/v78/speculative/draft', methods=['POST'])
+def v78_speculative_draft():
+    """M127: 草稿推理"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.8模块未加载'}), 503
+        query = data.get('query', '')
+        max_candidates = int(data.get('max_candidates', 3))
+        result = modules['speculative']().draft_reason(query, max_candidates)
+        return jsonify(_to_native(result.to_dict() if hasattr(result, 'to_dict') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/speculative/verify', methods=['POST'])
+def v78_speculative_verify():
+    """M127: 批量验证"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.8模块未加载'}), 503
+        hypotheses = data.get('hypotheses', [])
+        result = modules['speculative']().verify_chain(hypotheses)
+        return jsonify(_to_native(result.to_dict() if hasattr(result, 'to_dict') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/speculative/loop-check', methods=['POST'])
+def v78_speculative_loop():
+    """M127: 推理循环检测"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.8模块未加载'}), 503
+        reasoning_trace = data.get('reasoning_trace', [])
+        result = modules['speculative']().detect_loop(reasoning_trace)
+        return jsonify(_to_native(result if isinstance(result, dict) else {'loop_detected': result}))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/speculative/speculate', methods=['POST'])
+def v78_speculative_run():
+    """M127: 自适应推测推理"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.8模块未加载'}), 503
+        query = data.get('query', '')
+        result = modules['speculative']().adaptive_speculate(query)
+        return jsonify(_to_native(result.to_dict() if hasattr(result, 'to_dict') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/speculative/state', methods=['GET'])
+def v78_speculative_state():
+    """M127: 推测推理器状态"""
+    try:
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify(_v78_state['speculative'])
+        return jsonify(_to_native(modules['speculative']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M128: KVCacheGovernor ----
+
+@app.route('/api/v78/kvcache/quantize', methods=['POST'])
+def v78_kvcache_quantize():
+    """M128: KV-cache差异量化"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.8模块未加载'}), 503
+        layer = int(data.get('layer', 1))
+        data_items = data.get('data', [])
+        phi_value = float(data.get('phi_value', 0.5))
+        result = modules['kvcache']().quantize(layer, data_items, phi_value)
+        return jsonify(_to_native(result.to_dict() if hasattr(result, 'to_dict') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/kvcache/compact', methods=['POST'])
+def v78_kvcache_compact():
+    """M128: TieredCompact压缩"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.8模块未加载'}), 503
+        memories = data.get('memories', [])
+        keep_recent = int(data.get('keep_recent', 3))
+        result = modules['kvcache']().compact(memories, keep_recent)
+        return jsonify(_to_native(result.to_dict() if hasattr(result, 'to_dict') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/kvcache/budget', methods=['GET'])
+def v78_kvcache_budget():
+    """M128: 上下文预算查询"""
+    try:
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify(_v78_state['kvcache'])
+        state = modules['kvcache']().get_state()
+        return jsonify(_to_native(state))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/kvcache/govern', methods=['POST'])
+def v78_kvcache_govern():
+    """M128: 全局KV治理"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.8模块未加载'}), 503
+        memory_tree = data.get('memory_tree', {})
+        result = modules['kvcache']().govern(memory_tree)
+        return jsonify(_to_native(result.to_dict() if hasattr(result, 'to_dict') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/kvcache/state', methods=['GET'])
+def v78_kvcache_state():
+    """M128: KV缓存治理器状态"""
+    try:
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify(_v78_state['kvcache'])
+        return jsonify(_to_native(modules['kvcache']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M129: OntologyAutoForge ----
+
+@app.route('/api/v78/ontology/generate', methods=['POST'])
+def v78_ontology_generate():
+    """M129: 本体自动生成"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.8模块未加载'}), 503
+        module_dir = data.get('module_dir', '.')
+        result = modules['ontology']().generate_ontology(module_dir)
+        return jsonify(_to_native(result.to_dict() if hasattr(result, 'to_dict') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/ontology/correct', methods=['POST'])
+def v78_ontology_correct():
+    """M129: 人在回路修正"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.8模块未加载'}), 503
+        instruction = data.get('instruction', '')
+        result = modules['ontology']().correct_ontology(instruction)
+        return jsonify(_to_native(result.to_dict() if hasattr(result, 'to_dict') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/ontology/snapshot', methods=['POST'])
+def v78_ontology_snapshot():
+    """M129: 创建版本快照"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.8模块未加载'}), 503
+        version = data.get('version', 'v7.8')
+        changes = data.get('changes', [])
+        result = modules['ontology']().create_snapshot(version, changes)
+        return jsonify(_to_native(result.to_dict() if hasattr(result, 'to_dict') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/ontology/rollback', methods=['POST'])
+def v78_ontology_rollback():
+    """M129: 版本回滚"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.8模块未加载'}), 503
+        target_version = data.get('target_version', 'v7.7')
+        result = modules['ontology']().rollback(target_version)
+        return jsonify(_to_native(result.to_dict() if hasattr(result, 'to_dict') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/ontology/resonance', methods=['POST'])
+def v78_ontology_resonance():
+    """M129: 跨版本共振分析"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.8模块未加载'}), 503
+        v1 = data.get('version1', 'v7.0')
+        v2 = data.get('version2', 'v7.8')
+        result = modules['ontology']().analyze_resonance(v1, v2)
+        return jsonify(_to_native(result.to_dict() if hasattr(result, 'to_dict') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v78/ontology/state', methods=['GET'])
+def v78_ontology_state():
+    """M129: 本体自锻造状态"""
+    try:
+        modules = get_v78_modules()
+        if modules is None:
+            return jsonify(_v78_state['ontology'])
+        return jsonify(_to_native(modules['ontology']().get_state()))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

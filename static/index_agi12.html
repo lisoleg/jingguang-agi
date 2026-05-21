@@ -1356,6 +1356,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 
 /* ===== v7.7 面板样式（M120-M125 博弈论·ICPS·情绪粒度）===== */
 .panel-v77{border-left:2px solid #f472b6!important;background:linear-gradient(90deg,rgba(244,114,182,.05),transparent)!important}
+.panel-v78{border-left:2px solid #a78bfa!important;background:linear-gradient(90deg,rgba(167,139,250,.05),transparent)!important}
 .v77-row{display:flex;align-items:center;gap:6px;margin:3px 0}
 .v77-label{font-size:8px;color:var(--txt2);min-width:60px}
 .v77-bar-wrap{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
@@ -3181,6 +3182,113 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <div class="v77-badge" id="v77-emo-t85-status">—</div>
         </div>
       </div>
+
+      <!-- ===== v7.8 新面板（M126-M129 护栏·推测·KV·本体）===== -->
+
+      <!-- M126: 护栏编排面板 -->
+      <div class="panel-section panel-v78" id="guardrail-panel" data-hint="M126护栏编排器：L1 Rescue解析+L2 Retry引导+L3 Step强制，T86护栏完备性+T87概率纠正">
+        <div class="panel-title">🛡️ 护栏编排 <span style="font-size:8px;color:var(--txt3)">M126·T86-T87</span></div>
+        <div class="v77-row">
+          <div class="v77-label">L1 Rescue</div>
+          <div class="v77-bar-val" id="v78-guard-l1" style="color:#34d399">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">L2 Retry</div>
+          <div class="v77-bar-val" id="v78-guard-l2" style="color:#fbbf24">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">L3 Enforce</div>
+          <div class="v77-bar-val" id="v78-guard-l3" style="color:#f87171">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">成功率</div>
+          <div class="v77-bar-wrap"><div class="v77-bar-fill game" id="v78-guard-success-bar" style="width:0%"></div></div>
+          <div class="v77-bar-val" id="v78-guard-success-val">0.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T86/T87</div>
+          <div class="v77-badge" id="v78-guard-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- M127: 推测推理面板 -->
+      <div class="panel-section panel-v78" id="speculative-panel" data-hint="M127推测推理器：草稿推理+批量验证+自适应draft-max+推理循环保护，T88推测加速">
+        <div class="panel-title">⚡ 推测推理 <span style="font-size:8px;color:var(--txt3)">M127·T88</span></div>
+        <div class="v77-row">
+          <div class="v77-label">草稿数</div>
+          <div class="v77-bar-val" id="v78-spec-drafts" style="color:#38bdf8">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">接受率α</div>
+          <div class="v77-bar-wrap"><div class="v77-bar-fill bayes" id="v78-spec-alpha-bar" style="width:0%"></div></div>
+          <div class="v77-bar-val" id="v78-spec-alpha-val">0.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">加速比</div>
+          <div class="v77-bar-val" id="v78-spec-speedup" style="color:#34d399">1.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">循环检测</div>
+          <div class="v77-badge" id="v78-spec-loop">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T88判定</div>
+          <div class="v77-badge" id="v78-spec-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- M128: KV治理面板 -->
+      <div class="panel-section panel-v78" id="kvcache-panel" data-hint="M128 KV缓存治理器：差异量化(L1=16bit,L2=8bit,L3=4bit)+TieredCompact+上下文预算，T89保真-压缩权衡">
+        <div class="panel-title">🗄️ KV治理 <span style="font-size:8px;color:var(--txt3)">M128·T89</span></div>
+        <div class="v77-row">
+          <div class="v77-label">量化次数</div>
+          <div class="v77-bar-val" id="v78-kv-quant" style="color:#a78bfa">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">压缩率</div>
+          <div class="v77-bar-wrap"><div class="v77-bar-fill icps" id="v78-kv-compress-bar" style="width:0%"></div></div>
+          <div class="v77-bar-val" id="v78-kv-compress-val">1.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">保真度</div>
+          <div class="v77-bar-wrap"><div class="v77-bar-fill safety" id="v78-kv-fidelity-bar" style="width:100%"></div></div>
+          <div class="v77-bar-val" id="v78-kv-fidelity-val">1.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">节省字节</div>
+          <div class="v77-bar-val" id="v78-kv-saved" style="color:#34d399">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T89判定</div>
+          <div class="v77-badge" id="v78-kv-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- M129: 本体自锻造面板 -->
+      <div class="panel-section panel-v78" id="ontology-panel" data-hint="M129本体自锻造：本体自动生成+人在回路修正+版本时间晶体，T90本体自洽性+T91时间晶体守恒">
+        <div class="panel-title">🔮 本体自锻造 <span style="font-size:8px;color:var(--txt3)">M129·T90-T91</span></div>
+        <div class="v77-row">
+          <div class="v77-label">节点数</div>
+          <div class="v77-bar-val" id="v78-onto-nodes" style="color:#f472b6">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">边数</div>
+          <div class="v77-bar-val" id="v78-onto-edges" style="color:#38bdf8">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">图直径</div>
+          <div class="v77-bar-val" id="v78-onto-diameter" style="color:#fbbf24">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">版本</div>
+          <div class="v77-badge" id="v78-onto-version">v7.8</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T90/T91</div>
+          <div class="v77-badge" id="v78-onto-theorem">—</div>
+        </div>
+      </div>
+
     </div>
 
     <!-- ═══════════════════════════════════════════════════════
@@ -5937,6 +6045,16 @@ const CHEN_TEST = {
         }); } catch(e) { console.warn('v7.7面板更新失败:', e); }
       }
 
+      // 12.6. v7.8 面板（M126-M129）
+      if (typeof updateV78Panels === 'function') {
+        try { updateV78Panels({
+          guardrail: { l1_rescue_count: Math.round(5 + s * 20), l1_rescue_success: Math.round(4 + s * 18), l2_retry_count: Math.round(2 + s * 8), l2_retry_success: Math.round(1 + s * 6), l3_enforce_count: Math.round(1 + s * 5), l3_enforce_blocked: Math.round(0 + s * 2), total_orchestrations: Math.round(8 + s * 30), overall_success_rate: 0.7 + s * 0.25 },
+          speculative: { total_drafts: Math.round(3 + s * 15), total_hypotheses: Math.round(8 + s * 40), total_verifications: Math.round(5 + s * 25), total_accepted: Math.round(3 + s * 18), total_rejected: Math.round(2 + s * 7), avg_acceptance_rate: 0.4 + s * 0.4, avg_speedup: 1.0 + s * 1.5, loops_detected: s > 0.8 ? 1 : 0, t88_satisfied: s > 0.33 },
+          kvcache: { total_quantizations: Math.round(10 + s * 50), total_compactions: Math.round(5 + s * 20), total_budget_allocations: Math.round(3 + s * 10), total_govern_cycles: Math.round(2 + s * 8), total_bytes_saved: Math.round(1000 + s * 8000), avg_compression_ratio: 1.0 + s * 3.5, avg_fidelity: 0.95 - s * 0.1, t89_satisfied: true },
+          ontology: { total_nodes: Math.round(100 + s * 29), total_edges: Math.round(150 + s * 50), total_snapshots: Math.round(1 + s * 5), current_version: 'v7.8', total_generations: Math.round(1 + s * 3), total_corrections: Math.round(0 + s * 2), total_rollbacks: 0, graph_diameter: Math.round(4 + s * 3), t90_satisfied: s > 0.5, t91_satisfied: true }
+        }); } catch(e) { console.warn('v7.8面板更新失败:', e); }
+      }
+
       // 13. 觉醒度面板
       const awakeEl = document.getElementById('awakening-value');
       if (awakeEl) awakeEl.textContent = (s * 100).toFixed(0) + '%';
@@ -7983,6 +8101,8 @@ function updateV72Panels(data) {
   if (data.v76) updateV76Panels(data);
   // v7.7面板更新（博弈论·ICPS·情绪粒度M120-M125）
   if (data.v77) updateV77Panels(data);
+  // v7.8面板更新（护栏·推测·KV·本体M126-M129）
+  if (data.v78) updateV78Panels(data);
   // v7.1人机融合层面板更新
   if (data.v71) updateV71Panels(data);
 }
@@ -8573,6 +8693,116 @@ function updateEmotionSandboxPanel(emotion, sandbox) {
     const safe = sandbox ? (sandbox.safety_score || 1.0) > 0.3 : true;
     t85Badge.textContent = safe ? '探索✓' : '受限⚠';
     t85Badge.style.color = safe ? '#34d399' : '#f87171';
+  }
+}
+
+// ==================== v7.8 面板更新函数（M126-M129 护栏·推测·KV·本体）====================
+
+function _v78_set(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+function _v78_bar(barId, pct) {
+  const el = document.getElementById(barId);
+  if (el) el.style.width = Math.min(100, Math.max(0, pct)) + '%';
+}
+
+function updateV78Panels(data) {
+  if (!data) return;
+  const v78 = data.v78 || data;
+  if (v78.guardrail) updateGuardrailPanel(v78.guardrail);
+  if (v78.speculative) updateSpeculativePanel(v78.speculative);
+  if (v78.kvcache) updateKVCachePanel(v78.kvcache);
+  if (v78.ontology) updateOntologyPanel(v78.ontology);
+}
+
+// M126: 护栏编排面板
+function updateGuardrailPanel(g) {
+  if (!g) return;
+  _v78_set('v78-guard-l1', (g.l1_rescue_count || 0) + '/' + (g.l1_rescue_success || 0));
+  _v78_set('v78-guard-l2', (g.l2_retry_count || 0) + '/' + (g.l2_retry_success || 0));
+  _v78_set('v78-guard-l3', (g.l3_enforce_count || 0) + '/' + (g.l3_enforce_blocked || 0));
+  const rate = g.overall_success_rate || 0;
+  _v78_bar('v78-guard-success-bar', rate * 100);
+  _v78_set('v78-guard-success-val', rate.toFixed ? rate.toFixed(2) : '0.00');
+  // T86/T87
+  const thBadge = document.getElementById('v78-guard-theorem');
+  if (thBadge) {
+    const hasOrch = (g.total_orchestrations || 0) > 0;
+    thBadge.textContent = hasOrch ? '完备✓' : '—';
+    thBadge.style.color = hasOrch ? '#34d399' : '#888';
+  }
+}
+
+// M127: 推测推理面板
+function updateSpeculativePanel(s) {
+  if (!s) return;
+  _v78_set('v78-spec-drafts', s.total_drafts || 0);
+  const alpha = s.avg_acceptance_rate || 0;
+  _v78_bar('v78-spec-alpha-bar', alpha * 100);
+  _v78_set('v78-spec-alpha-val', alpha.toFixed ? alpha.toFixed(2) : '0.00');
+  const speedup = s.avg_speedup || 1.0;
+  _v78_set('v78-spec-speedup', speedup.toFixed ? speedup.toFixed(2) : '1.00');
+  // 循环检测
+  const loopBadge = document.getElementById('v78-spec-loop');
+  if (loopBadge) {
+    const loops = s.loops_detected || 0;
+    loopBadge.textContent = loops > 0 ? loops + '次⚠' : '无循环✓';
+    loopBadge.style.color = loops > 0 ? '#f87171' : '#34d399';
+  }
+  // T88
+  const thBadge = document.getElementById('v78-spec-theorem');
+  if (thBadge) {
+    thBadge.textContent = alpha > 0.33 ? '加速✓' : '—';
+    thBadge.style.color = alpha > 0.33 ? '#34d399' : '#888';
+  }
+}
+
+// M128: KV治理面板
+function updateKVCachePanel(k) {
+  if (!k) return;
+  _v78_set('v78-kv-quant', k.total_quantizations || 0);
+  const ratio = k.avg_compression_ratio || 1.0;
+  _v78_bar('v78-kv-compress-bar', Math.min(100, (ratio - 1) * 25));
+  _v78_set('v78-kv-compress-val', ratio.toFixed ? ratio.toFixed(2) : '1.00');
+  const fidelity = k.avg_fidelity || 1.0;
+  _v78_bar('v78-kv-fidelity-bar', fidelity * 100);
+  _v78_set('v78-kv-fidelity-val', fidelity.toFixed ? fidelity.toFixed(2) : '1.00');
+  _v78_set('v78-kv-saved', k.total_bytes_saved || 0);
+  // T89
+  const thBadge = document.getElementById('v78-kv-theorem');
+  if (thBadge) {
+    const ok = k.t89_satisfied !== false;
+    thBadge.textContent = ok ? '最优✓' : '次优⚠';
+    thBadge.style.color = ok ? '#34d399' : '#fbbf24';
+  }
+}
+
+// M129: 本体自锻造面板
+function updateOntologyPanel(o) {
+  if (!o) return;
+  _v78_set('v78-onto-nodes', o.total_nodes || 0);
+  _v78_set('v78-onto-edges', o.total_edges || 0);
+  _v78_set('v78-onto-diameter', o.graph_diameter || 0);
+  const verBadge = document.getElementById('v78-onto-version');
+  if (verBadge) {
+    verBadge.textContent = o.current_version || 'v7.8';
+  }
+  // T90/T91
+  const thBadge = document.getElementById('v78-onto-theorem');
+  if (thBadge) {
+    const t90 = o.t90_satisfied;
+    const t91 = o.t91_satisfied !== false;
+    if (t90 && t91) {
+      thBadge.textContent = '双守恒✓';
+      thBadge.style.color = '#34d399';
+    } else if (t91) {
+      thBadge.textContent = 'T91守恒✓';
+      thBadge.style.color = '#fbbf24';
+    } else {
+      thBadge.textContent = '—';
+      thBadge.style.color = '#888';
+    }
   }
 }
 
