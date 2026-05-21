@@ -839,6 +839,8 @@ def chat_v2():
             'v710': get_v710_data() or _v710_state,
             # v7.11新增：二部图拓扑·关系作用量·混合相位·拓扑相变（M138-M141）
             'v711': get_v711_data() or _v711_state,
+            # v7.12新增：UV正则化·芬芳香子·金符堆垒·宇射认知·辩证零·奇点消除（M142-M147）
+            'v712': get_v712_data() or _v712_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
         }))
@@ -6519,6 +6521,540 @@ def v711_phase_state():
         if modules is None:
             return jsonify(_v711_state['phase'])
         return jsonify(_to_native(modules['phase']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.12 懒加载与状态（M142-M147）====================
+
+_v712_modules = None
+_v712_modules_lock = threading.Lock()
+
+def get_v712_modules():
+    """获取或初始化 v7.12 模块（线程安全懒加载）"""
+    global _v712_modules
+    if _v712_modules is None:
+        with _v712_modules_lock:
+            if _v712_modules is None:
+                try:
+                    from M142_UVRegularizationEngine import get_instance as get_uv
+                    from M143_FenxiangziSpaceEngine import get_instance as get_fenxiang
+                    from M144_JinfuAccumulationComputer import get_instance as get_accum
+                    from M145_YuMappingCognitiveEngine import get_instance as get_yu
+                    from M146_DialecticalZeroReasoner import get_instance as get_dzero
+                    from M147_SingularityEliminator import get_instance as get_singul
+
+                    _v712_modules = {
+                        'uv': get_uv,          # M142: UV正则化引擎
+                        'fenxiang': get_fenxiang,  # M143: 芬芳香子空间引擎
+                        'accum': get_accum,    # M144: 金符堆垒运算器
+                        'yu': get_yu,          # M145: 宇射认知引擎
+                        'dzero': get_dzero,    # M146: 辩证零推理器
+                        'singul': get_singul,  # M147: 奇点消除器
+                    }
+                    print("✅ v7.12新模块已加载（M142-M147）- UV正则化·芬芳香子·金符堆垒·宇射认知·辩证零·奇点消除")
+                except Exception as e:
+                    import traceback
+                    print(f"⚠️ v7.12模块加载失败（降级运行）: {e}")
+                    traceback.print_exc()
+                    _v712_modules = None
+    return _v712_modules
+
+def get_v712_data():
+    """获取所有v7.12模块的状态数据（M142-M147）"""
+    modules = get_v712_modules()
+    if modules is None:
+        return None
+    try:
+        return {
+            'uv': modules['uv']().get_state(),
+            'fenxiang': modules['fenxiang']().get_state(),
+            'accum': modules['accum']().get_state(),
+            'yu': modules['yu']().get_state(),
+            'dzero': modules['dzero']().get_state(),
+            'singul': modules['singul']().get_state(),
+        }
+    except Exception as e:
+        print(f"⚠️ 获取v7.12数据失败: {e}")
+        return None
+
+# v7.12 静态状态（降级模式）
+_v712_state = {
+    'uv': {
+        'module_id': 'M142', 'module_name': 'UVRegularizationEngine', 'version': '7.12',
+        'd_phi': 0.01, 'k_max': 314.159, 'regularization_count': 0,
+        'divergence_count': 0, 'operation_count': 0,
+        't104_satisfied': True,
+    },
+    'fenxiang': {
+        'module_id': 'M143', 'module_name': 'FenxiangziSpaceEngine', 'version': '7.12',
+        'total_polyhedra': 18, 'platonic_count': 5, 'archimedean_count': 13,
+        'space_fillable': 3, 'knowledge_domains': 0, 'operation_count': 0,
+        't105_satisfied': True,
+    },
+    'accum': {
+        'module_id': 'M144', 'module_name': 'JinfuAccumulationComputer', 'version': '7.12',
+        'total_operators': 127, 'category_counts': {'relation': 21, 'phase': 18, 'stacking': 30, 'transform': 58},
+        'compute_history_count': 0, 'operation_count': 0,
+        't106_satisfied': True,
+    },
+    'yu': {
+        'module_id': 'M145', 'module_name': 'YuMappingCognitiveEngine', 'version': '7.12',
+        'alpha': 0.7, 'beta': 0.3, 'mapping_history_count': 0, 'operation_count': 0,
+        't107_satisfied': True,
+    },
+    'dzero': {
+        'module_id': 'M146', 'module_name': 'DialecticalZeroReasoner', 'version': '7.12',
+        'd_phi': 0.01, 'analysis_history_count': 0, 'operation_count': 0,
+        't108_satisfied': True,
+    },
+    'singul': {
+        'module_id': 'M147', 'module_name': 'SingularityEliminator', 'version': '7.12',
+        'd_phi': 0.01, 'max_recursion': 100, 'total_eliminations': 0,
+        'elimination_by_type': {}, 'operation_count': 0,
+        't109_satisfied': True,
+    },
+}
+
+# ==================== v7.12 定理注册 ====================
+_V712_THEOREMS = {
+    'T104': 'UV正则化定理: 金灵球d_φ提供物理截断k_max=π/d_φ, 无需重正化即可消除紫外发散',
+    'T105': '芬芳香子密堆定理: 18种正/半正多面体可密铺3D空间, Euler公式V-E+F=2全局成立',
+    'T106': '金符堆垒完备定理: 120个金符算符构成关系/相位/堆垒/变换完备运算系统, 无浮点截断',
+    'T107': '宇射认知定理: 对残缺输入X, H(Ψ) >= H(f), 宇射映射不损失信息且容忍不完整特征',
+    'T108': '辩证零定理: 0_D = {x : |x| < d_φ}为物理不可分辨而非绝对虚无, 极限运算在金符时空中恒有定义',
+    'T109': '奇点消除定理: 金符时空中曲率R <= 1/d_φ²有界, 分母以d_φ为下界, 递归深度受限 — 奇点为伪问题',
+}
+
+
+# ==================== v7.12 API端点 ====================
+
+@app.route('/api/v712/state', methods=['GET'])
+def v712_state():
+    """v7.12 完整状态获取"""
+    try:
+        data = get_v712_data()
+        if data:
+            return jsonify({**data, 'theorems': _V712_THEOREMS})
+        return jsonify({**_v712_state, 'theorems': _V712_THEOREMS})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M142: UVRegularizationEngine ----
+
+@app.route('/api/v712/uv/cutoff', methods=['GET'])
+def v712_uv_cutoff():
+    """获取UV截断频率"""
+    try:
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify({'d_phi': 0.01, 'k_max': 314.159})
+        return jsonify(_to_native(modules['uv']().get_cutoff_info()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/uv/detect-divergence', methods=['POST'])
+def v712_uv_detect():
+    """检测积分发散"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['uv'])
+        result = modules['uv']().detect_divergence(
+            data.get('integrand_type', 'power_law'),
+            data.get('dimension', 3),
+            data.get('extra_params', {})
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/uv/regularize', methods=['POST'])
+def v712_uv_regularize():
+    """正则化积分"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['uv'])
+        result = modules['uv']().regularize_integral(
+            data.get('integrand_type', 'power_law'),
+            data.get('dimension', 3),
+            data.get('extra_params', {})
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/uv/analyze-spectrum', methods=['POST'])
+def v712_uv_spectrum():
+    """分析频谱"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['uv'])
+        result = modules['uv']().analyze_spectrum(data.get('spectrum_data', []))
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/uv/state', methods=['GET'])
+def v712_uv_state():
+    """M142状态"""
+    try:
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['uv'])
+        return jsonify(_to_native(modules['uv']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M143: FenxiangziSpaceEngine ----
+
+@app.route('/api/v712/fenxiang/list', methods=['GET'])
+def v712_fenxiang_list():
+    """列出芬芳香子"""
+    try:
+        category = request.args.get('category', None)
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify({'total_polyhedra': 18, 'platonic_count': 5, 'archimedean_count': 13})
+        result = modules['fenxiang']().list_polyhedra(category)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/fenxiang/detail', methods=['GET'])
+def v712_fenxiang_detail():
+    """获取多面体详情"""
+    try:
+        name = request.args.get('name', 'Cube')
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify({'error': 'module not loaded'}), 503
+        result = modules['fenxiang']().get_polyhedron(name)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/fenxiang/space-fill', methods=['POST'])
+def v712_fenxiang_fill():
+    """空间填充模拟"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['fenxiang'])
+        result = modules['fenxiang']().simulate_space_filling(
+            dimensions=tuple(data.get('dimensions', [5, 5, 5])),
+            primary_type=data.get('primary_type', 'Cube'),
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/fenxiang/map-domain', methods=['POST'])
+def v712_fenxiang_domain():
+    """知识域映射"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['fenxiang'])
+        result = modules['fenxiang']().map_knowledge_domain(
+            data.get('domain', 'physics'),
+            data.get('subtopics', []),
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/fenxiang/state', methods=['GET'])
+def v712_fenxiang_state():
+    """M143状态"""
+    try:
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['fenxiang'])
+        return jsonify(_to_native(modules['fenxiang']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M144: JinfuAccumulationComputer ----
+
+@app.route('/api/v712/accum/list', methods=['GET'])
+def v712_accum_list():
+    """列出金符算符"""
+    try:
+        category = request.args.get('category', None)
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify({'total_operators': 120})
+        result = modules['accum']().list_operators(category)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/accum/detail', methods=['GET'])
+def v712_accum_detail():
+    """获取算符详情"""
+    try:
+        op_id = int(request.args.get('id', '0'))
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify({'error': 'module not loaded'}), 503
+        result = modules['accum']().get_operator(op_id)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/accum/compute', methods=['POST'])
+def v712_accum_compute():
+    """执行堆垒运算"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['accum'])
+        result = modules['accum']().accumulate(
+            value=data.get('value', 1.0),
+            operator_ids=data.get('operator_ids', [0]),
+            precision_bits=data.get('precision_bits', 64),
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/accum/network', methods=['POST'])
+def v712_accum_network():
+    """构建关系网络"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['accum'])
+        result = modules['accum']().build_relation_network(
+            data.get('nodes', []),
+            data.get('edges', []),
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/accum/state', methods=['GET'])
+def v712_accum_state():
+    """M144状态"""
+    try:
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['accum'])
+        return jsonify(_to_native(modules['accum']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M145: YuMappingCognitiveEngine ----
+
+@app.route('/api/v712/yu/map', methods=['POST'])
+def v712_yu_map():
+    """执行宇射计算"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['yu'])
+        result = modules['yu']().yu_map(
+            features=data.get('features', {}),
+            context=data.get('context', ''),
+            required_features=data.get('required_features'),
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/yu/compare', methods=['POST'])
+def v712_yu_compare():
+    """传统映射 vs 宇射对比"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['yu'])
+        result = modules['yu']().compare_mappings(
+            features=data.get('features', {}),
+            context=data.get('context', ''),
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/yu/inference', methods=['POST'])
+def v712_yu_inference():
+    """残缺数据推理"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['yu'])
+        result = modules['yu']().inference_with_missing_data(
+            features=data.get('features', {}),
+            context=data.get('context', ''),
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/yu/state', methods=['GET'])
+def v712_yu_state():
+    """M145状态"""
+    try:
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['yu'])
+        return jsonify(_to_native(modules['yu']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M146: DialecticalZeroReasoner ----
+
+@app.route('/api/v712/dzero/classify', methods=['POST'])
+def v712_dzero_classify():
+    """判定辩证状态"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['dzero'])
+        result = modules['dzero']().classify_value(
+            value=data.get('value', 0.0),
+            reference=data.get('reference', 0.0),
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/dzero/analyze-limit', methods=['POST'])
+def v712_dzero_limit():
+    """极限分析"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['dzero'])
+        result = modules['dzero']().analyze_limit(
+            sequence=data.get('sequence', []),
+            limit_candidate=data.get('limit_candidate', 0.0),
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/dzero/range', methods=['GET'])
+def v712_dzero_range():
+    """辩证零范围"""
+    try:
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify({'d_phi': 0.01, 'lower': -0.01, 'upper': 0.01})
+        result = modules['dzero']().get_dialectical_zero_range()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/dzero/state', methods=['GET'])
+def v712_dzero_state():
+    """M146状态"""
+    try:
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['dzero'])
+        return jsonify(_to_native(modules['dzero']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M147: SingularityEliminator ----
+
+@app.route('/api/v712/singul/safe-divide', methods=['POST'])
+def v712_singul_divide():
+    """安全除法"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['singul'])
+        result = modules['singul']().safe_divide(
+            numerator=data.get('numerator', 1.0),
+            denominator=data.get('denominator', 0.0),
+            context=data.get('context', ''),
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/singul/detect', methods=['POST'])
+def v712_singul_detect():
+    """曲率奇点检测"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['singul'])
+        result = modules['singul']().detect_curvature_singularity(
+            data.get('metric_tensor', [[1, 0], [0, 1]]),
+            data.get('context', ''),
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/singul/analyze-recursion', methods=['POST'])
+def v712_singul_recursion():
+    """递归安全性分析"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['singul'])
+        result = modules['singul']().analyze_recursion(
+            data.get('func_name', 'unknown'),
+            data.get('max_depth', 100),
+            data.get('base_case_value', 0.0),
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/singul/safe-compute', methods=['POST'])
+def v712_singul_compute():
+    """安全计算"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['singul'])
+        result = modules['singul']().safe_compute(
+            data.get('expression', ''),
+            data.get('variables', {}),
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v712/singul/state', methods=['GET'])
+def v712_singul_state():
+    """M147状态"""
+    try:
+        modules = get_v712_modules()
+        if modules is None:
+            return jsonify(_v712_state['singul'])
+        return jsonify(_to_native(modules['singul']().get_state()))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
