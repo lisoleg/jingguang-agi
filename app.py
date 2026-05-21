@@ -841,6 +841,8 @@ def chat_v2():
             'v711': get_v711_data() or _v711_state,
             # v7.12新增：UV正则化·芬芳香子·金符堆垒·宇射认知·辩证零·奇点消除（M142-M147）
             'v712': get_v712_data() or _v712_state,
+            # v7.13新增：太乙拓扑斯·金符CA·离散统计力学·HoTT防火墙·双共振·双轨评价·引力分解·流贯优化·拓扑短路（M148-M156）
+            'v713': get_v713_data() or _v713_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
         }))
@@ -7913,5 +7915,569 @@ def v70_holistic_state():
     try:
         data = get_v70_data()
         return jsonify({'success': True, 'data': data})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.13 懒加载与状态（M148-M156）====================
+
+_v713_modules = None
+_v713_modules_lock = threading.Lock()
+
+def get_v713_modules():
+    """获取或初始化 v7.13 模块（线程安全懒加载）"""
+    global _v713_modules
+    if _v713_modules is None:
+        with _v713_modules_lock:
+            if _v713_modules is None:
+                try:
+                    from M148_TaiyiToposEngine import get_instance as get_topos
+                    from M149_JinfuCAEngine import get_instance as get_ca
+                    from M150_DiscreteSMEngine import get_instance as get_dsm
+                    from M151_HottFirewall import get_instance as get_hott
+                    from M152_DualResonanceEngine import get_instance as get_dualres
+                    from M153_DualTrackEvalEngine import get_instance as get_dualtrack
+                    from M154_GravEMDecompEngine import get_instance as get_gravem
+                    from M155_FtelOptimizer import get_instance as get_ftelopt
+                    from M156_TopoShortcutEngine import get_instance as get_toposhort
+
+                    _v713_modules = {
+                        'topos': get_topos,          # M148: 太乙拓扑斯引擎
+                        'ca': get_ca,               # M149: 金符元胞自动机
+                        'dsm': get_dsm,             # M150: 离散统计力学
+                        'hott': get_hott,            # M151: HoTT防火墙
+                        'dualres': get_dualres,     # M152: 双共振引擎
+                        'dualtrack': get_dualtrack, # M153: 双轨制评价
+                        'gravem': get_gravem,       # M154: 引力电磁分解
+                        'ftelopt': get_ftelopt,     # M155: 流贯优化器
+                        'toposhort': get_toposhort, # M156: 拓扑短路
+                    }
+                    print("\u2705 v7.13\u65b0\u6a21\u5757\u5df2\u52a0\u8f7d\uff08M148-M156\uff09- \u592a\u4e59\u62d3\u6251\u65af\u00b7\u91d1\u7b26CA\u00b7\u79bb\u6563\u7edf\u8ba1\u529b\u5b66\u00b7HoTT\u9632\u706b\u5899\u00b7\u53cc\u5171\u632f\u00b7\u53cc\u8f68\u8bc4\u4ef7\u00b7\u5f15\u529b\u5206\u89e3\u00b7\u6d41\u8d2f\u4f18\u5316\u00b7\u62d3\u6251\u77ed\u8def")
+                except Exception as e:
+                    import traceback
+                    print(f"\u26a0\ufe0f v7.13\u6a21\u5757\u52a0\u8f7d\u5931\u8d25\uff08\u964d\u7ea7\u8fd0\u884c\uff09: {e}")
+                    traceback.print_exc()
+                    _v713_modules = None
+    return _v713_modules
+
+def get_v713_data():
+    """获取所有v7.13模块的状态数据（M148-M156）"""
+    modules = get_v713_modules()
+    if modules is None:
+        return None
+    try:
+        return {
+            'topos': modules['topos']().get_state(),
+            'ca': modules['ca']().get_state(),
+            'dsm': modules['dsm']().get_state(),
+            'hott': modules['hott']().get_state(),
+            'dualres': modules['dualres']().get_state(),
+            'dualtrack': modules['dualtrack']().get_state(),
+            'gravem': modules['gravem']().get_state(),
+            'ftelopt': modules['ftelopt']().get_state(),
+            'toposhort': modules['toposhort']().get_state(),
+        }
+    except Exception as e:
+        print(f"\u26a0\ufe0f \u83b7\u53d6v7.13\u6570\u636e\u5931\u8d25: {e}")
+        return None
+
+# v7.13 静态状态（降级模式）
+_v713_state = {
+    'topos': {
+        'module_id': 'M148', 'module_name': 'TaiyiToposEngine', 'version': '7.13',
+        'd_phi': 0.01, 'modulus': 127, 'morphisms_count': 0, 'operation_count': 0,
+    },
+    'ca': {
+        'module_id': 'M149', 'module_name': 'JinfuCAEngine', 'version': '7.13',
+        'd_phi': 0.01, 'ca_history_count': 0, 'operation_count': 0,
+    },
+    'dsm': {
+        'module_id': 'M150', 'module_name': 'DiscreteSMEngine', 'version': '7.13',
+        'd_phi': 0.01, 'beta': 1.0, 'operation_count': 0,
+    },
+    'hott': {
+        'module_id': 'M151', 'module_name': 'HottFirewall', 'version': '7.13',
+        'types_registered': 8, 'checks_performed': 0, 'hallucinations_detected': 0, 'safety_score': 1.0,
+    },
+    'dualres': {
+        'module_id': 'M152', 'module_name': 'DualResonanceEngine', 'version': '7.13',
+        'd_phi': 0.01, 'resonance_history_count': 0, 'operation_count': 0,
+    },
+    'dualtrack': {
+        'module_id': 'M153', 'module_name': 'DualTrackEvalEngine', 'version': '7.13',
+        'review_history_count': 0, 'knowledge_base_size': 0, 'doubt_activations': 0,
+    },
+    'gravem': {
+        'module_id': 'M154', 'module_name': 'GravEMDecompEngine', 'version': '7.13',
+        'G': 6.674e-11, 'c': 3e8, 'decomposition_count': 0,
+    },
+    'ftelopt': {
+        'module_id': 'M155', 'module_name': 'FtelOptimizer', 'version': '7.13',
+        'conservation_constant': 100.0, 'optimization_history_count': 0,
+    },
+    'toposhort': {
+        'module_id': 'M156', 'module_name': 'TopoShortcutEngine', 'version': '7.13',
+        'nodes_count': 15, 'edges_count': 14, 'shortcuts_detected': 0,
+    },
+}
+
+# ==================== v7.13 定理注册 ====================
+_V713_THEOREMS = {
+    'T110': '\u62d3\u6251\u65afNNO\u5b9a\u7406: \u592a\u4e59\u62d3\u6251\u65af\u4e2dNNO\u901a\u8fc7\u9012\u5f52\u56fe\u552f\u4e00\u786e\u5b9a\u4efb\u610f\u9012\u5f52\u5b9a\u4e49',
+    'T111': '\u91d1\u7b26\u6570\u57df\u5c01\u95ed\u5b9a\u7406: Z_\u03c6=Z/mZ\u6784\u6210\u6a21m\u7684\u5546\u73af, \u52a0\u6cd5\u548c\u4e58\u6cd5\u8fd0\u7b97\u5c01\u95ed',
+    'T112': 'CA\u5218\u673a\u5236\u7b49\u4ef7\u5b9a\u7406: Rule30\u5728\u91d1\u7b26\u79bb\u6563\u65f6\u7a7a\u4e2d\u7b49\u4ef7\u4e8e\u5218\u673a\u5236\u76f8\u4f4d\u622a\u65ad',
+    'T113': '\u79bb\u6563\u6700\u5c0f\u4f5c\u7528\u91cf\u5b9a\u7406: \u79bb\u6563\u6b27\u62c9-\u62c9\u683c\u6717\u65e5\u65b9\u7a0b\u4f7f\u79bb\u6563\u4f5c\u7528\u91cf\u6781\u5c0f',
+    'T114': 'PDS\u914d\u5206\u51fd\u6570\u6709\u754c\u5b9a\u7406: \u5e9e\u52a0\u83b1\u5341\u4e8c\u9762\u4f53\u7a7a\u95f4\u4e2d\u914d\u5206\u51fd\u6570\u4e25\u683c\u6709\u754c',
+    'T115': '\u5e7b\u89c9-\u7c7b\u578b\u9519\u8bef\u540c\u6784\u5b9a\u7406: AI\u5e7b\u89c9\u4e0eHoTT\u7c7b\u578b\u9519\u8bef\u7cbe\u786e\u540c\u6784',
+    'T116': '\u8def\u5f84\u5f52\u7eb3\u5b89\u5168\u5b9a\u7406: \u8def\u5f84\u5f52\u7eb3\u8fde\u901a\u7684\u63a8\u7406\u94fe\u7c7b\u578b\u5b89\u5168',
+    'T117': '\u53cc\u5171\u632f\u9501\u76f8\u5b9a\u7406: \u8026\u5408\u5f3a\u5ea6\u03ba>|w1-w2|/2\u65f6\u76f8\u4f4d\u9501\u76f8\u5fc5\u7136\u5b9e\u73b0',
+    'T118': 'ZPE\u4e0d\u53ef\u80fd\u5b9a\u7406: \u96f6\u70b9\u80fd\u4e0d\u80fd\u4f5c\u4e3a\u6c38\u52a8\u673a\u7684\u81ea\u7531\u80fd\u6e90',
+    'T119': '\u53cc\u8f68\u4e00\u81f4\u6027\u5b9a\u7406: \u903b\u8f91+\u5b9e\u8bc1\u53cc\u9ad8\u5206\u65f6\u6000\u7591\u7ea0\u9519\u7801\u4e0d\u6fc0\u6d3b',
+    'T120': '\u5f15\u529bE-B\u5206\u89e3\u5b9a\u7406: \u5f15\u529b\u573a\u53ef\u6b63\u4ea4\u5206\u89e3\u4e3aE(\u7c7b\u7535)\u548cB(\u7c7b\u78c1)',
+    'T121': '\u592a\u6781\u4e2d\u5bab\u5b9a\u70b9\u5b9a\u7406: \u8fde\u7eed\u6620\u5c04f:D^n\u2192D^n\u81f3\u5c11\u5b58\u5728\u4e00\u4e2a\u4e0d\u52a8\u70b9',
+    'T122': 'Ftel\u6700\u5c0f\u4f5c\u7528\u91cf\u5b9a\u7406: \u5218\u673a\u5236\u8def\u5f84\u4f7f\u4fe1\u606f\u6d41\u6548\u7387\u6700\u5927\u5316',
+    'T123': '\u62d3\u6251\u77ed\u8def\u4e0d\u53ef\u9006\u5b9a\u7406: \u4e25\u91cd\u8de8\u5c42\u77ed\u8def\u4e00\u65e6\u53d1\u751f\u4e0d\u53ef\u9006',
+}
+
+
+# ==================== v7.13 API端点 ====================
+
+@app.route('/api/v713/state', methods=['GET'])
+def v713_state():
+    """v7.13 完整状态获取"""
+    try:
+        data = get_v713_data()
+        if data:
+            return jsonify({**data, 'theorems': _V713_THEOREMS})
+        return jsonify({**_v713_state, 'theorems': _V713_THEOREMS})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M148: TaiyiToposEngine ----
+
+@app.route('/api/v713/topos/nno', methods=['GET', 'POST'])
+def v713_topos_nno():
+    """NNO递归计算"""
+    try:
+        data = request.get_json() or {}
+        n = data.get('n', 10)
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['topos'])
+        result = modules['topos']().api_nno(int(n))
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/topos/ring', methods=['GET'])
+def v713_topos_ring():
+    """金符数域环结构"""
+    try:
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['topos'])
+        result = modules['topos']().api_ring_info()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/topos/compute', methods=['POST'])
+def v713_topos_compute():
+    """金符数运算"""
+    try:
+        data = request.get_json() or {}
+        a = int(data.get('a', 0))
+        b = int(data.get('b', 0))
+        op = data.get('op', '+')
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['topos'])
+        result = modules['topos']().api_compute(a, b, op)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/topos/state', methods=['GET'])
+def v713_topos_state():
+    """M148状态"""
+    try:
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['topos'])
+        return jsonify(_to_native(modules['topos']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M149: JinfuCAEngine ----
+
+@app.route('/api/v713/ca/evolve', methods=['POST'])
+def v713_ca_evolve():
+    """一维CA演化"""
+    try:
+        data = request.get_json() or {}
+        rule = int(data.get('rule', 30))
+        width = int(data.get('width', 20))
+        gens = int(data.get('generations', 20))
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['ca'])
+        result = modules['ca']().api_evolve_1d(rule, width, gens)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/ca/phase-lock', methods=['POST'])
+def v713_ca_phase_lock():
+    """相位锁相检测"""
+    try:
+        data = request.get_json() or {}
+        rule = int(data.get('rule', 30))
+        width = int(data.get('width', 20))
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['ca'])
+        result = modules['ca']().api_phase_lock(rule, width)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/ca/state', methods=['GET'])
+def v713_ca_state():
+    """M149状态"""
+    try:
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['ca'])
+        return jsonify(_to_native(modules['ca']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M150: DiscreteSMEngine ----
+
+@app.route('/api/v713/dsm/euler-lagrange', methods=['POST'])
+def v713_dsm_el():
+    """离散欧拉-拉格朗日"""
+    try:
+        data = request.get_json() or {}
+        system = data.get('system', 'harmonic')
+        n = int(data.get('num_points', 50))
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['dsm'])
+        result = modules['dsm']().api_euler_lagrange(system, n)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/dsm/partition', methods=['POST'])
+def v713_dsm_partition():
+    """离散配分函数"""
+    try:
+        data = request.get_json() or {}
+        n = int(data.get('num_levels', 100))
+        beta = float(data.get('beta', 1.0))
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['dsm'])
+        result = modules['dsm']().api_partition(n, beta)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/dsm/pds', methods=['GET'])
+def v713_dsm_pds():
+    """庞加莱十二面体空间"""
+    try:
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['dsm'])
+        result = modules['dsm']().api_pds()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/dsm/state', methods=['GET'])
+def v713_dsm_state():
+    """M150状态"""
+    try:
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['dsm'])
+        return jsonify(_to_native(modules['dsm']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M151: HottFirewall ----
+
+@app.route('/api/v713/hott/type-check', methods=['POST'])
+def v713_hott_typecheck():
+    """HoTT类型检查"""
+    try:
+        data = request.get_json() or {}
+        expr = data.get('expression', '')
+        typ = data.get('type', 'Proposition')
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['hott'])
+        result = modules['hott']().api_type_check(expr, typ)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/hott/path-check', methods=['POST'])
+def v713_hott_pathcheck():
+    """路径归纳检查"""
+    try:
+        data = request.get_json() or {}
+        source = data.get('source', 'Natural')
+        target = data.get('target', 'Natural')
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['hott'])
+        result = modules['hott']().api_path_check(source, target)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/hott/scan', methods=['POST'])
+def v713_hott_scan():
+    """防火墙扫描"""
+    try:
+        data = request.get_json() or {}
+        chain = data.get('chain', [])
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['hott'])
+        result = modules['hott']().api_scan(chain)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/hott/types', methods=['GET'])
+def v713_hott_types():
+    """已注册类型"""
+    try:
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['hott'])
+        result = modules['hott']().api_types()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/hott/state', methods=['GET'])
+def v713_hott_state():
+    """M151状态"""
+    try:
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['hott'])
+        return jsonify(_to_native(modules['hott']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M152: DualResonanceEngine ----
+
+@app.route('/api/v713/dualres/resonance', methods=['POST'])
+def v713_dualres_res():
+    """双共振仿真"""
+    try:
+        data = request.get_json() or {}
+        f1 = float(data.get('f1', 1.0))
+        f2 = float(data.get('f2', 1.0))
+        kappa = float(data.get('coupling', 0.1))
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['dualres'])
+        result = modules['dualres']().api_resonance(f1, f2, kappa)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/dualres/zpe', methods=['GET'])
+def v713_dualres_zpe():
+    """ZPE不可能定理验证"""
+    try:
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['dualres'])
+        result = modules['dualres']().api_zpe()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/dualres/state', methods=['GET'])
+def v713_dualres_state():
+    """M152状态"""
+    try:
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['dualres'])
+        return jsonify(_to_native(modules['dualres']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M153: DualTrackEvalEngine ----
+
+@app.route('/api/v713/dualtrack/evaluate', methods=['POST'])
+def v713_dualtrack_eval():
+    """双轨制综合评价"""
+    try:
+        data = request.get_json() or {}
+        claim = data.get('claim', '')
+        axioms = data.get('axioms', [])
+        ep = int(data.get('evidence_positive', 0))
+        en = int(data.get('evidence_negative', 0))
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['dualtrack'])
+        result = modules['dualtrack']().dual_track_evaluate(claim, axioms, ep, en)
+        return jsonify(_to_native(asdict(result) if hasattr(result, '__dataclass_fields__') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/dualtrack/state', methods=['GET'])
+def v713_dualtrack_state():
+    """M153状态"""
+    try:
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['dualtrack'])
+        return jsonify(_to_native(modules['dualtrack']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M154: GravEMDecompEngine ----
+
+@app.route('/api/v713/gravem/decompose', methods=['POST'])
+def v713_gravem_decomp():
+    """引力E-B分解"""
+    try:
+        data = request.get_json() or {}
+        field_data = data.get('field', [[1.0]*5]*5)
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['gravem'])
+        result = modules['gravem']().api_decompose(field_data)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/gravem/fixed-point', methods=['GET'])
+def v713_gravem_fp():
+    """太极中宫定点"""
+    try:
+        dim = int(request.args.get('dim', 2))
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['gravem'])
+        result = modules['gravem']().api_fixed_point(dim)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/gravem/state', methods=['GET'])
+def v713_gravem_state():
+    """M154状态"""
+    try:
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['gravem'])
+        return jsonify(_to_native(modules['gravem']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M155: FtelOptimizer ----
+
+@app.route('/api/v713/ftelopt/ftel', methods=['POST'])
+def v713_ftelopt_ftel():
+    """Ftel三元组创建"""
+    try:
+        data = request.get_json() or {}
+        R = float(data.get('R', 30))
+        I = float(data.get('I', 40))
+        E = float(data.get('E', 30))
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['ftelopt'])
+        result = modules['ftelopt']().api_ftel(R, I, E)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/ftelopt/optimize', methods=['POST'])
+def v713_ftelopt_optimize():
+    """流贯目的论优化"""
+    try:
+        data = request.get_json() or {}
+        context = data.get('context', 'reasoning')
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['ftelopt'])
+        result = modules['ftelopt']().api_optimize(context)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/ftelopt/state', methods=['GET'])
+def v713_ftelopt_state():
+    """M155状态"""
+    try:
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['ftelopt'])
+        return jsonify(_to_native(modules['ftelopt']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M156: TopoShortcutEngine ----
+
+@app.route('/api/v713/toposhort/detect', methods=['POST'])
+def v713_toposhort_detect():
+    """拓扑短路检测"""
+    try:
+        data = request.get_json() or {}
+        node_a = data.get('node_a', '')
+        node_b = data.get('node_b', '')
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['toposhort'])
+        result = modules['toposhort']().detect_shortcut(node_a, node_b)
+        return jsonify(_to_native(asdict(result) if hasattr(result, '__dataclass_fields__') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/toposhort/fold', methods=['POST'])
+def v713_toposhort_fold():
+    """相位折叠"""
+    try:
+        data = request.get_json() or {}
+        phases = data.get('phases', [0.1, 0.5, 0.3, 0.8])
+        target_dim = int(data.get('target_dim', 2))
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['toposhort'])
+        result = modules['toposhort']().phase_fold(phases, target_dim)
+        return jsonify(_to_native(asdict(result) if hasattr(result, '__dataclass_fields__') else result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v713/toposhort/state', methods=['GET'])
+def v713_toposhort_state():
+    """M156状态"""
+    try:
+        modules = get_v713_modules()
+        if modules is None:
+            return jsonify(_v713_state['toposhort'])
+        return jsonify(_to_native(modules['toposhort']().get_state()))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
