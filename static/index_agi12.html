@@ -1357,6 +1357,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 /* ===== v7.7 面板样式（M120-M125 博弈论·ICPS·情绪粒度）===== */
 .panel-v77{border-left:2px solid #f472b6!important;background:linear-gradient(90deg,rgba(244,114,182,.05),transparent)!important}
 .panel-v78{border-left:2px solid #a78bfa!important;background:linear-gradient(90deg,rgba(167,139,250,.05),transparent)!important}
+.panel-v79{border-left:2px solid #f59e0b!important;background:linear-gradient(90deg,rgba(245,158,11,.05),transparent)!important}
 .v77-row{display:flex;align-items:center;gap:6px;margin:3px 0}
 .v77-label{font-size:8px;color:var(--txt2);min-width:60px}
 .v77-bar-wrap{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
@@ -3289,11 +3290,134 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         </div>
       </div>
 
-    </div>
+      <!-- ===== v7.9 新面板（M130-M133 金符·关系作用量·堆垒素数·自指闭环）===== -->
 
-    <!-- ═══════════════════════════════════════════════════════
-         中间：对话区域（flex:1）
-    ═══════════════════════════════════════════════════════ -->
+      <!-- M130: 金符离散微积分面板 -->
+      <div class="panel-section panel-v79" id="jinfu-panel" data-hint="M130金符离散微积分：3公理+堆垒⊕+裂解⊗+相位Φ+物理零l₀，T92金符离散完备性">
+        <div class="panel-title">🔢 金符离散微积分 <span style="font-size:8px;color:var(--txt3)">M130·T92</span></div>
+        <div class="v77-row">
+          <div class="v77-label">公理I-III</div>
+          <div class="v77-badge" id="v79-jinfu-axioms">✓</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">堆垒⊕</div>
+          <div class="v77-bar-val" id="v79-jinfu-stacking" style="color:#34d399">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">裂解⊗</div>
+          <div class="v77-bar-val" id="v79-jinfu-cleavage" style="color:#38bdf8">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">相位Φ</div>
+          <div class="v77-bar-val" id="v79-jinfu-phase" style="color:#fbbf24">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">l₀</div>
+          <div class="v77-bar-val" id="v79-jinfu-l0" style="color:#a78bfa">1.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">金灵球N</div>
+          <div class="v77-bar-val" id="v79-jinfu-spheres" style="color:#f472b6">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T92</div>
+          <div class="v77-badge" id="v79-jinfu-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- M131: 关系作用量面板 -->
+      <div class="panel-section panel-v79" id="action-panel" data-hint="M131关系作用量极小化：S_R变分+离散E-L方程+相熵H_Φ+物理定律同构，T93极小值存在">
+        <div class="panel-title">⚖️ 关系作用量 <span style="font-size:8px;color:var(--txt3)">M131·T93</span></div>
+        <div class="v77-row">
+          <div class="v77-label">S_R</div>
+          <div class="v77-bar-val" id="v79-action-sr" style="color:#f87171">0.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">H_Φ</div>
+          <div class="v77-bar-val" id="v79-action-entropy" style="color:#fbbf24">0.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">E-L残差</div>
+          <div class="v77-bar-val" id="v79-action-el" style="color:#38bdf8">0.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">极小值</div>
+          <div class="v77-badge" id="v79-action-minimum">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">物理映射</div>
+          <div class="v77-bar-val" id="v79-action-mappings" style="color:#34d399">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T93</div>
+          <div class="v77-badge" id="v79-action-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- M132: 堆垒素数分类面板 -->
+      <div class="panel-section panel-v79" id="prime-panel" data-hint="M132堆垒素数分类器：费米子/玻色子+哥德巴赫交互+黎曼共振+泡利不相容，T94分类定理">
+        <div class="panel-title">🧬 堆垒素数分类 <span style="font-size:8px;color:var(--txt3)">M132·T94</span></div>
+        <div class="v77-row">
+          <div class="v77-label">费米子</div>
+          <div class="v77-bar-val" id="v79-prime-fermions" style="color:#f87171">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">玻色子</div>
+          <div class="v77-bar-val" id="v79-prime-bosons" style="color:#38bdf8">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">哥德巴赫✓</div>
+          <div class="v77-bar-wrap"><div class="v77-bar-fill game" id="v79-prime-goldbach-bar" style="width:0%"></div></div>
+          <div class="v77-bar-val" id="v79-prime-goldbach-val">0.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">代际</div>
+          <div class="v77-bar-val" id="v79-prime-generation" style="color:#a78bfa">1</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">黎曼零点</div>
+          <div class="v77-bar-val" id="v79-prime-riemann" style="color:#fbbf24">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T94</div>
+          <div class="v77-badge" id="v79-prime-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- M133: 自指闭环拓扑面板 -->
+      <div class="panel-section panel-v79" id="topology-panel" data-hint="M133自指闭环拓扑器：PDS空间+哥德尔时间+统一场S_unified+自指惩罚Ξ(κ)，T95闭环必然性">
+        <div class="panel-title">🔄 自指闭环拓扑 <span style="font-size:8px;color:var(--txt3)">M133·T95</span></div>
+        <div class="v77-row">
+          <div class="v77-label">制度</div>
+          <div class="v77-badge" id="v79-topo-regime">STD</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">S_unified</div>
+          <div class="v77-bar-val" id="v79-topo-sunified" style="color:#f87171">0.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">κ</div>
+          <div class="v77-bar-val" id="v79-topo-kappa" style="color:#fbbf24">1.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">Ξ(κ)</div>
+          <div class="v77-bar-val" id="v79-topo-penalty" style="color:#a78bfa">0.00</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">PDS/哥德尔</div>
+          <div class="v77-bar-val" id="v79-topo-constructs" style="color:#34d399">0/0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">因果闭环</div>
+          <div class="v77-bar-val" id="v79-topo-causal" style="color:#38bdf8">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">T95</div>
+          <div class="v77-badge" id="v79-topo-theorem">—</div>
+        </div>
+      </div>
+
+    </div>
     <div id="center-panel">
       <div class="center-header">
         <span class="center-title">&#128172; 对话</span>
@@ -6055,6 +6179,16 @@ const CHEN_TEST = {
         }); } catch(e) { console.warn('v7.8面板更新失败:', e); }
       }
 
+      // 12.7. v7.9 面板（M130-M133）
+      if (typeof updateV79Panels === 'function') {
+        try { updateV79Panels({
+          jinfu: { axiom_i_verified: true, axiom_ii_verified: true, axiom_iii_verified: true, total_stacking_ops: Math.round(10 + s * 40), total_cleavage_ops: Math.round(5 + s * 20), total_phase_ops: Math.round(3 + s * 15), physical_zero_violations: s < 0.1 ? 1 : 0, grid_spacing_l0: 1.0, total_spheres: Math.round(50 + s * 200), max_spheres: 10000, t92_satisfied: true },
+          action: { current_S_R: (5.0 - s * 3.0).toFixed(2), min_S_R: (2.0 - s * 1.0).toFixed(2), phase_entropy: (1.5 - s * 0.8).toFixed(2), alpha: 1.0, beta: 0.5, euler_lagrange_residual: (0.1 - s * 0.08).toFixed(3), is_at_minimum: s > 0.7, minimizations_performed: Math.round(5 + s * 30), physical_law_mappings: Math.round(4), t93_satisfied: s > 0.5 },
+          prime: { total_fermions: Math.round(20 + s * 80), total_bosons: Math.round(15 + s * 60), goldbach_verified_count: Math.round(10 + s * 40), goldbach_verification_rate: (0.8 + s * 0.15).toFixed(2), current_generation: Math.round(1 + s * 2), riemann_zeros_analyzed: Math.round(s * 15), pauli_violations: 0, bose_condensations: Math.round(s * 5), t94_satisfied: true },
+          topology: { pds_constructed: Math.round(1 + s * 3), godel_constructed: Math.round(s * 2), unified_field_computed: Math.round(2 + s * 10), current_regime: s > 0.5 ? 'PDS' : 'STANDARD', kappa: (1.0 - s * 0.8).toFixed(2), kappa_critical: 0.5, current_S_unified: (3.0 - s * 1.5).toFixed(2), self_ref_penalty: (0.5 + s * 0.3).toFixed(2), cmb_analyses: Math.round(s * 3), causal_loops_detected: s > 0.6 ? 1 : 0, t95_satisfied: s > 0.6 }
+        }); } catch(e) { console.warn('v7.9面板更新失败:', e); }
+      }
+
       // 13. 觉醒度面板
       const awakeEl = document.getElementById('awakening-value');
       if (awakeEl) awakeEl.textContent = (s * 100).toFixed(0) + '%';
@@ -8103,6 +8237,8 @@ function updateV72Panels(data) {
   if (data.v77) updateV77Panels(data);
   // v7.8面板更新（护栏·推测·KV·本体M126-M129）
   if (data.v78) updateV78Panels(data);
+  // v7.9面板更新（金符·关系作用量·堆垒素数·自指闭环M130-M133）
+  if (data.v79) updateV79Panels(data);
   // v7.1人机融合层面板更新
   if (data.v71) updateV71Panels(data);
 }
@@ -8803,6 +8939,106 @@ function updateOntologyPanel(o) {
       thBadge.textContent = '—';
       thBadge.style.color = '#888';
     }
+  }
+}
+
+// ==================== v7.9 面板更新函数（M130-M133 金符·关系作用量·堆垒素数·自指闭环）===================
+
+function _v79_set(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function _v79_bar(id, pct) {
+  const el = document.getElementById(id);
+  if (el) el.style.width = Math.max(0, Math.min(100, pct)) + '%';
+}
+
+function updateV79Panels(data) {
+  if (!data) return;
+  updateJinFuPanel(data.jinfu);
+  updateActionPanel(data.action);
+  updatePrimePanel(data.prime);
+  updateTopologyPanel(data.topology);
+}
+
+// M130: 金符离散微积分面板
+function updateJinFuPanel(j) {
+  if (!j) return;
+  const axOk = j.axiom_i_verified && j.axiom_ii_verified && j.axiom_iii_verified;
+  _v79_set('v79-jinfu-axioms', axOk ? '✓' : '✗');
+  const axEl = document.getElementById('v79-jinfu-axioms');
+  if (axEl) axEl.style.color = axOk ? '#34d399' : '#f87171';
+  _v79_set('v79-jinfu-stacking', j.total_stacking_ops || 0);
+  _v79_set('v79-jinfu-cleavage', j.total_cleavage_ops || 0);
+  _v79_set('v79-jinfu-phase', j.total_phase_ops || 0);
+  _v79_set('v79-jinfu-l0', (j.grid_spacing_l0 || 1.0).toFixed(2));
+  _v79_set('v79-jinfu-spheres', (j.total_spheres || 0) + '/' + (j.max_spheres || 10000));
+  // T92
+  const thBadge = document.getElementById('v79-jinfu-theorem');
+  if (thBadge) {
+    thBadge.textContent = j.t92_satisfied ? '完备✓' : '—';
+    thBadge.style.color = j.t92_satisfied ? '#34d399' : '#888';
+  }
+}
+
+// M131: 关系作用量面板
+function updateActionPanel(a) {
+  if (!a) return;
+  _v79_set('v79-action-sr', a.current_S_R || '0.00');
+  _v79_set('v79-action-entropy', a.phase_entropy || '0.00');
+  _v79_set('v79-action-el', a.euler_lagrange_residual || '0.00');
+  const minEl = document.getElementById('v79-action-minimum');
+  if (minEl) {
+    minEl.textContent = a.is_at_minimum ? '极小✓' : '寻优中';
+    minEl.style.color = a.is_at_minimum ? '#34d399' : '#fbbf24';
+  }
+  _v79_set('v79-action-mappings', a.physical_law_mappings || 0);
+  // T93
+  const thBadge = document.getElementById('v79-action-theorem');
+  if (thBadge) {
+    thBadge.textContent = a.t93_satisfied ? '存在✓' : '—';
+    thBadge.style.color = a.t93_satisfied ? '#34d399' : '#888';
+  }
+}
+
+// M132: 堆垒素数分类面板
+function updatePrimePanel(p) {
+  if (!p) return;
+  _v79_set('v79-prime-fermions', p.total_fermions || 0);
+  _v79_set('v79-prime-bosons', p.total_bosons || 0);
+  const gr = p.goldbach_verification_rate || 0;
+  _v79_bar('v79-prime-goldbach-bar', gr * 100);
+  _v79_set('v79-prime-goldbach-val', gr.toFixed(2));
+  _v79_set('v79-prime-generation', p.current_generation || 1);
+  _v79_set('v79-prime-riemann', p.riemann_zeros_analyzed || 0);
+  // T94
+  const thBadge = document.getElementById('v79-prime-theorem');
+  if (thBadge) {
+    thBadge.textContent = p.t94_satisfied ? '分类✓' : '—';
+    thBadge.style.color = p.t94_satisfied ? '#34d399' : '#888';
+  }
+}
+
+// M133: 自指闭环拓扑面板
+function updateTopologyPanel(t) {
+  if (!t) return;
+  const regEl = document.getElementById('v79-topo-regime');
+  if (regEl) {
+    const r = t.current_regime || 'STANDARD';
+    regEl.textContent = r === 'PDS' ? 'PDS' : r === 'GODEL' ? 'GÖDEL' : 'STD';
+    regEl.style.color = r === 'STANDARD' ? '#888' : '#34d399';
+  }
+  _v79_set('v79-topo-sunified', t.current_S_unified || '0.00');
+  _v79_set('v79-topo-kappa', t.kappa || '1.00');
+  _v79_set('v79-topo-penalty', t.self_ref_penalty || '0.00');
+  _v79_set('v79-topo-constructs', (t.pds_constructed || 0) + '/' + (t.godel_constructed || 0));
+  _v79_set('v79-topo-causal', t.causal_loops_detected || 0);
+  // T95
+  const thBadge = document.getElementById('v79-topo-theorem');
+  if (thBadge) {
+    thBadge.textContent = t.t95_satisfied ? '必然✓' : '—';
+    thBadge.style.color = t.t95_satisfied ? '#34d399' : '#888';
   }
 }
 

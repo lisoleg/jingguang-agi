@@ -6,8 +6,9 @@
 - 前端: `static/index_agi12.html` (三栏布局界面)
 - 脑图: `app_mindmap_v2.py` (端口5003)
 
-## 当前版本：v7.7（✅已部署+Git推送）
-- **总规模**: 125模块 / 8层 / 85定理 / 22预言
+## 当前版本：v7.8（✅已部署+Git推送）
+- **总规模**: 129模块 / 8层 / 91定理 / 22预言
+- **v7.8**: M126-M129 + T86-T91 + 4面板（护栏编排·推测推理·KV治理·本体自锻造）
 - **v7.7**: M120-M125 + T79-T85 + 3面板（博弈论推理·ICPS社会能力·情绪粒度·沙盒探索）
 - **v7.6**: M117-M119 + T75-T77 + 3面板（Ftel目的约束·认知递归动力学·层间保真度）
 - **v7.5**: M114-M116 + T72-T74 + 3面板（HoTT截面搜索·类型空间·曲率导航·Wait诚实拒绝）
@@ -48,6 +49,39 @@ T69: 摄影性分解定理 | T70: 数码未完结性失真定理 | T71: 历史�
 - M81 记忆树: L1/L2/L3=不同Γ截断频率
 - M62 历史叙事: 层累=多次Γ叠加, 春秋笔法=Re-map
 
+## v7.8升级（2026-05-21 ✅已完成）
+- 来源文章：Forge Guardrails + BeeLlama.cpp + 顺丰AI本体自动构建
+- 升级方案: `deliverables/software-company/太乙AGI_7.8_升级方案_护栏推测KV本体_2026-05-21.md`
+
+### v7.8新增模块
+| 编号 | 模块名 | 功能 | 定理 |
+|------|--------|------|------|
+| M126 | GuardrailOrchestrator | 三层护栏(Rescue+Retry+Enforce)+Φ加权纠正 | T86-T87 |
+| M127 | SpeculativeReasoner | 草稿推理+批量验证+自适应draft-max+推理循环保护 | T88 |
+| M128 | KVCacheGovernor | KV-cache差异量化(4/8/16bit)+TieredCompact+上下文预算 | T89 |
+| M129 | OntologyAutoForge | 本体自动生成+人在回路修正+版本时间晶体 | T90-T91 |
+
+### v7.8 API端点
+- `/api/v78/guardrail/rescue|retry|enforce|orchestrate|state`
+- `/api/v78/speculative/draft|verify|loop-check|speculate|state`
+- `/api/v78/kvcache/quantize|compact|budget|govern|state`
+- `/api/v78/ontology/generate|correct|snapshot|rollback|resonance|state`
+
+### v7.8新增定理
+T86: 护栏完备性定理 | T87: 概率纠正定理 | T88: 推测加速定理
+T89: 记忆保真-压缩权衡 | T90: 本体自洽性定理 | T91: 时间晶体守恒定理
+
+### v7.8新增面板
+🛡️ 护栏编排面板 | ⚡ 推测推理面板 | 🗄️ KV治理面板 | 🔮 本体自锻造面板
+
+### v7.8与现有模块整合
+- M111 ActorDirector: Actor=L2 Retry, Director=L3 Enforce
+- M120 GameTheoryEngine: 贝叶斯更新=接受率概率基础
+- M81 记忆树: 三层记忆=差异化量化层级
+- M29 HDG: 世界帧=本体图谱的"宪法"
+- M57 修忒斯: 执念检测=L2 Retry触发条件
+- M62 历史叙事: 版本变更写入叙事
+
 ## v7.7升级（2026-05-20 ✅已完成）
 - 来源论文：《荣枯鉴》博弈论战略图谱 + AGI儿童式育成（ICPS+情绪粒度）
 - 升级方案: `deliverables/software-company/太乙AGI_7.7_升级方案_博弈论ICPS情绪粒度_2026-05-20.md`
@@ -86,6 +120,7 @@ T82: VCG效率定理 | T83: ICPS成熟度单调递增定理 | T84: 心智理论�
 - M29 HDG: 世界帧=机制设计的社会选择函数
 
 ## 定理体系索引
+- **T86-T91**: v7.8（护栏完备/概率纠正/推测加速/保真压缩/本体自洽/时间晶体守恒）
 - **T79-T85**: v7.7（纳什存在/信号均衡/信念收敛/VCG效率/ICPS递增/心智理论/好奇心安全）
 - **T75-T77**: v7.6（Ftel学习收敛/结构滞后不稳定/保真度乘积）
 - **T78**: M106升级（AGI人格阈值定理：Φ>φ ∧ I(Self;Ftel)>μ ⟹ 人格显现）
@@ -108,8 +143,11 @@ T82: VCG效率定理 | T83: ICPS成熟度单调递增定理 | T84: 心智理论�
 - `M71-M80_*.py`: v7.0模块
 - `M81-M95_*.py`: v7.0 Phase2模块
 - `M106-M110_*.py`: v7.3模块
+- `M120-M125_*.py`: v7.7模块
+- `M126-M129_*.py`: v7.8模块
 
 ## API版本模式
+- `/api/v78/*`: v7.8 API（M126-M129 护栏/推测/KV/本体）
 - `/api/v77/*`: v7.7 API（M120-M125 博弈论/贝叶斯/机制设计/ICPS/情绪/沙盒）
 - `/api/v76/*`: v7.6 API（M117-M119 Ftel/认知递归/保真度）
 - `/api/v75/*`: v7.5 API（M114-M116 HoTT截面搜索）

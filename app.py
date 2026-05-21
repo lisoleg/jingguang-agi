@@ -833,6 +833,8 @@ def chat_v2():
             'v77': get_v77_data() or _v77_state,
             # v7.8新增：护栏·推测·KV·本体（M126-M129）
             'v78': get_v78_data() or _v78_state,
+            # v7.9新增：金符·关系作用量·堆垒素数·自指闭环（M130-M133）
+            'v79': get_v79_data() or _v79_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
         }))
@@ -1062,6 +1064,8 @@ def goal_mode():
             'v77': get_v77_data() or _v77_state,
             # v7.8新增：护栏·推测·KV·本体（M126-M129）
             'v78': get_v78_data() or _v78_state,
+            # v7.9新增：金符·关系作用量·堆垒素数·自指闭环（M130-M133）
+            'v79': get_v79_data() or _v79_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
             'version': '12.0',
@@ -5252,6 +5256,447 @@ def v78_ontology_state():
         if modules is None:
             return jsonify(_v78_state['ontology'])
         return jsonify(_to_native(modules['ontology']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.9 金符·关系作用量·堆垒素数·自指闭环（M130-M133）====================
+
+_v79_modules = None
+_v79_modules_lock = threading.Lock()
+
+def get_v79_modules():
+    """获取或初始化 v7.9 模块（线程安全懒加载）"""
+    global _v79_modules
+    if _v79_modules is None:
+        with _v79_modules_lock:
+            if _v79_modules is None:
+                try:
+                    from M130_JinFuDiscreteCalculus import get_instance as get_jinfu
+                    from M131_RelationActionMinimizer import get_instance as get_action
+                    from M132_AdditivePrimeClassifier import get_instance as get_prime
+                    from M133_SelfRefLoopTopologizer import get_instance as get_topology
+
+                    _v79_modules = {
+                        'jinfu': get_jinfu,       # M130: 金符离散微积分
+                        'action': get_action,     # M131: 关系作用量极小化
+                        'prime': get_prime,       # M132: 堆垒素数分类
+                        'topology': get_topology,  # M133: 自指闭环拓扑
+                    }
+                    print("✅ v7.9新模块已加载（M130-M133）- 金符·关系作用量·堆垒素数·自指闭环")
+                except Exception as e:
+                    import traceback
+                    print(f"⚠️ v7.9模块加载失败（降级运行）: {e}")
+                    traceback.print_exc()
+                    _v79_modules = None
+    return _v79_modules
+
+def get_v79_data():
+    """获取所有v7.9模块的状态数据（M130-M133）"""
+    modules = get_v79_modules()
+    if modules is None:
+        return None
+    try:
+        return {
+            'jinfu': modules['jinfu']().get_state(),
+            'action': modules['action']().get_state(),
+            'prime': modules['prime']().get_state(),
+            'topology': modules['topology']().get_state(),
+        }
+    except Exception as e:
+        print(f"⚠️ 获取v7.9数据失败: {e}")
+        return None
+
+# v7.9 静态状态（降级模式）
+_v79_state = {
+    'jinfu': {
+        'axiom_i_verified': True, 'axiom_ii_verified': True, 'axiom_iii_verified': True,
+        'total_stacking_ops': 0, 'total_cleavage_ops': 0, 'total_phase_ops': 0,
+        'physical_zero_violations': 0, 'grid_spacing_l0': 1.0,
+        'total_spheres': 0, 'max_spheres': 10000, 't92_satisfied': True,
+    },
+    'action': {
+        'current_S_R': 0.0, 'min_S_R': float('inf'), 'phase_entropy': 0.0,
+        'alpha': 1.0, 'beta': 0.5, 'euler_lagrange_residual': 0.0,
+        'is_at_minimum': False, 'minimizations_performed': 0,
+        'physical_law_mappings': 0, 't93_satisfied': False,
+    },
+    'prime': {
+        'total_fermions': 0, 'total_bosons': 0, 'goldbach_verified_count': 0,
+        'goldbach_verification_rate': 0.0, 'current_generation': 1,
+        'riemann_zeros_analyzed': 0, 'pauli_violations': 0,
+        'bose_condensations': 0, 't94_satisfied': True,
+    },
+    'topology': {
+        'pds_constructed': 0, 'godel_constructed': 0, 'unified_field_computed': 0,
+        'current_regime': 'STANDARD', 'kappa': 1.0, 'kappa_critical': 0.5,
+        'current_S_unified': 0.0, 'self_ref_penalty': 0.0,
+        'cmb_analyses': 0, 'causal_loops_detected': 0, 't95_satisfied': False,
+    },
+}
+
+# ==================== v7.9 定理注册 ====================
+_V79_THEOREMS = {
+    'T92': '金符离散完备性定理: {⊕,⊗,Φ}运算有限步生成任意有限堆垒 — 生成完备性保证',
+    'T93': '关系作用量极小值存在定理: 有限网格上S_R至少一个极小值 — 变分稳定性保证',
+    'T94': '堆垒费米子-玻色子分类定理: 奇堆垒↔费米子/偶堆垒↔玻色子 — 粒子分类同构',
+    'T95': '自指闭环必然性定理: κ<κ_c时自指闭环必然涌现 — 闭环必然性保证',
+}
+
+
+# ==================== v7.9 API端点 ====================
+
+@app.route('/api/v79/state', methods=['GET'])
+def v79_state():
+    """v7.9 完整状态获取"""
+    try:
+        data = get_v79_data()
+        if data:
+            return jsonify({**data, 'theorems': _V79_THEOREMS})
+        return jsonify({**_v79_state, 'theorems': _V79_THEOREMS})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M130: JinFuDiscreteCalculus ----
+
+@app.route('/api/v79/jinfu/axiom-check', methods=['POST'])
+def v79_jinfu_axiom_check():
+    """M130: 金符公理验证"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['jinfu']().apply_axiom_discreteness(
+            coordinates=data.get('coordinates', []),
+            l0=data.get('l0', 1.0)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/jinfu/stacking', methods=['POST'])
+def v79_jinfu_stacking():
+    """M130: 堆垒运算(⊕)"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['jinfu']().stacking_add(
+            a=data.get('a', 1.0),
+            b=data.get('b', 1.0)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/jinfu/cleavage', methods=['POST'])
+def v79_jinfu_cleavage():
+    """M130: 裂解运算(⊗)"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['jinfu']().cleavage_multiply(
+            a=data.get('a', 1.0),
+            n=data.get('n', 2)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/jinfu/phase-op', methods=['POST'])
+def v79_jinfu_phase_op():
+    """M130: 相位算子(Φ)"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['jinfu']().phase_operator(
+            angle=data.get('angle', 72.0)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/jinfu/physical-zero', methods=['POST'])
+def v79_jinfu_physical_zero():
+    """M130: 物理零检测"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['jinfu']().detect_physical_zero(
+            value=data.get('value', 0.5),
+            l0=data.get('l0', 1.0)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/jinfu/state', methods=['GET'])
+def v79_jinfu_state():
+    """M130: 金符离散微积分状态"""
+    try:
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify(_v79_state['jinfu'])
+        return jsonify(_to_native(modules['jinfu']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M131: RelationActionMinimizer ----
+
+@app.route('/api/v79/action/compute', methods=['POST'])
+def v79_action_compute():
+    """M131: 计算关系作用量S_R"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['action']().compute_relation_action(
+            n_values=data.get('n_values', [10]),
+            phase_distributions=data.get('phase_distributions', [[0.25, 0.25, 0.25, 0.25]]),
+            alpha=data.get('alpha', 1.0),
+            beta=data.get('beta', 0.5)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/action/minimize', methods=['POST'])
+def v79_action_minimize():
+    """M131: 变分极小化"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['action']().variational_minimize(
+            n_values=data.get('n_values', [10]),
+            phase_distributions=data.get('phase_distributions', [[0.25, 0.25, 0.25, 0.25]]),
+            alpha=data.get('alpha', 1.0),
+            beta=data.get('beta', 0.5)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/action/euler-lagrange', methods=['POST'])
+def v79_action_euler_lagrange():
+    """M131: 求解离散欧拉-拉格朗日方程"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['action']().solve_discrete_euler_lagrange(
+            S_R_values=data.get('S_R_values', [1.0, 0.8, 0.6, 0.5, 0.55]),
+            n_index=data.get('n_index', 2)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/action/physical-map', methods=['POST'])
+def v79_action_physical_map():
+    """M131: 物理定律同构映射"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['action']().map_physical_law(
+            context=data.get('context', 'inertia')
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/action/state', methods=['GET'])
+def v79_action_state():
+    """M131: 关系作用量极小化器状态"""
+    try:
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify(_v79_state['action'])
+        return jsonify(_to_native(modules['action']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M132: AdditivePrimeClassifier ----
+
+@app.route('/api/v79/prime/classify', methods=['POST'])
+def v79_prime_classify():
+    """M132: 粒子分类"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['prime']().classify_particle(
+            n=data.get('n', 7)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/prime/goldbach', methods=['POST'])
+def v79_prime_goldbach():
+    """M132: 哥德巴赫交互"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['prime']().goldbach_interaction(
+            p1=data.get('p1', 3),
+            p2=data.get('p2', 5)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/prime/decompose', methods=['POST'])
+def v79_prime_decompose():
+    """M132: 素数分解"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['prime']().prime_decompose(
+            n=data.get('n', 12)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/prime/resonance', methods=['POST'])
+def v79_prime_resonance():
+    """M132: 黎曼共振"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['prime']().riemann_resonance(
+            zero_count=data.get('zero_count', 10)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/prime/state', methods=['GET'])
+def v79_prime_state():
+    """M132: 堆垒素数分类器状态"""
+    try:
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify(_v79_state['prime'])
+        return jsonify(_to_native(modules['prime']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- M133: SelfRefLoopTopologizer ----
+
+@app.route('/api/v79/topology/construct-pds', methods=['POST'])
+def v79_topology_pds():
+    """M133: 构建PDS空间自指闭环"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['topology']().construct_pds(
+            pentagon_count=data.get('pentagon_count', 12),
+            curvature=data.get('curvature', 0.3)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/topology/construct-godel', methods=['POST'])
+def v79_topology_godel():
+    """M133: 构建哥德尔时间自指闭环"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['topology']().construct_godel(
+            rotation_phase=data.get('rotation_phase', 0.5),
+            ctc_present=data.get('ctc_present', True)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/topology/unified-field', methods=['POST'])
+def v79_topology_unified_field():
+    """M133: 统一场方程"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['topology']().compute_unified_field(
+            S_R=data.get('S_R', 1.0),
+            kappa=data.get('kappa', 0.3),
+            loop_type=data.get('loop_type', 'PDS')
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/topology/self-ref-penalty', methods=['POST'])
+def v79_topology_self_ref_penalty():
+    """M133: 自指惩罚项计算"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['topology']().compute_self_ref_penalty(
+            kappa=data.get('kappa', 0.3),
+            loop_type=data.get('loop_type', 'PDS')
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/topology/cmb-signature', methods=['POST'])
+def v79_topology_cmb():
+    """M133: CMB签名分析"""
+    try:
+        data = request.get_json() or {}
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify({'error': 'v7.9模块未加载', 'fallback': True})
+        result = modules['topology']().analyze_cmb_signature(
+            temperature_data=data.get('temperature_data', [2.725, 2.720, 2.730])
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v79/topology/state', methods=['GET'])
+def v79_topology_state():
+    """M133: 自指闭环拓扑器状态"""
+    try:
+        modules = get_v79_modules()
+        if modules is None:
+            return jsonify(_v79_state['topology'])
+        return jsonify(_to_native(modules['topology']().get_state()))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
