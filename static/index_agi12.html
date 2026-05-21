@@ -185,12 +185,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 
 /* 陈天桥测试模块样式 */
 #chen-test-panel{
-  border-bottom:1px solid var(--bdr);flex-shrink:0;
-  max-height:none;overflow-y:visible;
+  flex-shrink:0;
+  max-height:45%;overflow-y:auto;
   background:linear-gradient(180deg, var(--bg2) 0%, rgba(124,58,237,0.15) 100%);
-  border-left:4px solid var(--acc);  /* 左边框高亮 - 紫色 */
-  min-height: 150px;  /* 确保最小高度 */
+  border-left:4px solid var(--acc);
+  min-height:150px;
 }
+#chen-test-panel::-webkit-scrollbar{width:4px}
+#chen-test-panel::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
 .chen-panel-highlight{
   box-shadow:0 -4px 12px rgba(124,58,237,0.25);  /* 顶部阴影 */
   background: rgba(124,58,237, 0.1);  /* 背景高亮 */
@@ -664,9 +666,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 /* ═══════════════════════════════════════════════════════════════
    右侧DAG关系图 - 宽度520px（放大）
 ═══════════════════════════════════════════════════════════════ */
-#right-panel{
+#right-column{
   width:520px;background:var(--bg2);border-left:1px solid var(--bdr);
   display:flex;flex-direction:column;flex-shrink:0;overflow:hidden
+}
+#right-panel{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  border-top:2px solid var(--bdr);
 }
 .right-header{
   height:44px;padding:0 14px;background:var(--bg2);
@@ -2051,8 +2057,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <span style="margin-left:8px">自相似: <span id="arb-selfsim" style="color:var(--sky)">是</span></span>
         </div>
       </div>
-
-      <!-- 陈天桥测试模块 - 已移至右侧对话关系链面板 -->
 
       <!-- ═══════════════════════════════════════════════════════════
             v6.3 新增面板（基于数学完备化论文）
@@ -3662,17 +3666,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
     </div>
 
     <!-- ═══════════════════════════════════════════════════════
-         右侧：DAG关系图（400px）
+         右侧：陈天桥测试 + DAG关系图
     ═══════════════════════════════════════════════════════ -->
-    <div id="right-panel" data-hint="对话关系图：展示多线索问答结构。点击节点可跳转到对应对话，线条颜色区分话题">
-      <div class="right-header">
-        <span class="right-icon">&#128279;</span>
-        <span class="right-title">对话关系链</span>
-        <span class="rel-badge" id="rel-badge">0 节点</span>
-        <button class="btn-dag-fullscreen" id="btn-dag-fullscreen" onclick="toggleDAGFullscreen()" title="全屏查看">&#9974;</button>
-        <button class="btn-dag-toggle" id="btn-dag-toggle" onclick="toggleDAG()" title="折叠/展开">▼</button>
-      </div>
-      <!-- 陈天桥认知测试 - 移至对话关系链上方 -->
+    <div id="right-column">
+      <!-- 陈天桥认知测试 - 独立面板 -->
       <div id="chen-test-panel" class="chen-panel-highlight" data-hint="陈天桥认知测试：21道综合认知能力测试题。诘辩涌现定理案例 · 苏格拉底助产士模式">
         <div class="chen-test-header">
           <span style="font-size:14px">&#127920;</span>
@@ -3699,35 +3696,45 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           </div>
         </div>
       </div>
-      <div id="dag-container">
-        <svg id="dag-svg">
-          <defs>
-            <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-              <path d="M0,0 L0,6 L9,3 z" fill="var(--txt3)"/>
-            </marker>
-            <marker id="arrow-ref" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-              <path d="M0,0 L0,6 L9,3 z" fill="var(--sky)"/>
-            </marker>
-            <marker id="arrow-follow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-              <path d="M0,0 L0,6 L9,3 z" fill="var(--grow)"/>
-            </marker>
-          </defs>
-          <g id="dag-g"></g>
-        </svg>
-        <div class="dag-empty-state" id="dag-empty">
-          <div class="dag-empty-icon">&#128279;</div>
-          <div class="dag-empty-text">发送消息开始构建<br>对话关系链</div>
+      <!-- 对话关系链面板 -->
+      <div id="right-panel" data-hint="对话关系图：展示多线索问答结构。点击节点可跳转到对应对话，线条颜色区分话题">
+        <div class="right-header">
+          <span class="right-icon">&#128279;</span>
+          <span class="right-title">对话关系链</span>
+          <span class="rel-badge" id="rel-badge">0 节点</span>
+          <button class="btn-dag-fullscreen" id="btn-dag-fullscreen" onclick="toggleDAGFullscreen()" title="全屏查看">&#9974;</button>
+          <button class="btn-dag-toggle" id="btn-dag-toggle" onclick="toggleDAG()" title="折叠/展开">▼</button>
         </div>
-        <div id="tooltip"></div>
+        <div id="dag-container">
+          <svg id="dag-svg">
+            <defs>
+              <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L9,3 z" fill="var(--txt3)"/>
+              </marker>
+              <marker id="arrow-ref" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L9,3 z" fill="var(--sky)"/>
+              </marker>
+              <marker id="arrow-follow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L9,3 z" fill="var(--grow)"/>
+              </marker>
+            </defs>
+            <g id="dag-g"></g>
+          </svg>
+          <div class="dag-empty-state" id="dag-empty">
+            <div class="dag-empty-icon">&#128279;</div>
+            <div class="dag-empty-text">发送消息开始构建<br>对话关系链</div>
+          </div>
+          <div id="tooltip"></div>
+        </div>
+        <div id="dag-footer">
+          <!-- 苏格拉底关系类型（T3.1诘辩涌现定理） -->
+          <div class="dag-stat" title="问答关系：问-答基本关系"><div class="dag-dot dot-q"></div><span>问答</span></div>
+          <div class="dag-stat" title="引用关系：引用之前的问答"><div class="dag-dot dot-ref"></div><span>引用</span></div>
+          <div class="dag-stat" title="整合关系：横向整合多线索"><div class="dag-dot dot-follow"></div><span>整合</span></div>
+          <div class="dag-stat" title="诘辩关系：苏格拉底诘辩追问"><div style="width:8px;height:8px;border-radius:50%;background:#f97316;display:inline-block"></div><span>诘辩</span></div>
+        </div>
+        <!-- 四象相干模态已移至左侧分析仪表盘 -->
       </div>
-      <div id="dag-footer">
-        <!-- 苏格拉底关系类型（T3.1诘辩涌现定理） -->
-        <div class="dag-stat" title="问答关系：问-答基本关系"><div class="dag-dot dot-q"></div><span>问答</span></div>
-        <div class="dag-stat" title="引用关系：引用之前的问答"><div class="dag-dot dot-ref"></div><span>引用</span></div>
-        <div class="dag-stat" title="整合关系：横向整合多线索"><div class="dag-dot dot-follow"></div><span>整合</span></div>
-        <div class="dag-stat" title="诘辩关系：苏格拉底诘辩追问"><div style="width:8px;height:8px;border-radius:50%;background:#f97316;display:inline-block"></div><span>诘辩</span></div>
-      </div>
-      <!-- 四象相干模态已移至左侧分析仪表盘 -->
     </div>
   </div>
 
@@ -4970,6 +4977,9 @@ function renderDAGFullscreen() {
   if (!dagG.node()) return;
   dagG.selectAll('*').remove();
 
+  // 裁剪定义（防止文字溢出节点）
+  const fsDefs = dagG.append('defs');
+
   if (threads.length === 0) return;
 
   const fsSvg = document.getElementById('dag-fullscreen-svg');
@@ -5046,7 +5056,7 @@ function renderDAGFullscreen() {
     });
 
     // 节点
-    thread.qa_pairs.forEach((qa) => {
+    thread.qa_pairs.forEach((qa, qi) => {
       const isQ = qa.type === 'question' || qa.type === 'user';
       const isG = qa.type === 'goal';
       const isA = qa.type === 'answer';
@@ -5054,8 +5064,17 @@ function renderDAGFullscreen() {
       const labelBg = isG ? 'var(--goal)' : (isQ ? 'var(--acc)' : 'var(--green)');
       const labelText = qa.global_id || (isG ? 'G' : (isQ ? 'Q' : 'A'));
 
+      // 裁剪路径（防止文字溢出节点边界）
+      const fsClipId = 'dagcfs-' + ti + '-' + qi;
+      fsDefs.append('clipPath')
+        .attr('id', fsClipId)
+        .append('rect')
+        .attr('x', -nodeW / 2 + 3).attr('y', -nodeH / 2 + 3)
+        .attr('width', nodeW - 6).attr('height', nodeH - 6).attr('rx', 5);
+
       const g = dagG.append('g')
         .attr('transform', `translate(${qa._fsX},${qa._fsY})`)
+        .attr('clip-path', `url(#${fsClipId})`)
         .style('cursor', 'pointer')
         .on('click', () => highlightHistory(qa.hist_idx));
 
@@ -5074,21 +5093,34 @@ function renderDAGFullscreen() {
         .attr('text-anchor', 'middle').attr('class', 'dag-badge').attr('font-size', '11px')
         .text(labelText);
 
-      const txt = (qa.content || '').slice(0, 45);
+      // 内容文本（按11px中文字宽≈11px，可用宽≈362px，保守30字符）
+      const qaContent = qa.content || '';
+      let fsLine1, fsLine2;
+      if (qaContent.length <= 30) {
+        fsLine1 = qaContent; fsLine2 = '';
+      } else {
+        fsLine1 = qaContent.slice(0, 30) + '…';
+        fsLine2 = qaContent.slice(30, 55);
+      }
       g.append('text')
         .attr('x', -nodeW / 2 + 48).attr('y', -nodeH / 2 + 20)
         .attr('class', 'dag-label').attr('font-size', '11px')
-        .text(txt + ((qa.content||'').length > 45 ? '…' : ''));
-
-      if ((qa.content||'').length > 45) {
-        const line2 = (qa.content || '').slice(45, 80);
+        .text(fsLine1);
+      if (fsLine2) {
         g.append('text')
           .attr('x', -nodeW / 2 + 10).attr('y', -nodeH / 2 + 38)
           .attr('class', 'dag-label').attr('font-size', '9px').attr('fill', 'var(--txt2)')
-          .text(line2 + ((qa.content||'').length > 80 ? '…' : ''));
+          .text(fsLine2 + (fsLine2.length >= 28 ? '…' : ''));
       }
     });
   });
+
+  // 根据实际内容高度调整SVG尺寸，确保滚动条覆盖全部内容
+  const finalH = currentY + 40;
+  if (fsSvg && finalH > h) {
+    fsSvg.setAttribute('height', finalH);
+    fsSvg.style.height = finalH + 'px';
+  }
 
   const totalNodes = threads.reduce((sum, t) => sum + t.qa_pairs.length, 0);
   const fsBadge = document.getElementById('fs-badge');
@@ -5119,6 +5151,9 @@ function renderDAG() {
   const dagG = STATE.dagG || d3.select('#dag-g');
 
   dagG.selectAll('*').remove();
+
+  // 裁剪定义（防止文字溢出节点）
+  const defs = dagG.append('defs');
 
   // 空状态
   const emptyEl = document.getElementById('dag-empty');
@@ -5220,8 +5255,17 @@ function renderDAG() {
       const isA = qa.type === 'answer';
       const nodeClass = isG ? 'dag-node dag-node-goal' : (isQ ? 'dag-node dag-node-user' : 'dag-node dag-node-ai');
 
+      // 裁剪路径（防止文字溢出节点边界）
+      const clipId = 'dagc-' + ti + '-' + qa._nodeIdx;
+      defs.append('clipPath')
+        .attr('id', clipId)
+        .append('rect')
+        .attr('x', -nodeW / 2 + 2).attr('y', -nodeH / 2 + 2)
+        .attr('width', nodeW - 4).attr('height', nodeH - 4).attr('rx', 4);
+
       const g = dagG.append('g')
         .attr('transform', `translate(${qa.x},${qa.y})`)
+        .attr('clip-path', `url(#${clipId})`)
         .style('cursor', 'pointer')
         .on('click', () => highlightHistory(qa.hist_idx));
 
@@ -5244,20 +5288,24 @@ function renderDAG() {
         .attr('text-anchor', 'middle').attr('class', 'dag-badge').attr('font-size', '9px')
         .text(labelText);
 
-      // 内容
-      const content = (qa.content || '').slice(0, 28);
+      // 内容文本（按9px中文字宽≈9px，可用宽≈214px，保守22字符）
+      const qaContent = qa.content || '';
+      let line1, line2;
+      if (qaContent.length <= 22) {
+        line1 = qaContent; line2 = '';
+      } else {
+        line1 = qaContent.slice(0, 22) + '…';
+        line2 = qaContent.slice(22, 42);
+      }
       g.append('text')
         .attr('x', -nodeW / 2 + 38).attr('y', -nodeH / 2 + 17)
         .attr('class', 'dag-label').attr('font-size', '9px')
-        .text(content + ((qa.content||'').length > 28 ? '…' : ''));
-
-      // 第二行内容（适当截断）
-      if ((qa.content||'').length > 28) {
-        const line2 = (qa.content || '').slice(28, 52);
+        .text(line1);
+      if (line2) {
         g.append('text')
           .attr('x', -nodeW / 2 + 8).attr('y', -nodeH / 2 + 32)
           .attr('class', 'dag-label').attr('font-size', '8px').attr('fill', 'var(--txt2)')
-          .text(line2 + ((qa.content||'').length > 52 ? '…' : ''));
+          .text(line2 + (line2.length >= 20 ? '…' : ''));
       }
 
       // 时间戳
