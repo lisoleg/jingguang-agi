@@ -843,6 +843,8 @@ def chat_v2():
             'v712': get_v712_data() or _v712_state,
             # v7.13新增：太乙拓扑斯·金符CA·离散统计力学·HoTT防火墙·双共振·双轨评价·引力分解·流贯优化·拓扑短路（M148-M156）
             'v713': get_v713_data() or _v713_state,
+            # v7.14新增：M78内生证明搜索引擎
+            'v714': get_v714_data() or _v714_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
         }))
@@ -1078,6 +1080,8 @@ def goal_mode():
             'v710': get_v710_data() or _v710_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
+            # v7.14新增：M78内生证明搜索引擎
+            'v714': get_v714_data() or _v714_state,
             'version': '12.0',
             'modules_count': 111
         }
@@ -8479,5 +8483,160 @@ def v713_toposhort_state():
         if modules is None:
             return jsonify(_v713_state['toposhort'])
         return jsonify(_to_native(modules['toposhort']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.14 M78内生证明搜索引擎 ====================
+
+_v714_state = {
+    'm78_endogenous': {
+        'version': '3.0.0',
+        'status': 'active',
+        'endogenous_search': {
+            'total_searches': 0, 'proved': 0, 'disproved': 0,
+            'wait_states': 0, 'pruned_branches': 0, 'avg_time_ms': 0.0
+        },
+        'undecidable_goals': 0,
+        'jinfu_modulus': 127
+    }
+}
+
+_V714_THEOREMS = {
+    'T_search_completeness': '定理2.1（搜索完备性）：对于任意可判定的目标类型G，prove(G)在有限步内找到构造项或判定不可证',
+    'P30': '预言P30：内生证明效率——M78内生引擎证明简单定理速度超过外部方案',
+    'P31': '预言P31：不可判定问题处理——M78返回wait()而非死循环或错误证明',
+}
+
+
+def get_v714_modules():
+    """获取或初始化 v7.14 M78内生证明搜索模块（线程安全懒加载）"""
+    if not hasattr(app, '_v714_modules') or app._v714_modules is None:
+        with _module_lock:
+            if not hasattr(app, '_v714_modules') or app._v714_modules is None:
+                try:
+                    from M78_HoTTReasoningEngine import get_instance as get_m78_v3
+                    app._v714_modules = {
+                        'm78': get_m78_v3,
+                    }
+                    print("✅ v7.14新模块已加载 - M78内生证明搜索引擎·类型导向剪枝·刘原理不动点·M88防火墙·wait()态")
+                except Exception as e:
+                    print(f"⚠️ v7.14模块加载失败: {e}")
+                    app._v714_modules = {}
+    return app._v714_modules
+
+
+def get_v714_data():
+    """获取 v7.14 数据"""
+    modules = get_v714_modules()
+    if modules is None:
+        return None
+    try:
+        m78 = modules.get('m78')
+        if m78:
+            return {'m78_endogenous': m78().get_state()}
+    except Exception:
+        pass
+    return None
+
+
+# --- M78 内生证明搜索 API ---
+
+@app.route('/api/v714/m78/prove', methods=['POST'])
+def v714_m78_prove():
+    """M78内生证明搜索：类型导向剪枝搜索"""
+    try:
+        modules = get_v714_modules()
+        if modules is None:
+            return jsonify(_v714_state['m78_endogenous'])
+        engine = modules['m78']()
+        data = request.get_json()
+        proposition = data.get('proposition', 'x=x')
+        max_depth = data.get('max_depth', 8)
+        result = engine.api_prove(proposition, max_depth=max_depth)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v714/m78/constructors', methods=['POST'])
+def v714_m78_constructors():
+    """M84刘原理构造子搜索"""
+    try:
+        modules = get_v714_modules()
+        if modules is None:
+            return jsonify(_v714_state['m78_endogenous'])
+        engine = modules['m78']()
+        data = request.get_json()
+        proposition = data.get('proposition', 'x=x')
+        result = engine.api_find_constructors(proposition)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v714/m78/wait-state', methods=['POST'])
+def v714_m78_wait_state():
+    """不可判定等待态检测"""
+    try:
+        modules = get_v714_modules()
+        if modules is None:
+            return jsonify(_v714_state['m78_endogenous'])
+        engine = modules['m78']()
+        data = request.get_json()
+        proposition = data.get('proposition', '证明该程序会停止')
+        result = engine.api_wait_state(proposition)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v714/m78/predictions', methods=['GET'])
+def v714_m78_predictions():
+    """预言P30/P31验证"""
+    try:
+        modules = get_v714_modules()
+        if modules is None:
+            return jsonify(_v714_state['m78_endogenous'])
+        engine = modules['m78']()
+        result = engine.api_predictions()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v714/m78/state', methods=['GET'])
+def v714_m78_state():
+    """M78引擎完整状态"""
+    try:
+        modules = get_v714_modules()
+        if modules is None:
+            return jsonify(_v714_state['m78_endogenous'])
+        return jsonify(_to_native(modules['m78']().get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v714/m78/search-completeness', methods=['POST'])
+def v714_m78_search_completeness():
+    """定理2.1搜索完备性验证"""
+    try:
+        modules = get_v714_modules()
+        if modules is None:
+            return jsonify({'error': '模块未加载'}), 500
+        engine = modules['m78']()
+        data = request.get_json()
+        propositions = data.get('propositions', ['x=x', '存在y使得y>0'])
+        from M78_HoTTReasoningEngine import Type, TypeKind
+        goals = [engine.proposition_as_type(p) for p in propositions]
+        results = engine.verify_search_completeness(goals)
+        return jsonify(_to_native([{
+            'goal': r.goal.name,
+            'is_decidable': r.is_decidable,
+            'found_proof': r.found_proof,
+            'steps_taken': r.steps_taken,
+            'theorem_holds': r.theorem_holds,
+            'insight': r.insight
+        } for r in results]))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
