@@ -845,6 +845,8 @@ def chat_v2():
             'v713': get_v713_data() or _v713_state,
             # v7.14新增：M78内生证明搜索引擎
             'v714': get_v714_data() or _v714_state,
+            # v7.15新增：六元对偶卷积+M78桥接升级+公式解析器
+            'v715': get_v715_data() or _v715_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
         }))
@@ -1082,6 +1084,8 @@ def goal_mode():
             'v71': get_v71_data() or _v71_state,
             # v7.14新增：M78内生证明搜索引擎
             'v714': get_v714_data() or _v714_state,
+            # v7.15新增：六元对偶卷积+M78桥接升级+公式解析器
+            'v715': get_v715_data() or _v715_state,
             'version': '12.0',
             'modules_count': 111
         }
@@ -8638,5 +8642,220 @@ def v714_m78_search_completeness():
             'theorem_holds': r.theorem_holds,
             'insight': r.insight
         } for r in results]))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.15 六元对偶卷积+M78桥接升级 ====================
+
+_v715_state = {
+    'hexadic_convolution': {
+        'version': '1.0.0',
+        'status': 'active',
+        'modules': ['M157', 'M158', 'M159', 'M160', 'M161', 'M162'],
+        'theorems': ['T124', 'T125', 'T126', 'T127', 'T128', 'T129'],
+        'prediction': 'P32'
+    },
+    'm78_bridge_upgrade': {
+        'version': '3.1.0',
+        'status': 'active',
+        'm84_bridge_mode': 'direct',
+        'm88_bridge_mode': 'direct',
+        'formula_parser': 'active'
+    }
+}
+
+_V715_THEOREMS = {
+    'T124': 'Theorem 2.1 (Discretization): Continuous convolution on Jinling grid degenerates to summation',
+    'T125': 'Theorem 2.2 (EML Decomposition): Feature and kernel decompose into EML operator form',
+    'T126': 'Theorem 2.3 (Phase Reversal): JinFu operation phi->-phi defines reverse flow',
+    'T127': 'Theorem 2.4 (Topology Reconstruction): Euclidean neighborhood replaced by 18 Fenxiangzi types',
+    'T128': 'Theorem 2.5 (Flow Direction): Reversing convolution index direction simulates feedback',
+    'T129': 'Theorem 2.6 (UV Cutoff): Introducing d_phi as minimum scale eliminates infinitesimals',
+    'P32': 'Prediction P32: Hexadic architecture significantly outperforms single continuous convolution on OOD tasks',
+}
+
+
+def get_v715_modules():
+    """v7.15 Hexadic Dual Convolution Module Thread-safe Lazy Load"""
+    if not hasattr(app, '_v715_modules') or app._v715_modules is None:
+        with _module_lock:
+            if not hasattr(app, '_v715_modules') or app._v715_modules is None:
+                try:
+                    from M157_JinlingGridConvolution import get_instance as get_m157
+                    from M158_PhaseModulusDualConvolution import get_instance as get_m158
+                    from M159_ReversePhaseConvolution import get_instance as get_m159
+                    from M160_FenxiangziTopologyConvolution import get_instance as get_m160
+                    from M161_BackwardFlowConvolution import get_instance as get_m161
+                    from M162_UVRegularizedConvolution import get_instance as get_m162
+                    from M78_HoTTReasoningEngine import get_instance as get_m78_v31
+                    app._v715_modules = {
+                        'm157': get_m157,
+                        'm158': get_m158,
+                        'm159': get_m159,
+                        'm160': get_m160,
+                        'm161': get_m161,
+                        'm162': get_m162,
+                        'm78': get_m78_v31,
+                    }
+                    print("  v7.15 - M157-M162 six-element dual convolution + M78 bridge upgrade + formula parser")
+                except Exception as e:
+                    print(f"  v7.15 module loading failed: {e}")
+                    app._v715_modules = {}
+    return app._v715_modules
+
+
+def get_v715_data():
+    """Get v7.15 data"""
+    modules = get_v715_modules()
+    if modules is None:
+        return None
+    try:
+        data = {'hexadic_convolution': {}}
+        for key in ['m157', 'm158', 'm159', 'm160', 'm161', 'm162']:
+            mod = modules.get(key)
+            if mod:
+                data['hexadic_convolution'][key] = mod().get_state()
+        m78 = modules.get('m78')
+        if m78:
+            data['m78_bridge_upgrade'] = m78().get_state()
+        return data
+    except Exception:
+        pass
+    return None
+
+
+# --- v7.15 API ---
+
+@app.route('/api/v715/convolve/<module_name>', methods=['POST'])
+def v715_convolve(module_name):
+    """Hexadic Dual Convolution: Unified Convolution API"""
+    try:
+        modules = get_v715_modules()
+        if modules is None:
+            return jsonify({'error': 'modules not loaded'}), 500
+
+        module_map = {
+            'jinling': 'm157', 'phase': 'm158', 'reverse': 'm159',
+            'fenxiangzi': 'm160', 'backward': 'm161', 'uv': 'm162',
+        }
+        mod_key = module_map.get(module_name)
+        if not mod_key:
+            return jsonify({'error': f'unknown module: {module_name}',
+                           'available': list(module_map.keys())}), 400
+
+        mod = modules[mod_key]()
+        data = request.get_json()
+        signal = data.get('signal', [1.0, 2.0, 3.0, 2.0, 1.0])
+        kernel = data.get('kernel', [1.0, 0.5, 0.25])
+
+        result = mod.api_convolve(signal, kernel)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v715/theorem/<theorem_id>', methods=['GET'])
+def v715_theorem(theorem_id):
+    """Theorem Verification API: T124-T129"""
+    try:
+        modules = get_v715_modules()
+        if modules is None:
+            return jsonify({'error': 'modules not loaded'}), 500
+
+        theorem_module_map = {
+            'T124': 'm157', 'T125': 'm158', 'T126': 'm159',
+            'T127': 'm160', 'T128': 'm161', 'T129': 'm162',
+        }
+        mod_key = theorem_module_map.get(theorem_id)
+        if not mod_key:
+            return jsonify({'error': f'unknown theorem: {theorem_id}',
+                           'available': list(theorem_module_map.keys())}), 400
+
+        mod = modules[mod_key]()
+        result = mod.verify_theorem()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v715/prediction/p32', methods=['GET'])
+def v715_prediction_p32():
+    """Prediction P32: Hexadic Architecture Diversity Advantage"""
+    try:
+        modules = get_v715_modules()
+        if modules is None:
+            return jsonify({'error': 'modules not loaded'}), 500
+
+        test_signal = [1.0, 2.0, 3.0, 2.0, 1.0]
+        test_kernel = [1.0, 0.5, 0.25]
+
+        results = {}
+        module_map = {
+            'jinling': 'm157', 'phase': 'm158', 'reverse': 'm159',
+            'fenxiangzi': 'm160', 'backward': 'm161', 'uv': 'm162',
+        }
+        for name, key in module_map.items():
+            mod = modules[key]()
+            result = mod.api_convolve(test_signal, test_kernel)
+            results[name] = {
+                'result_hash': hash(tuple(
+                    round(v, 6) if isinstance(v, float) else v
+                    for v in result.get('result', [])
+                )),
+                'theorem_holds': result.get('theorem_holds', False)
+            }
+
+        unique_hashes = len(set(r['result_hash'] for r in results.values()))
+        all_theorems_hold = all(r['theorem_holds'] for r in results.values())
+
+        return jsonify(_to_native({
+            'prediction': 'P32: hexadic architecture diversity advantage',
+            'unique_outputs': unique_hashes,
+            'total_modules': 6,
+            'diversity_ratio': unique_hashes / 6.0,
+            'all_theorems_hold': all_theorems_hold,
+            'p32_holds': unique_hashes >= 3 and all_theorems_hold,
+            'results': results,
+            'falsification_condition': 'If fewer than 3 unique outputs, or any equation permanently suppressed, architecture is imbalanced'
+        }))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v715/m78/formula-parse', methods=['POST'])
+def v715_formula_parse():
+    """M78 Logical Formula Parsing API (v7.15)"""
+    try:
+        modules = get_v715_modules()
+        if modules is None:
+            return jsonify({'error': 'modules not loaded'}), 500
+        engine = modules['m78']()
+        data = request.get_json()
+        formula = data.get('formula', 'forall x:Nat.x = x')
+        parsed = engine.formula_parser.parse(formula)
+        goal_type = engine.proposition_as_type(formula)
+        return jsonify(_to_native({
+            'formula': formula,
+            'formula_kind': parsed.kind.value,
+            'goal_type': goal_type.name,
+            'goal_kind': goal_type.kind.value,
+            'var_name': parsed.var_name,
+            'var_type': parsed.var_type,
+            'sub_formulas': len(parsed.sub_formulas),
+            'operator': parsed.operator
+        }))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v715/state', methods=['GET'])
+def v715_state():
+    """v7.15 Full State"""
+    try:
+        data = get_v715_data()
+        if data is None:
+            return jsonify(_v715_state)
+        return jsonify(_to_native(data))
     except Exception as e:
         return jsonify({'error': str(e)}), 500

@@ -201,7 +201,7 @@ class TypeCheckFirewall:
                 "name": "hallucination_detection",
                 "description": "幻觉检测",
                 "action": "flag",
-                "check": lambda term: self._detect_hallucination(term)
+                "check": lambda term: not self._detect_hallucination(term)
             }
         ]
     

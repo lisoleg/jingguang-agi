@@ -49,10 +49,27 @@ import math
 import random
 import time
 import hashlib
+import re
 from typing import Dict, List, Tuple, Any, Optional, Callable, Set
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
+
+# ===== v7.15: 直接调用M84/M88原模块 =====
+try:
+    from M84_LiuGuanDynamicsGenerator import LiuGuanDynamicsGenerator as M84Engine
+    _M84_AVAILABLE = True
+except ImportError:
+    _M84_AVAILABLE = False
+
+try:
+    from M88_TypeCheckFirewall import TypeCheckFirewall as M88Firewall
+    from M88_TypeCheckFirewall import TypeSignature as M88TypeSig
+    from M88_TypeCheckFirewall import Term as M88Term
+    from M88_TypeCheckFirewall import TypeCheckStatus as M88Status
+    _M88_AVAILABLE = True
+except ImportError:
+    _M88_AVAILABLE = False
 
 
 class TypeKind(Enum):
@@ -241,6 +258,308 @@ class SearchCompletenessResult:
 
 
 # ============================================================================
+# v7.15新增：逻辑公式解析器
+# ============================================================================
+
+class FormulaKind(Enum):
+    """公式种类"""
+    ATOMIC = "atomic"           # 原子命题 P
+    UNIVERSAL = "universal"     # ∀x:A.P
+    EXISTENTIAL = "existential" # ∃x:A.P
+    CONJUNCTION = "conjunction" # P ∧ Q
+    DISJUNCTION = "disjunction" # P ∨ Q
+    IMPLICATION = "implication" # P → Q
+    NEGATION = "negation"      # ¬P
+    BICONDITIONAL = "biconditional"  # P ↔ Q
+    EQUALITY_FORM = "equality"  # a = b
+    INEQUALITY = "inequality"  # a ≠ b
+    UNDECIDABLE = "undecidable" # 不可判定
+
+
+@dataclass
+class LogicalFormula:
+    """
+    逻辑公式（v7.15新增）
+
+    支持完整的逻辑公式表示，从原子命题到嵌套量词公式
+    对应HoTT的"命题即类型"：每种公式对应一种TypeKind
+    """
+    kind: FormulaKind
+    raw: str                              # 原始字符串
+    var_name: str = ""                    # 量词绑定的变量名
+    var_type: str = ""                    # 量词绑定的变量类型
+    sub_formulas: List['LogicalFormula'] = field(default_factory=list)
+    operator: str = ""                    # 连接词符号
+
+    def to_type(self) -> Type:
+        """将逻辑公式转换为HoTT类型"""
+        if self.kind == FormulaKind.ATOMIC:
+            return Type(self.raw, TypeKind.PROP, [], self.raw)
+
+        elif self.kind == FormulaKind.UNIVERSAL:
+            return Type(
+                f"∀{self.var_name}:{self.var_type}.{self.sub_formulas[0].raw if self.sub_formulas else 'P'}",
+                TypeKind.PI,
+                [sf.to_type() for sf in self.sub_formulas],
+                f"全称量化: ∀{self.var_name}:{self.var_type}"
+            )
+
+        elif self.kind == FormulaKind.EXISTENTIAL:
+            return Type(
+                f"∃{self.var_name}:{self.var_type}.{self.sub_formulas[0].raw if self.sub_formulas else 'P'}",
+                TypeKind.SIGMA,
+                [sf.to_type() for sf in self.sub_formulas],
+                f"存在量化: ∃{self.var_name}:{self.var_type}"
+            )
+
+        elif self.kind == FormulaKind.CONJUNCTION:
+            return Type(
+                f"({' ∧ '.join(sf.raw for sf in self.sub_formulas)})",
+                TypeKind.SIGMA,
+                [sf.to_type() for sf in self.sub_formulas],
+                "合取类型"
+            )
+
+        elif self.kind == FormulaKind.DISJUNCTION:
+            return Type(
+                f"({' ∨ '.join(sf.raw for sf in self.sub_formulas)})",
+                TypeKind.SIGMA,
+                [sf.to_type() for sf in self.sub_formulas],
+                "析取类型"
+            )
+
+        elif self.kind == FormulaKind.IMPLICATION:
+            if len(self.sub_formulas) == 2:
+                return Type(
+                    f"{self.sub_formulas[0].raw} → {self.sub_formulas[1].raw}",
+                    TypeKind.PI,
+                    [sf.to_type() for sf in self.sub_formulas],
+                    "蕴含类型（函数空间）"
+                )
+            return Type("P→Q", TypeKind.PI, [], "蕴含类型")
+
+        elif self.kind == FormulaKind.NEGATION:
+            return Type(
+                f"¬{self.sub_formulas[0].raw if self.sub_formulas else 'P'}",
+                TypeKind.PI,
+                [sf.to_type() for sf in self.sub_formulas],
+                "否定类型（P→⊥）"
+            )
+
+        elif self.kind == FormulaKind.BICONDITIONAL:
+            return Type(
+                f"{self.sub_formulas[0].raw if self.sub_formulas else 'P'} ↔ {self.sub_formulas[1].raw if len(self.sub_formulas) > 1 else 'Q'}",
+                TypeKind.EQUIV,
+                [sf.to_type() for sf in self.sub_formulas],
+                "双向蕴含（等价类型）"
+            )
+
+        elif self.kind == FormulaKind.EQUALITY_FORM:
+            return Type(
+                self.raw,
+                TypeKind.EQUALITY,
+                [sf.to_type() for sf in self.sub_formulas],
+                "相等类型"
+            )
+
+        elif self.kind == FormulaKind.INEQUALITY:
+            return Type(
+                f"¬({self.raw.replace('≠', '=')})",
+                TypeKind.PI,
+                [Type(self.raw.replace('≠', '='), TypeKind.EQUALITY, [], "等式"),
+                 Type("⊥", TypeKind.EMPTY, [], "底类型")],
+                "不等式（否定相等）"
+            )
+
+        elif self.kind == FormulaKind.UNDECIDABLE:
+            return Type("Undecidable", TypeKind.WAIT, [], "不可判定问题（等待态）")
+
+        return Type(self.raw, TypeKind.PROP, [], self.raw)
+
+
+class FormulaParser:
+    """
+    逻辑公式解析器（v7.15新增）
+
+    支持的语法：
+    - 量词：∀x:A.P, ∃x:A.P, 对于所有x:A, 存在x:A
+    - 连接词：∧, ∨, →, ↔, ¬, 且, 或, 蕴含, 等价于
+    - 相等：a = b, a ≠ b, a等于b
+    - 类型标注：x:Nat, x:Bool, x:Prop
+    - 嵌套：∀x:Nat.∃y:Nat.y = x+1
+    - 括号分组：(P ∧ Q) → R
+    """
+
+    # 类型标注映射
+    TYPE_MAP = {
+        "nat": "Nat", "自然数": "Nat", "ℕ": "Nat",
+        "bool": "Bool", "布尔": "Bool", "𝔹": "Bool",
+        "prop": "Prop", "命题": "Prop",
+        "int": "Int", "整数": "Int", "ℤ": "Int",
+        "real": "Real", "实数": "Real", "ℝ": "Real",
+        "type": "Type", "类型": "Type",
+        "unit": "Unit", "单元": "Unit", "⊤": "Unit",
+        "empty": "Empty", "空": "Empty", "⊥": "Empty",
+        "sigma": "Sigma", "存在类型": "Sigma", "Σ": "Sigma",
+        "pi": "Pi", "全称类型": "Pi", "Π": "Pi",
+    }
+
+    def parse(self, formula: str) -> LogicalFormula:
+        """解析逻辑公式"""
+        formula = formula.strip()
+
+        # 1. 不可判定性检测
+        undecidable_kws = [
+            "停机", "halt", "程序会停止", "循环终止",
+            "不可判定", "undecidable", "自指循环",
+            "罗素悖论", "自引用", "哥德尔不完备"
+        ]
+        if any(kw in formula for kw in undecidable_kws):
+            return LogicalFormula(
+                kind=FormulaKind.UNDECIDABLE,
+                raw=formula,
+                sub_formulas=[]
+            )
+
+        # 2. 量词解析（优先级最高）
+        qf = self._try_parse_quantifier(formula)
+        if qf is not None:
+            return qf
+
+        # 3. 双向蕴含 ↔
+        if "↔" in formula or "等价于" in formula:
+            parts = re.split(r'↔|等价于', formula, maxsplit=1)
+            if len(parts) == 2:
+                return LogicalFormula(
+                    kind=FormulaKind.BICONDITIONAL,
+                    raw=formula,
+                    sub_formulas=[self.parse(p.strip()) for p in parts],
+                    operator="↔"
+                )
+
+        # 4. 蕴含 →
+        if "→" in formula or "蕴含" in formula or "⇒" in formula:
+            parts = re.split(r'→|蕴含|⇒', formula, maxsplit=1)
+            if len(parts) == 2:
+                return LogicalFormula(
+                    kind=FormulaKind.IMPLICATION,
+                    raw=formula,
+                    sub_formulas=[self.parse(p.strip()) for p in parts],
+                    operator="→"
+                )
+
+        # 5. 否定 ¬
+        if formula.startswith("¬") or formula.startswith("非"):
+            inner = formula[1:].strip()
+            return LogicalFormula(
+                kind=FormulaKind.NEGATION,
+                raw=formula,
+                sub_formulas=[self.parse(inner)],
+                operator="¬"
+            )
+
+        # 6. 合取 ∧
+        if "∧" in formula or "且" in formula or "并且" in formula:
+            sep = "∧" if "∧" in formula else ("且" if "且" in formula else "并且")
+            parts = formula.split(sep, maxsplit=1)
+            if len(parts) == 2:
+                return LogicalFormula(
+                    kind=FormulaKind.CONJUNCTION,
+                    raw=formula,
+                    sub_formulas=[self.parse(p.strip()) for p in parts],
+                    operator="∧"
+                )
+
+        # 7. 析取 ∨
+        if "∨" in formula or "或" in formula:
+            sep = "∨" if "∨" in formula else "或"
+            parts = formula.split(sep, maxsplit=1)
+            if len(parts) == 2:
+                return LogicalFormula(
+                    kind=FormulaKind.DISJUNCTION,
+                    raw=formula,
+                    sub_formulas=[self.parse(p.strip()) for p in parts],
+                    operator="∨"
+                )
+
+        # 8. 相等 = / 等于
+        if "≠" in formula:
+            return LogicalFormula(
+                kind=FormulaKind.INEQUALITY,
+                raw=formula
+            )
+        if "=" in formula or "等于" in formula:
+            return LogicalFormula(
+                kind=FormulaKind.EQUALITY_FORM,
+                raw=formula
+            )
+
+        # 9. 原子命题
+        return LogicalFormula(kind=FormulaKind.ATOMIC, raw=formula)
+
+    def _try_parse_quantifier(self, formula: str) -> Optional[LogicalFormula]:
+        """尝试解析量词，成功返回LogicalFormula，否则返回None"""
+        # ∀x:A.P 格式
+        universal_pattern = r'^[∀]\s*(\w+)\s*[:：]\s*(\w+)\s*[.。]\s*(.+)$'
+        m = re.match(universal_pattern, formula)
+        if m:
+            var_name, var_type, body = m.groups()
+            var_type_mapped = self.TYPE_MAP.get(var_type.lower(), var_type)
+            return LogicalFormula(
+                kind=FormulaKind.UNIVERSAL,
+                raw=formula,
+                var_name=var_name,
+                var_type=var_type_mapped,
+                sub_formulas=[self.parse(body.strip())],
+                operator="∀"
+            )
+
+        # ∃x:A.P 格式
+        existential_pattern = r'^[∃]\s*(\w+)\s*[:：]\s*(\w+)\s*[.。]\s*(.+)$'
+        m = re.match(existential_pattern, formula)
+        if m:
+            var_name, var_type, body = m.groups()
+            var_type_mapped = self.TYPE_MAP.get(var_type.lower(), var_type)
+            return LogicalFormula(
+                kind=FormulaKind.EXISTENTIAL,
+                raw=formula,
+                var_name=var_name,
+                var_type=var_type_mapped,
+                sub_formulas=[self.parse(body.strip())],
+                operator="∃"
+            )
+
+        # 中文：对于所有x，P / 存在x，P
+        cn_universal = r'^对于所有\s*(\w+)[，,]\s*(.+)$'
+        m = re.match(cn_universal, formula)
+        if m:
+            var_name, body = m.groups()
+            return LogicalFormula(
+                kind=FormulaKind.UNIVERSAL,
+                raw=formula,
+                var_name=var_name,
+                var_type="Nat",
+                sub_formulas=[self.parse(body.strip())],
+                operator="∀"
+            )
+
+        cn_existential = r'^存在\s*(\w+)[，,]\s*(.+)$'
+        m = re.match(cn_existential, formula)
+        if m:
+            var_name, body = m.groups()
+            return LogicalFormula(
+                kind=FormulaKind.EXISTENTIAL,
+                raw=formula,
+                var_name=var_name,
+                var_type="Nat",
+                sub_formulas=[self.parse(body.strip())],
+                operator="∃"
+            )
+
+        return None
+
+
+# ============================================================================
 # Pi-Type 和 Sigma-Type 强化
 # ============================================================================
 
@@ -334,34 +653,89 @@ class UnivalenceChecker:
 
 
 # ============================================================================
-# M84 刘原理不动点求解器（桥接层）
+# M84 刘原理不动点求解器（v7.15：直接调用原模块实例）
 # ============================================================================
 
-class LiuPrincipleBridge:
+class M84DirectBridge:
     """
-    M84刘原理不动点求解器桥接层
+    M84刘原理不动点求解器直接桥接层（v7.15升级）
 
     对应文档2.2节：
     - 作用量评估：评估每个潜在构造子对应的关系作用量S_R
     - 路径选择：优先探索S_R较小的路径
     - 剪枝：若S_R过大（超过阈值），直接剪枝
 
-    桥接M84_LiuGuanDynamicsGenerator.find_liu_principle_solution()
+    v7.15变更：直接调用M84_LiuGuanDynamicsGenerator.find_liu_principle_solution()
+    替代原有的简化桥接实现，利用M84完整的候选规律生成、
+    Kolmogorov复杂度极小化和Brouwer不动点验证
     """
 
     def __init__(self, action_threshold: float = 2.0):
         self.action_threshold = action_threshold
         self._eval_cache: Dict[str, float] = {}
         self.eval_count = 0
+        # ===== 直接调用M84原模块 =====
+        self._m84_instance = None
+        self._use_native_m84 = _M84_AVAILABLE
+
+    def _get_m84(self):
+        """懒加载M84单例"""
+        if self._m84_instance is None and self._use_native_m84:
+            try:
+                self._m84_instance = M84Engine()
+            except Exception:
+                self._use_native_m84 = False
+        return self._m84_instance
+
+    def _type_to_phenomena(self, goal_type: Type,
+                           available_types: Dict[str, Type]) -> List[Dict]:
+        """将M78的Type转换为M84的phenomena格式"""
+        phenomena = [{
+            "type": "goal",
+            "value": hash(goal_type.name) % 100 / 100.0,
+            "description": f"目标类型: {goal_type.name}({goal_type.kind.value})"
+        }]
+        for type_name, t in available_types.items():
+            phenomena.append({
+                "type": "available_type",
+                "value": hash(t.name) % 100 / 100.0,
+                "description": f"可用类型: {t.name}({t.kind.value})"
+            })
+        return phenomena
+
+    def _candidate_law_to_constructor(self, law, goal_type: Type) -> ConstructorCandidate:
+        """将M84的CandidateLaw转换为M78的ConstructorCandidate"""
+        # M84 CandidateLaw → M78 ConstructorCandidate
+        # kolmogorov_k 映射到 action_value（K复杂度越低→作用量越低→路径越优）
+        action_value = law.kolmogorov_k * 2.0  # 缩放到action_value范围
+
+        # 不动点的构造子作用量更低（刘机制调整）
+        if law.is_fixed_point:
+            action_value *= 0.5
+
+        return ConstructorCandidate(
+            name=f"m84_{law.name}_to_{goal_type.name}",
+            target_type=goal_type,
+            subgoals=[],  # M84的law不直接提供子目标，由M78搜索算法推导
+            action_value=action_value,
+            kolmogorov_k=law.kolmogorov_k,
+            is_fixed_point=law.is_fixed_point,
+            rank=0
+        )
 
     def find_constructors(self, goal_type: Type,
                           available_types: Dict[str, Type]) -> List[ConstructorCandidate]:
         """
-        寻找目标类型的构造子
+        寻找目标类型的构造子（v7.15：优先调用M84原模块）
 
         对应文档：M84 Find Constructors
         利用刘机制 δS_R = 0 极小路径分析类型结构，
         找出所有可能生成 G 的构造子
+
+        策略：
+        1. 若M84可用，调用find_liu_principle_solution获取候选规律
+        2. 将M84的CandidateLaw转换为ConstructorCandidate
+        3. 补充基于类型系统的直接构造子
         """
         candidates = []
 
@@ -379,22 +753,49 @@ class LiuPrincipleBridge:
             return candidates
 
         if goal_type.kind == TypeKind.EMPTY or goal_type.name == "⊥":
-            # 底类型无构造子
             return candidates
 
-        # 从已有类型中寻找可能的构造子
+        # ===== 路径A：调用M84原模块获取构造子 =====
+        m84 = self._get_m84()
+        if m84 is not None:
+            try:
+                phenomena = self._type_to_phenomena(goal_type, available_types)
+                fp_result = m84.find_liu_principle_solution(phenomena)
+
+                if fp_result.found and fp_result.minimal_law:
+                    # 将M84找到的极简规律转为构造子
+                    ctor = self._candidate_law_to_constructor(
+                        fp_result.minimal_law, goal_type
+                    )
+                    candidates.append(ctor)
+
+                # 从所有候选规律中提取额外构造子
+                for law in fp_result.all_candidates:
+                    if law.can_generate_frames and law is not fp_result.minimal_law:
+                        ctor = self._candidate_law_to_constructor(law, goal_type)
+                        if ctor.action_value < self.action_threshold:
+                            candidates.append(ctor)
+
+            except Exception:
+                # M84调用失败，回退到路径B
+                pass
+
+        # ===== 路径B：基于类型系统的构造子补充 =====
         for type_name, t in available_types.items():
-            action = self._eval_action(t, goal_type)
+            action = self._eval_type_action(t, goal_type)
             if action < self.action_threshold:
-                candidates.append(ConstructorCandidate(
-                    name=f"ctor_{type_name}_to_{goal_type.name}",
-                    target_type=goal_type,
-                    subgoals=[t],
-                    action_value=action,
-                    kolmogorov_k=len(type_name) / 100.0,
-                    is_fixed_point=(action < 0.5),
-                    rank=0
-                ))
+                # 避免与M84路径重复
+                name_key = f"ctor_{type_name}_to_{goal_type.name}"
+                if not any(name_key in c.name for c in candidates):
+                    candidates.append(ConstructorCandidate(
+                        name=name_key,
+                        target_type=goal_type,
+                        subgoals=[t],
+                        action_value=action,
+                        kolmogorov_k=len(type_name) / 100.0,
+                        is_fixed_point=(action < 0.5),
+                        rank=0
+                    ))
 
         # 按关系作用量排序（刘机制：优先探索S_R最小的路径）
         candidates.sort(key=lambda c: c.action_value)
@@ -405,7 +806,7 @@ class LiuPrincipleBridge:
 
     def eval_action(self, constructor: ConstructorCandidate) -> float:
         """
-        评估构造子的关系作用量
+        评估构造子的关系作用量（v7.15：集成M84 K复杂度）
 
         对应文档：M84 Eval Action
         流贯代价评估：S_R(constructor) = 关系代价
@@ -415,7 +816,6 @@ class LiuPrincipleBridge:
         if cache_key in self._eval_cache:
             return self._eval_cache[cache_key]
 
-        # 基于目标类型和构造子类型的关系距离计算作用量
         action = constructor.action_value
 
         # 刘机制调整：不动点的构造子作用量更低
@@ -425,6 +825,10 @@ class LiuPrincipleBridge:
         # 子目标越多，作用量越高
         action += len(constructor.subgoals) * 0.3
 
+        # M84的K复杂度加成：K越低→越可能是正确路径→额外降低作用量
+        if constructor.kolmogorov_k < 0.3:
+            action *= 0.8  # 极简规律加成
+
         self._eval_cache[cache_key] = action
         return action
 
@@ -433,49 +837,105 @@ class LiuPrincipleBridge:
         剪枝判断：若S_R过大，直接剪枝
 
         对应文档2.2节剪枝规则
+        v7.15：结合M84的Brouwer不动点验证进行智能剪枝
         """
         action = self.eval_action(constructor)
+
+        # M84未验证为不动点且作用量高 → 强剪枝
+        if not constructor.is_fixed_point and action > self.action_threshold * 0.8:
+            return True
+
         return action > self.action_threshold
 
-    def _eval_action(self, source: Type, target: Type) -> float:
+    def _eval_type_action(self, source: Type, target: Type) -> float:
         """评估源类型到目标类型的关系作用量"""
         self.eval_count += 1
         if source.kind == target.kind:
-            return 0.1  # 同类型，极低作用量
+            return 0.1
         if source.name == target.name:
             return 0.05
-
-        # 不同类型间的作用量（基于类型距离）
         kind_distance = abs(hash(source.kind.value) - hash(target.kind.value)) % 10
         return 0.3 + kind_distance * 0.2
 
+    def get_stats(self) -> Dict[str, Any]:
+        """获取桥接层统计"""
+        m84_active = self._m84_instance is not None
+        return {
+            "m84_native_available": _M84_AVAILABLE,
+            "m84_instance_active": m84_active,
+            "eval_count": self.eval_count,
+            "action_threshold": self.action_threshold,
+            "bridge_mode": "direct" if m84_active else "fallback"
+        }
+
 
 # ============================================================================
-# M88 类型防火墙（桥接层）
+# M88 类型防火墙（v7.15：直接调用原模块实例）
 # ============================================================================
 
-class TypeFirewallBridge:
+class M88DirectBridge:
     """
-    M88类型防火墙桥接层
+    M88类型防火墙直接桥接层（v7.15升级）
 
     对应文档：M88 Check
     - 类型等价性检查
     - 证明项实时校验
     - 幻觉拦截
 
-    桥接M88_TypeCheckFirewall.verify()
+    v7.15变更：直接调用M88_TypeCheckFirewall.verify()
+    替代原有的简化检查，利用M88完整的类型注册表、统一算法、
+    层级兼容性检查和防火墙规则系统
     """
 
     def __init__(self):
         self.check_count = 0
         self.block_count = 0
+        # ===== 直接调用M88原模块 =====
+        self._m88_instance = None
+        self._use_native_m88 = _M88_AVAILABLE
+
+    def _get_m88(self):
+        """懒加载M88单例"""
+        if self._m88_instance is None and self._use_native_m88:
+            try:
+                self._m88_instance = M88Firewall()
+            except Exception:
+                self._use_native_m88 = False
+        return self._m88_instance
+
+    def _type_to_m88_sig(self, t: Type) -> 'M88TypeSig':
+        """将M78的Type转换为M88的TypeSignature"""
+        if not _M88_AVAILABLE:
+            return None
+        params = [self._type_to_m88_sig(p) for p in t.params] if t.params else []
+        return M88TypeSig(
+            type_name=t.name,
+            type_params=params,
+            constraints=[t.kind.value]
+        )
+
+    def _term_to_m88_term(self, t: Term) -> 'M88Term':
+        """将M78的Term转换为M88的Term"""
+        if not _M88_AVAILABLE:
+            return None
+        m88_type = self._type_to_m88_sig(t.term_type)
+        return M88Term(
+            term_name=t.name,
+            term_type=m88_type,
+            value=t.value,
+            proof_chain=[p.name for p in t.proof_tree] if t.proof_tree else []
+        )
 
     def check(self, proof_term: Optional[Term], goal_type: Type) -> bool:
         """
-        类型等价性检查
+        类型等价性检查（v7.15：优先调用M88原模块）
 
         对应文档：M88 Check
         检查证明项是否属于目标类型
+
+        策略：
+        1. 若M88可用，调用verify()进行完整的类型检查
+        2. 否则回退到简化的类型匹配检查
         """
         self.check_count += 1
 
@@ -483,13 +943,30 @@ class TypeFirewallBridge:
             self.block_count += 1
             return False
 
-        # 类型匹配检查
+        # ===== 路径A：调用M88原模块 =====
+        m88 = self._get_m88()
+        if m88 is not None:
+            try:
+                m88_term = self._term_to_m88_term(proof_term)
+                m88_goal = self._type_to_m88_sig(goal_type)
+
+                if m88_term is not None and m88_goal is not None:
+                    result = m88.verify(m88_term, m88_goal)
+
+                    if result.status == M88Status.VALID:
+                        return True
+                    else:
+                        self.block_count += 1
+                        return False
+            except Exception:
+                # M88调用失败，回退到路径B
+                pass
+
+        # ===== 路径B：简化类型匹配检查（回退） =====
         if proof_term.term_type.kind == goal_type.kind:
             return True
         if proof_term.term_type.name == goal_type.name:
             return True
-
-        # 名称匹配
         if proof_term.term_type.name in goal_type.name or goal_type.name in proof_term.term_type.name:
             return True
 
@@ -497,10 +974,15 @@ class TypeFirewallBridge:
         return False
 
     def get_stats(self) -> Dict[str, Any]:
+        """获取防火墙统计"""
+        m88_active = self._m88_instance is not None
         return {
+            "m88_native_available": _M88_AVAILABLE,
+            "m88_instance_active": m88_active,
             "total_checks": self.check_count,
             "blocked": self.block_count,
-            "pass_rate": (self.check_count - self.block_count) / max(1, self.check_count)
+            "pass_rate": (self.check_count - self.block_count) / max(1, self.check_count),
+            "bridge_mode": "direct" if m88_active else "fallback"
         }
 
 
@@ -527,7 +1009,7 @@ class HoTTReasoningEngine:
     """
 
     def __init__(self, action_threshold: float = 2.0):
-        self.version = "3.0.0"
+        self.version = "3.1.0"  # v7.15: 直接调用M84/M88 + 公式解析器
         self.types: Dict[str, Type] = {}
         self.terms: Dict[str, Term] = {}
         self.proof_steps: List[ProofStep] = []
@@ -535,9 +1017,12 @@ class HoTTReasoningEngine:
         # 单价公理检查器
         self.univalence_checker = UnivalenceChecker()
 
-        # ===== v3.0新增: 内生证明搜索引擎 =====
-        self.liu_bridge = LiuPrincipleBridge(action_threshold=action_threshold)
-        self.firewall_bridge = TypeFirewallBridge()
+        # ===== v7.15: 直接调用M84/M88原模块 =====
+        self.liu_bridge = M84DirectBridge(action_threshold=action_threshold)
+        self.firewall_bridge = M88DirectBridge()
+
+        # ===== v7.15: 逻辑公式解析器 =====
+        self.formula_parser = FormulaParser()
 
         # 证明搜索统计
         self._search_stats = {
@@ -957,6 +1442,8 @@ class HoTTReasoningEngine:
 
         对于 Nat(零构造子zero)、Bool(true/false) 等基础类型，
         无需递归搜索，直接给出构造项
+
+        v7.15增强：支持公式解析器生成的复合类型直接构造
         """
         if goal.kind == TypeKind.NAT:
             return Term(name="zero", term_type=goal, value=0, is_constructor=True)
@@ -971,7 +1458,11 @@ class HoTTReasoningEngine:
         elif goal.kind == TypeKind.EQUIV:
             return Term(name="equiv_id", term_type=goal, value="identity", is_constructor=True)
         elif goal.kind == TypeKind.PI:
+            # v7.15: 支持公式解析器生成的Π类型（含参数）
+            # ∀x:A.P → lambda抽象
             return Term(name="lambda_id", term_type=goal, value="λx.x", is_constructor=True)
+        elif goal.kind == TypeKind.UNIVALENT:
+            return Term(name="ua", term_type=goal, value="univalence", is_constructor=True)
         return None
 
     def _is_potentially_undecidable(self, goal: Type) -> bool:
@@ -1116,8 +1607,28 @@ class HoTTReasoningEngine:
 
     def proposition_as_type(self, proposition: str) -> Type:
         """
-        命题即类型：将逻辑命题转换为HoTT类型
+        命题即类型：将逻辑命题转换为HoTT类型（v7.15增强）
+
+        v7.15升级：
+        - 使用FormulaParser解析复杂逻辑公式
+        - 支持量词(∀/∃)、连接词(∧/∨/→/¬)、类型标注(x:A)
+        - 支持嵌套公式如 ∀x:Nat.∃y:Nat.y=x+1
+        - 回退到关键词匹配保证向后兼容
         """
+        try:
+            # v7.15: 优先使用公式解析器
+            formula = self.formula_parser.parse(proposition)
+            result_type = formula.to_type()
+
+            # 注册到类型系统
+            if result_type.name not in self.types:
+                self.types[result_type.name] = result_type
+
+            return result_type
+        except Exception:
+            # 回退到v3.0的关键词匹配
+            pass
+
         proposition_lower = proposition.lower()
 
         if "等于" in proposition or "=" in proposition:
@@ -1556,8 +2067,9 @@ class HoTTReasoningEngine:
             "endogenous_search": self._search_stats,
             "undecidable_goals": len(self._undecidable_goals),
             "jinfu_modulus": self._jinfu_modulus,
-            "liu_bridge_evals": self.liu_bridge.eval_count,
-            "firewall_stats": self.firewall_bridge.get_stats(),
+            # v7.15: 直接桥接层统计
+            "m84_bridge": self.liu_bridge.get_stats(),
+            "m88_bridge": self.firewall_bridge.get_stats(),
             # v7.3新增: Helix自函子统计
             "helix_endofunctors": len(self.helix_endofunctors),
             "helix_natural_transforms": len(self.helix_natural_transforms),
@@ -1793,10 +2305,26 @@ if __name__ == "__main__":
         print(f"  命题：{proposition}")
         print(f"    可证：{result.is_provable}, 幻觉：{result.is_hallucination}")
 
-    # === 测试7: M88防火墙桥接 ===
-    print("\n[测试7] M88类型防火墙桥接")
+    # === 测试7: M88防火墙直接桥接 ===
+    print("\n[测试7] M88类型防火墙直接桥接(v7.15)")
     fw_stats = engine.firewall_bridge.get_stats()
     print(f"  防火墙统计: {fw_stats}")
+
+    # === 测试9: 公式解析器(v7.15) ===
+    print("\n[测试9] 逻辑公式解析器(v7.15)")
+    test_formulas = [
+        "∀x:Nat.x = x",
+        "∃y:Nat.y = x+1",
+        "P ∧ Q",
+        "P → Q",
+        "¬P",
+        "∀x:Nat.∃y:Nat.y = x+1",
+        "停机问题",
+    ]
+    for f in test_formulas:
+        goal = engine.proposition_as_type(f)
+        formula = engine.formula_parser.parse(f)
+        print(f"  '{f}' → Type({goal.name}, {goal.kind.value}) | Formula({formula.kind.value})")
 
     # === 测试8: API辅助方法 ===
     print("\n[测试8] API辅助方法")
@@ -1817,6 +2345,7 @@ if __name__ == "__main__":
     print(f"  类型数: {state['total_types']}")
     print(f"  内生搜索统计: {state['endogenous_search']}")
     print(f"  不可判定目标: {state['undecidable_goals']}")
-    print(f"  防火墙: {state['firewall_stats']}")
+    print(f"  M84桥接: {state['m84_bridge']}")
+    print(f"  M88桥接: {state['m88_bridge']}")
 
     print("\n✅ M78 v3.0 内生证明搜索引擎 自测全部通过！")
