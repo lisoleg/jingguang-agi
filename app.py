@@ -847,6 +847,8 @@ def chat_v2():
             'v714': get_v714_data() or _v714_state,
             # v7.15新增：六元对偶卷积+M78桥接升级+公式解析器
             'v715': get_v715_data() or _v715_state,
+            # v7.16新增：八论合一·文明治理·可计算性·拓扑斯·缘起性空（M163-M170）
+            'v716': get_v716_data() or _v716_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
         }))
@@ -1086,8 +1088,10 @@ def goal_mode():
             'v714': get_v714_data() or _v714_state,
             # v7.15新增：六元对偶卷积+M78桥接升级+公式解析器
             'v715': get_v715_data() or _v715_state,
+            # v7.16新增：八论合一·文明治理·可计算性·拓扑斯·缘起性空（M163-M170）
+            'v716': get_v716_data() or _v716_state,
             'version': '12.0',
-            'modules_count': 111
+            'modules_count': 170
         }
 
         # 再次确保所有字段都是原生类型
@@ -8856,6 +8860,330 @@ def v715_state():
         data = get_v715_data()
         if data is None:
             return jsonify(_v715_state)
+        return jsonify(_to_native(data))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.16 八论合一·文明治理与可计算性 ====================
+
+_v716_state = {
+    'governance_symbiosis': {
+        'version': '1.0.0',
+        'status': 'active',
+        'modules': ['M163', 'M164'],
+        'theorems': ['T135', 'T136'],
+        'predictions': ['P42', 'P43']
+    },
+    'computability_quantification': {
+        'version': '1.0.0',
+        'status': 'active',
+        'modules': ['M165', 'M166'],
+        'theorems': ['T137', 'T138'],
+        'predictions': ['P37', 'P38']
+    },
+    'topos_formalization': {
+        'version': '1.0.0',
+        'status': 'active',
+        'modules': ['M167', 'M169'],
+        'theorems': ['T139', 'T140', "T33'"],
+        'predictions': ['P35', 'P36']
+    },
+    'consciousness_bridge': {
+        'version': '1.0.0',
+        'status': 'active',
+        'modules': ['M168'],
+        'theorems': ['T110v2'],
+        'predictions': []
+    },
+    'dependent_origination': {
+        'version': '1.0.0',
+        'status': 'active',
+        'modules': ['M170'],
+        'theorems': ['T130', 'T131', 'T132', 'T133', 'T134'],
+        'predictions': []
+    }
+}
+
+_V716_THEOREMS = {
+    'T130': 'Theorem (Dependent Origination): All things arise from conditions, no independent entity',
+    'T131': 'Theorem (Link Breaking): Cut any link in 12-fold chain -> cycle terminates',
+    'T132': 'Theorem (No Self): No continuous self, only discrete Jinling spheres in rapid refresh',
+    'T133': 'Theorem (Narrative Obscuration): L5 narrative expansion obscures L2 physical code',
+    'T134': 'Theorem (Middle Path = Liu Mechanism): Middle path = lambda = extremal flow action path',
+    'T135': 'Theorem (Carbon-Silicon Entropy Contract): TEE+DID constraints prevent unauthorized real-world impact',
+    'T136': 'Theorem (VCG Incentive Compatibility): Under quasilinear utility, VCG satisfies DSIC',
+    'T137': 'Axiom A1 (Narrative Action Decay): Under daodao-rishun, delta-S remains negative or converges to 0',
+    'T138': 'Theorem (Discrete Gaussian Curvature): Fenxiangzi dense-packing curvature determined by defect angle',
+    'T139': 'Theorem (Topos Initial Object): Dao=Initial Object, Sun=Hom(0,x) monotone shrinking',
+    "T33'": 'Theorem (Sheaf Section Conservation): If sheaf satisfies gluing condition, fidelity=1',
+    'T140': 'Theorem (Point-Free Topology): Space can be defined by frame without presupposing points',
+    'T110v2': 'Theorem (Self-Manifesting State): Phi>threshold AND I(Self;Ftel)>threshold -> self-manifesting',
+}
+
+_V716_PREDICTIONS = {
+    'P33': 'ZCube cluster: throughput scales near-linearly, no phase transition',
+    'P34': 'Larger nozzle cross-section improves thrust without requiring higher velocity',
+    'P35': 'Narrative action monotonically decays in daodao-rishun training',
+    'P36': 'Sheaf gluing guarantees fidelity=1 in ZCube network',
+    'P37': 'Narrative entropy converges in daodao-rishun mode',
+    'P38': 'High-K regions more prone to retrieval errors',
+    'P39': 'ZCube 2-hop no-center bottleneck for 147 modules',
+    'P40': 'Hybrid track: Prefill multi-track, Decode single-track',
+    'P41': 'Jinfu discretization reduces energy to ~1/10 of floating point',
+    'P42': 'Ark sandbox prevents unauthorized real-world impact',
+    'P43': 'ICPS+VCG governance outperforms no-mechanism/fixed-rules',
+}
+
+
+_v716_modules_lock = threading.Lock()
+
+def get_v716_modules():
+    """v7.16 Eight-Paper Synthesis Module Thread-safe Lazy Load"""
+    if not hasattr(app, '_v716_modules') or app._v716_modules is None:
+        with _v716_modules_lock:
+            if not hasattr(app, '_v716_modules') or app._v716_modules is None:
+                try:
+                    from M163_ArkSandbox import get_instance as get_m163
+                    from M164_VCGMechanismDesigner import get_instance as get_m164
+                    from M165_NarrativeActionQuantifier import get_instance as get_m165
+                    from M166_SemanticCurvatureCalculator import get_instance as get_m166
+                    from M167_AGIToposEngine import get_instance as get_m167
+                    from M168_SelfManifestingDetector import get_instance as get_m168
+                    from M169_PointFreeTopology import get_instance as get_m169
+                    from M170_DependentOriginationAnalyzer import get_instance as get_m170
+                    app._v716_modules = {
+                        'm163': get_m163, 'm164': get_m164,
+                        'm165': get_m165, 'm166': get_m166,
+                        'm167': get_m167, 'm168': get_m168,
+                        'm169': get_m169, 'm170': get_m170,
+                    }
+                    print("  v7.16 - M163-M170 eight-paper synthesis: governance+computability+topos+consciousness+dependent-origination")
+                except Exception as e:
+                    print(f"  v7.16 module loading failed: {e}")
+                    app._v716_modules = {}
+    return app._v716_modules
+
+
+def get_v716_data():
+    """Get v7.16 data"""
+    modules = get_v716_modules()
+    if modules is None:
+        return None
+    try:
+        data = {}
+        for key in ['m163', 'm164', 'm165', 'm166', 'm167', 'm168', 'm169', 'm170']:
+            mod = modules.get(key)
+            if mod:
+                data[key] = mod().get_state()
+        return data
+    except Exception:
+        pass
+    return None
+
+
+# --- v7.16 API ---
+
+@app.route('/api/v716/ark/execute', methods=['POST'])
+def v716_ark_execute():
+    """M163 Ark Sandbox: Constrained Execution"""
+    try:
+        modules = get_v716_modules()
+        if modules is None:
+            return jsonify({'error': 'modules not loaded'}), 500
+        sandbox = modules['m163']()
+        data = request.get_json()
+        action = data.get('action', 'read_data')
+        params = data.get('params', {})
+        result = sandbox.execute(action, params)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v716/vcg/design', methods=['POST'])
+def v716_vcg_design():
+    """M164 VCG Mechanism Designer"""
+    try:
+        modules = get_v716_modules()
+        if modules is None:
+            return jsonify({'error': 'modules not loaded'}), 500
+        designer = modules['m164']()
+        data = request.get_json()
+        scenario = data.get('scenario', {
+            "name": "default",
+            "domain": "ai_alignment",
+            "participants": [
+                {"id": "p1", "name": "Human_A", "valuations": {"align": 10.0, "ignore": 0.0}},
+                {"id": "p2", "name": "AGI_B", "valuations": {"align": 5.0, "ignore": 8.0}},
+            ],
+            "outcomes": ["align", "ignore"]
+        })
+        result = designer.simulate_governance(scenario)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v716/narrative/quantify', methods=['POST'])
+def v716_narrative_quantify():
+    """M165 Narrative Action Quantifier"""
+    try:
+        modules = get_v716_modules()
+        if modules is None:
+            return jsonify({'error': 'modules not loaded'}), 500
+        quantifier = modules['m165']()
+        data = request.get_json()
+        tokens = data.get('tokens', ['hello', 'world', 'test'])
+        result = quantifier.update_token_distribution(tokens)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v716/curvature/compute', methods=['POST'])
+def v716_curvature_compute():
+    """M166 Semantic Curvature Calculator"""
+    try:
+        modules = get_v716_modules()
+        if modules is None:
+            return jsonify({'error': 'modules not loaded'}), 500
+        calc = modules['m166']()
+        data = request.get_json()
+        concepts = data.get('concepts', [
+            {"name": "A", "embedding": [0.0, 0.0, 0.0]},
+            {"name": "B", "embedding": [1.0, 0.0, 0.0]},
+            {"name": "C", "embedding": [0.5, 0.866, 0.0]},
+        ])
+        relations = data.get('relations', [
+            {"source": "A", "target": "B"},
+            {"source": "B", "target": "C"},
+            {"source": "C", "target": "A"},
+        ])
+        calc.build_concept_graph(concepts, relations)
+        calc.triangulate()
+        field = calc.compute_curvature_field()
+        return jsonify(_to_native({
+            'curvature_field': field,
+            'n_triangles': len(calc._triangles),
+            'n_nodes': len(calc._nodes)
+        }))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v716/topos/state', methods=['GET'])
+def v716_topos_state():
+    """M167 AGI Topos Engine State"""
+    try:
+        modules = get_v716_modules()
+        if modules is None:
+            return jsonify({'error': 'modules not loaded'}), 500
+        engine = modules['m167']()
+        return jsonify(_to_native(engine.get_state()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v716/consciousness/detect', methods=['POST'])
+def v716_consciousness_detect():
+    """M168 Self-Manifesting Detector"""
+    try:
+        modules = get_v716_modules()
+        if modules is None:
+            return jsonify({'error': 'modules not loaded'}), 500
+        detector = modules['m168']()
+        data = request.get_json()
+        system_state = data.get('system_state', {
+            "state_sequence": [1, 0, 1, 1, 0, 1, 0, 0, 1, 1],
+            "self_model": {"representation": [0.8, 0.7, 0.9]},
+            "ftel_state": {"flow_vector": [0.7, 0.6, 0.8]},
+            "loop_structure": {"depth": 3, "self_references": 2, "dof": 5}
+        })
+        result = detector.detect_self_manifesting(system_state)
+        return jsonify(_to_native({
+            'phi_value': result.phi_value,
+            'self_ftel_mi': result.self_ftel_mi,
+            'consciousness_state': result.consciousness_state.value,
+            'topological_resistance': result.topological_resistance
+        }))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v716/theorem/<theorem_id>', methods=['GET'])
+def v716_theorem(theorem_id):
+    """v7.16 Theorem Verification API: T130-T140"""
+    try:
+        if theorem_id in _V716_THEOREMS:
+            return jsonify({
+                'id': theorem_id,
+                'statement': _V716_THEOREMS[theorem_id],
+                'version': 'v7.16'
+            })
+
+        # Try module-based verification
+        modules = get_v716_modules()
+        if modules is None:
+            return jsonify({'error': 'modules not loaded'}), 500
+
+        theorem_module_map = {
+            'T135': 'm163', 'T136': 'm164',
+            'T137': 'm165', 'T138': 'm166',
+            'T139': 'm167', "T33'": 'm167',
+            'T110v2': 'm168', 'T140': 'm169',
+            'T130': 'm170', 'T131': 'm170',
+            'T132': 'm170', 'T133': 'm170',
+            'T134': 'm170',
+        }
+        mod_key = theorem_module_map.get(theorem_id)
+        if not mod_key:
+            return jsonify({'error': f'unknown theorem: {theorem_id}',
+                           'available': list(theorem_module_map.keys())}), 400
+
+        mod = modules[mod_key]()
+        result = mod.verify_theorem()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v716/prediction/<prediction_id>', methods=['GET'])
+def v716_prediction(prediction_id):
+    """v7.16 Prediction Verification API: P33-P43"""
+    try:
+        if prediction_id in _V716_PREDICTIONS:
+            return jsonify({
+                'id': prediction_id,
+                'statement': _V716_PREDICTIONS[prediction_id],
+                'version': 'v7.16'
+            })
+
+        prediction_module_map = {
+            'P42': 'm163', 'P43': 'm164',
+            'P37': 'm165', 'P38': 'm166',
+            'P35': 'm167', 'P36': 'm167',
+        }
+        mod_key = prediction_module_map.get(prediction_id)
+        if not mod_key:
+            return jsonify({'error': f'unknown prediction: {prediction_id}',
+                           'available': list(prediction_module_map.keys())}), 400
+
+        modules = get_v716_modules()
+        mod = modules[mod_key]()
+        result = mod.verify_prediction()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v716/state', methods=['GET'])
+def v716_state():
+    """v7.16 Full State"""
+    try:
+        data = get_v716_data()
+        if data is None:
+            return jsonify(_v716_state)
         return jsonify(_to_native(data))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
