@@ -5,15 +5,30 @@
 - 主服务器: `app.py` (Flask, 端口5001)
 - 前端: `static/index_agi12.html` (三栏布局界面)
 - 脑图: `app_mindmap_v2.py` (端口5003)
-- **总规模**: 147模块 / 8层 / 109定理
+- **总规模**: 173模块 / 9层 / 151定理
 
-## 当前版本：v7.12（✅已部署+Git推送）
+## 当前版本：v7.17（✅已部署+Git推送完成 6e6d75a）
+- **v7.17**: λ宇宙·TY形式化·UFM-RISC-V具身架构 M171-M173 + T141-T150 ✅
+  - 来源：2篇论文（《太一归算》《归算的必然性：UFM-RISC-V》）
+  - M171 UFMLambdaUniverse: λ宇宙引擎 Y组合子·β归约·amb·不可克隆·意识CRD不动点 T141-T144
+  - M172 TYFormalizer: TY硬核1.1-1.10↔UFM映射·软层四域解释·L1-L5层次提升·元方法论收敛·物理升级接口 T145-T147
+  - M173 UFMRISCVArchitect: 冯诺依曼破产·λ必要性三论证·四层异构·ISA扩展(REDUCE/AMB)·RGM·β归约流水线·具身完备性 T148-T150
+  - API: /api/v717/lambda/reduce, /lambda/theorems, /lambda/observe, /ty/formalize, /ty/interpret, /ty/promote, /riscv/bankruptcy, /riscv/necessity, /riscv/architecture, /riscv/isa, /riscv/embodied, /theorem/<Tid>, /state
+- **v7.16**: 八论合一·文明治理与可计算性 M163-M170 + T130-T140 + P33-P43 ✅
+  - 来源：8篇论文（约柜沙盒/ZCube混合轨/可计算性/数学严格性/意识难问题/大横截面积/分别见观照/缘起性空）
+  - M163 ArkSandbox: 约柜沙盒执行器+碳硅熵契约 T135/P42
+  - M164 VCGMechanismDesigner: VCG机制设计器 T136/P43
+  - M165 NarrativeActionQuantifier: 叙事作用量量化器 T137/P37
+  - M166 SemanticCurvatureCalculator: 语义流形曲率计算器 T138/P38
+  - M167 AGIToposEngine: AGI拓扑斯引擎 T139/T33'/P35/P36
+  - M168 SelfManifestingDetector: 自显化态检测器 T110v2
+  - M169 PointFreeTopology: 点自由拓扑引擎 T140
+  - M170 DependentOriginationAnalyzer: 缘起性空拓扑分析器 T130-T134
+  - API: /api/v716/ark/execute, /vcg/design, /narrative/quantify, /curvature/compute, /topos/state, /consciousness/detect, /theorem/<Tid>, /prediction/<Pid>, /state
+- **v7.14**: M78内生证明搜索引擎升级 v3.0 ✅（类型导向剪枝搜索·M84刘原理不动点·M88防火墙·wait()态·定理2.1·P30/P31）
 - **v7.12**: M142-M147 + T104-T109 ✅（UV正则化·芬芳香子·金符堆垒·宇射认知·辩证零·奇点消除）
-  - 来源：《论金符离散时空的量子-引力导出与可证伪性》（章锋）— k_max=π/d_φ截断 + 18种多面体密铺 + 127个金符算符 + Ψ残缺容限 + 0_D辩证零 + R≤1/d_φ²奇点消除
 - **v7.11**: M138-M141 + T100-T103 ✅（二部图拓扑·关系作用量·混合相位·拓扑相变）
-  - 来源：《ZCube网络架构深层解构：关系实在论下的流贯拓扑优化与刘机制证明》— 完全二部图K_{n/2,n/2} + 刘机制确定性路由 + 单/多轨混合接入τ* + 拓扑相变检测
 - **v7.10**: M134-M137 + T96-T99 ✅（欧拉相位闭合·递归证明折叠·五层次本体·可证伪预言）
-  - 来源：《论关系实在的终极压缩》（章锋）— 欧拉恒等式相位闭合 + zk-SNARK递归证明折叠 + L1-L5五层次本体 + 可证伪预言框架
 - **v7.9**: M130-M133 + T92-T95 ✅（金符离散微积分·关系作用量·堆垒素数·自指闭环拓扑）
 - **v7.8**: M126-M129 + T86-T91 ✅（护栏编排·推测推理·KV治理·本体自锻造）
 - **v7.7**: M120-M125 + T79-T85 ✅（博弈论推理·ICPS社会能力·情绪粒度·沙盒探索）
@@ -22,48 +37,43 @@
 - **v7.1**: M96-M105 + T41-T51 ✅ | **v7.0**: M71-M95 + T23-T40 ✅
 
 ## 编号规则
-- **模块**: M1-M95(v5-7.0) | M96-M105(v7.1) | M106-M110(v7.3) | M111-M113(v7.4) | M114-M116(v7.5) | M117-M119(v7.6) | M120-M125(v7.7) | M126-M129(v7.8) | M130-M133(v7.9) | M134-M137(v7.10) | M138-M141(v7.11) | M142-M147(v7.12)
-- **定理**: T1-T7(核心) | T8-T16(v6.1) | T17-T22(v6.2) | T23-T40(v7.0) | T41-T51(v7.1) | T52-T58(v7.2) | T59-T65(v7.3) | T66-T71(v7.4) | T72-T74(v7.5) | T75-T77(v7.6) | T78(M106) | T79-T85(v7.7) | T86-T91(v7.8) | T92-T95(v7.9) | T96-T99(v7.10) | T100-T103(v7.11) | T104-T109(v7.12)
+- **模块**: M1-M95(v5-7.0) | M96-M105(v7.1) | M106-M110(v7.3) | M111-M113(v7.4) | M114-M116(v7.5) | M117-M119(v7.6) | M120-M125(v7.7) | M126-M129(v7.8) | M130-M133(v7.9) | M134-M137(v7.10) | M138-M141(v7.11) | M142-M147(v7.12) | M148-M156(v7.13) | M157-M162(v7.15) | M163-M170(v7.16) | M171-M173(v7.17)
+- **定理**: T1-T7(核心) | T8-T16(v6.1) | T17-T22(v6.2) | T23-T40(v7.0) | T41-T51(v7.1) | T52-T58(v7.2) | T59-T65(v7.3) | T66-T71(v7.4) | T72-T74(v7.5) | T75-T77(v7.6) | T78(M106) | T79-T85(v7.7) | T86-T91(v7.8) | T92-T95(v7.9) | T96-T99(v7.10) | T100-T103(v7.11) | T104-T109(v7.12) | T110-T123(v7.13) | T搜索完备性(v7.14) | T124-T129(v7.15) | T130-T140+T33'+T110v2(v7.16) | T141-T150(v7.17)
 
 ## API版本模式
-- `/api/v712/*`: v7.12（M142-M147）| `/api/v711/*`: v7.11（M138-M141）| `/api/v710/*`: v7.10（M134-M137）| `/api/v79/*`: v7.9 | `/api/v78/*`: v7.8 | `/api/v77/*`: v7.7
-- `/api/v76/*`: v7.6 | `/api/v75/*`: v7.5 | `/api/v74/*`: v7.4 | `/api/v73/*`: v7.3 | `/api/v71/*`: v7.1
+- `/api/v717/*`: v7.17（λ宇宙·TY形式化·UFM-RISC-V具身架构）| `/api/v716/*`: v7.16（八论合一·文明治理·可计算性·拓扑斯·缘起性空）| `/api/v715/*`: v7.15（六元对偶卷积+M78桥接升级）| `/api/v714/*`: v7.14（M78内生证明搜索）| `/api/v713/*`: v7.13（M148-M156）| `/api/v712/*`: v7.12（M142-M147）
 - `/api/chat_v2`: 主对话 | `/api/goal`: 目标模式
 
 ## 核心模块文件
 - `CompositeAGI_V2.py`: 主核心（v5.0+）
 - `HolographicDiscreteGovernance.py`: M29 全息离散治理
 - `agi_medium_symbiosis.py`: 介质共生
-- `M142-M147_*.py`: v7.12 | `M138-M141_*.py`: v7.11 | `M134-M137_*.py`: v7.10 | `M130-M133_*.py`: v7.9 | `M126-M129_*.py`: v7.8 | `M120-M125_*.py`: v7.7
+- `M171-M173_*.py`: v7.17（λ宇宙·TY形式化·UFM-RISC-V具身架构）| `M163-M170_*.py`: v7.16（八论合一·文明治理·可计算性·拓扑斯·缘起性空）| `M157-M162_*.py`: v7.15（六元对偶卷积）| `M142-M147_*.py`: v7.12 | `M138-M141_*.py`: v7.11
 
-## v7.12模块整合关系
-- M142 UVRegularizationEngine: 与M130(JinFu)桥接，k_max=π/d_φ物理截断消除紫外发散
-- M143 FenxiangziSpaceEngine: 与M138(Bipartite)桥接，18种正/半正多面体密铺+知识域映射
-- M144 JinfuAccumulationComputer: 与M130(JinFu)和M132(PrimeClassifier)桥接，127个金符算符+关系网络
-- M145 YuMappingCognitiveEngine: 与M123(ICPS)桥接，Ψ残缺特征容限映射+置信区间推理
-- M146 DialecticalZeroReasoner: 与M136(FiveLayer)桥接，0_D={x:|x|<d_φ}三态分类+极限恒有定义
-- M147 SingularityEliminator: 与M142(UVRegularization)桥接，安全除法+曲率有界+递归安全
+## v7.15模块整合关系
+- M157 JinlingGridConvolution: 与M130(JinFu)桥接，Z_φ模运算+金灵球格点量化
+- M158 PhaseModulusDualConvolution: 与M117(Ftel)桥接，EML分解f=|f|*e^{i*phi}
+- M159 ReversePhaseConvolution: 与M84(刘机制)桥接，反向相位=δS_R=0极小路径互补
+- M160 FenxiangziTopologyConvolution: 与M143(芬芳香子)桥接，18种非欧密铺邻域
+- M161 BackwardFlowConvolution: 与M131(关系作用量)桥接，时间反演+自指闭环
+- M162 UVRegularizedConvolution: 与M142(UV正则化)/M147(奇点消除)桥接，k_max=π/d_φ
 
-## v7.11模块整合关系
-- M138 BipartiteGraphTopologyEngine: 与M134(EulerPhase)和M130(JinFu)桥接，K_{n/2,n/2}完全二部图
-- M139 RelationalActionRouter: 与M117(Ftel)和M131(RelationAction)桥接，刘机制δS_R=0极小路径
-- M140 HybridRailPhaseController: 与M134(EulerPhase)和M128(KVGovernance)桥接，τ*最优混合接入+PD分离
-- M141 TopologicalPhaseTransitionDetector: 与M136(FiveLayer)和M137(FalsifiablePrediction)桥接，Clos相变检测+ZCube线性
-
-## v7.10模块整合关系
-- M134 EulerPhaseClosure: 与M130(金符phase)和M133(自指闭环)桥接
-- M135 RecursiveProofFolder: 与M81(记忆树)和M128(KV治理)整合
-- M136 FiveLayerOntology: L1→M117 Ftel, L2→M130金符, L3→M112截断, L4→M123 ICPS, L5→M62叙事
-- M137 FalsifiablePrediction: 通用预言框架，支持任意定理生成预言
+## M78桥接层升级（v7.15）
+- M84DirectBridge: 直接调用M84_LiuGuanDynamicsGenerator.get_instance()
+  - _type_to_phenomena(): M78 Type → M84 phenomena格式
+  - _candidate_law_to_constructor(): M84 CandidateLaw → M78 ConstructorCandidate
+  - 懒加载+回退：M84不可用时自动降级到类型系统构造子
+- M88DirectBridge: 直接调用M88_TypeCheckFirewall.get_firewall()
+  - _type_to_m88_sig(): M78 Type → M88 TypeSignature
+  - _term_to_m88_term(): M78 Term → M88 Term
+  - 懒加载+回退：M88不可用时自动降级到简化类型匹配
+- FormulaParser: 逻辑公式解析器（FormulaKind/LogicalFormula）
+  - 支持量词(∀x:A.P/∃x:A.P)、连接词(∧/∨/→/¬/↔)、类型标注、嵌套
 
 ## 重要Bug记录（精简）
 - `_to_native` float转换：需检查imag!=0
 - app.run()阻塞：路由必须在app.run()之前定义
-- 模块/定理编号冲突：M88+被占用从M111开始，T59+被占用从T66开始
-- 工程师模块缺get_instance()：需手动添加模块级单例
-- 多进程占端口：用taskkill //PID //F逐个杀掉
-- M133 compute_self_ref_penalty返回float非dict：已知不一致
-- M106 Φ值精度低：sigmoid软激活+Laplace平滑修复
+- M88幻觉检测逻辑反转：check返回_detect_hallucination而非not _detect_hallucination（v7.15已修复）
 - Python 3.10不支持f-string内反斜杠
 
 ## 服务启动

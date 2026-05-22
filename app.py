@@ -1094,8 +1094,10 @@ def goal_mode():
             'v716': get_v716_data() or _v716_state,
             # v7.17新增：λ宇宙+TY形式化+UFM-RISC-V具身架构（M171-M173）
             'v717': get_v717_data() or _v717_state,
-            'version': '12.0',
-            'modules_count': 173
+            # v7.18新增：沙箱增强+安全护盾（M174-M175）
+            'v718': get_v718_data() or _v718_state,
+            'version': '12.1',
+            'modules_count': 175
         }
 
         # 再次确保所有字段都是原生类型
@@ -7484,43 +7486,360 @@ def v71_fusion_audit():
         return jsonify({'error': str(e)}), 500
 
 
-if __name__ == '__main__':
-    print("=" * 60)
-    print("🌌 统一太乙系统 Web 服务 (Phase 2 具身+心架构)")
-    print("   前端: http://localhost:5000")
-    print("   API:  http://localhost:5000/api/chat")
-    print("   Phase 2 新增API:")
-    print("   前五识工具:")
-    print("   - /api/tools/list     (前五识工具列表)")
-    print("   - /api/tools/execute  (执行单个工具)")
-    print("   - /api/tools/batch    (批量执行工具)")
-    print("   - /api/tools/audit    (审计日志)")
-    print("   第七识审计:")
-    print("   - /api/manas/audit     (审计输出)")
-    print("   - /api/manas/distinguish (自我/非我区分)")
-    print("   - /api/manas/stats     (审计统计)")
-    print("   UFO² 具身执行层:")
-    print("   - /api/ufo2/status     (具身层状态)")
-    print("   - /api/ufo2/execute    (执行桌面任务)")
-    print("   - /api/ufo2/app_control (应用控制)")
-    print("   - /api/ufo2/capture    (截图)")
-    print("   - /api/ufo2/ui_tree    (UI树)")
-    print("   - /api/ufo2/tools      (工具列表)")
-    print("   增强API:")
-    print("   - /api/rag/status    (RAG知识库状态)")
-    print("   - /api/rag/search?q=关键词   (知识检索)")
-    print("   - /api/rag/add       (添加文档)")
-    print("   - /api/memory/status (记忆系统状态)")
-    print("   - /api/enhancer/status (增强器统计)")
-    print("=" * 60)
+# ==================== v7.18 沙箱增强·安全护盾 ====================
 
-    # 预热 AGI 系统
+_v718_state = {
+    'sandbox': {
+        'version': '1.0.0',
+        'status': 'active',
+        'modules': ['M174'],
+        'theorems': ['T151', 'T152', 'T153'],
+        'predictions': []
+    },
+    'safety_shield': {
+        'version': '1.0.0',
+        'status': 'active',
+        'modules': ['M175'],
+        'theorems': ['T154', 'T155', 'T156'],
+        'predictions': []
+    }
+}
+
+_V718_THEOREMS = {
+    'T151': 'Theorem (Snapshot Completeness): Any execution state can be losslessly snapshotted and precisely restored',
+    'T152': 'Theorem (Dual Isolation): Inner λ-sandbox + Outer OS-sandbox ≡ product topology S_λ × S_OS, leak probability ≤ ε_λ · ε_OS',
+    'T153': 'Theorem (Resource-Bounded Execution): Circuit breaker guarantees computation terminates within finite resources',
+    'T154': 'Theorem (PII Non-Leakage): With recall rate ≥ R_min, masked output contains no original PII',
+    'T155': 'Theorem (Dual Review Completeness): Input PII masking + Output compliance audit = complete I/O safety (no bypass paths)',
+    'T156': 'Theorem (Content Wall Equivalence): SafetyShield content wall ≡ M88 pre-filter + M88 type firewall',
+}
+
+_V718_PREDICTIONS = {}
+
+_v718_modules_lock = threading.Lock()
+
+def get_v718_modules():
+    """v7.18 Sandbox + SafetyShield Thread-safe Lazy Load"""
+    if not hasattr(app, '_v718_modules') or app._v718_modules is None:
+        with _v718_modules_lock:
+            if not hasattr(app, '_v718_modules') or app._v718_modules is None:
+                try:
+                    from M174_UFMRISCVSandbox import UFMRISCVSandbox as _M174
+                    from M175_SafetyShield import SafetyShield as _M175
+                    app._v718_modules = {
+                        'm174': _M174.get_instance, 'm175': _M175.get_instance,
+                    }
+                    print("  v7.18 - M174-M175: sandbox-enhancement + safety-shield")
+                except Exception as e:
+                    print(f"  v7.18 module loading failed: {e}")
+                    app._v718_modules = {}
+    return app._v718_modules
+
+
+def get_v718_data():
+    """Get v7.18 data"""
+    modules = get_v718_modules()
+    if modules is None:
+        return None
     try:
-        get_agi_system()
-    except Exception as e:
-        print(f"⚠️ AGI 系统预热失败: {e}")
+        data = {}
+        for key in ['m174', 'm175']:
+            mod = modules.get(key)
+            if mod:
+                data[key] = mod().get_state()
+        return data
+    except Exception:
+        pass
+    return None
 
-    app.run(host='0.0.0.0', port=5001, debug=False, threaded=True)
+
+# --- v7.18 API: M174 Sandbox ---
+
+@app.route('/api/v718/sandbox/snapshot', methods=['POST'])
+def v718_sandbox_snapshot():
+    """M174 Create execution snapshot"""
+    try:
+        data = request.json or {}
+        modules = get_v718_modules()
+        m174 = modules['m174']()
+        result = m174.create_snapshot(
+            pc=data.get('pc', 0),
+            registers=data.get('registers', {}),
+            memory_pages=data.get('memory_pages', {}),
+            pipeline_state=data.get('pipeline_state', 'Match'),
+            rgm_node_count=data.get('rgm_node_count', 0),
+            instruction_count=data.get('instruction_count', 0)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718/sandbox/restore/<snapshot_id>', methods=['POST'])
+def v718_sandbox_restore(snapshot_id):
+    """M174 Restore execution snapshot"""
+    try:
+        modules = get_v718_modules()
+        m174 = modules['m174']()
+        result = m174.restore_snapshot(snapshot_id)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718/sandbox/resume', methods=['POST'])
+def v718_sandbox_resume():
+    """M174 Resume execution from snapshot"""
+    try:
+        data = request.json or {}
+        snapshot_id = data.get('snapshot_id', '')
+        steps = data.get('steps', 1)
+        modules = get_v718_modules()
+        m174 = modules['m174']()
+        result = m174.resume_execution(snapshot_id, steps)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718/sandbox/snapshots', methods=['GET'])
+def v718_sandbox_snapshots():
+    """M174 List all snapshots"""
+    try:
+        modules = get_v718_modules()
+        m174 = modules['m174']()
+        result = m174.snapshot_store.list_snapshots()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718/sandbox/isolation/activate', methods=['POST'])
+def v718_isolation_activate():
+    """M174 Activate dual isolation"""
+    try:
+        modules = get_v718_modules()
+        m174 = modules['m174']()
+        result = m174.activate_isolation()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718/sandbox/isolation/check', methods=['POST'])
+def v718_isolation_check():
+    """M174 Check isolation policy"""
+    try:
+        data = request.json or {}
+        modules = get_v718_modules()
+        m174 = modules['m174']()
+        result = m174.check_isolation(
+            operation=data.get('operation', 'compute'),
+            resource_type=data.get('resource_type', 'cpu'),
+            amount=data.get('amount', 1)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718/sandbox/isolation/deactivate', methods=['POST'])
+def v718_isolation_deactivate():
+    """M174 Deactivate dual isolation"""
+    try:
+        modules = get_v718_modules()
+        m174 = modules['m174']()
+        result = m174.isolation_manager.deactivate()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718/sandbox/execute/begin', methods=['POST'])
+def v718_execution_begin():
+    """M174 Begin resource-bounded execution"""
+    try:
+        modules = get_v718_modules()
+        m174 = modules['m174']()
+        result = m174.begin_bounded_execution()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718/sandbox/execute/consume', methods=['POST'])
+def v718_execution_consume():
+    """M174 Consume resources"""
+    try:
+        data = request.json or {}
+        modules = get_v718_modules()
+        m174 = modules['m174']()
+        result = m174.consume_resource(
+            cpu_cycles=data.get('cpu_cycles', 1),
+            memory_mb=data.get('memory_mb', 0)
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718/sandbox/execute/recover', methods=['POST'])
+def v718_execution_recover():
+    """M174 Recover circuit breaker"""
+    try:
+        modules = get_v718_modules()
+        m174 = modules['m174']()
+        result = m174.resource_executor.try_recover()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718/sandbox/audit', methods=['GET'])
+def v718_sandbox_audit():
+    """M174 Query audit log"""
+    try:
+        event_type = request.args.get('event_type')
+        limit = int(request.args.get('limit', 20))
+        modules = get_v718_modules()
+        m174 = modules['m174']()
+        result = m174.auditor.query(event_type=event_type, limit=limit)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# --- v7.18 API: M175 SafetyShield ---
+
+@app.route('/api/v718/safety/pii/scan', methods=['POST'])
+def v718_pii_scan():
+    """M175 Scan PII in text"""
+    try:
+        data = request.json or {}
+        text = data.get('text', '')
+        modules = get_v718_modules()
+        m175 = modules['m175']()
+        result = m175.scan_pii(text)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718/safety/pii/mask', methods=['POST'])
+def v718_pii_mask():
+    """M175 Detect and mask PII"""
+    try:
+        data = request.json or {}
+        text = data.get('text', '')
+        modules = get_v718_modules()
+        m175 = modules['m175']()
+        result = m175.mask_pii(text)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718/safety/compliance/audit', methods=['POST'])
+def v718_compliance_audit():
+    """M175 Audit text compliance"""
+    try:
+        data = request.json or {}
+        text = data.get('text', '')
+        modules = get_v718_modules()
+        m175 = modules['m175']()
+        result = m175.audit_compliance(text)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718/safety/compliance/filter', methods=['POST'])
+def v718_compliance_filter():
+    """M175 Filter output text"""
+    try:
+        data = request.json or {}
+        text = data.get('text', '')
+        modules = get_v718_modules()
+        m175 = modules['m175']()
+        result = m175.filter_output(text)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718/safety/pipeline', methods=['POST'])
+def v718_safety_pipeline():
+    """M175 Full content wall pipeline"""
+    try:
+        data = request.json or {}
+        input_text = data.get('input_text', '')
+        output_text = data.get('output_text', '')
+        modules = get_v718_modules()
+        m175 = modules['m175']()
+        result = m175.full_pipeline(input_text, output_text)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# --- v7.18 Theorem & State ---
+
+@app.route('/api/v718/theorem/<theorem_id>', methods=['GET'])
+def v718_theorem(theorem_id):
+    """v7.18 Get theorem by ID (T151-T156)"""
+    try:
+        if theorem_id in _V718_THEOREMS:
+            return jsonify({
+                'id': theorem_id,
+                'statement': _V718_THEOREMS[theorem_id],
+                'version': 'v7.18'
+            })
+        return jsonify({'error': f'unknown theorem: {theorem_id}',
+                       'available': list(_V718_THEOREMS.keys())}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718/theorems', methods=['GET'])
+def v718_theorems():
+    """v7.18 Verify all theorems (T151-T156)"""
+    try:
+        modules = get_v718_modules()
+        results = {}
+        all_verified = True
+        for key in ['m174', 'm175']:
+            mod = modules.get(key)
+            if mod:
+                t = mod().verify_theorems()
+                for tid, tdata in t.items():
+                    if isinstance(tdata, dict):
+                        results[tid] = tdata
+                        if not tdata.get('verified', False):
+                            all_verified = False
+        return jsonify(_to_native({
+            'theorems': results,
+            'all_verified': all_verified
+        }))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718/state', methods=['GET'])
+def v718_state():
+    """v7.18 Full State"""
+    try:
+        data = get_v718_data()
+        if data is None:
+            return jsonify(_v718_state)
+        return jsonify(_to_native(data))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v718_test', methods=['GET'])
+def v718_test():
+    return jsonify({'status': 'v718_route_works'})
+
 # ==================== SSE 流式生成器 ====================
 def _chat_stream_generator(data):
     """SSE 流式生成器 - 用于 /api/chat?stream=true"""
@@ -9242,11 +9561,11 @@ def get_v717_modules():
         with _v717_modules_lock:
             if not hasattr(app, '_v717_modules') or app._v717_modules is None:
                 try:
-                    from M171_UFMLambdaUniverse import get_instance as get_m171
-                    from M172_TYFormalizer import get_instance as get_m172
-                    from M173_UFMRISCVArchitect import get_instance as get_m173
+                    from M171_UFMLambdaUniverse import UFMLambdaUniverse as _M171
+                    from M172_TYFormalizer import TYFormalizer as _M172
+                    from M173_UFMRISCVArchitect import UFMRISCVArchitect as _M173
                     app._v717_modules = {
-                        'm171': get_m171, 'm172': get_m172, 'm173': get_m173,
+                        'm171': _M171.get_instance, 'm172': _M172.get_instance, 'm173': _M173.get_instance,
                     }
                     print("  v7.17 - M171-M173: lambda-universe + TY-formalization + UFM-RISC-V")
                 except Exception as e:
@@ -9462,3 +9781,42 @@ def v717_state():
         return jsonify(_to_native(data))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+if __name__ == '__main__':
+    print("=" * 60)
+    print("🌌 统一太乙系统 Web 服务 (Phase 2 具身+心架构)")
+    print("   前端: http://localhost:5000")
+    print("   API:  http://localhost:5000/api/chat")
+    print("   Phase 2 新增API:")
+    print("   前五识工具:")
+    print("   - /api/tools/list     (前五识工具列表)")
+    print("   - /api/tools/execute  (执行单个工具)")
+    print("   - /api/tools/batch    (批量执行工具)")
+    print("   - /api/tools/audit    (审计日志)")
+    print("   第七识审计:")
+    print("   - /api/manas/audit     (审计输出)")
+    print("   - /api/manas/distinguish (自我/非我区分)")
+    print("   - /api/manas/stats     (审计统计)")
+    print("   UFO² 具身执行层:")
+    print("   - /api/ufo2/status     (具身层状态)")
+    print("   - /api/ufo2/execute    (执行桌面任务)")
+    print("   - /api/ufo2/app_control (应用控制)")
+    print("   - /api/ufo2/capture    (截图)")
+    print("   - /api/ufo2/ui_tree    (UI树)")
+    print("   - /api/ufo2/tools      (工具列表)")
+    print("   增强API:")
+    print("   - /api/rag/status    (RAG知识库状态)")
+    print("   - /api/rag/search?q=关键词   (知识检索)")
+    print("   - /api/rag/add       (添加文档)")
+    print("   - /api/memory/status (记忆系统状态)")
+    print("   - /api/enhancer/status (增强器统计)")
+    print("=" * 60)
+
+    # 预热 AGI 系统
+    try:
+        get_agi_system()
+    except Exception as e:
+        print(f"⚠️ AGI 系统预热失败: {e}")
+
+    app.run(host='0.0.0.0', port=5001, debug=False, threaded=True)

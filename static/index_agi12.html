@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taiyi-AGI (太乙因果机) 17.0 v7.17 — λ宇宙·TY形式化·UFM-RISC-V具身架构·复合体理学v3.12</title>
+<title>Taiyi-AGI (太乙因果机) 17.1 v7.18 — 沙箱增强·安全护盾·复合体理学v3.12</title>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 
 <style>
@@ -3692,6 +3692,46 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         <div class="v77-row">
           <div class="v77-label">具身完备</div>
           <div class="v77-badge" id="v717-embodied">—</div>
+        </div>
+      </div>
+
+      <!-- v7.18 UFM-RISC-V沙箱增强 -->
+      <div class="panel-section panel-v717" id="sandbox-panel" data-hint="M174 沙箱增强：执行快照+断点续跑+VM双重隔离+资源有界执行+熔断，T151-T153">
+        <div class="v77-title" style="font-size:11px">🛡️ 沙箱增强</div>
+        <div class="v77-row">
+          <div class="v77-label">快照数</div>
+          <div class="v77-badge" id="v718-snapshots">0</div>
+          <div class="v77-label">断点</div>
+          <div class="v77-badge" id="v718-breakpoints">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">双重隔离</div>
+          <div class="v77-badge" id="v718-isolation">—</div>
+          <div class="v77-label">泄露概率</div>
+          <div class="v77-badge" id="v718-leak-prob">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">熔断器</div>
+          <div class="v77-badge" id="v718-breaker">closed</div>
+          <div class="v77-label">熔断次数</div>
+          <div class="v77-badge" id="v718-trips">0</div>
+        </div>
+      </div>
+
+      <!-- v7.18 安全护盾 -->
+      <div class="panel-section panel-v717" id="safety-shield-panel" data-hint="M175 安全护盾：PII检测+合规审查+内容墙，输入→PII脱敏→M88类型检查→输出合规审查→响应，T154-T156">
+        <div class="v77-title" style="font-size:11px">🔒 安全护盾</div>
+        <div class="v77-row">
+          <div class="v77-label">PII类别</div>
+          <div class="v77-badge" id="v718-pii-categories">7</div>
+          <div class="v77-label">审查类别</div>
+          <div class="v77-badge" id="v718-compliance-categories">7</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">已处理</div>
+          <div class="v77-badge" id="v718-processed">0</div>
+          <div class="v77-label">M88桥接</div>
+          <div class="v77-badge" id="v718-m88-bridge">—</div>
         </div>
       </div>
 
@@ -8587,6 +8627,8 @@ function updateV72Panels(data) {
   if (data.v711) updateV711Panels(data);
   // v7.17面板更新（λ宇宙·TY形式化·UFM-RISC-V具身架构M171-M173）
   if (data.v717) updateV717Panels(data);
+  // v7.18面板更新（沙箱增强·安全护盾M174-M175）
+  if (data.v718) updateV718Panels(data);
   // v7.1人机融合层面板更新
   if (data.v71) updateV71Panels(data);
 }
@@ -9638,6 +9680,57 @@ function updateV717Panels(data) {
     if (embEl) {
       embEl.textContent = emb.total_interactions > 0 ? '交互中' : '完备✓';
       embEl.style.color = '#34d399';
+    }
+  }
+}
+
+// ==================== v7.18 沙箱增强·安全护盾 面板更新函数 ====================
+
+function _v718_set(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function updateV718Panels(data) {
+  if (!data) return;
+  const v718 = data.v718 || data;
+
+  // M174 沙箱增强
+  const m174 = v718.m174;
+  if (m174) {
+    const ss = m174.snapshot_store || {};
+    _v718_set('v718-snapshots', ss.total_snapshots || 0);
+    const re = m174.resume_engine || {};
+    _v718_set('v718-breakpoints', re.breakpoint_count || 0);
+    const iso = m174.isolation || {};
+    const isoEl = document.getElementById('v718-isolation');
+    if (isoEl) {
+      isoEl.textContent = iso.isolation_active ? '活跃✓' : '未激活';
+      isoEl.style.color = iso.isolation_active ? '#34d399' : '#94a3b8';
+    }
+    const leakEl = document.getElementById('v718-leak-prob');
+    if (leakEl && iso.lambda_config && iso.os_config) {
+      const lp = (iso.lambda_config.leak_probability || 0) * (iso.os_config.leak_probability || 0);
+      leakEl.textContent = lp.toExponential(1);
+    }
+    const rx = m174.resource_executor || {};
+    _v718_set('v718-breaker', rx.breaker_state || 'closed');
+    _v718_set('v718-trips', rx.breaker_trips || 0);
+  }
+
+  // M175 安全护盾
+  const m175 = v718.m175;
+  if (m175) {
+    const pii = m175.pii_detector || {};
+    _v718_set('v718-pii-categories', (pii.supported_categories || []).length);
+    const comp = m175.compliance_auditor || {};
+    _v718_set('v718-compliance-categories', (comp.categories || []).length);
+    const cw = m175.content_wall || {};
+    _v718_set('v718-processed', cw.total_processed || 0);
+    const m88El = document.getElementById('v718-m88-bridge');
+    if (m88El) {
+      m88El.textContent = m175.m88_bridge ? '已连接✓' : '未连接';
+      m88El.style.color = m175.m88_bridge ? '#34d399' : '#94a3b8';
     }
   }
 }
