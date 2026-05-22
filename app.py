@@ -849,6 +849,8 @@ def chat_v2():
             'v715': get_v715_data() or _v715_state,
             # v7.16新增：八论合一·文明治理·可计算性·拓扑斯·缘起性空（M163-M170）
             'v716': get_v716_data() or _v716_state,
+            # v7.17新增：λ宇宙+TY形式化+UFM-RISC-V具身架构（M171-M173）
+            'v717': get_v717_data() or _v717_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
         }))
@@ -1090,8 +1092,10 @@ def goal_mode():
             'v715': get_v715_data() or _v715_state,
             # v7.16新增：八论合一·文明治理·可计算性·拓扑斯·缘起性空（M163-M170）
             'v716': get_v716_data() or _v716_state,
+            # v7.17新增：λ宇宙+TY形式化+UFM-RISC-V具身架构（M171-M173）
+            'v717': get_v717_data() or _v717_state,
             'version': '12.0',
-            'modules_count': 170
+            'modules_count': 173
         }
 
         # 再次确保所有字段都是原生类型
@@ -9184,6 +9188,277 @@ def v716_state():
         data = get_v716_data()
         if data is None:
             return jsonify(_v716_state)
+        return jsonify(_to_native(data))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.17 λ宇宙·TY形式化·UFM-RISC-V具身架构 ====================
+
+_v717_state = {
+    'lambda_universe': {
+        'version': '1.0.0',
+        'status': 'active',
+        'modules': ['M171'],
+        'theorems': ['T141', 'T142', 'T143', 'T144'],
+        'predictions': []
+    },
+    'ty_formalization': {
+        'version': '1.0.0',
+        'status': 'active',
+        'modules': ['M172'],
+        'theorems': ['T145', 'T146', 'T147'],
+        'predictions': []
+    },
+    'ufm_riscv_architecture': {
+        'version': '1.0.0',
+        'status': 'active',
+        'modules': ['M173'],
+        'theorems': ['T148', 'T149', 'T150'],
+        'predictions': []
+    }
+}
+
+_V717_THEOREMS = {
+    'T141': 'Theorem (Self-Referential Completeness): Y combinator is the unique fixed-point operator satisfying self-referential closure',
+    'T142': 'Theorem (Observation is Reduction): Quantum observation ≡ β-reduction, consciousness = reduction subject',
+    'T143': 'Theorem (No-Clone): No total-domain Clone operator exists (diagonal paradox proof)',
+    'T144': 'Theorem (UFM Uniqueness): UFM is the minimal formal system satisfying self-reference + observation + no-clone',
+    'T145': 'Theorem (Relation Reality Mapping): TY relation reality ↦ UFM application structure (M N)',
+    'T146': 'Theorem (Layer Promotion): Terms in L_n can be promoted to L_{n+1} via β-reduction',
+    'T147': 'Theorem (Meta-Method Convergence): M = Y(upgrade) produces convergent meta-methodology sequence',
+    'T148': 'Theorem (Von Neumann Bankruptcy): VN entity+mutation assumptions fundamentally conflict with TY relation reality',
+    'T149': 'Theorem (Lambda Necessity): Three independent arguments establish λ-calculus as the unique AGI foundation',
+    'T150': 'Theorem (Embodied Completeness): Screen(skin) + Touch(observation) = universal embodied interface',
+}
+
+_V717_PREDICTIONS = {}
+
+_v717_modules_lock = threading.Lock()
+
+def get_v717_modules():
+    """v7.17 Lambda Universe + TY Formalization + UFM-RISC-V Thread-safe Lazy Load"""
+    if not hasattr(app, '_v717_modules') or app._v717_modules is None:
+        with _v717_modules_lock:
+            if not hasattr(app, '_v717_modules') or app._v717_modules is None:
+                try:
+                    from M171_UFMLambdaUniverse import get_instance as get_m171
+                    from M172_TYFormalizer import get_instance as get_m172
+                    from M173_UFMRISCVArchitect import get_instance as get_m173
+                    app._v717_modules = {
+                        'm171': get_m171, 'm172': get_m172, 'm173': get_m173,
+                    }
+                    print("  v7.17 - M171-M173: lambda-universe + TY-formalization + UFM-RISC-V")
+                except Exception as e:
+                    print(f"  v7.17 module loading failed: {e}")
+                    app._v717_modules = {}
+    return app._v717_modules
+
+
+def get_v717_data():
+    """Get v7.17 data"""
+    modules = get_v717_modules()
+    if modules is None:
+        return None
+    try:
+        data = {}
+        for key in ['m171', 'm172', 'm173']:
+            mod = modules.get(key)
+            if mod:
+                data[key] = mod().get_state()
+        return data
+    except Exception:
+        pass
+    return None
+
+
+# --- v7.17 API ---
+
+@app.route('/api/v717/lambda/reduce', methods=['POST'])
+def v717_lambda_reduce():
+    """M171 β-reduction engine"""
+    try:
+        data = request.json or {}
+        expr = data.get('expression', '')
+        max_steps = data.get('max_steps', 100)
+        modules = get_v717_modules()
+        m171 = modules['m171']()
+        term = m171.parse_simple(expr)
+        if term is None:
+            return jsonify({'error': f'Cannot parse: {expr}', 'suggestion': 'Use λx.M or (M N) syntax'}), 400
+        result = m171.reduce(term, max_steps)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v717/lambda/theorems', methods=['GET'])
+def v717_lambda_theorems():
+    """M171 Verify T141-T144 theorems"""
+    try:
+        modules = get_v717_modules()
+        m171 = modules['m171']()
+        result = m171.verify_theorems()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v717/lambda/observe', methods=['POST'])
+def v717_lambda_observe():
+    """M171 Observation = Reduction (T142)"""
+    try:
+        data = request.json or {}
+        expr = data.get('expression', '')
+        context = data.get('context', '')
+        modules = get_v717_modules()
+        m171 = modules['m171']()
+        term = m171.parse_simple(expr)
+        if term is None:
+            return jsonify({'error': f'Cannot parse: {expr}'}), 400
+        result = m171.observation.observe(term, context)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v717/ty/formalize', methods=['POST'])
+def v717_ty_formalize():
+    """M172 TY concept → UFM formalization"""
+    try:
+        data = request.json or {}
+        ty_id = data.get('ty_id', '')
+        modules = get_v717_modules()
+        m172 = modules['m172']()
+        result = m172.formalize(ty_id)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v717/ty/interpret', methods=['POST'])
+def v717_ty_interpret():
+    """M172 TY soft-layer interpretation"""
+    try:
+        data = request.json or {}
+        ty_id = data.get('ty_id', '')
+        domain = data.get('domain', 'all')
+        modules = get_v717_modules()
+        m172 = modules['m172']()
+        result = m172.softlayer.interpret(ty_id, domain)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v717/ty/promote', methods=['POST'])
+def v717_ty_promote():
+    """M172 Layer promotion (T146)"""
+    try:
+        data = request.json or {}
+        expr = data.get('expression', '')
+        from_layer = data.get('from_layer', 'L1_Syntax')
+        modules = get_v717_modules()
+        m172 = modules['m172']()
+        term = m172.hardcore.get_mapping("1.1")
+        from M172_TYFormalizer import TYLayer
+        layer_map = {l.value: l for l in TYLayer}
+        layer = layer_map.get(from_layer, TYLayer.L1_SYNTAX)
+        if term and term.lambda_term:
+            result = m172.promoter.promote(term.lambda_term, layer)
+        else:
+            from M171_UFMLambdaUniverse import Var, Lam, App
+            sample = App(Lam("x", Var("x")), Var("y"))
+            result = m172.promoter.promote(sample, layer)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v717/riscv/bankruptcy', methods=['GET'])
+def v717_riscv_bankruptcy():
+    """M173 Von Neumann Bankruptcy Analysis (T148)"""
+    try:
+        modules = get_v717_modules()
+        m173 = modules['m173']()
+        result = m173.vn_analyzer.analyze()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v717/riscv/necessity', methods=['GET'])
+def v717_riscv_necessity():
+    """M173 Lambda Necessity Three Arguments (T149)"""
+    try:
+        modules = get_v717_modules()
+        m173 = modules['m173']()
+        result = m173.lambda_prover.prove()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v717/riscv/architecture', methods=['GET'])
+def v717_riscv_architecture():
+    """M173 UFM-RISC-V Four-Layer Heterogeneous Architecture"""
+    try:
+        modules = get_v717_modules()
+        m173 = modules['m173']()
+        result = m173.get_architecture_overview()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v717/riscv/isa', methods=['GET'])
+def v717_riscv_isa():
+    """M173 UFM-RISC-V ISA Extensions"""
+    try:
+        modules = get_v717_modules()
+        m173 = modules['m173']()
+        result = m173.isa.get_instruction_set()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v717/riscv/embodied', methods=['GET'])
+def v717_riscv_embodied():
+    """M173 Embodied Completeness Theorem (T150)"""
+    try:
+        modules = get_v717_modules()
+        m173 = modules['m173']()
+        result = m173.embodied.demonstrate()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v717/theorem/<theorem_id>', methods=['GET'])
+def v717_theorem(theorem_id):
+    """v7.17 Get theorem by ID (T141-T150)"""
+    try:
+        all_theorems = {**_V717_THEOREMS}
+        if theorem_id in all_theorems:
+            return jsonify({
+                'id': theorem_id,
+                'statement': all_theorems[theorem_id],
+                'version': 'v7.17'
+            })
+        return jsonify({'error': f'unknown theorem: {theorem_id}',
+                       'available': list(all_theorems.keys())}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v717/state', methods=['GET'])
+def v717_state():
+    """v7.17 Full State"""
+    try:
+        data = get_v717_data()
+        if data is None:
+            return jsonify(_v717_state)
         return jsonify(_to_native(data))
     except Exception as e:
         return jsonify({'error': str(e)}), 500

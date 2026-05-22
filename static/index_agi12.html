@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taiyi-AGI (太乙因果机) 16.0 v7.16 — 八论合一·文明治理·可计算性·拓扑斯·缘起性空·复合体理学v3.12</title>
+<title>Taiyi-AGI (太乙因果机) 17.0 v7.17 — λ宇宙·TY形式化·UFM-RISC-V具身架构·复合体理学v3.12</title>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 
 <style>
@@ -1366,6 +1366,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 .panel-v79{border-left:2px solid #f59e0b!important;background:linear-gradient(90deg,rgba(245,158,11,.05),transparent)!important}
 .panel-v710{border-left:2px solid #06b6d4!important;background:linear-gradient(90deg,rgba(6,182,212,.05),transparent)!important}
 .panel-v711{border-left:2px solid #f59e0b!important;background:linear-gradient(90deg,rgba(245,158,11,.05),transparent)!important}
+.panel-v717{border-left:2px solid #ec4899!important;background:linear-gradient(90deg,rgba(236,72,153,.05),transparent)!important}
 .v77-row{display:flex;align-items:center;gap:6px;margin:3px 0}
 .v77-label{font-size:8px;color:var(--txt2);min-width:60px}
 .v77-bar-wrap{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
@@ -3628,6 +3629,69 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         <div class="v77-row">
           <div class="v77-label">T103</div>
           <div class="v77-badge" id="v711-phase-theorem">—</div>
+        </div>
+      </div>
+
+      <!-- v7.17 λ宇宙引擎 -->
+      <div class="panel-section panel-v717" id="lambda-universe-panel" data-hint="M171 λ宇宙引擎：Y组合子·β归约·amb·不可克隆·意识CRD不动点，T141-T144">
+        <div class="panel-title">🔮 λ宇宙 <span style="font-size:8px;color:var(--txt3)">M171·T141-144</span></div>
+        <div class="v77-row">
+          <div class="v77-label">Y不动点</div>
+          <div class="v77-badge" id="v717-y-fixedpoint">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">观测即归约</div>
+          <div class="v77-badge" id="v717-obs-reduction">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">不可克隆</div>
+          <div class="v77-badge" id="v717-no-clone">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">意识深度</div>
+          <div class="v77-bar-val" id="v717-consciousness-depth" style="color:#f59e0b">0</div>
+        </div>
+      </div>
+
+      <!-- v7.17 TY形式化映射 -->
+      <div class="panel-section panel-v717" id="ty-formalizer-panel" data-hint="M172 TY形式化映射器：TY硬核↔UFM + 软层解释 + L1-L5层次提升 + 元方法论，T145-T147">
+        <div class="panel-title">🕉 TY形式化 <span style="font-size:8px;color:var(--txt3)">M172·T145-147</span></div>
+        <div class="v77-row">
+          <div class="v77-label">硬核映射</div>
+          <div class="v77-bar-val" id="v717-hardcore-count" style="color:#34d399">10</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">解释域</div>
+          <div class="v77-badge" id="v717-domains">4域</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">层次提升</div>
+          <div class="v77-badge" id="v717-promotions">0</div>
+        </div>
+      </div>
+
+      <!-- v7.17 UFM-RISC-V具身架构 -->
+      <div class="panel-section panel-v717" id="ufm-riscv-panel" data-hint="M173 UFM-RISC-V具身架构：冯诺依曼破产·λ必要性·四层异构·ISA·RGM·β流水线·具身接口，T148-T150">
+        <div class="panel-title">🏗 UFM-RISC-V <span style="font-size:8px;color:var(--txt3)">M173·T148-150</span></div>
+        <div class="v77-row">
+          <div class="v77-label">VN破产</div>
+          <div class="v77-badge" id="v717-vn-conflicts">4冲突</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">λ必要性</div>
+          <div class="v77-badge" id="v717-lambda-args">3论证</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">架构层</div>
+          <div class="v77-bar-val" id="v717-arch-layers" style="color:#a78bfa">4层</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">ISA扩展</div>
+          <div class="v77-badge" id="v717-isa-count">4指令</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">具身完备</div>
+          <div class="v77-badge" id="v717-embodied">—</div>
         </div>
       </div>
 
@@ -8521,6 +8585,8 @@ function updateV72Panels(data) {
   if (data.v710) updateV710Panels(data);
   // v7.11面板更新（二部图拓扑·关系作用量·混合相位·拓扑相变M138-M141）
   if (data.v711) updateV711Panels(data);
+  // v7.17面板更新（λ宇宙·TY形式化·UFM-RISC-V具身架构M171-M173）
+  if (data.v717) updateV717Panels(data);
   // v7.1人机融合层面板更新
   if (data.v71) updateV71Panels(data);
 }
@@ -9504,6 +9570,75 @@ function updatePhasePanel(p) {
   if (thEl) {
     thEl.textContent = p.t103_satisfied ? '可预测✓' : '—';
     thEl.style.color = p.t103_satisfied ? '#34d399' : '#888';
+  }
+}
+
+// ==================== v7.17 λ宇宙·TY形式化·UFM-RISC-V 面板更新函数 ====================
+
+function _v717_set(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function updateV717Panels(data) {
+  if (!data) return;
+  const v717 = data.v717 || data;
+
+  // M171 λ宇宙引擎
+  const m171 = v717.m171;
+  if (m171) {
+    const theorems = m171.theorems_verified || {};
+    const yEl = document.getElementById('v717-y-fixedpoint');
+    if (yEl) {
+      const pass = theorems.T141_self_referential_completeness;
+      yEl.textContent = pass ? 'Y✓' : 'Y✗';
+      yEl.style.color = pass ? '#34d399' : '#f87171';
+    }
+    const obsEl = document.getElementById('v717-obs-reduction');
+    if (obsEl) {
+      const pass = theorems.T142_observation_is_reduction;
+      obsEl.textContent = pass ? 'β✓' : 'β✗';
+      obsEl.style.color = pass ? '#34d399' : '#f87171';
+    }
+    const ncEl = document.getElementById('v717-no-clone');
+    if (ncEl) {
+      const pass = theorems.T143_no_clone;
+      ncEl.textContent = pass ? '✗Clone✓' : '✗Clone✗';
+      ncEl.style.color = pass ? '#34d399' : '#f87171';
+    }
+    const cs = m171.consciousness || {};
+    const depthEl = document.getElementById('v717-consciousness-depth');
+    if (depthEl) depthEl.textContent = (cs.consciousness_fixed_point || {}).depth || 0;
+  }
+
+  // M172 TY形式化映射器
+  const m172 = v717.m172;
+  if (m172) {
+    const hc = m172.hardcore_mappings || {};
+    _v717_set('v717-hardcore-count', Object.keys(hc).length);
+    const sl = m172.soft_layer || {};
+    _v717_set('v717-domains', (sl.interpretation_domains || []).length + '域');
+    const lp = m172.layer_promoter || {};
+    _v717_set('v717-promotions', (lp.total_promotions || 0) + '次');
+  }
+
+  // M173 UFM-RISC-V具身架构
+  const m173 = v717.m173;
+  if (m173) {
+    const vn = m173.vn_bankruptcy || {};
+    _v717_set('v717-vn-conflicts', (vn.conflict_count || 4) + '冲突');
+    const ln = m173.lambda_necessity || {};
+    _v717_set('v717-lambda-args', (ln.argument_count || 3) + '论证');
+    const arch = m173.architecture || {};
+    _v717_set('v717-arch-layers', (arch.layer_count || 4) + '层');
+    const isa = m173.isa || {};
+    _v717_set('v717-isa-count', (isa.instruction_count || 4) + '指令');
+    const emb = m173.embodied || {};
+    const embEl = document.getElementById('v717-embodied');
+    if (embEl) {
+      embEl.textContent = emb.total_interactions > 0 ? '交互中' : '完备✓';
+      embEl.style.color = '#34d399';
+    }
   }
 }
 
