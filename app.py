@@ -8432,6 +8432,68 @@ _v718_state = {
     }
 }
 
+# ═══════════════════════════════════════════
+# GC (Governance Coin) 调整 API
+# ═══════════════════════════════════════════
+
+import json as _gc_json
+
+_GC_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.workbuddy', 'gc_balance.json')
+
+def _gc_load():
+    try:
+        with open(_GC_FILE, 'r', encoding='utf-8') as f:
+            return _gc_json.load(f)
+    except:
+        return {'balance': 1000, 'history': []}
+
+def _gc_save(data):
+    os.makedirs(os.path.dirname(_GC_FILE), exist_ok=True)
+    with open(_GC_FILE, 'w', encoding='utf-8') as f:
+        _gc_json.dump(data, f, ensure_ascii=False, indent=2)
+
+@app.route('/api/gc/balance', methods=['GET'])
+def gc_get_balance():
+    """获取当前GC余额"""
+    data = _gc_load()
+    return jsonify({'balance': data.get('balance', 1000), 'history': data.get('history', [])})
+
+@app.route('/api/gc/adjust', methods=['POST'])
+def gc_adjust():
+    """调整GC余额：{delta: +10或-10, reason: '用户打分'}"""
+    try:
+        body = request.get_json(force=True, silent=True) or {}
+        delta = int(body.get('delta', 0))
+        reason = str(body.get('reason', ''))[:200]
+        if delta == 0:
+            return jsonify({'error': 'delta must be non-zero'}), 400
+        data = _gc_load()
+        old = data.get('balance', 1000)
+        new = max(0, old + delta)  # 不允许负数
+        data['balance'] = new
+        if 'history' not in data:
+            data['history'] = []
+        import time as _gc_time
+        data['history'].append({
+            'ts': _gc_time.time(),
+            'delta': delta,
+            'old': old,
+            'new': new,
+            'reason': reason,
+        })
+        data['history'] = data['history'][-100:]
+        _gc_save(data)
+        return jsonify({'balance': new, 'delta': delta, 'old': old})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/gc/reset', methods=['POST'])
+def gc_reset():
+    """重置GC余额到1000"""
+    _gc_save({'balance': 1000, 'history': []})
+    return jsonify({'balance': 1000})
+
+
 _V718_THEOREMS = {
     'T151': 'Theorem (Snapshot Completeness): Any execution state can be losslessly snapshotted and precisely restored',
     'T152': 'Theorem (Dual Isolation): Inner λ-sandbox + Outer OS-sandbox ≡ product topology S_λ × S_OS, leak probability ≤ ε_λ · ε_OS',
@@ -9767,10 +9829,12 @@ _V714_THEOREMS = {
 }
 
 
+_v714_modules_lock = threading.Lock()
+
 def get_v714_modules():
     """获取或初始化 v7.14 M78内生证明搜索模块（线程安全懒加载）"""
     if not hasattr(app, '_v714_modules') or app._v714_modules is None:
-        with _module_lock:
+        with _v714_modules_lock:
             if not hasattr(app, '_v714_modules') or app._v714_modules is None:
                 try:
                     from M78_HoTTReasoningEngine import get_instance as get_m78_v3
@@ -9930,10 +9994,12 @@ _V715_THEOREMS = {
 }
 
 
+_v715_modules_lock = threading.Lock()
+
 def get_v715_modules():
     """v7.15 Hexadic Dual Convolution Module Thread-safe Lazy Load"""
     if not hasattr(app, '_v715_modules') or app._v715_modules is None:
-        with _module_lock:
+        with _v715_modules_lock:
             if not hasattr(app, '_v715_modules') or app._v715_modules is None:
                 try:
                     from M157_JinlingGridConvolution import get_instance as get_m157

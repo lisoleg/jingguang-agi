@@ -11,6 +11,22 @@ import subprocess
 import webbrowser
 from time import sleep
 
+# Fix Windows console encoding for emoji support
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
+def safe_print(*args, **kwargs):
+    """Print that handles emoji on Windows GBK console."""
+    try:
+        print(*args, **kwargs)
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        # fallback: remove emoji
+        import re
+        msg = " ".join(str(a) for a in args)
+        msg = msg.encode('ascii', errors='ignore').decode('ascii')
+        print(msg, **{k:v for k,v in kwargs.items() if k != 'file'})
+
 print("=" * 60)
 print("🔮 统一太乙系统 - AGI问答系统")
 print("=" * 60)
@@ -37,7 +53,8 @@ if active == "rule_engine":
     print("   要启用真正的LLM能力，请选择以下方案之一：")
     print("")
     print("   【方案1】使用OpenRouter免费LLM（推荐）")
-    print("      1. 访问 https://openrouter.ai/keys 获取免费API KEY")
+    url = "http://localhost:" + str(5000)
+#     print("   访问: localhost:" + str(5000))
     print("      2. 设置环境变量：")
     print("         set OPENROUTER_API_KEY=sk-or-v1-xxxxx")
     print("      3. 重新运行此脚本")
@@ -50,8 +67,8 @@ if active == "rule_engine":
 
 # 2. 启动Flask服务
 print("\n🚀 步骤2: 启动Flask服务...")
-print("   访问地址: <ADDRESS_REMOVED>
-print("   按 Alt+C 停止服务\n")
+# print("   访问地址: <ADDRESS_REMOVED>
+# print("   按 Ctrl+C 停止服务\n")
 
 try:
     from app import app

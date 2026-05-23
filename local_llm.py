@@ -13,6 +13,9 @@ import json
 import requests
 import concurrent.futures
 from typing import Optional, Dict, Any, List
+from dotenv import load_dotenv
+
+load_dotenv()  # 从.env文件加载环境变量
 
 # LM Studio配置（本地优先）
 LM_STUDIO_API_BASE = "http://localhost:1234/v1"

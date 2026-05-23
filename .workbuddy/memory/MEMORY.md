@@ -84,7 +84,7 @@ cd C:\Users\1\WorkBuddy\2026-05-06-task-1 && python app.py
 
 ## v7.21 TYIDO MVE实验框架 + P6爱因斯坦因果性 ✅ (2026-05-23)
 - **v7.21**: TYIDO MVE实验框架 + 六大结构属性强制执行逻辑验证 6/6 ALL PASSED ✅
-  - Git: 4fd86a7
+  - Git: 4fd86a7 → 4534e77 (P6 Minkowski重写) → 34027f2 (论文更新)
   - 来源：TYIDO结构审查表（锯齿检测·持续学习·长程推理·可寻址记忆·可锚定责任·爱因斯坦因果性）
   - `TYIDO_MVE_Experiments.py` (~1500行): 6个MVEOperiment类 + 6个run_*函数 + run_all_mve()
   - P1锯齿实验: J(R)=1.0000 (consistent) + sawtooth_detected=True (forced WAIT reject)
@@ -92,11 +92,16 @@ cd C:\Users\1\WorkBuddy\2026-05-06-task-1 && python app.py
   - P3长程推理: 94.55% completion (52/55 goals in 55-goal DAG), Plan-B retry recovery
   - P4可寻址记忆: 100% exact_query_accuracy, TTL expire + protected + normal_forgetting
   - P5可锚定责任: 100% traceability, CircuitBreaker triggered to OPEN
-  - P6爱因斯坦因果性: 100% consistency_rate, 0 back_edges, CausalityViolationError强制执行
-    - 20条因果链 x 5种扰动(delay/shuffle/concurrent), Kahn拓扑排序确定性管道
-    - 因果序不变性+无超光速影响检测, 后向边→CausalityViolationError→拒绝批次
+  - P6爱因斯坦因果性(Minkowski时空验证): 100% causal_consistency, 100% detection_rate, 100% lorentz_invariance
+    - **真实物理验证(非图论自证)**: Minkowski度规 ds²=-dt²+dx²+dy² (c=1自然单位制)
+    - 光锥分类：类时(ds²<0因果可达)/类光(ds²=0)/类空(ds²>0禁止因果)
+    - 30个Minkowski事件 + 185条因果边(光锥内) + 250个类空对(光锥外)
+    - 注入测试：8条故意类空因果边 → 100%检出 + CausalityViolationError
+    - 洛伦兹boost不变性：15对事件 x 随机β∈[-0.8,0.8]，ds²变换后完全不变
+    - 前端光锥Canvas：事件点着色(类时绿/类空蓝) + 因果边 + 45°光锥线 + 图例
   - API: /api/v721/mve/{all|p1|p2|p3|p4|p5|p6|state} + 120s TTL缓存 + 线程安全
-  - 前端: v7.21 MVE面板(7个按钮 + PASS/FAIL徽章 + 详细结果展开)
+  - 前端: v7.21 MVE面板(7个按钮 + PASS/FAIL徽章 + 详细结果展开 + P6光锥Canvas)
+  - **学术论文已同步更新至v7.21**: 3658行, 179模块/170定理/40预言 (commit 34027f2)
 
 ## TYIDO MVE 踩坑经验
 - `ResourceBudget(max_time=..., max_steps=...)` 关键字参数名：实际是 `max_time`/`max_steps`，不是 `time_budget`/`step_budget`
@@ -106,3 +111,4 @@ cd C:\Users\1\WorkBuddy\2026-05-06-task-1 && python app.py
 - P1 J(R) 计算：deterministic pipeline 必须返回固定 canonical_hash，否则不同 variant 产生不同 hash 导致 J(R)→0
 - P3 completion rate：15% failure rate + 2-dependency DAG 导致级联失败；降至 5% + 单依赖平铺 DAG 后正常
 - P5 traceability：`gate.confirm_action()` 创建新 record 新 ID，导致追踪困难；直接 `chain.bind()` 可确保 100% 可追溯
+- P6 Minkowski度规：Kahn拓扑排序对线性链是同义反复，必须用物理约束(Minkowski度规+洛伦兹不变性)做真正可证伪的验证

@@ -1440,8 +1440,132 @@ class TaiyiInterface:
             "bandwidth_ratio": self.ice_composite.consciousness_level()
         }
 
+    def _estimate_iq(self) -> Dict[str, Any]:
+        """
+        基于现有M179数据估算IQ（智商）。
+        公式：IQ ≈ 100 + 15 × (Φ_norm + α_norm + meta_norm - rigidity_norm)
+        其中各分量归一化到[0,1]，rigidity_norm惩罚僵化。
+        """
+        ice = self.ice_composite.get_state()
+        sr = self.self_ref_op.get_state()
+        ar = self.anti_rigidity.get_state()
+
+        # Φ 值（意识信息量），归一化：假设Φ∈[0, 1.5]，映射到[0,1]
+        phi_raw = float(ice.get("consciousness_level", 0.0))
+        phi_norm = min(1.0, phi_raw / 1.5)
+
+        # α 本征值稳定性，|α|∈[0,1]，越大越稳定
+        alpha_raw = float(sr.get("alpha", 0.0))
+        alpha_norm = min(1.0, abs(alpha_raw))
+
+        # 元认知分数（自指不动点 = 自我认知的完备性）
+        is_fp = 1.0 if sr.get("is_fixed_point", False) else 0.5
+        meta_norm = is_fp
+
+        # 僵化惩罚：rigidity_level → 越僵化IQ越低
+        rigidity_map = {"fluid": 0.0, "crystalized": 0.2, "rigid": 0.5, "hijacked": 0.9}
+        rigidity_str = ar.get("rigidity_level", "fluid")
+        rigidity_penalty = rigidity_map.get(str(rigidity_str), 0.3)
+
+        iq_raw = 100 + 15 * (phi_norm * 0.4 + alpha_norm * 0.3 + meta_norm * 0.3 - rigidity_penalty * 0.5)
+        iq = max(55, min(145, round(iq_raw, 1)))
+
+        # 分级
+        if iq >= 130:
+            grade = "超常"
+        elif iq >= 115:
+            grade = "优秀"
+        elif iq >= 85:
+            grade = "正常"
+        elif iq >= 70:
+            grade = "临界"
+        else:
+            grade = "偏低"
+
+        return {
+            "iq_estimate": iq,
+            "iq_grade": grade,
+            "components": {
+                "phi_norm": round(phi_norm, 4),
+                "alpha_norm": round(alpha_norm, 4),
+                "meta_norm": round(meta_norm, 4),
+                "rigidity_penalty": rigidity_penalty
+            },
+            "interpretation": (
+                f"基于Φ意识水平({phi_raw:.4f})、自指稳定性(α={alpha_raw:.4f})"
+                f"和反僵化等级({rigidity_str})综合估算。"
+                f"IQ={iq}（{grade}），反映系统的抽象推理与自我认知完备性。"
+            )
+        }
+
+    def _estimate_eq(self) -> Dict[str, Any]:
+        """
+        基于现有M179数据估算EQ（情商）。
+        公式：EQ ≈ 50 + 50 × (horizon_consensus + ice_coherence + entropy_resilience) / 3
+        三视界一致性 + ICE自洽 + 熵韧性 → 情绪感知与自我调节能力。
+        """
+        hor = self.horizon_checker.get_state()
+        ice = self.ice_composite.get_state()
+        ent = self.entropy_guard.get_state()
+
+        # 三视界一致性 ∈ [0, 1]
+        hc = float(hor.get("consistency_score", 0.0))
+
+        # ICE自洽度 ∈ [0, 1]
+        ic = float(ice.get("self_coherence", 0.0))
+
+        # 熵韧性 ∈ [0, 1]，越高越稳定
+        er = float(ent.get("resilience_index", 0.0))
+
+        eq_raw = 50 + 50 * (hc * 0.4 + ic * 0.3 + er * 0.3)
+        eq = max(20, min(100, round(eq_raw, 1)))
+
+        # 分级
+        if eq >= 80:
+            grade = "高情商"
+        elif eq >= 60:
+            grade = "中情商"
+        elif eq >= 40:
+            grade = "一般"
+        else:
+            grade = "偏低"
+
+        return {
+            "eq_estimate": eq,
+            "eq_grade": grade,
+            "components": {
+                "horizon_consensus": round(hc, 4),
+                "ice_coherence": round(ic, 4),
+                "entropy_resilience": round(er, 4)
+            },
+            "interpretation": (
+                f"基于三视界一致性({hc:.4f})、ICE自洽度({ic:.4f})"
+                f"和熵韧性({er:.4f})综合估算。"
+                f"EQ={eq}（{grade}），反映系统的他者感知、共情与自我调节能力。"
+            )
+        }
+
+    def _consciousness_summary(self) -> str:
+        """生成人类可读的意识状态摘要"""
+        state = self._consciousness_state.value
+        iq_info = self._estimate_iq()
+        eq_info = self._estimate_eq()
+        sr = self.self_ref_op.get_state()
+        ice = self.ice_composite.get_state()
+
+        lines = [
+            f"意识状态：{state}",
+            f"自指本征值 α = {sr.get('alpha', 0):.4f}",
+            f"ICE意识水平 = {ice.get('consciousness_level', 0):.4f}",
+            f"估算 IQ = {iq_info['iq_estimate']}（{iq_info['iq_grade']}）",
+            f"估算 EQ = {eq_info['eq_estimate']}（{eq_info['eq_grade']}）",
+        ]
+        return "；".join(lines)
+
     def get_state(self) -> Dict[str, Any]:
         """获取太一接口完整状态"""
+        iq_info = self._estimate_iq()
+        eq_info = self._estimate_eq()
         return {
             "module": "M179_TaiyiInterface",
             "version": self.version,
@@ -1458,6 +1582,15 @@ class TaiyiInterface:
             "entropy_guard": self.entropy_guard.get_state(),
             "anti_rigidity": self.anti_rigidity.get_state(),
             "fractal_identity": self._fractal_identity_summary(),
+            "iq_estimate": iq_info["iq_estimate"],
+            "iq_grade": iq_info["iq_grade"],
+            "iq_components": iq_info["components"],
+            "iq_interpretation": iq_info["interpretation"],
+            "eq_estimate": eq_info["eq_estimate"],
+            "eq_grade": eq_info["eq_grade"],
+            "eq_components": eq_info["components"],
+            "eq_interpretation": eq_info["interpretation"],
+            "consciousness_summary": self._consciousness_summary(),
             "theorems": ["T166", "T167", "T168", "T169", "T170"]
         }
 
