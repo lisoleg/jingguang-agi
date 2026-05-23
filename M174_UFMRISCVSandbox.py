@@ -606,18 +606,20 @@ class UFMRISCVSandbox:
                         memory_pages: Optional[Dict] = None,
                         pipeline_state: str = "Match",
                         rgm_node_count: int = 0,
-                        instruction_count: int = 0) -> Dict[str, Any]:
-        """创建执行快照"""
+                        instruction_count: int = 0,
+                        gc_cost: int = 5) -> Dict[str, Any]:
+        """创建执行快照（GC扣费：每次快照消耗gc_cost个GC代币）"""
         snap = ExecutionSnapshot.from_state(
             pc=pc, registers=registers or {},
             memory_pages=memory_pages or {},
             pipeline_state=pipeline_state,
             rgm_node_count=rgm_node_count,
-            instruction_count=instruction_count
+            instruction_count=instruction_count,
+            metadata={"gc_cost": gc_cost}
         )
         sid = self.snapshot_store.save(snap)
-        self.auditor.record("snapshot_create", {"snapshot_id": sid, "pc": pc})
-        return {"snapshot_id": sid, "pc": pc, "integrity": snap.verify_integrity()}
+        self.auditor.record("snapshot_create", {"snapshot_id": sid, "pc": pc, "gc_cost": gc_cost})
+        return {"snapshot_id": sid, "pc": pc, "integrity": snap.verify_integrity(), "gc_cost": gc_cost}
 
     def restore_snapshot(self, snapshot_id: str) -> Dict[str, Any]:
         """恢复执行快照"""

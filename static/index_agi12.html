@@ -3735,6 +3735,75 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         </div>
       </div>
 
+      <!-- v7.19 组织记忆引擎 -->
+      <div class="panel-section panel-v717" id="org-memory-panel" data-hint="M176 组织记忆引擎：向量DB语义检索+本地双层LRU+失败案例库(不可删)+定理提炼+GC账本，T157-T159">
+        <div class="v77-title" style="font-size:11px">🧠 组织记忆</div>
+        <div class="v77-row">
+          <div class="v77-label">向量条目</div>
+          <div class="v77-badge" id="v719-vector-size">0</div>
+          <div class="v77-label">热层/冷层</div>
+          <div class="v77-badge" id="v719-store-layers">0/0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">翻车案例</div>
+          <div class="v77-badge" id="v719-failures">0</div>
+          <div class="v77-label">组织定理</div>
+          <div class="v77-badge" id="v719-org-theorems">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">读/写</div>
+          <div class="v77-badge" id="v719-rw-count">0/0</div>
+          <div class="v77-label">GC罚金</div>
+          <div class="v77-badge" id="v719-gc-penalty">0</div>
+        </div>
+      </div>
+
+      <!-- v7.19 Φ场预算体系 -->
+      <div class="panel-section panel-v717" id="phi-budget-panel" data-hint="M177 四级Φ场预算：GC代币(香火钱)+Φ场分配+生存焦虑+四级守恒，T160-T162">
+        <div class="v77-title" style="font-size:11px">💰 Φ场预算</div>
+        <div class="v77-row">
+          <div class="v77-label">Agent数</div>
+          <div class="v77-badge" id="v719-budget-agents">0</div>
+          <div class="v77-label">总GC</div>
+          <div class="v77-badge" id="v719-total-gc">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">分配周期</div>
+          <div class="v77-badge" id="v719-alloc-cycles">0</div>
+          <div class="v77-label">交易笔数</div>
+          <div class="v77-badge" id="v719-txn-count">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">焦虑模式</div>
+          <div class="v77-badge" id="v719-anxiety-mode">—</div>
+          <div class="v77-label">Φ均值</div>
+          <div class="v77-badge" id="v719-avg-phi">—</div>
+        </div>
+      </div>
+
+      <!-- v7.19 太乙AgentOS -->
+      <div class="panel-section panel-v717" id="agent-os-panel" data-hint="M178 太乙AgentOS：Agent注册表(10000)+消息总线(Lamport)+推理内核(HoTT+刘原理+防火墙)+工作流DAG，T163-T165">
+        <div class="v77-title" style="font-size:11px">🖥️ AgentOS</div>
+        <div class="v77-row">
+          <div class="v77-label">在线Agent</div>
+          <div class="v77-badge" id="v719-os-agents">0</div>
+          <div class="v77-label">总请求</div>
+          <div class="v77-badge" id="v719-os-requests">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">消息数</div>
+          <div class="v77-badge" id="v719-os-messages">0</div>
+          <div class="v77-label">Lamport</div>
+          <div class="v77-badge" id="v719-os-lamport">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">工作流</div>
+          <div class="v77-badge" id="v719-os-workflows">0</div>
+          <div class="v77-label">推理内核</div>
+          <div class="v77-badge" id="v719-os-kernel">—</div>
+        </div>
+      </div>
+
     </div>
     <div id="center-panel">
       <div class="center-header">
@@ -8629,6 +8698,8 @@ function updateV72Panels(data) {
   if (data.v717) updateV717Panels(data);
   // v7.18面板更新（沙箱增强·安全护盾M174-M175）
   if (data.v718) updateV718Panels(data);
+  // v7.19面板更新（组织记忆·Φ场预算·AgentOS M176-M178）
+  if (data.v719) updateV719Panels(data);
   // v7.1人机融合层面板更新
   if (data.v71) updateV71Panels(data);
 }
@@ -9731,6 +9802,92 @@ function updateV718Panels(data) {
     if (m88El) {
       m88El.textContent = m175.m88_bridge ? '已连接✓' : '未连接';
       m88El.style.color = m175.m88_bridge ? '#34d399' : '#94a3b8';
+    }
+  }
+}
+
+// ==================== v7.19 组织记忆·Φ场预算·AgentOS 面板更新函数 ====================
+
+function _v719_set(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function updateV719Panels(data) {
+  if (!data) return;
+  const v719 = data.v719 || data;
+
+  // M176 组织记忆引擎
+  const m176 = v719.m176;
+  if (m176) {
+    const vs = m176.vector_store || {};
+    _v719_set('v719-vector-size', vs.total_entries || vs.size || 0);
+    const ls = m176.local_store || {};
+    const hotSize = ls.hot_size || 0;
+    const coldSize = ls.cold_size || 0;
+    _v719_set('v719-store-layers', hotSize + '/' + coldSize);
+    const fl = m176.failure_library || {};
+    _v719_set('v719-failures', fl.total_cases || fl.count || 0);
+    const to = m176.theorem_organizer || {};
+    _v719_set('v719-org-theorems', to.total_theorems || to.count || 0);
+    _v719_set('v719-rw-count', (m176.read_count || 0) + '/' + (m176.write_count || 0));
+    _v719_set('v719-gc-penalty', fl.total_gc_penalty || 0);
+  }
+
+  // M177 Φ场预算体系
+  const m177 = v719.m177;
+  if (m177) {
+    const alloc = m177.phi_allocator || {};
+    _v719_set('v719-budget-agents', alloc.agent_count || 0);
+    const balances = m177.balances || {};
+    let totalGc = 0;
+    if (Array.isArray(balances)) {
+      balances.forEach(b => { totalGc += (b.total_balance || 0); });
+    }
+    _v719_set('v719-total-gc', Math.round(totalGc));
+    _v719_set('v719-alloc-cycles', m177.allocation_cycles || 0);
+    const txns = m177.recent_transactions || [];
+    _v719_set('v719-txn-count', txns.length || m177.total_transactions || 0);
+    // 焦虑模式 & Φ均值
+    const anxietyEl = document.getElementById('v719-anxiety-mode');
+    if (anxietyEl) {
+      const anxiety = m177.avg_anxiety || 0;
+      if (anxiety > 0.7) {
+        anxietyEl.textContent = '竞争⚡';
+        anxietyEl.style.color = '#f87171';
+      } else if (anxiety > 0.3) {
+        anxietyEl.textContent = '温和';
+        anxietyEl.style.color = '#fbbf24';
+      } else {
+        anxietyEl.textContent = '充裕✓';
+        anxietyEl.style.color = '#34d399';
+      }
+    }
+    _v719_set('v719-avg-phi', m177.avg_phi ? m177.avg_phi.toFixed(1) : '—');
+  }
+
+  // M178 太乙AgentOS
+  const m178 = v719.m178;
+  if (m178) {
+    const reg = m178.registry || {};
+    _v719_set('v719-os-agents', reg.active_count || reg.count || 0);
+    _v719_set('v719-os-requests', m178.total_requests || 0);
+    const bus = m178.message_bus || {};
+    _v719_set('v719-os-messages', bus.total_messages || 0);
+    _v719_set('v719-os-lamport', bus.lamport_clock || 0);
+    const orch = m178.orchestration || {};
+    _v719_set('v719-os-workflows', orch.total_workflows || 0);
+    const kernelEl = document.getElementById('v719-os-kernel');
+    if (kernelEl) {
+      const rk = m178.reasoning_kernel || {};
+      const loaded = rk.modules_loaded || [];
+      if (loaded.length > 0) {
+        kernelEl.textContent = loaded.length + '模✓';
+        kernelEl.style.color = '#34d399';
+      } else {
+        kernelEl.textContent = '待加载';
+        kernelEl.style.color = '#94a3b8';
+      }
     }
   }
 }

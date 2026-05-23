@@ -318,6 +318,7 @@ class ContentWall:
         self.compliance_auditor = compliance_auditor or ComplianceAuditor()
         self._m88 = None
         self._log: List[ContentWallResult] = []
+        self._gc_penalty_total: int = 0  # GC扣罚累计
 
     def set_m88_bridge(self, m88_instance: Any) -> None:
         """设置 M88 桥接（可选）"""
@@ -434,6 +435,16 @@ class ContentWall:
         overall_risk = max(input_result.risk_score, output_result.risk_score)
         blocked = (output_result.action == ContentWallAction.BLOCK)
 
+        # GC扣罚：违规越严重，扣罚越多（对齐文章2治理思路）
+        gc_penalty = 0
+        if blocked:
+            gc_penalty = 50  # 严重违规：重罚
+        elif output_result.action == ContentWallAction.FLAG:
+            gc_penalty = 20  # 标记违规：中罚
+        elif output_result.action == ContentWallAction.MASK:
+            gc_penalty = 5   # PII脱敏：轻罚
+        self._gc_penalty_total += gc_penalty
+
         return {
             "input": {
                 "action": input_result.action.value,
@@ -450,6 +461,7 @@ class ContentWall:
             },
             "overall_risk": overall_risk,
             "blocked": blocked,
+            "gc_penalty": gc_penalty,
             "final_output": None if blocked else output_result.processed_text
         }
 
@@ -457,6 +469,7 @@ class ContentWall:
         return {
             "total_processed": len(self._log),
             "m88_bridge_active": self._m88 is not None,
+            "gc_penalty_total": self._gc_penalty_total,
             "recent_actions": [
                 {"action": r.action.value, "risk_score": r.risk_score}
                 for r in self._log[-10:]

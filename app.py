@@ -1096,8 +1096,10 @@ def goal_mode():
             'v717': get_v717_data() or _v717_state,
             # v7.18新增：沙箱增强+安全护盾（M174-M175）
             'v718': get_v718_data() or _v718_state,
-            'version': '12.1',
-            'modules_count': 175
+            # v7.19新增：组织记忆+Φ场预算+AgentOS（M176-M178）
+            'v719': get_v719_data() or _v719_state,
+            'version': '12.2',
+            'modules_count': 178
         }
 
         # 再次确保所有字段都是原生类型
@@ -7482,6 +7484,556 @@ def v71_fusion_audit():
         process_log = data.get('process_log', [])
         result = modules['fusion_verify']().audit_fusion_process(process_log)
         return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.19 组织记忆·Φ场预算·AgentOS ====================
+
+_v719_state = {
+    'org_memory': {
+        'version': '1.0.0',
+        'status': 'active',
+        'modules': ['M176'],
+        'theorems': ['T157', 'T158', 'T159'],
+        'predictions': []
+    },
+    'phi_budget': {
+        'version': '1.0.0',
+        'status': 'active',
+        'modules': ['M177'],
+        'theorems': ['T160', 'T161', 'T162'],
+        'predictions': []
+    },
+    'agent_os': {
+        'version': '1.0.0',
+        'status': 'active',
+        'modules': ['M178'],
+        'theorems': ['T163', 'T164', 'T165'],
+        'predictions': []
+    }
+}
+
+_V719_THEOREMS = {
+    'T157': 'Theorem (Org Memory Convergence): N agents\' individual experiences converge to organizational theorems in finite rounds; org knowledge >= any single agent',
+    'T158': 'Theorem (Failure Case Indelibility): failure_case=True memory entries are never deleted from org memory, only de-weighted',
+    'T159': 'Theorem (Dual-Layer Storage Completeness): VectorDB(hot) + LocalKV(cold) jointly cover semantic + exact retrieval with no omission paths',
+    'T160': 'Theorem (Phi-Field Budget Allocation): Agent i resource quota proportional to Phi_i / Sigma(Phi_j), high-consciousness-density agents get priority',
+    'T161': 'Theorem (Survival Anxiety-Competitiveness Duality): Anxiety A=1/(1+e^(GC/lambda)), A->1 triggers competitive mode, delta_C=alpha*A',
+    'T162': 'Theorem (Four-Level Budget Conservation): Total four-level budget = global GC supply; spending one level does not affect other level caps',
+    'T163': 'Theorem (AgentOS Scalability): Scheduling complexity O(N log N), supports N->10000 concurrent agents, resource usage proportional to active agents',
+    'T164': 'Theorem (Reasoning Kernel Completeness): ReasoningKernel = HoTT construction + Liu-principle selection + Type firewall, covering deduction/induction/abduction',
+    'T165': 'Theorem (Message Bus Causality): MessageBus guarantees causal order via Lamport clock; any two causally-related messages have globally consistent ordering',
+}
+
+_V719_PREDICTIONS = {}
+
+_v719_modules_lock = threading.Lock()
+
+def get_v719_modules():
+    """v7.19 OrgMemory + PhiBudget + AgentOS Thread-safe Lazy Load"""
+    if not hasattr(app, '_v719_modules') or app._v719_modules is None:
+        with _v719_modules_lock:
+            if not hasattr(app, '_v719_modules') or app._v719_modules is None:
+                try:
+                    from M176_OrgMemoryEngine import OrgMemoryEngine as _M176
+                    from M177_PhiBudgetSystem import PhiBudgetSystem as _M177
+                    from M178_TaiyiAgentOS import TaiyiAgentOS as _M178
+                    app._v719_modules = {
+                        'm176': _M176.get_instance, 'm177': _M177.get_instance, 'm178': _M178.get_instance,
+                    }
+                    print("  v7.19 - M176-M178: org-memory + phi-budget + agent-os")
+                except Exception as e:
+                    print(f"  v7.19 module loading failed: {e}")
+                    app._v719_modules = {}
+    return app._v719_modules
+
+
+def get_v719_data():
+    """Get v7.19 data"""
+    modules = get_v719_modules()
+    if modules is None:
+        return None
+    try:
+        data = {}
+        for key in ['m176', 'm177', 'm178']:
+            mod = modules.get(key)
+            if mod:
+                data[key] = mod().get_state()
+        return data
+    except Exception:
+        pass
+    return None
+
+
+# --- v7.19 API: M176 OrgMemoryEngine ---
+
+@app.route('/api/v719/memory/remember', methods=['POST'])
+def v719_memory_remember():
+    """M176 Write memory entry"""
+    try:
+        data = request.json or {}
+        modules = get_v719_modules()
+        m176 = modules['m176']()
+        from M176_OrgMemoryEngine import MemoryType
+        mt_str = data.get('memory_type', 'experience')
+        try:
+            memory_type = MemoryType(mt_str)
+        except ValueError:
+            memory_type = MemoryType.EXPERIENCE
+        result = m176.remember(
+            agent_id=data.get('agent_id', 'anonymous'),
+            content=data.get('content', ''),
+            memory_type=memory_type,
+            tags=data.get('tags'),
+            failure_case=data.get('failure_case', False),
+            gc_penalty=data.get('gc_penalty', 0),
+            confidence=data.get('confidence', 1.0),
+            metadata=data.get('metadata')
+        )
+        return jsonify(_to_native(result.to_dict()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/memory/recall', methods=['POST'])
+def v719_memory_recall():
+    """M176 Semantic recall (vector search)"""
+    try:
+        data = request.json or {}
+        modules = get_v719_modules()
+        m176 = modules['m176']()
+        filter_type = None
+        ft_str = data.get('filter_type')
+        if ft_str:
+            from M176_OrgMemoryEngine import MemoryType
+            try:
+                filter_type = MemoryType(ft_str)
+            except ValueError:
+                pass
+        result = m176.recall(
+            query=data.get('query', ''),
+            top_k=data.get('top_k', 5),
+            filter_type=filter_type
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/memory/recall/tag', methods=['POST'])
+def v719_memory_recall_tag():
+    """M176 Tag-based recall (local KV)"""
+    try:
+        data = request.json or {}
+        modules = get_v719_modules()
+        m176 = modules['m176']()
+        result = m176.recall_by_tag(tag=data.get('tag', ''))
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/memory/recent', methods=['GET'])
+def v719_memory_recent():
+    """M176 Get recent N memories"""
+    try:
+        n = int(request.args.get('n', 10))
+        modules = get_v719_modules()
+        m176 = modules['m176']()
+        result = m176.get_recent(n=n)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/memory/failure/record', methods=['POST'])
+def v719_failure_record():
+    """M176 Record AI failure case (T158: indelible)"""
+    try:
+        data = request.json or {}
+        modules = get_v719_modules()
+        m176 = modules['m176']()
+        result = m176.record_failure(
+            agent_id=data.get('agent_id', 'anonymous'),
+            description=data.get('description', ''),
+            root_cause=data.get('root_cause', 'unknown'),
+            correct_approach=data.get('correct_approach', 'pending'),
+            gc_penalty=data.get('gc_penalty', 20),
+            severity=data.get('severity', 'medium'),
+            tags=data.get('tags')
+        )
+        return jsonify(_to_native(result.to_dict()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/memory/failure/search', methods=['POST'])
+def v719_failure_search():
+    """M176 Search failure cases"""
+    try:
+        data = request.json or {}
+        modules = get_v719_modules()
+        m176 = modules['m176']()
+        keyword = data.get('keyword', '')
+        severity = data.get('severity')
+        results = m176.failure_library.search(keyword)
+        if severity:
+            results = [f for f in results if f.severity == severity]
+        return jsonify(_to_native([f.to_dict() for f in results]))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/memory/theorem/extract', methods=['POST'])
+def v719_theorem_extract():
+    """M176 Extract organizational theorem from agent experience"""
+    try:
+        data = request.json or {}
+        modules = get_v719_modules()
+        m176 = modules['m176']()
+        result = m176.extract_theorem(
+            agent_id=data.get('agent_id', 'anonymous'),
+            source_query=data.get('source_query', ''),
+            statement=data.get('statement', ''),
+            proof_sketch=data.get('proof_sketch', '')
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/memory/gc/adjust', methods=['POST'])
+def v719_memory_gc_adjust():
+    """M176 Adjust agent GC balance"""
+    try:
+        data = request.json or {}
+        modules = get_v719_modules()
+        m176 = modules['m176']()
+        result = m176.adjust_gc(
+            agent_id=data.get('agent_id', 'anonymous'),
+            delta=data.get('delta', 0),
+            reason=data.get('reason', '')
+        )
+        return jsonify(_to_native({'agent_id': data.get('agent_id', 'anonymous'), 'new_balance': result}))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/memory/gc/<agent_id>', methods=['GET'])
+def v719_memory_gc_balance(agent_id):
+    """M176 Get agent GC balance"""
+    try:
+        modules = get_v719_modules()
+        m176 = modules['m176']()
+        result = m176.get_gc_balance(agent_id)
+        return jsonify(_to_native({'agent_id': agent_id, 'gc_balance': result}))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# --- v7.19 API: M177 PhiBudgetSystem ---
+
+@app.route('/api/v719/budget/spend', methods=['POST'])
+def v719_budget_spend():
+    """M177 Agent spends GC on resource"""
+    try:
+        data = request.json or {}
+        modules = get_v719_modules()
+        m177 = modules['m177']()
+        from M177_PhiBudgetSystem import ResourceLevel
+        level = ResourceLevel(data.get('level', 'compute'))
+        result = m177.spend(
+            agent_id=data.get('agent_id', 'anonymous'),
+            level=level,
+            amount=data.get('amount', 0),
+            reason=data.get('description', '')
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/budget/earn', methods=['POST'])
+def v719_budget_earn():
+    """M177 Agent earns GC"""
+    try:
+        data = request.json or {}
+        modules = get_v719_modules()
+        m177 = modules['m177']()
+        from M177_PhiBudgetSystem import ResourceLevel
+        level = ResourceLevel(data.get('level', 'compute'))
+        result = m177.earn(
+            agent_id=data.get('agent_id', 'anonymous'),
+            level=level,
+            amount=data.get('amount', 0),
+            reason=data.get('description', '')
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/budget/balance/<agent_id>', methods=['GET'])
+def v719_budget_balance(agent_id):
+    """M177 Get agent budget balance"""
+    try:
+        modules = get_v719_modules()
+        m177 = modules['m177']()
+        result = m177.get_balance(agent_id)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/budget/balances', methods=['GET'])
+def v719_budget_balances():
+    """M177 Get all agent balances"""
+    try:
+        modules = get_v719_modules()
+        m177 = modules['m177']()
+        result = m177.get_all_balances()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/budget/allocate', methods=['POST'])
+def v719_budget_allocate():
+    """M177 Run Phi-field allocation cycle"""
+    try:
+        modules = get_v719_modules()
+        m177 = modules['m177']()
+        result = m177.run_allocation_cycle()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/budget/anxiety/<agent_id>', methods=['GET'])
+def v719_budget_anxiety(agent_id):
+    """M177 Check agent survival anxiety"""
+    try:
+        modules = get_v719_modules()
+        m177 = modules['m177']()
+        result = m177.check_survival_anxiety(agent_id)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/budget/phi/update', methods=['POST'])
+def v719_budget_phi_update():
+    """M177 Update agent Phi value"""
+    try:
+        data = request.json or {}
+        modules = get_v719_modules()
+        m177 = modules['m177']()
+        m177.update_phi(
+            agent_id=data.get('agent_id', 'anonymous'),
+            phi_value=data.get('phi_value', 1.0)
+        )
+        return jsonify(_to_native({'status': 'updated', 'agent_id': data.get('agent_id'), 'phi': data.get('phi_value')}))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/budget/leaderboard', methods=['GET'])
+def v719_budget_leaderboard():
+    """M177 Get GC leaderboard"""
+    try:
+        modules = get_v719_modules()
+        m177 = modules['m177']()
+        result = m177.get_leaderboard()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/budget/transactions', methods=['GET'])
+def v719_budget_transactions():
+    """M177 Get transaction history"""
+    try:
+        agent_id = request.args.get('agent_id')
+        limit = int(request.args.get('limit', 20))
+        modules = get_v719_modules()
+        m177 = modules['m177']()
+        result = m177.get_transactions(agent_id=agent_id, limit=limit)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# --- v7.19 API: M178 TaiyiAgentOS ---
+
+@app.route('/api/v719/os/agent/spawn', methods=['POST'])
+def v719_os_agent_spawn():
+    """M178 Spawn new agent"""
+    try:
+        data = request.json or {}
+        modules = get_v719_modules()
+        m178 = modules['m178']()
+        from M178_TaiyiAgentOS import AgentType
+        at = AgentType(data.get('agent_type', 'reasoner'))
+        result = m178.spawn_agent(
+            name=data.get('name', 'agent'),
+            agent_type=at,
+            phi_value=data.get('phi_value', 1.0),
+            priority=data.get('priority', 5),
+            capabilities=data.get('capabilities')
+        )
+        return jsonify(_to_native(result.to_dict()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/os/agent/terminate', methods=['POST'])
+def v719_os_agent_terminate():
+    """M178 Terminate agent"""
+    try:
+        data = request.json or {}
+        modules = get_v719_modules()
+        m178 = modules['m178']()
+        result = m178.terminate_agent(data.get('agent_id', ''))
+        return jsonify(_to_native({'terminated': result}))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/os/agent/list', methods=['GET'])
+def v719_os_agent_list():
+    """M178 List agents"""
+    try:
+        modules = get_v719_modules()
+        m178 = modules['m178']()
+        result = m178.get_agent_list()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/os/agent/execute', methods=['POST'])
+def v719_os_agent_execute():
+    """M178 Execute task for agent"""
+    try:
+        data = request.json or {}
+        modules = get_v719_modules()
+        m178 = modules['m178']()
+        result = m178.execute_task(
+            agent_id=data.get('agent_id', ''),
+            task_type=data.get('task_type', 'reason'),
+            payload=data.get('payload', {})
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/os/message/send', methods=['POST'])
+def v719_os_message_send():
+    """M178 Send inter-agent message"""
+    try:
+        data = request.json or {}
+        modules = get_v719_modules()
+        m178 = modules['m178']()
+        result = m178.broadcast(
+            topic=data.get('topic', 'general'),
+            payload=data.get('payload'),
+            sender_id=data.get('sender_id', 'api_user')
+        )
+        return jsonify(_to_native({'recipients': result}))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/os/workflow/create', methods=['POST'])
+def v719_os_workflow_create():
+    """M178 Create workflow DAG"""
+    try:
+        data = request.json or {}
+        modules = get_v719_modules()
+        m178 = modules['m178']()
+        result = m178.orchestration.create_workflow(data.get('tasks', []))
+        return jsonify(_to_native({'workflow_id': result}))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/os/workflow/<wf_id>/status', methods=['GET'])
+def v719_os_workflow_status(wf_id):
+    """M178 Get workflow status"""
+    try:
+        modules = get_v719_modules()
+        m178 = modules['m178']()
+        result = m178.orchestration.get_workflow_status(wf_id)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/os/workflow/<wf_id>/complete', methods=['POST'])
+def v719_os_workflow_complete(wf_id):
+    """M178 Complete a workflow task"""
+    try:
+        data = request.json or {}
+        modules = get_v719_modules()
+        m178 = modules['m178']()
+        result = m178.orchestration.complete_task(wf_id, data.get('task_id', ''), data.get('result'))
+        return jsonify(_to_native({'completed': result}))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# --- v7.19 Theorem & State ---
+
+@app.route('/api/v719/theorem/<theorem_id>', methods=['GET'])
+def v719_theorem(theorem_id):
+    """v7.19 Get theorem by ID (T157-T165)"""
+    try:
+        if theorem_id in _V719_THEOREMS:
+            return jsonify({
+                'id': theorem_id,
+                'statement': _V719_THEOREMS[theorem_id],
+                'version': 'v7.19'
+            })
+        return jsonify({'error': f'unknown theorem: {theorem_id}',
+                       'available': list(_V719_THEOREMS.keys())}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/theorems', methods=['GET'])
+def v719_theorems():
+    """v7.19 Verify all theorems (T157-T165)"""
+    try:
+        modules = get_v719_modules()
+        results = {}
+        all_verified = True
+        for key in ['m176', 'm177', 'm178']:
+            mod = modules.get(key)
+            if mod:
+                t = mod().verify_theorems()
+                for tid, tdata in t.items():
+                    if isinstance(tdata, dict):
+                        results[tid] = tdata
+                        if not tdata.get('verified', False):
+                            all_verified = False
+        return jsonify(_to_native({
+            'theorems': results,
+            'all_verified': all_verified
+        }))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v719/state', methods=['GET'])
+def v719_state():
+    """v7.19 Full State"""
+    try:
+        data = get_v719_data()
+        if data is None:
+            return jsonify(_v719_state)
+        return jsonify(_to_native(data))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
