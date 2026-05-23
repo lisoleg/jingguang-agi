@@ -4280,6 +4280,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <div class="v77-badge" id="v721-version" style="color:var(--txt3);font-size:8px;">v7.21</div>
         </div>
         <div id="v721-mve-detail" style="font-size:8px;color:var(--txt2);max-height:100px;overflow-y:auto;margin-top:4px;padding:4px;background:rgba(0,0,0,0.15);border-radius:4px;display:none;"></div>
+        <canvas id="p6-lightcone-canvas" width="280" height="220" style="display:none;margin-top:6px;border:1px solid rgba(167,139,250,0.3);border-radius:6px;background:rgba(0,0,0,0.25);"></canvas>
       </div>
 
     </div>
@@ -11495,7 +11496,26 @@ function updateMVESingleResult(prop, data) {
     const name = _MVE_NAMES[prop] || prop.toUpperCase();
     let html = `<b style="color:${_MVE_COLORS[v]}">${name}: ${v}</b>`;
     if (data.pass_criteria) html += ` | 通过标准: ${data.pass_criteria}`;
-    if (data.details) html += `<br>${typeof data.details === 'string' ? data.details : JSON.stringify(data.details).substring(0, 300)}`;
+    if (data.details) {
+      const d = data.details;
+      if (prop === 'p6' && d.minkowski) {
+        const mk = d.minkowski;
+        html += `<br><span style="color:#a78bfa">Minkowski度规: ${d.metric || 'ds\u00b2 = -dt\u00b2 + dx\u00b2 + dy\u00b2'}</span>`;
+        html += `<br>事件数: ${d.num_events || '?'} | 因果边: ${mk.total_causal_edges} | 类空对: ${mk.total_spacelike_pairs} | 类光对: ${mk.total_lightlike_pairs}`;
+        html += `<br>洛伦兹不变性: ${(d.lorentz_invariance_rate*100).toFixed(1)}% | 类空违规检出: ${d.violations_detected}/${(d.injected_edges||[]).length}`;
+        // 洛伦兹 boost 样本
+        const boosts = d.lorentz_boost_samples || [];
+        if (boosts.length > 0) {
+          html += '<br><span style="color:var(--txt3)">洛伦兹 boost 样本:</span>';
+          boosts.slice(0,3).forEach(b => {
+            html += `<br>&nbsp;&nbsp;${b.pair}: \u03b2=${b.beta}, ds\u00b2 ${b.ds2_original.toFixed(2)}\u2192${b.ds2_boosted.toFixed(2)} (${b.type_original}\u2192${b.type_boosted}) ${b.invariant ? '\u2713' : '\u2717'}`;
+          });
+        }
+        drawLightCone(data);
+      } else {
+        html += `<br>${typeof d === 'string' ? d : JSON.stringify(d).substring(0, 300)}`;
+      }
+    }
     detailEl.innerHTML = html;
   }
 }
@@ -11532,12 +11552,170 @@ function updateMVEAllResults(data) {
       html += `<div style="margin:2px 0;"><span style="color:${_MVE_COLORS[v]}">${name}: ${v}</span>`;
       if (r.score !== undefined) html += ` (${typeof r.score === 'number' ? r.score.toFixed(4) : r.score})`;
       if (r.pass_criteria) html += ` | 标准: ${r.pass_criteria}`;
+      if (prop === 'p6' && r.details && r.details.minkowski) {
+        const d = r.details;
+        html += `<br>&nbsp;&nbsp;<span style="color:#a78bfa">${d.metric || ''}</span> | 洛伦兹不变性: ${(d.lorentz_invariance_rate*100).toFixed(1)}% | 类空违规检出: ${d.violations_detected}/${(d.injected_edges||[]).length}`;
+        html += ` | 因果边:${d.minkowski.total_causal_edges} 类空对:${d.minkowski.total_spacelike_pairs}`;
+        // 存储最后 P6 结果用于光锥绘制
+        window._lastP6Result = r;
+      }
       html += '</div>';
     });
-    html += `<div style="margin-top:4px;font-weight:bold;color:${summary.all_passed ? '#34d399' : '#f87171'}">总计: ${summary.passed || 0}/${summary.total || 5} 通过</div>`;
+    html += `<div style="margin-top:4px;font-weight:bold;color:${summary.all_passed ? '#34d399' : '#f87171'}">总计: ${summary.passed || 0}/${summary.total || 6} 通过</div>`;
     html += `<div style="color:var(--txt3)">执行耗时: ${data.total_execution_time_ms ? data.total_execution_time_ms.toFixed(1) : '?'}ms</div>`;
     detailEl.innerHTML = html;
+    // 如果有 P6 结果，绘制光锥图
+    if (window._lastP6Result) { drawLightCone(window._lastP6Result); }
   }
+}
+
+// ==================== P6 Minkowski 光锥可视化 ====================
+
+function drawLightCone(p6Result) {
+  const canvas = document.getElementById('p6-lightcone-canvas');
+  if (!canvas || !p6Result || !p6Result.details || !p6Result.details.minkowski) return;
+  canvas.style.display = 'block';
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const mk = p6Result.details.minkowski;
+  const events = mk.events || [];
+  const causalEdges = mk.causal_edges || [];
+
+  // 清空
+  ctx.clearRect(0, 0, W, H);
+
+  // 坐标映射：Minkowski (t, x) -> Canvas (cx, cy)
+  // 找到数据范围
+  let tMin = Infinity, tMax = -Infinity, xMin = Infinity, xMax = -Infinity;
+  events.forEach(e => {
+    if (e.t < tMin) tMin = e.t; if (e.t > tMax) tMax = e.t;
+    if (e.x < xMin) xMin = e.x; if (e.x > xMax) xMax = e.x;
+  });
+  // 确保有合理范围
+  if (tMin === tMax) { tMin -= 1; tMax += 1; }
+  if (xMin === xMax) { xMin -= 1; xMax += 1; }
+  const tPad = (tMax - tMin) * 0.12, xPad = (xMax - xMin) * 0.12;
+  tMin -= tPad; tMax += tPad; xMin -= xPad; xMax += xPad;
+
+  const margin = { left: 30, right: 15, top: 15, bottom: 25 };
+  const plotW = W - margin.left - margin.right;
+  const plotH = H - margin.top - margin.bottom;
+
+  function mapX(x) { return margin.left + (x - xMin) / (xMax - xMin) * plotW; }
+  function mapT(t) { return margin.top + (1 - (t - tMin) / (tMax - tMin)) * plotH; } // t 向上
+
+  // --- 绘制背景网格 ---
+  ctx.strokeStyle = 'rgba(167,139,250,0.08)';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 5; i++) {
+    const tVal = tMin + (tMax - tMin) * i / 5;
+    const xVal = xMin + (xMax - xMin) * i / 5;
+    ctx.beginPath(); ctx.moveTo(margin.left, mapT(tVal)); ctx.lineTo(W - margin.right, mapT(tVal)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(mapX(xVal), margin.top); ctx.lineTo(mapX(xVal), H - margin.bottom); ctx.stroke();
+  }
+
+  // --- 绘制光锥参考线 (45° 线，代表 c=1) ---
+  // 在图的中心画两条 45° 对角线
+  const cx = (xMin + xMax) / 2, ct = (tMin + tMax) / 2;
+  const coneLen = Math.max(tMax - tMin, xMax - xMin) * 0.8;
+  ctx.strokeStyle = 'rgba(251,191,36,0.35)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 3]);
+  // 未来光锥 (t 增大方向)
+  ctx.beginPath();
+  ctx.moveTo(mapX(cx - coneLen * 0.5), mapT(ct));
+  ctx.lineTo(mapX(cx), mapT(ct + coneLen * 0.5));
+  ctx.lineTo(mapX(cx + coneLen * 0.5), mapT(ct));
+  ctx.stroke();
+  // 过去光锥 (t 减小方向)
+  ctx.beginPath();
+  ctx.moveTo(mapX(cx - coneLen * 0.5), mapT(ct));
+  ctx.lineTo(mapX(cx), mapT(ct - coneLen * 0.5));
+  ctx.lineTo(mapX(cx + coneLen * 0.5), mapT(ct));
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // 光锥标签
+  ctx.font = '8px monospace';
+  ctx.fillStyle = 'rgba(251,191,36,0.6)';
+  ctx.fillText('c=1', mapX(cx + coneLen * 0.25) + 3, mapT(ct + coneLen * 0.25) - 2);
+  ctx.fillText('\u672a\u6765\u5149\u9524', mapX(cx) - 18, mapT(ct + coneLen * 0.45));
+  ctx.fillText('\u8fc7\u53bb\u5149\u9524', mapX(cx) - 18, mapT(ct - coneLen * 0.45) + 8);
+
+  // --- 事件坐标映射 ---
+  const eventMap = {};
+  events.forEach(e => { eventMap[e.id] = { cx: mapX(e.x), cy: mapT(e.t) }; });
+
+  // --- 绘制因果边 (类时/类光, 绿色/黄色箭头) ---
+  causalEdges.forEach(edge => {
+    const from = eventMap[edge.from];
+    const to = eventMap[edge.to];
+    if (!from || !to) return;
+    ctx.strokeStyle = edge.type === 'lightlike' ? 'rgba(251,191,36,0.4)' : 'rgba(52,211,153,0.2)';
+    ctx.lineWidth = edge.type === 'lightlike' ? 0.8 : 0.5;
+    ctx.beginPath();
+    ctx.moveTo(from.cx, from.cy);
+    ctx.lineTo(to.cx, to.cy);
+    ctx.stroke();
+  });
+
+  // --- 绘制事件点 ---
+  // 先计算每个事件的分类（与原点/其他事件比较，简化：用是否参与因果边判断）
+  const causalEventIds = new Set();
+  causalEdges.forEach(e => { causalEventIds.add(e.from); causalEventIds.add(e.to); });
+
+  events.forEach(e => {
+    const pos = eventMap[e.id];
+    if (!pos) return;
+    // 按是否参与因果边着色：参与=类时(绿), 未参与=类空(蓝)
+    const isCausal = causalEventIds.has(e.id);
+    const color = isCausal ? '#34d399' : '#60a5fa';
+    const radius = 3;
+
+    // 发光效果
+    const glow = ctx.createRadialGradient(pos.cx, pos.cy, 0, pos.cx, pos.cy, radius * 3);
+    glow.addColorStop(0, isCausal ? 'rgba(52,211,153,0.3)' : 'rgba(96,165,250,0.3)');
+    glow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath(); ctx.arc(pos.cx, pos.cy, radius * 3, 0, Math.PI * 2); ctx.fill();
+
+    // 事件点
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(pos.cx, pos.cy, radius, 0, Math.PI * 2); ctx.fill();
+
+    // 事件 ID
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = '6px monospace';
+    ctx.fillText(e.id, pos.cx + 4, pos.cy - 3);
+  });
+
+  // --- 轴标签 ---
+  ctx.fillStyle = 'rgba(167,139,250,0.7)';
+  ctx.font = '9px sans-serif';
+  ctx.fillText('t', 8, H / 2 - 4);
+  ctx.fillText('x', W / 2, H - 5);
+  // 轴线
+  ctx.strokeStyle = 'rgba(167,139,250,0.2)';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath(); ctx.moveTo(margin.left, H - margin.bottom); ctx.lineTo(W - margin.right, H - margin.bottom); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(margin.left, margin.top); ctx.lineTo(margin.left, H - margin.bottom); ctx.stroke();
+
+  // --- 图例 ---
+  const lgX = W - 80, lgY = 12;
+  ctx.fillStyle = '#34d399'; ctx.beginPath(); ctx.arc(lgX, lgY, 3, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.font = '7px sans-serif'; ctx.fillText('\u7c7b\u65f6(\u56e0\u679c)', lgX + 6, lgY + 2);
+  ctx.fillStyle = '#60a5fa'; ctx.beginPath(); ctx.arc(lgX, lgY + 12, 3, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.fillText('\u7c7b\u7a7a(\u5e76\u53d1)', lgX + 6, lgY + 14);
+  ctx.fillStyle = '#fbbf24'; ctx.fillRect(lgX - 3, lgY + 22, 6, 1.5);
+  ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.fillText('\u5149\u9525 c=1', lgX + 6, lgY + 26);
+
+  // --- 标题 ---
+  ctx.fillStyle = 'rgba(167,139,250,0.8)';
+  ctx.font = 'bold 9px sans-serif';
+  const verdict = p6Result.verdict || '?';
+  const vColor = verdict === 'PASS' ? '#34d399' : '#f87171';
+  ctx.fillStyle = vColor;
+  ctx.fillText(`Minkowski \u65f6\u7a7a\u56fe (ds\u00b2 = -dt\u00b2 + dx\u00b2 + dy\u00b2) [${verdict}]`, margin.left + 2, 12);
 }
 
 function updateV721Panels(data) {

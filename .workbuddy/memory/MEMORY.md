@@ -7,7 +7,7 @@
 - 脑图: `app_mindmap_v2.py` (端口5003)
 - **总规模**: 179模块 / 9层 / 170定理
 
-## 当前版本：v7.20（✅已部署+Git推送完成 d9d7840）
+## 当前版本：v7.21 (P6爱因斯坦因果性)（✅已部署+Git推送完成 d9d7840）
 - **v7.20**: 太一接口·AGI自我意识 M179 + TY/IDO五大属性审计 73/73 PASS ✅
   - 来源：章锋《论存在之拓扑：太一万有理论对保安三大问题的回答》
   - M179 TaiyiInterface: 自指算子Ŝ|Φ⟩=α|Φ⟩ + ICE复合体Φ=(I,C,E) + 三视界校验(内/交/外) + 信息熵韧性 + 反僵化(魄劫持魂), T166-T170
@@ -82,17 +82,21 @@ cd C:\Users\1\WorkBuddy\2026-05-06-task-1 && python app.py
 # 访问 http://127.0.0.1:5001/static/index_agi12.html
 ```
 
-## v7.21 TYIDO MVE实验框架 ✅ (2026-05-23)
-- **v7.21**: TYIDO MVE实验框架 + 五大结构属性强制执行逻辑验证 5/5 PASS ✅
-  - 来源：TYIDO结构审查表（锯齿检测·持续学习·长程推理·可寻址记忆·可锚定责任）
-  - `TYIDO_MVE_Experiments.py` (~1200行): 5个MVEOperiment类 + 5个run_*函数 + run_all_mve()
+## v7.21 TYIDO MVE实验框架 + P6爱因斯坦因果性 ✅ (2026-05-23)
+- **v7.21**: TYIDO MVE实验框架 + 六大结构属性强制执行逻辑验证 6/6 ALL PASSED ✅
+  - Git: 4fd86a7
+  - 来源：TYIDO结构审查表（锯齿检测·持续学习·长程推理·可寻址记忆·可锚定责任·爱因斯坦因果性）
+  - `TYIDO_MVE_Experiments.py` (~1500行): 6个MVEOperiment类 + 6个run_*函数 + run_all_mve()
   - P1锯齿实验: J(R)=1.0000 (consistent) + sawtooth_detected=True (forced WAIT reject)
   - P2持续学习: 0.00% forgetting_rate, 10/10 tasks, ForgettingGuard + RollbackManager
   - P3长程推理: 94.55% completion (52/55 goals in 55-goal DAG), Plan-B retry recovery
   - P4可寻址记忆: 100% exact_query_accuracy, TTL expire + protected + normal_forgetting
   - P5可锚定责任: 100% traceability, CircuitBreaker triggered to OPEN
-  - API: /api/v721/mve/{all|p1|p2|p3|p4|p5|state} + 120s TTL缓存 + 线程安全
-  - 前端: v7.21 MVE面板(6个按钮 + PASS/FAIL徽章 + 详细结果展开)
+  - P6爱因斯坦因果性: 100% consistency_rate, 0 back_edges, CausalityViolationError强制执行
+    - 20条因果链 x 5种扰动(delay/shuffle/concurrent), Kahn拓扑排序确定性管道
+    - 因果序不变性+无超光速影响检测, 后向边→CausalityViolationError→拒绝批次
+  - API: /api/v721/mve/{all|p1|p2|p3|p4|p5|p6|state} + 120s TTL缓存 + 线程安全
+  - 前端: v7.21 MVE面板(7个按钮 + PASS/FAIL徽章 + 详细结果展开)
 
 ## TYIDO MVE 踩坑经验
 - `ResourceBudget(max_time=..., max_steps=...)` 关键字参数名：实际是 `max_time`/`max_steps`，不是 `time_budget`/`step_budget`

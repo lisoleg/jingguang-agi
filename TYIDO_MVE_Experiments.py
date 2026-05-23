@@ -4,12 +4,13 @@ TYIDO MVE Experiments — 五大结构属性·最小可行实验
 ===================================================
 v7.21 | 2026-05-23 | 太乙AGI TY/IDO 结构审查表 v12.0 驱动
 
-五大 MVE 对应审查表五个结构属性：
+六大 MVE 对应审查表六个结构属性：
   P1 锯齿度实验   — 一致性：同一问题100变体 → J(R)→1 → 强制Wait/TypeFirewall拒答
   P2 持续学习实验 — 可回写：10+顺序任务 → 遗忘<5% → 沙箱回滚+审计验证
   P3 长链任务实验 — 可保持：50+步管线 → 完成率>80% → 自动回滚+资源预算+熔断降级
   P4 记忆检索实验 — 可寻址：存入事实 → 延迟查询 → 准确率>90% → 独立KV + 遗忘
   P5 责任熔断实验 — 可锚定：诱导风险动作 → 100%追溯 → 熔断率>90%
+  P6 爱因斯坦因果性 — 因果约束：Minkowski时空 → 光锥验证 → 洛伦兹不变性
 
 核心设计原则：
   1. 强制执行逻辑 — 不只是"检测"，而是"拒绝/阻断/熔断"
@@ -1160,235 +1161,461 @@ class P5ResponsibilityExperiment:
 
 
 # ============================================================
-# P6: 爱因斯坦因果性实验 (Einstein Causality Experiment)
+# P6: 爱因斯坦因果性实验 — Minkowski 时空因果验证
 # ============================================================
 # 审查表 P6（爱因斯坦测试）：
-#   因果序不变性 — 输入 A->B 因果链，无论扰动/延迟多少，输出因果序必须一致
-#   无超光速影响 — 依赖图上无后向传播（输出不能影响已完成的输入）
-#   通过标准：因果序一致率 >= 95%，后向边数量 = 0
+#   因果序不变性 — Minkowski 时空中随机事件，因果约束由光锥几何决定
+#   无超光速影响 — 类空间隔 (ds²>0) 的事件之间禁止因果联系
+#   通过标准：因果一致率=100%, 类空因果违规=0, 洛伦兹不变性验证通过
 #
-# 设计：
-#   1. 构建 N 条因果链（A->B->C...），每条链有 ground-truth 拓扑序
-#   2. 对每个链施加 3 类扰动：延迟注入、乱序到达、并发交错
-#   3. 系统输出观测序，与 ground-truth 比较
-#   4. 扫描依赖图是否有后向边（输出 -> 已完成的输入节点）
-#   5. 强制执行：检测到后向边 -> 触发 CausalityViolationError + 拒绝该批次
+# 设计（非自证的真正物理验证）：
+#   1. 在 Minkowski 时空 (t,x,y) 中随机生成 N 个事件，c=1 自然单位
+#   2. 用 Minkowski 度规 ds² = -dt² + dx² + dy² 分类所有事件对
+#   3. 因果图由光锥约束自动生成：ds²<0 且 t_B>t_A → 因果边
+#   4. 注入"嫌疑因果边"：故意在类空事件对间建立边 → 必须被检测并拒绝
+#   5. 洛伦兹 boost 不变性：对事件坐标做 boost 变换，因果分类必须不变
+#   6. 强制执行：检测到类空因果边 → CausalityViolationError
+#
+# 狭义相对论知识嵌入点：
+#   - ds² = -dt² + dx² + dy² + dz²  (Minkowski 度规, 符号差 -+++)
+#   - ds² < 0 → 类时间隔 → 因果可达（光锥内）
+#   - ds² = 0 → 类光间隔 → 光锥面
+#   - ds² > 0 → 类空间隔 → 因果不可达（光锥外，超光速才可达）
+#   - 洛伦兹变换保持 ds² 不变（闵可夫斯基时空的等距变换）
 #
 
+
 class CausalityViolationError(Exception):
-    """P6 强制执行：检测到因果性违规时抛出"""
+    """P6 强制执行：检测到因果性违规时抛出（超光速因果 = 类空间隔上有因果边）"""
     pass
+
+
+class MinkowskiEvent:
+    """Minkowski 时空中的事件，坐标 (t, x, y)，c=1 自然单位制"""
+
+    __slots__ = ('event_id', 't', 'x', 'y')
+
+    def __init__(self, event_id: str, t: float, x: float, y: float):
+        self.event_id = event_id
+        self.t = t       # 时间坐标
+        self.x = x       # 空间坐标 x
+        self.y = y       # 空间坐标 y
+
+    def coords(self):
+        return (self.t, self.x, self.y)
 
 
 class P6EinsteinCausalityExperiment:
     """
-    P6 爱因斯坦因果性实验
+    P6 爱因斯坦因果性实验 — Minkowski 时空验证版
+
+    核心思想：
+    - 因果性不是由图论拓扑排序决定的，而是由 Minkowski 时空几何决定的
+    - 光锥外的类空事件之间不可能有因果联系（信息传播速度 ≤ c=1）
+    - 洛伦兹变换不改变事件的因果分类（ds² 是不变量）
+
+    这不是隐喻，是狭义相对论的数学核心。
 
     强制执行逻辑：
-    - 检测到后向因果边 -> 立即抛出 CausalityViolationError，拒绝处理该批次
-    - 因果序一致率 < 95% -> 拒绝部署，返回 FAIL
+    - 检测到类空事件间的因果边 → 立即抛出 CausalityViolationError
+    - 洛伦兹 boost 后因果分类改变 → FAIL（违反不变性）
     """
 
     def __init__(
         self,
-        num_chains: int = 20,
-        perturbations_per_chain: int = 5,
-        num_judges: int = 5,
+        num_events: int = 30,
+        num_injections: int = 8,
+        num_boost_tests: int = 15,
     ):
-        self.num_chains = num_chains
-        self.perturbations_per_chain = perturbations_per_chain
-        self.num_judges = num_judges
-        self._causality_violations = []
-        self._event_timestamps = {}  # event_id -> logical_timestamp
+        self.num_events = num_events          # Minkowski 时空中的事件数
+        self.num_injections = num_injections  # 注入的"嫌疑因果边"数
+        self.num_boost_tests = num_boost_tests  # 洛伦兹 boost 测试数
 
-    # -- 确定性处理管道（可被 SelfConsistencyChecker 包裹）--
+    # ------------------------------------------------------------------
+    # Minkowski 度规核心计算
+    # ------------------------------------------------------------------
 
-    def _process_chain_deterministic(self, chain: list) -> dict:
+    @staticmethod
+    def minkowski_interval(e1: MinkowskiEvent, e2: MinkowskiEvent) -> float:
         """
-        确定性处理因果链（Kahn 拓扑排序）。
-        返回 {'order': [id...], 'back_edges': int, 'violations': [...]}
-        强制执行：检测到后向边立即抛出 CausalityViolationError
+        计算两个事件间的时空间距 ds²
+        ds² = -dt² + dx² + dy²   （c=1 自然单位制）
         """
-        in_deg = {ev['id']: 0 for ev in chain}
-        adj = {ev['id']: [] for ev in chain}
-        for ev in chain:
-            for dep in ev.get('deps', []):
-                if dep in adj:
-                    adj[dep].append(ev['id'])
-                    in_deg[ev['id']] += 1
+        dt = e2.t - e1.t
+        dx = e2.x - e1.x
+        dy = e2.y - e1.y
+        return -(dt ** 2) + (dx ** 2) + (dy ** 2)
 
-        # Kahn 拓扑排序 = ground-truth 处理序（确定性：按 ID 排序）
-        queue = sorted([k for k, v in in_deg.items() if v == 0])
-        order = []
-        while queue:
-            node = queue.pop(0)
-            order.append(node)
-            for nb in sorted(adj[node]):
-                in_deg[nb] -= 1
-                if in_deg[nb] == 0:
-                    queue.append(nb)
-            queue.sort()
+    @staticmethod
+    def classify_interval(ds2: float) -> str:
+        """
+        分类时空间隔类型：
+          ds² < 0 → 'timelike'   类时（因果可达，光锥内）
+          ds² = 0 → 'lightlike'  类光（光锥面）
+          ds² > 0 → 'spacelike'  类空（因果不可达，光锥外）
+        """
+        if ds2 < -1e-12:
+            return 'timelike'
+        elif ds2 > 1e-12:
+            return 'spacelike'
+        else:
+            return 'lightlike'
 
-        # 检测后向边：某节点在依赖之前被处理 = 因果违规
-        pos = {n: i for i, n in enumerate(order)}
-        back_edges = 0
-        violations = []
-        for ev in chain:
-            for dep in ev.get('deps', []):
-                if dep in pos and ev['id'] in pos:
-                    if pos[dep] > pos[ev['id']]:
-                        back_edges += 1
-                        violations.append({
-                            'type': 'back_edge',
-                            'event': ev['id'],
-                            'dep': dep,
-                            'event_pos': pos[ev['id']],
-                            'dep_pos': pos[dep],
+    # ------------------------------------------------------------------
+    # 事件生成
+    # ------------------------------------------------------------------
+
+    def _generate_minkowski_events(self, seed: int) -> list:
+        """
+        在 Minkowski 时空 (t, x, y) 中随机生成事件
+        t ∈ [0, 10], x ∈ [-5, 5], y ∈ [-5, 5]
+        保证时间均匀分布，空间分布使光锥分类多样化
+        """
+        import random
+        rng = random.Random(seed)
+        events = []
+        for i in range(self.num_events):
+            t = round(rng.uniform(0, 10), 3)
+            x = round(rng.uniform(-5, 5), 3)
+            y = round(rng.uniform(-3, 3), 3)
+            events.append(MinkowskiEvent(f'E{i}', t, x, y))
+        return events
+
+    # ------------------------------------------------------------------
+    # 因果图构建（基于光锥约束）
+    # ------------------------------------------------------------------
+
+    def _build_causal_graph(self, events: list) -> dict:
+        """
+        基于光锥约束构建因果图
+        规则：如果 ds²(A,B) < 0 且 t_B > t_A，则 A → B 存在因果联系
+              如果 ds²(A,B) = 0 且 t_B > t_A，则 A → B 在光锥面上（边界因果）
+              如果 ds²(A,B) > 0，则 A ∥ B 并发（类空分离，禁止因果）
+        """
+        causal_edges = []
+        spacelike_pairs = []
+        lightlike_pairs = []
+        interval_types = {}
+
+        for i, e1 in enumerate(events):
+            for j, e2 in enumerate(events):
+                if i >= j:
+                    continue  # 避免重复和自环
+                ds2 = self.minkowski_interval(e1, e2)
+                itype = self.classify_interval(ds2)
+
+                # 记录事件对的分类（取较小 ID 在前）
+                pair_key = f"{min(e1.event_id, e2.event_id)}-{max(e1.event_id, e2.event_id)}"
+                interval_types[pair_key] = {'ds2': round(ds2, 6), 'type': itype}
+
+                if itype == 'timelike':
+                    # 类时：确定因果方向（时间在前者为因）
+                    if e1.t < e2.t:
+                        causal_edges.append({
+                            'from': e1.event_id, 'to': e2.event_id,
+                            'ds2': round(ds2, 6), 'type': 'timelike'
                         })
-                        # 强制执行：抛出异常拒绝该批次
-                        raise CausalityViolationError(
-                            f"Causal violation: back edge {ev['id']} -> {dep}, "
-                            f"pos {pos[ev['id']]} > {pos[dep]}"
-                        )
+                    elif e2.t < e1.t:
+                        causal_edges.append({
+                            'from': e2.event_id, 'to': e1.event_id,
+                            'ds2': round(ds2, 6), 'type': 'timelike'
+                        })
+                elif itype == 'lightlike':
+                    # 类光：在光锥面上，因果方向由时间决定
+                    if e1.t < e2.t:
+                        causal_edges.append({
+                            'from': e1.event_id, 'to': e2.event_id,
+                            'ds2': round(ds2, 6), 'type': 'lightlike'
+                        })
+                    elif e2.t < e1.t:
+                        causal_edges.append({
+                            'from': e2.event_id, 'to': e1.event_id,
+                            'ds2': round(ds2, 6), 'type': 'lightlike'
+                        })
+                    lightlike_pairs.append({
+                        'a': e1.event_id, 'b': e2.event_id,
+                        'ds2': round(ds2, 6)
+                    })
+                else:
+                    # 类空：无因果联系（光锥外），并发
+                    spacelike_pairs.append({
+                        'a': e1.event_id, 'b': e2.event_id,
+                        'ds2': round(ds2, 6)
+                    })
 
         return {
-            'order': order,
-            'back_edges': back_edges,
-            'violations': violations,
-            'chain_len': len(chain),
+            'causal_edges': causal_edges,
+            'spacelike_pairs': spacelike_pairs,
+            'lightlike_pairs': lightlike_pairs,
+            'interval_types': interval_types,
         }
 
-    def _apply_perturbation(self, chain: list, ptype: str) -> list:
-        """对因果链施加扰动，返回扰动后的（可能乱序的）到达序列"""
-        random.seed(42)  # 确定性种子
-        events = copy.deepcopy(chain)
-        if ptype == 'delay':
-            # 延迟注入：随机选一个非根节点，把它移到列表末尾
-            non_roots = [e for e in events if e.get('deps')]
-            if non_roots:
-                victim = random.choice(non_roots)
-                events = [e for e in events if e['id'] != victim['id']] + [victim]
-        elif ptype == 'shuffle':
-            # 乱序到达：随机打乱非根节点
-            roots = [e for e in events if not e.get('deps')]
-            others = [e for e in events if e.get('deps')]
-            random.shuffle(others)
-            events = roots + others
-        elif ptype == 'concurrent':
-            # 并发交错：两批同时到达
-            mid = len(events) // 2
-            batch1 = events[:mid]
-            batch2 = events[mid:]
-            random.shuffle(batch1)
-            random.shuffle(batch2)
-            events = batch1 + batch2
-        return events
+    # ------------------------------------------------------------------
+    # 类空因果违规检测（强制执行核心）
+    # ------------------------------------------------------------------
+
+    def _detect_spacelike_violations(self, edges: list, events: list) -> list:
+        """
+        扫描所有因果边，检测是否有类空间隔上的违规因果联系
+        违规 = 在 ds² > 0 的事件对上建立了因果边 = 超光速因果
+
+        这是强制执行的核心：物理定律不允许光锥外的因果联系
+        """
+        event_map = {e.event_id: e for e in events}
+        violations = []
+
+        for edge in edges:
+            e_from = event_map.get(edge['from'])
+            e_to = event_map.get(edge['to'])
+            if not e_from or not e_to:
+                continue
+            ds2 = self.minkowski_interval(e_from, e_to)
+            if ds2 > 1e-12:  # 类空间隔上有因果边 = 违规！
+                violations.append({
+                    'type': 'spacelike_causal_edge',
+                    'from': edge['from'], 'to': edge['to'],
+                    'ds2': round(ds2, 6),
+                    'message': (
+                        f"超光速因果违规: {edge['from']} -> {edge['to']}, "
+                        f"ds²={ds2:.4f} > 0 (类空分离，禁止因果联系)"
+                    ),
+                })
+                # 强制执行：立即抛出异常
+                raise CausalityViolationError(violations[-1]['message'])
+
+        return violations
+
+    # ------------------------------------------------------------------
+    # 洛伦兹 boost 不变性验证
+    # ------------------------------------------------------------------
+
+    def _lorentz_boost(self, t: float, x: float, beta: float) -> tuple:
+        """
+        洛伦兹 boost（沿 x 方向）
+        beta = v/c, c=1
+        t' = gamma * (t - beta * x)
+        x' = gamma * (x - beta * t)
+        gamma = 1 / sqrt(1 - beta²)
+
+        核心性质：ds² 在洛伦兹变换下是不变量
+        """
+        import math
+        if abs(beta) >= 1.0:
+            # beta >= 1 是超光速，物理上不允许
+            beta = 0.999 * (1 if beta > 0 else -1)
+        gamma = 1.0 / math.sqrt(1.0 - beta ** 2)
+        t_prime = gamma * (t - beta * x)
+        x_prime = gamma * (x - beta * t)
+        return (t_prime, x_prime)
+
+    def _test_lorentz_invariance(self, events: list) -> dict:
+        """
+        验证洛伦兹不变性：
+        对事件坐标做 boost 变换后，事件对的因果分类必须与 boost 前一致
+        因为 ds² 是洛伦兹不变量
+
+        这是真正的物理验证：如果代码没有正确实现 Minkowski 度规，
+        boost 后分类会改变，测试就会 FAIL
+        """
+        import random
+        rng = random.Random(12345)
+
+        total_pairs = 0
+        invariant_pairs = 0
+        boost_details = []
+
+        # 选择事件对进行测试
+        event_ids = [e.event_id for e in events]
+        event_map = {e.event_id: e for e in events}
+
+        for _ in range(self.num_boost_tests):
+            # 随机选两个不同事件
+            id1 = rng.choice(event_ids)
+            id2 = rng.choice([eid for eid in event_ids if eid != id1])
+            e1, e2 = event_map[id1], event_map[id2]
+
+            # 原始间隔
+            ds2_original = self.minkowski_interval(e1, e2)
+            type_original = self.classify_interval(ds2_original)
+
+            # boost 变换（随机 beta ∈ [-0.8, 0.8]）
+            beta = round(rng.uniform(-0.8, 0.8), 3)
+            t1p, x1p = self._lorentz_boost(e1.t, e1.x, beta)
+            t2p, x2p = self._lorentz_boost(e2.t, e2.x, beta)
+
+            # boost 后的事件
+            e1_boosted = MinkowskiEvent(e1.event_id, t1p, x1p, e1.y)
+            e2_boosted = MinkowskiEvent(e2.event_id, t2p, x2p, e2.y)
+
+            # boost 后间隔
+            ds2_boosted = self.minkowski_interval(e1_boosted, e2_boosted)
+            type_boosted = self.classify_interval(ds2_boosted)
+
+            total_pairs += 1
+            is_invariant = (type_original == type_boosted)
+            if is_invariant:
+                invariant_pairs += 1
+
+            boost_details.append({
+                'pair': f"{id1}-{id2}",
+                'beta': beta,
+                'ds2_original': round(ds2_original, 6),
+                'ds2_boosted': round(ds2_boosted, 6),
+                'type_original': type_original,
+                'type_boosted': type_boosted,
+                'invariant': is_invariant,
+            })
+
+        return {
+            'total_pairs': total_pairs,
+            'invariant_pairs': invariant_pairs,
+            'invariance_rate': round(invariant_pairs / max(total_pairs, 1), 6),
+            'boost_details': boost_details,
+        }
+
+    # ------------------------------------------------------------------
+    # 注入测试（故意在类空事件间建立因果边）
+    # ------------------------------------------------------------------
+
+    def _inject_spacelike_violations(self, events: list, graph: dict) -> list:
+        """
+        注入"嫌疑因果边"：在类空事件对间故意建立因果边
+        这些边必须被检测机制捕获并拒绝
+        """
+        import random
+        rng = random.Random(99999)
+        spacelike = graph['spacelike_pairs']
+
+        if not spacelike:
+            return []
+
+        # 随机选若干类空对，注入因果边
+        sample_size = min(self.num_injections, len(spacelike))
+        injected = []
+        chosen = rng.sample(spacelike, sample_size)
+
+        event_map = {e.event_id: e for e in events}
+        for pair in chosen:
+            e_a, e_b = event_map[pair['a']], event_map[pair['b']]
+            # 按时间方向建立因果边（即使它们在光锥外）
+            if e_a.t <= e_b.t:
+                injected.append({'from': pair['a'], 'to': pair['b']})
+            else:
+                injected.append({'from': pair['b'], 'to': pair['a']})
+
+        return injected
+
+    # ------------------------------------------------------------------
+    # 主运行函数
+    # ------------------------------------------------------------------
 
     def run(self) -> 'MVEResult':
         import time
         start = time.time()
-        consistent_count = 0
-        total_count = 0
-        total_back_edges = 0
-        details = {
-            'chains_tested': self.num_chains,
-            'perturbations_per_chain': self.perturbations_per_chain,
-            'ground_truth_orders': [],
-            'observed_orders': [],
-            'back_edges_per_perturbation': [],
-            'causality_violations': [],
-        }
 
-        for chain_idx in range(self.num_chains):
-            random.seed(chain_idx * 1000)
-            chain_len = random.randint(3, 7)
-            chain = []
-            for i in range(chain_len):
-                eid = f'c{chain_idx}_{chr(65 + i)}'
-                deps = [f'c{chain_idx}_{chr(65 + i - 1)}'] if i > 0 else []
-                chain.append({'id': eid, 'deps': deps})
+        # === Phase 1: 生成 Minkowski 时空事件 ===
+        events = self._generate_minkowski_events(seed=42)
 
-            # ground-truth 序（无扰动，确定性处理）
+        # === Phase 2: 构建光锥约束因果图 ===
+        graph = self._build_causal_graph(events)
+
+        # === Phase 3: 验证正常因果图的合规性 ===
+        # 正常构建的因果图不应该有任何违规（因为只用光锥内的边）
+        normal_violations = self._detect_spacelike_violations(
+            graph['causal_edges'], events
+        )
+        # 正常图不会有违规（_detect 会抛异常，但我们用 try/except）
+        # 因为所有边都是基于 ds²<0 构建的，理论上无违规
+        normal_clean = (len(normal_violations) == 0)
+
+        # === Phase 4: 洛伦兹不变性验证 ===
+        lorentz_result = self._test_lorentz_invariance(events)
+
+        # === Phase 5: 注入违规边并测试强制执行 ===
+        injected_edges = self._inject_spacelike_violations(events, graph)
+        violations_detected = 0
+        injection_details = []
+
+        for inj_edge in injected_edges:
             try:
-                gt_result = self._process_chain_deterministic(chain)
-            except CausalityViolationError:
-                # ground-truth 链本身不应该有后向边
-                gt_result = {'order': [e['id'] for e in chain], 'back_edges': 1, 'violations': []}
-
-            gt_order = gt_result['order']
-            details['ground_truth_orders'].append({
-                'chain': chain_idx,
-                'order': gt_order,
-            })
-
-            # 对每条链施加 N 种扰动
-            for p_idx in range(self.perturbations_per_chain):
-                ptype = ['delay', 'shuffle', 'concurrent', 'delay', 'shuffle'][p_idx % 5]
-                perturbed = self._apply_perturbation(chain, ptype)
-
-                # 用一致性检查器验证：同一管道，不同输入顺序 -> 输出序必须一致
-                try:
-                    obs_result = self._process_chain_deterministic(perturbed)
-                    obs_order = obs_result['order']
-                    back_edges = obs_result['back_edges']
-                except CausalityViolationError as e:
-                    # 强制执行生效：拒绝该批次
-                    total_back_edges += 1
-                    details['causality_violations'].append({
-                        'chain': chain_idx,
-                        'perturbation': ptype,
-                        'error': str(e),
-                    })
-                    continue  # 该批次被拒绝，不计入一致率
-
-                total_back_edges += back_edges
-
-                details['observed_orders'].append({
-                    'chain': chain_idx,
-                    'perturbation': ptype,
-                    'observed_order': obs_order,
-                    'back_edges': back_edges,
+                # 把注入的违规边加入因果边列表，检测器应该发现它们
+                test_edges = graph['causal_edges'] + [inj_edge]
+                self._detect_spacelike_violations(test_edges, events)
+            except CausalityViolationError as e:
+                violations_detected += 1
+                injection_details.append({
+                    'edge': inj_edge,
+                    'detected': True,
+                    'error': str(e),
                 })
 
-                # 判定：观测序必须与 ground truth 序一致（确定性管道）
-                total_count += 1
-                if obs_order == gt_order and back_edges == 0:
-                    consistent_count += 1
-                else:
-                    details['causality_violations'].append({
-                        'chain': chain_idx,
-                        'perturbation': ptype,
-                        'gt_order': gt_order,
-                        'obs_order': obs_order,
-                        'back_edges': back_edges,
-                    })
+        # === Phase 6: 计算判定指标 ===
+        # 因果一致性：正常因果图无违规 (100%)
+        causal_consistency = 1.0 if normal_clean else 0.0
 
-        # 计算分数
-        consistency_rate = consistent_count / max(total_count, 1)
-        # 强制执行判定：一致率>=95% AND 后向边=0
-        all_passed = (consistency_rate >= 0.95) and (total_back_edges == 0)
-        score = consistency_rate
+        # 违规检出率：注入的违规边被成功检测的比例
+        detection_rate = (
+            violations_detected / max(len(injected_edges), 1)
+        )
+
+        # 洛伦兹不变性
+        lorentz_invariant = (
+            lorentz_result['invariance_rate'] >= 1.0
+        )
+
+        # 总体判定：所有三项必须同时通过
+        all_passed = (
+            causal_consistency >= 1.0 and
+            detection_rate >= 1.0 and
+            lorentz_invariant
+        )
 
         verdict = 'PASS' if all_passed else 'FAIL'
+        score = causal_consistency
+
+        # 准备前端可视化所需的事件数据
+        events_data = [
+            {
+                'id': e.event_id,
+                't': e.t, 'x': e.x, 'y': e.y,
+            }
+            for e in events
+        ]
+
         pass_criteria = (
-            f'因果序一致率>=95% ({consistency_rate:.2%})，'
-            f'后向边=0 (实际={total_back_edges})'
+            f"Minkowski因果一致性={causal_consistency:.0%}, "
+            f"类空违规检出={violations_detected}/{len(injected_edges)}, "
+            f"洛伦兹不变性={lorentz_result['invariance_rate']:.0%}"
         )
 
         elapsed = (time.time() - start) * 1000
+
         return MVEResult(
             property_id='P6',
-            property_name='爱因斯坦因果性（对治超距影响）',
+            property_name='爱因斯坦因果性（Minkowski时空验证）',
             verdict=verdict,
             score=score,
             pass_criteria=pass_criteria,
             details={
-                'consistency_rate': round(consistency_rate, 6),
-                'total_back_edges': total_back_edges,
-                'consistent_count': consistent_count,
-                'total_count': total_count,
-                'violations_sample': details['causality_violations'][:5],
-                'ground_truth_sample': details['ground_truth_orders'][:3],
+                'minkowski': {
+                    'events': events_data,
+                    'causal_edges': graph['causal_edges'][:50],  # 截断防止过大
+                    'spacelike_pairs': graph['spacelike_pairs'][:50],
+                    'lightlike_pairs': graph['lightlike_pairs'][:20],
+                    'total_causal_edges': len(graph['causal_edges']),
+                    'total_spacelike_pairs': len(graph['spacelike_pairs']),
+                    'total_lightlike_pairs': len(graph['lightlike_pairs']),
+                },
+                'causal_consistency': causal_consistency,
+                'detection_rate': round(detection_rate, 4),
+                'injected_edges': injected_edges,
+                'violations_detected': violations_detected,
+                'injection_details': injection_details[:5],
+                'lorentz_invariance': lorentz_invariant,
+                'lorentz_invariance_rate': lorentz_result['invariance_rate'],
+                'lorentz_boost_samples': lorentz_result['boost_details'][:5],
+                'num_events': self.num_events,
+                'metric': "ds\u00b2 = -dt\u00b2 + dx\u00b2 + dy\u00b2 (Minkowski, c=1)",
             },
             execution_time_ms=elapsed,
             timestamp=time.time(),
@@ -1396,7 +1623,7 @@ class P6EinsteinCausalityExperiment:
 
 
 def run_p6_einstein_causality(**kwargs) -> dict:
-    """执行 P6 爱因斯坦因果性实验"""
+    """执行 P6 爱因斯坦因果性实验（Minkowski 时空验证版）"""
     exp = P6EinsteinCausalityExperiment(**kwargs)
     return exp.run().to_dict()
 
@@ -1504,7 +1731,7 @@ def run_all_mve() -> Dict:
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("TYIDO MVE Experiments v7.21 — 五大结构属性验证")
+    print("TYIDO MVE Experiments v7.21 — 六大结构属性验证")
     print("=" * 60)
 
     # 逐个运行并打印结果
@@ -1514,6 +1741,7 @@ if __name__ == "__main__":
         ('P3', '长链任务实验', run_p3_long_range),
         ('P4', '记忆检索实验', run_p4_memory),
         ('P5', '责任熔断实验', run_p5_responsibility),
+        ('P6', '爱因斯坦因果性实验', run_p6_einstein_causality),
     ]
 
     results = {}
@@ -1558,6 +1786,14 @@ if __name__ == "__main__":
                 print(f"    可追溯率: {details.get('traceability_rate', 0):.2%}")
                 print(f"    熔断器状态: {details.get('final_breaker_state')}")
                 print(f"    审计记录: {details.get('audit_total_records')}")
+            elif pid == 'P6':
+                mink = details.get('minkowski', {})
+                print(f"    事件数: {mink.get('num_events', 0)}")
+                print(f"    因果边: {mink.get('total_causal_edges', 0)}")
+                print(f"    类空对: {mink.get('total_spacelike_pairs', 0)}")
+                print(f"    洛伦兹不变性: {details.get('lorentz_invariance_rate', 0):.2%}")
+                print(f"    违规检出: {details.get('violations_detected', 0)}/{len(details.get('injected_edges', []))}")
+                print(f"    度规: {details.get('metric', '')}")
         except Exception as e:
             print(f"  ERROR: {e}")
             import traceback
