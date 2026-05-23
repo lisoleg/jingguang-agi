@@ -4253,6 +4253,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <button onclick="runMVE('p3')" style="font-size:9px;padding:2px 6px;border:1px solid var(--accent);background:var(--panel-bg);color:var(--accent);border-radius:3px;cursor:pointer;">P3</button>
           <button onclick="runMVE('p4')" style="font-size:9px;padding:2px 6px;border:1px solid var(--safe);background:var(--panel-bg);color:var(--safe);border-radius:3px;cursor:pointer;">P4</button>
           <button onclick="runMVE('p5')" style="font-size:9px;padding:2px 6px;border:1px solid var(--txt2);background:var(--panel-bg);color:var(--txt2);border-radius:3px;cursor:pointer;">P5</button>
+          <button onclick="runMVE('p6')" style="font-size:9px;padding:2px 6px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:3px;cursor:pointer;">P6</button>
         </div>
         <div class="v77-row">
           <div class="v77-label">P1 一致性</div>
@@ -4269,8 +4270,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         <div class="v77-row">
           <div class="v77-label">P5 可锚定</div>
           <div class="v77-badge" id="v721-p5" style="color:var(--txt3)">—</div>
+          <div class="v77-label">P6 因果性</div>
+          <div class="v77-badge" id="v721-p6" style="color:var(--txt3)">—</div>
+        </div>
+        <div class="v77-row">
           <div class="v77-label">总计</div>
           <div class="v77-badge" id="v721-total" style="color:var(--txt3)">—</div>
+          <div class="v77-label">版本</div>
+          <div class="v77-badge" id="v721-version" style="color:var(--txt3);font-size:8px;">v7.21</div>
         </div>
         <div id="v721-mve-detail" style="font-size:8px;color:var(--txt2);max-height:100px;overflow-y:auto;margin-top:4px;padding:4px;background:rgba(0,0,0,0.15);border-radius:4px;display:none;"></div>
       </div>
@@ -11433,7 +11440,7 @@ function updateV720Panels(data) {
 // ==================== v7.21 TYIDO MVE 实验面板 ====================
 
 const _MVE_COLORS = { PASS: '#34d399', FAIL: '#f87171', RUNNING: '#fbbf24', '—': 'var(--txt3)' };
-const _MVE_NAMES = { p1: 'P1一致性', p2: 'P2可回写', p3: 'P3可保持', p4: 'P4可寻址', p5: 'P5可锚定' };
+const _MVE_NAMES = { p1: 'P1一致性', p2: 'P2可回写', p3: 'P3可保持', p4: 'P4可寻址', p5: 'P5可锚定', p6: 'P6因果性' };
 
 function _mveBadge(id, verdict, score) {
   const el = document.getElementById(id);
@@ -11450,7 +11457,7 @@ function _mveSetRunning(ids) {
 }
 
 function runMVE(which) {
-  const allIds = ['v721-p1','v721-p2','v721-p3','v721-p4','v721-p5','v721-total'];
+  const allIds = ['v721-p1','v721-p2','v721-p3','v721-p4','v721-p5','v721-p6','v721-version','v721-total'];
   if (which === 'all') {
     _mveSetRunning(allIds);
   } else {
@@ -11497,7 +11504,7 @@ function updateMVEAllResults(data) {
   // data.results has keys P1, P2, ..., P5; data.summary has total/passed/failed
   const results = data.results || data;
   const summary = data.summary || {};
-  ['P1','P2','P3','P4','P5'].forEach(pKey => {
+  ['P1','P2','P3','P4','P5','P6'].forEach(pKey => {
     const prop = pKey.toLowerCase();
     const r = results[pKey] || {};
     const v = r.verdict || 'FAIL';
@@ -11517,7 +11524,7 @@ function updateMVEAllResults(data) {
   const detailEl = document.getElementById('v721-mve-detail');
   if (detailEl) {
     let html = '';
-    ['P1','P2','P3','P4','P5'].forEach(pKey => {
+    ['P1','P2','P3','P4','P5','P6'].forEach(pKey => {
       const prop = pKey.toLowerCase();
       const r = results[pKey] || {};
       const v = r.verdict || '?';

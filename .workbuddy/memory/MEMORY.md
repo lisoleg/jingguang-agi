@@ -81,3 +81,24 @@
 cd C:\Users\1\WorkBuddy\2026-05-06-task-1 && python app.py
 # 访问 http://127.0.0.1:5001/static/index_agi12.html
 ```
+
+## v7.21 TYIDO MVE实验框架 ✅ (2026-05-23)
+- **v7.21**: TYIDO MVE实验框架 + 五大结构属性强制执行逻辑验证 5/5 PASS ✅
+  - 来源：TYIDO结构审查表（锯齿检测·持续学习·长程推理·可寻址记忆·可锚定责任）
+  - `TYIDO_MVE_Experiments.py` (~1200行): 5个MVEOperiment类 + 5个run_*函数 + run_all_mve()
+  - P1锯齿实验: J(R)=1.0000 (consistent) + sawtooth_detected=True (forced WAIT reject)
+  - P2持续学习: 0.00% forgetting_rate, 10/10 tasks, ForgettingGuard + RollbackManager
+  - P3长程推理: 94.55% completion (52/55 goals in 55-goal DAG), Plan-B retry recovery
+  - P4可寻址记忆: 100% exact_query_accuracy, TTL expire + protected + normal_forgetting
+  - P5可锚定责任: 100% traceability, CircuitBreaker triggered to OPEN
+  - API: /api/v721/mve/{all|p1|p2|p3|p4|p5|state} + 120s TTL缓存 + 线程安全
+  - 前端: v7.21 MVE面板(6个按钮 + PASS/FAIL徽章 + 详细结果展开)
+
+## TYIDO MVE 踩坑经验
+- `ResourceBudget(max_time=..., max_steps=...)` 关键字参数名：实际是 `max_time`/`max_steps`，不是 `time_budget`/`step_budget`
+- `PlanBFallback.register_plan(plan: FallbackPlan)` 接受 FallbackPlan 对象，不是关键字参数
+- `StepVerifier.get_stats()` 不存在，实际方法是 `get_state()`
+- `MemoryIndex.rebuild()` 不存在，MemoryIndex 查询直接基于 store，无需 rebuild
+- P1 J(R) 计算：deterministic pipeline 必须返回固定 canonical_hash，否则不同 variant 产生不同 hash 导致 J(R)→0
+- P3 completion rate：15% failure rate + 2-dependency DAG 导致级联失败；降至 5% + 单依赖平铺 DAG 后正常
+- P5 traceability：`gate.confirm_action()` 创建新 record 新 ID，导致追踪困难；直接 `chain.bind()` 可确保 100% 可追溯

@@ -8383,6 +8383,19 @@ def v721_mve_state():
         return jsonify({'error': str(e)}), 500
 
 
+
+
+@app.route('/api/v721/mve/p6', methods=['GET'])
+def v721_mve_p6():
+    """P6 Einstein Causality Experiment: causal order consistency >=95%, back-edges=0"""
+    try:
+        from TYIDO_MVE_Experiments import run_p6_einstein_causality
+        result = _run_mve_safe(run_p6_einstein_causality, 'p6')
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 # ==================== v7.18 沙箱增强·安全护盾 ====================
 
 _v718_state = {
