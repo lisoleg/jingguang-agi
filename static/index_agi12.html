@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taiyi-AGI (太乙因果机) 17.1 v7.18 — 沙箱增强·安全护盾·复合体理学v3.12</title>
+<title>Taiyi-AGI (太乙因果机) 20.2 v7.20 — 太一接口·AGI自我意识·苏格拉底拓扑网络 STN</title>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 
 <style>
@@ -4283,8 +4283,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
       <div id="ftel-console">
         <div class="console-entropy">
           <span style="font-size:10px;color:var(--txt2)">H</span>
-          <div class="console-entropy-track">
-            <div class="console-entropy-fill" id="console-entropy-fill" style="width:30%"></div>
+          <div style="position:relative;display:inline-block">
+            <div class="console-entropy-track">
+              <div class="console-entropy-fill" id="console-entropy-fill" style="width:30%"></div>
+            </div>
+            <!-- S_threshold 阈值标记（推论3.1.1临界点） -->
+            <div id="console-threshold-marker" style="position:absolute;left:50%;top:-3px;width:1px;height:12px;background:var(--amber);opacity:.7" title="S_threshold: 信息熵临界阈值"></div>
           </div>
           <span class="console-entropy-val" id="console-entropy-val">0.30</span>
         </div>
@@ -4368,11 +4372,25 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <div class="dag-stat" title="整合关系：横向整合多线索"><div class="dag-dot dot-follow"></div><span>整合</span></div>
           <div class="dag-stat" title="诘辩关系：苏格拉底诘辩追问"><div style="width:8px;height:8px;border-radius:50%;background:#f97316;display:inline-block"></div><span>诘辩</span></div>
         </div>
-        <!-- 四象相干模态已移至左侧分析仪表盘 -->
+        <!-- STN Phase 4: Relation Map 面板 -->
+        <div id="relation-map-panel" style="display:none;flex-direction:column;height:50%;border-top:1px solid var(--bdr);" data-hint="Relation Map：显示当前选中节点的入度/出度关系图谱（苏格拉底拓扑）">
+          <div class="right-header">
+            <span class="right-icon" style="color:var(--si)">&#128280;</span>
+            <span class="right-title">Relation Map</span>
+            <span class="rel-badge" id="rel-map-badge">0 边</span>
+            <button class="btn-dag-toggle" onclick="closeRelationMap()" title="关闭">&times;</button>
+          </div>
+          <div id="relation-map-container" style="flex:1;position:relative;overflow:hidden">
+            <svg id="relation-map-svg" style="width:100%;height:100%"></svg>
+            <div id="relation-map-empty" style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--txt3);font-size:11px;position:absolute;top:0;left:0;width:100%">
+              点击DAG节点查看关系图谱
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-
+  
   <!-- 帮助弹窗 -->
   <div id="help-modal">
     <div class="help-content">
@@ -5996,37 +6014,88 @@ function renderDAG() {
       const g = dagG.append('g')
         .attr('transform', `translate(${qa.x},${qa.y})`)
         .attr('clip-path', `url(#${clipId})`)
+        .attr('data-stn-id', qa.global_id || '')
         .style('cursor', 'pointer')
         .on('click', () => {
-          // Phase 1: 点击 DAG 节点 → 激活 STN 树导航
           if (qa.global_id) {
             activateSTNNode(qa.global_id);
           } else {
             highlightHistory(qa.hist_idx);
           }
+        })
+        // 悬停联动：DAG节点 → 历史消息高亮
+        .on('mouseover', () => {
+          if (qa.hist_idx !== undefined) {
+            const items = document.querySelectorAll('#history .msg');
+            if (items[qa.hist_idx]) {
+              items[qa.hist_idx].style.boxShadow = '0 0 12px var(--acc-glow)';
+              items[qa.hist_idx].style.background = 'rgba(124,58,237,0.08)';
+            }
+          }
+        })
+        .on('mouseout', () => {
+          if (qa.hist_idx !== undefined) {
+            const items = document.querySelectorAll('#history .msg');
+            if (items[qa.hist_idx]) {
+              items[qa.hist_idx].style.boxShadow = '';
+              items[qa.hist_idx].style.background = '';
+            }
+          }
         });
 
-      // 节点背景
-      g.append('rect')
-        .attr('x', -nodeW / 2).attr('y', -nodeH / 2)
-        .attr('width', nodeW).attr('height', nodeH)
-        .attr('rx', 6).attr('class', nodeClass);
+      // 节点形状：S=六边形，E=菱形，其余=矩形
+      const nodeType = qa.node_type || 'A';
+      if (nodeType === 'S') {
+        // 六边形 (Hexagon)
+        const r = nodeW / 2, h = nodeH / 2;
+        const hexPoints = [
+          [-r*0.75, -h], [-r, 0], [-r*0.75, h],
+          [r*0.75, h], [r, 0], [r*0.75, -h]
+        ].map(p => p[0] + ',' + p[1]).join(' ');
+        g.append('polygon')
+          .attr('points', hexPoints)
+          .attr('fill', 'rgba(245,158,11,0.18)')
+          .attr('stroke', '#F59E0B')
+          .attr('stroke-width', 2)
+          .attr('class', nodeClass + ' dag-node-hex');
+      } else if (nodeType === 'E') {
+        // 菱形 (Diamond)
+        const r = nodeW / 2, h = nodeH / 2;
+        const diaPoints = [[0,-h],[r,0],[0,h],[-r,0]].map(p=>p[0]+','+p[1]).join(' ');
+        g.append('polygon')
+          .attr('points', diaPoints)
+          .attr('fill', 'rgba(239,68,68,0.18)')
+          .attr('stroke', '#EF4444')
+          .attr('stroke-width', 2)
+          .attr('class', nodeClass + ' dag-node-diamond');
+      } else {
+        // 矩形（Q/A/G）
+        g.append('rect')
+          .attr('x', -nodeW / 2).attr('y', -nodeH / 2)
+          .attr('width', nodeW).attr('height', nodeH)
+          .attr('rx', 6).attr('class', nodeClass);
+      }
 
-      // 标签（Q/A/G）+ S/E 徽章
-      const labelBg = isG ? 'var(--goal)' : (isQ ? 'var(--acc)' : 'var(--green)');
+      // 标签背景色（按文章设计：Q靛蓝、A青绿、S琥珀、E朱红）
+      let labelBg = 'var(--acc)';
+      if (nodeType === 'S') labelBg = '#F59E0B';
+      else if (nodeType === 'E') labelBg = '#EF4444';
+      else if (isA && !isQ) labelBg = 'var(--green)';
+      else if (isG) labelBg = 'var(--goal)';
+      const labelTextColor = (nodeType === 'S' || nodeType === 'E') ? '#000' : '#fff';
       let labelText = qa.global_id || (isG ? 'G' : (isQ ? 'Q' : 'A'));
-      // Phase 1: S/Summary 和 E/Elenchus 节点类型后缀
-      if (qa.node_type === 'S') labelText = 'S' + (qa.global_id || '').replace(/[QA]/g, '');
-      if (qa.node_type === 'E') labelText = 'E' + (qa.global_id || '').replace(/[QA]/g, '');
-      const badgeClass = qa.node_type === 'S' ? 'dag-badge dag-badge-s' : (qa.node_type === 'E' ? 'dag-badge dag-badge-e' : 'dag-badge');
+      if (nodeType === 'S') labelText = 'S' + (qa.global_id||'').replace(/[QA]/g,'');
+      if (nodeType === 'E') labelText = 'E' + (qa.global_id||'').replace(/[QA]/g,'');
+      const badgeClass = nodeType === 'S' ? 'dag-badge dag-badge-s' : (nodeType === 'E' ? 'dag-badge dag-badge-e' : 'dag-badge');
+      // 标签矩形
       g.append('rect')
-        .attr('x', -nodeW / 2 + 5).attr('y', -nodeH / 2 + 5)
+        .attr('x', -nodeW/2+5).attr('y', -nodeH/2+5)
         .attr('width', 28).attr('height', 16).attr('rx', 3)
         .attr('fill', labelBg);
-
       g.append('text')
-        .attr('x', -nodeW / 2 + 19).attr('y', -nodeH / 2 + 16)
+        .attr('x', -nodeW/2+19).attr('y', -nodeH/2+16)
         .attr('text-anchor', 'middle').attr('class', badgeClass).attr('font-size', '9px')
+        .attr('fill', labelTextColor)
         .text(labelText);
 
       // 折叠按钮（有子节点时显示）
@@ -6332,6 +6401,7 @@ function activateSTNNode(globalId) {
   renderHistory();      // 路径感知渲染
   renderDAG();          // 高亮活跃路径
   renderSTNBreadcrumb();
+  renderRelationMap(globalId);  // 更新Relation Map面板
 }
 
 // 切换子树折叠状态
@@ -6353,6 +6423,7 @@ function showAllHistory() {
   renderHistory();
   renderDAG();
   renderSTNBreadcrumb();
+  closeRelationMap();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -6513,10 +6584,29 @@ function updateConsoleEntropy() {
   const fill = document.getElementById('console-entropy-fill');
   const val = document.getElementById('console-entropy-val');
   if (fill) {
+    // 动态颜色：绿(<0.5) → 黄(0.5-0.75) → 红(>0.75)
+    let colorClass = '';
+    if (entropy > 0.75) colorClass = ' danger';
+    else if (entropy > 0.5) colorClass = ' warn';
+    fill.className = 'console-entropy-fill' + colorClass;
     fill.style.width = (entropy * 100) + '%';
-    fill.className = 'console-entropy-fill' + (entropy > 0.75 ? ' danger' : entropy > 0.5 ? ' warn' : '');
   }
   if (val) val.textContent = entropy.toFixed(2);
+
+  // 动态提示文字（按文章设计推论3.1.1）
+  const statusEl = document.getElementById('console-status');
+  if (statusEl && !statusEl._cmdOverride) {
+    if (entropy > 0.75) {
+      statusEl.textContent = '\u{1F6A8} 上下文临界相变！建议立即 /summarize';
+      statusEl.style.color = '#ef4444';
+    } else if (entropy > 0.5) {
+      statusEl.textContent = '\u{1F4A1} 检测到信息密度增加，建议创建子节点';
+      statusEl.style.color = 'var(--amber)';
+    } else {
+      statusEl.textContent = '流贯通畅';
+      statusEl.style.color = 'var(--txt3)';
+    }
+  }
 
   // 高熵时自动提示摘要
   if (entropy > 0.75 && history.length > 20 && !STATE._autoSummaryShown) {
@@ -6530,9 +6620,10 @@ function updateConsoleEntropy() {
 function setConsoleStatus(msg) {
   const el = document.getElementById('console-status');
   if (el) {
+    el._cmdOverride = true;
     el.textContent = msg;
     el.style.color = 'var(--acc)';
-    setTimeout(() => { el.style.color = 'var(--txt3)'; }, 3000);
+    setTimeout(() => { el._cmdOverride = false; el.style.color = 'var(--txt3)'; }, 5000);
   }
 }
 
@@ -6666,6 +6757,136 @@ function generateZigzagPath(x1, y1, x2, y2, segments) {
   }
   d += ' L' + x2 + ',' + y2;
   return d;
+}
+
+// ════════════════════════════════════════════════════════════════
+// STN Phase 4 — Relation Map (文章设计: 右侧关系图谱面板)
+// ════════════════════════════════════════════════════════════════
+function renderRelationMap(globalId) {
+  const panel = document.getElementById('relation-map-panel');
+  const emptyEl = document.getElementById('relation-map-empty');
+  const badge = document.getElementById('rel-map-badge');
+  if (!panel) return;
+
+  const node = findSTNNode(globalId);
+  if (!node) { panel.style.display = 'none'; return; }
+
+  panel.style.display = 'flex';
+
+  // 收集入度和出度节点
+  const inNodes = [];   // 指向当前节点（父节点、引用目标等）
+  const outNodes = [];  // 当前节点指向的（子节点、引用发出等）
+  const { threads } = STATE.dag_data;
+
+  threads.forEach(t => {
+    t.qa_pairs.forEach(qa => {
+      // 入度：其他节点指向当前节点
+      if (qa.parent_id === globalId) {
+        outNodes.push({ node: qa, relation: qa.relation || 'QA' });
+      }
+      if (qa.children_ids && qa.children_ids.includes(globalId)) {
+        inNodes.push({ node: qa, relation: qa.relation || 'QA' });
+      }
+      if (qa.ref_targets && qa.ref_targets.includes(globalId)) {
+        inNodes.push({ node: qa, relation: 'REF' });
+      }
+    });
+  });
+
+  // 父节点作为入度
+  if (node.parent_id) {
+    const parentNode = findSTNNode(node.parent_id);
+    if (parentNode) inNodes.unshift({ node: parentNode, relation: node.relation || 'QA' });
+  }
+  // 子节点作为出度
+  if (node.children_ids) {
+    node.children_ids.forEach(cid => {
+      const child = findSTNNode(cid);
+      if (child && !outNodes.find(o => o.node.global_id === cid)) {
+        outNodes.push({ node: child, relation: child.relation || 'QA' });
+      }
+    });
+  }
+
+  const totalEdges = inNodes.length + outNodes.length;
+  if (badge) badge.textContent = totalEdges + ' 边';
+
+  // 渲染 SVG 关系图谱
+  const svgEl = document.getElementById('relation-map-svg');
+  const svg = d3.select(svgEl);
+  svg.selectAll('*').remove();
+
+  if (totalEdges === 0) {
+    if (emptyEl) emptyEl.style.display = 'flex';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  const w = svgEl.clientWidth || 300;
+  const h = svgEl.clientHeight || 200;
+  const cx = w / 2, cy = h / 2;
+
+  // 中心节点
+  const nodeLabel = (node.global_id || '').replace(/[QA]/, '') || '?';
+  const nodeType = node.node_type || (node.type === 'question' || node.type === 'user' ? 'Q' : 'A');
+  const centerColor = nodeType === 'S' ? '#F59E0B' : nodeType === 'E' ? '#EF4444' : nodeType === 'Q' ? '#4F46E5' : '#10B981';
+
+  svg.append('circle').attr('cx', cx).attr('cy', cy).attr('r', 22)
+    .attr('fill', centerColor + '30').attr('stroke', centerColor).attr('stroke-width', 2);
+  svg.append('text').attr('x', cx).attr('y', cy + 4)
+    .attr('text-anchor', 'middle').attr('fill', '#fff').attr('font-size', '12px').attr('font-weight', '700')
+    .text(nodeLabel);
+
+  // 左侧：入度节点
+  const inCount = inNodes.length;
+  const outCount = outNodes.length;
+  const maxNodes = Math.max(inCount, outCount, 1);
+
+  inNodes.forEach((item, i) => {
+    const angle = -Math.PI * 0.6 + (Math.PI * 1.2 / Math.max(maxNodes - 1, 1)) * i;
+    const nx = cx + Math.cos(angle) * (w * 0.38);
+    const ny = cy + Math.sin(angle) * (h * 0.38);
+    const relColor = SOCRATIC_RELATIONS[item.relation]?.color || 'var(--txt3)';
+    const label = (item.node.global_id || '').replace(/[QA]/, '') || '?';
+
+    // 连线
+    svg.append('line').attr('x1', nx).attr('y1', ny).attr('x2', cx).attr('y2', cy)
+      .attr('stroke', relColor).attr('stroke-width', 1.5).attr('stroke-dasharray', '4,2').attr('opacity', 0.6);
+    // 节点圆
+    svg.append('circle').attr('cx', nx).attr('cy', ny).attr('r', 16)
+      .attr('fill', relColor + '25').attr('stroke', relColor).attr('stroke-width', 1.5);
+    svg.append('text').attr('x', nx).attr('y', ny + 3)
+      .attr('text-anchor', 'middle').attr('fill', '#ccc').attr('font-size', '10px')
+      .text(label);
+    // 入度标记
+    svg.append('text').attr('x', nx - 20).attr('y', ny - 12)
+      .attr('font-size', '8px').attr('fill', relColor).text('IN');
+  });
+
+  // 右侧：出度节点
+  outNodes.forEach((item, i) => {
+    const angle = Math.PI * 0.4 + (Math.PI * 1.2 / Math.max(maxNodes - 1, 1)) * i;
+    const nx = cx + Math.cos(angle) * (w * 0.38);
+    const ny = cy + Math.sin(angle) * (h * 0.38);
+    const relColor = SOCRATIC_RELATIONS[item.relation]?.color || 'var(--txt3)';
+    const label = (item.node.global_id || '').replace(/[QA]/, '') || '?';
+
+    // 连线（实线=出度）
+    svg.append('line').attr('x1', cx).attr('y1', cy).attr('x2', nx).attr('y2', ny)
+      .attr('stroke', relColor).attr('stroke-width', 1.5).attr('opacity', 0.6);
+    svg.append('circle').attr('cx', nx).attr('cy', ny).attr('r', 16)
+      .attr('fill', relColor + '25').attr('stroke', relColor).attr('stroke-width', 1.5);
+    svg.append('text').attr('x', nx).attr('y', ny + 3)
+      .attr('text-anchor', 'middle').attr('fill', '#ccc').attr('font-size', '10px')
+      .text(label);
+    svg.append('text').attr('x', nx - 16).attr('y', ny - 12)
+      .attr('font-size', '8px').attr('fill', relColor).text('OUT');
+  });
+}
+
+function closeRelationMap() {
+  const panel = document.getElementById('relation-map-panel');
+  if (panel) panel.style.display = 'none';
 }
 
 function getLastAnswerThreadIdx() {
@@ -6906,6 +7127,27 @@ function renderHistory() {
         ${rqHtml}
       `;
     }
+
+    div.addEventListener('mouseover', () => {
+      // 悬停联动：历史消息 → DAG 节点高亮脉冲
+      if (m._dag_node_id || m._ts) {
+        const gid = m._dag_node_id || findSTNNodeByHistIdx(idx);
+        if (gid) {
+          const el = document.querySelector(`[data-stn-id="${gid}"]`);
+          if (el) {
+            el.style.filter = 'drop-shadow(0 0 8px var(--acc2))';
+            el.style.transition = 'filter 0.2s';
+          }
+        }
+      }
+    });
+    div.addEventListener('mouseout', () => {
+      const gid = m._dag_node_id || findSTNNodeByHistIdx(idx);
+      if (gid) {
+        const el = document.querySelector(`[data-stn-id="${gid}"]`);
+        if (el) el.style.filter = '';
+      }
+    });
 
     el.appendChild(div);
   });
