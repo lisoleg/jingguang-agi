@@ -61,12 +61,29 @@ app.json_encoder = NumpyEncoder  # type: ignore
 @app.errorhandler(Exception)
 def handle_global_exception(e):
     """全局异常捕获，返回 JSON 格式错误，而非 HTML 500 页面"""
-    tb = traceback.format_exc()
-    print(f"[GLOBAL ERROR] {e}\n{tb}")
-    return jsonify({
-        'error': str(e),
-        'trace': tb
-    }), 500
+    import sys, traceback as tb_mod
+    tb_str = ''
+    try:
+        tb_str = tb_mod.format_exc()
+    except:
+        pass
+    # 安全打印（避免 Windows 控制台编码问题）
+    try:
+        sys.stderr.write(f"[GLOBAL ERROR] {type(e).__name__}: {str(e)[:200]}\n")
+        if tb_str:
+            sys.stderr.write(tb_str[-2000:])  # 只打印最后 2000 字符
+    except:
+        pass
+    # 构造安全的可序列化错误响应
+    try:
+        err_msg = str(e)[:500]
+        return jsonify({
+            'error': err_msg,
+            'trace': tb_str[-3000:] if tb_str else ''
+        }), 500
+    except:
+        # 最后兜底：返回纯文本 500
+        return 'Internal Server Error', 500
 
 # 全局 AGI 系统（线程安全初始化）
 # 使用 TaiyiAGI_V2（23个模块）

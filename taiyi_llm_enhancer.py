@@ -563,13 +563,13 @@ class TaiyiLLMEnhancer:
         # 选择提示模板
         if knowledge_context and self.enable_rag:
             return SYSTEM_PROMPT_RAG.format(
-                knowledge_context=knowledge_context[:2000],  # 限制长度
-                memory_context=memory_context[:1000] if memory_context else "无相关记忆",
+                knowledge_context=knowledge_context[:1200],  # 限制长度（原2000→1200，防止input length）
+                memory_context=memory_context[:600] if memory_context else "无相关记忆",
                 tone_requirement=tone_req
             ) + tool_def
         elif memory_context and self.enable_memory:
             return SYSTEM_PROMPT_WITH_MEMORY.format(
-                memory_context=memory_context[:1500],
+                memory_context=memory_context[:800],  # 原1500→800
                 tone_requirement=tone_req
             ) + tool_def
         else:
@@ -863,55 +863,128 @@ class TaiyiLLMEnhancer:
             tool_results=tool_results
         )
     
+    def _estimate_tokens(self, text: str) -> int:
+        """粗略估算token数（中文约1.5字/token，英文约4字符/token）"""
+        if not text:
+            return 0
+        chinese = sum(1 for c in text if '\u4e00' <= c <= '\u9fff')
+        others = len(text) - chinese
+        return int(chinese * 1.5 + others / 3.5)
+
+    def _truncate_messages(self, messages: List[Dict], max_tokens: int = 12000) -> List[Dict]:
+        """
+        智能截断消息历史，保留：
+        1. 第一条 system prompt（截断到2000 token）
+        2. 最近N轮对话（从后往前保留，直到达到token预算）
+        """
+        if not messages:
+            return messages
+        
+        result = []
+        total = 0
+        
+        # 1. 保留并截断 system prompt
+        if messages[0].get("role") == "system":
+            sys_msg = messages[0].copy()
+            sys_text = sys_msg["content"]
+            sys_tokens = self._estimate_tokens(sys_text)
+            if sys_tokens > 2000:
+                # 截断：保留前1500 token + 末尾500 token
+                keep_start = int(len(sys_text) * 1500 / sys_tokens)
+                keep_end = int(len(sys_text) * 500 / sys_tokens)
+                sys_msg["content"] = sys_text[:max(keep_start, 500)] + "\n[... 内容已截断 ...]\n" + sys_text[-max(keep_end, 200):]
+                print(f"⚠️ System prompt 已截断: {sys_tokens} → ~2000 tokens")
+            result.append(sys_msg)
+            total += min(sys_tokens, 2000)
+        
+        # 2. 从后往前保留对话历史
+        history_msgs = messages[1:]
+        kept = []
+        for msg in reversed(history_msgs):
+            t = self._estimate_tokens(msg.get("content", ""))
+            if total + t > max_tokens:
+                print(f"⚠️ 历史消息已截断: 保留最近 {len(kept)} 条，跳过 {len(history_msgs) - len(kept)} 条")
+                break
+            kept.append(msg)
+            total += t
+        
+        result.extend(reversed(kept))
+        return result
+
     def _call_llm(self, messages: List[Dict],
                    max_tokens: int, temperature: float,
                    image_base64: str = None,
                    stream_callback: callable = None) -> str:
-        """调用LLM（支持多模态图片输入、流式输出）"""
+        """调用LLM（支持多模态图片输入、流式输出）
+        
+        自动处理 input length too long 错误：截断历史后重试
+        """
         if not self.llm.active_backend:
             return "[无可用LLM后端]"
 
+        # 先尝试截断，避免第一轮就失败
+        original_len = len(messages)
+        messages = self._truncate_messages(messages)
+        if len(messages) < original_len:
+            print(f"⚠️ 消息已自动截断: {original_len} → {len(messages)} 条")
+
         try:
-            # 流式输出模式
-            if stream_callback and hasattr(self.llm.active_backend, 'chat_with_image_stream'):
-                return self._call_llm_stream(messages, max_tokens, temperature, image_base64, stream_callback)
-
-            # 获取最新用户消息内容
-            latest_content = messages[-1]["content"] if messages else ""
-
-            # 使用支持多模态的chat接口
-            if hasattr(self.llm.active_backend, 'chat_with_image'):
-                # 多模态后端
-                response = self.llm.active_backend.chat_with_image(
-                    content=latest_content,
-                    image_base64=image_base64,
-                    history=messages[:-1] if len(messages) > 1 else None,
-                    system_prompt=messages[0]["content"] if messages and messages[0]["role"] == "system" else None,
-                    max_tokens=max_tokens,
-                    temperature=temperature
-                )
-            elif hasattr(self.llm.active_backend, 'chat'):
-                # 标准chat接口
-                response = self.llm.active_backend.chat(
-                    latest_content,
-                    history=messages[:-1] if len(messages) > 1 else None,
-                    system_prompt=messages[0]["content"] if messages and messages[0]["role"] == "system" else None
-                )
-            else:
-                # Fallback: 拼接消息
-                prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
-                response = self.llm.generate(prompt, max_tokens, temperature)
-
-            return response.strip()
+            return self._call_llm_core(messages, max_tokens, temperature, image_base64, stream_callback)
         except Exception as e:
+            err_str = str(e)
+            # 输入过长：截断后重试一次
+            if "input length" in err_str.lower() or "too long" in err_str.lower():
+                print(f"⚠️ 检测到输入过长，正在智能截断后重试... (error: {err_str[:100]})")
+                messages = self._truncate_messages(messages, max_tokens=6000)  # 更激进的截断
+                try:
+                    return self._call_llm_core(messages, max_tokens, temperature, image_base64, stream_callback)
+                except Exception as e2:
+                    return f"[LLM调用失败(输入过长，已重试): {e2}]"
             return f"[LLM调用失败: {e}]"
+
+    def _call_llm_core(self, messages: List[Dict],
+                       max_tokens: int, temperature: float,
+                       image_base64: str = None,
+                       stream_callback: callable = None) -> str:
+        """实际执行LLM调用的核心方法"""
+        # 流式输出模式
+        if stream_callback and hasattr(self.llm.active_backend, 'chat_with_image_stream'):
+            return self._call_llm_stream(messages, max_tokens, temperature, image_base64, stream_callback)
+
+        # 获取最新用户消息内容
+        latest_content = messages[-1]["content"] if messages else ""
+
+        # 使用支持多模态的chat接口
+        if hasattr(self.llm.active_backend, 'chat_with_image'):
+            # 多模态后端
+            response = self.llm.active_backend.chat_with_image(
+                content=latest_content,
+                image_base64=image_base64,
+                history=messages[:-1] if len(messages) > 1 else None,
+                system_prompt=messages[0]["content"] if messages and messages[0]["role"] == "system" else None,
+                max_tokens=max_tokens,
+                temperature=temperature
+            )
+        elif hasattr(self.llm.active_backend, 'chat'):
+            # 标准chat接口
+            response = self.llm.active_backend.chat(
+                latest_content,
+                history=messages[:-1] if len(messages) > 1 else None,
+                system_prompt=messages[0]["content"] if messages and messages[0]["role"] == "system" else None
+            )
+        else:
+            # Fallback: 拼接消息
+            prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
+            response = self.llm.generate(prompt, max_tokens, temperature)
+
+        return response.strip()
     
     def _call_llm_stream(self, messages, max_tokens, temperature, image_base64, stream_callback):
         """流式LLM调用（内部方法）"""
         backend = self.llm.active_backend
         if not hasattr(backend, 'chat_with_image_stream'):
             # 后端不支持流式，降级为非流式
-            return self._call_llm(messages, max_tokens, temperature, image_base64)
+            return self._call_llm_core(messages, max_tokens, temperature, image_base64, stream_callback)
         
         latest_content = messages[-1]["content"] if messages else ""
         system_prompt = messages[0]["content"] if messages and messages[0]["role"] == "system" else None
