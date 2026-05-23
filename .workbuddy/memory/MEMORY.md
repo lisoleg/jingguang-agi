@@ -45,7 +45,10 @@
 - M175: 违规扣罚（BLOCK:50/FLAG:20/MASK:5 GC）
 
 ## 前端升级记录（index_agi12.html）
-- **STN 苏格拉底拓扑网络 Phase 1** ✅: 树结构(parent_id/children_ids) + 路径感知renderHistory + DAG活跃路径高亮 + 面包屑导航 + S/E节点类型 + 折叠
+- **STN 苏格拉底拓扑网络 Phase 1-4 全部完成** ✅: 树结构 + 路径感知renderHistory + DAG活跃路径高亮 + 面包屑导航 + S/E节点类型 + 折叠
+- **STN Phase 2** ✅: 悬停分叉按钮 + forkFromNode() + 多版本回答 + 版本切换器 + DAG分叉紫色虚线 + 多版本徽章
+- **STN Phase 3** ✅: 底部流贯控制台 + 熵值监控 + 命令系统(/fork /summarize /debate /integrate /help) + 高熵自动提示
+- **STN Phase 4** ✅: ELENCHUS锯齿线 + 微徽章(🔗📝⚔🔥) + 涟漪动画 + 发光脉冲 + DAG背景网格 + 摘要/诘辩消息样式
 - **M130 感知谱分解面板** ✅: L1-L5五层架构条 + 卷积核5×5 + PCA主因子 + 流贯帧率 + 对偶指示器
 - **M178 Agent行为分析面板** ✅: Agentic RL白盒化——工具调用分布 + 推理轨迹 + GC消耗Canvas图 + 奖励信号
 
@@ -55,6 +58,14 @@
 - M88幻觉检测逻辑反转：check返回_detect_hallucination而非not _detect_hallucination（v7.15已修复）
 - Python 3.10不支持f-string内反斜杠
 - M176/M177 API参数：memory_type需转MemoryType枚举（不能直接传str）；M177 spend/earn参数是reason不是description
+- M171 API返回值是dict(非object)：reduce()返回{'output','steps','normalized'}而非属性；verify_fixed_point_property()无'converges'字段
+- M102 compress_trajectory有状态：每次调用trajectory_count++，测试一致性需保存/恢复状态
+- M63 Mononumber用__new__ singleton：每次创建返回同一实例
+
+## TY/IDO 审计基础设施
+- `TYIDO_SelfConsistency.py`: P1共享基模块（SelfConsistencyChecker + ConsistencyResult）
+- `TYIDO_ContinuousLearning.py`: P2共享基模块（StateSnapshot + RollbackManager + ForgettingGuard + LearningRecord）
+- P2遗忘防护关键设计：只监控质量指标(排除history_length等数量指标)；auto-baseline在首次学习后设置；verdict只计drift/critical_loss
 
 ## 服务启动
 ```bash

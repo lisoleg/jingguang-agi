@@ -29,6 +29,15 @@ from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
 
+# TYIDO P4: 可寻址长期记忆
+try:
+    from TYIDO_AddressableMemory import (
+        AddressableMemoryStore, MemoryIndex, ForgetPolicy, MemoryMergeEngine
+    )
+    _P4_AVAILABLE = True
+except ImportError:
+    _P4_AVAILABLE = False
+
 
 class Layer(Enum):
     """L1-L5 层次枚举"""
@@ -148,6 +157,16 @@ class WalletPropertyBoundaryManager:
         
         # 边界强度阈值
         self.boundary_threshold = 0.5
+
+        # TYIDO P4: 可寻址长期记忆
+        self._p4_available = _P4_AVAILABLE
+        if self._p4_available:
+            self._p4_store = AddressableMemoryStore(max_size=5000)
+            self._p4_index = MemoryIndex(self._p4_store)
+            self._p4_forget_policy = ForgetPolicy(self._p4_store)
+            self._p4_merge_engine = MemoryMergeEngine(self._p4_store)
+        else:
+            self._p4_store = self._p4_index = self._p4_forget_policy = self._p4_merge_engine = None
     
     def define_boundary(self, wallet_id: str, layer: Layer, 
                        property_name: str, value: float) -> LayerProperty:
@@ -191,6 +210,15 @@ class WalletPropertyBoundaryManager:
         )
         
         self.wallets[wallet_id].append(prop)
+
+        # P4: 持久化边界定义到长期记忆
+        if self._p4_available and self._p4_store is not None:
+            mem_key = f"wallet:{wallet_id}:boundary:{layer.value}:{property_name}"
+            self._p4_store.write(mem_key, {
+                "value": prop.value, "boundary_strength": prop.boundary_strength,
+                "info_content": prop.info_content
+            }, tags=["wallet", "boundary", wallet_id, layer.value], importance=0.6)
+
         return prop
     
     def check_cross_layer_leakage(self, wallet_id: str) -> float:
@@ -361,6 +389,15 @@ class WalletPropertyBoundaryManager:
         )
         
         self.contributions[agent_id] = metrics
+
+        # P4: 持久化贡献度量到长期记忆
+        if self._p4_available and self._p4_store is not None:
+            self._p4_store.write(f"contribution:{agent_id}", {
+                "mutual_info": metrics.mutual_info, "kl_divergence": metrics.kl_divergence,
+                "shapley_value": metrics.shapley_value, "total_contribution": metrics.total_contribution,
+                "fairness_score": metrics.fairness_score
+            }, tags=["contribution", agent_id], importance=0.7)
+
         return metrics
     
     def compute_phi(self, system_state: List[float]) -> float:
@@ -523,6 +560,16 @@ class WalletPropertyBoundaryManager:
         )
         
         self.entropy_contracts[contract.contract_id] = contract
+
+        # P4: 持久化熵合约到长期记忆（受保护，不可遗忘）
+        if self._p4_available and self._p4_store is not None:
+            self._p4_store.write(f"entropy:{contract.contract_id}", {
+                "delta_s_carbon": contract.delta_s_carbon,
+                "delta_s_silicon": contract.delta_s_silicon,
+                "total_entropy": contract.total_entropy,
+                "is_valid": contract.is_valid
+            }, tags=["entropy_contract", "protected"], importance=0.9, protected=True)
+
         return contract
     
     def tee_generate_mnemonic_shards(self, mnemonic: str, n_shards: int, 
@@ -636,6 +683,16 @@ class WalletPropertyBoundaryManager:
         )
         
         self.ark_statuses[wallet_id] = status
+
+        # P4: 持久化约柜状态到长期记忆（受保护）
+        if self._p4_available and self._p4_store is not None:
+            self._p4_store.write(f"ark:{wallet_id}", {
+                "all_verified": status.all_verified,
+                "zkp_verified": status.zkp_verified,
+                "did_authenticated": status.did_authenticated,
+                "htlc_locked": status.htlc_locked
+            }, tags=["ark", "protected", wallet_id], importance=0.95, protected=True)
+
         return status
     
     def analyze_wallet(self, wallet_id: str) -> WalletBoundaryResult:
@@ -772,6 +829,33 @@ class WalletPropertyBoundaryManager:
             holistic_index=0.0,
             insight="未找到钱包数据"
         )
+
+    def get_state(self) -> Dict[str, Any]:
+        """获取模块状态（含 TYIDO P4 记忆诊断）"""
+        state = {
+            "module": "M71 WalletPropertyBoundaryManager",
+            "version": self.version,
+            "wallet_count": len(self.wallets),
+            "contribution_count": len(self.contributions),
+            "phi_detection_count": len(self.phi_detections),
+            "entropy_contract_count": len(self.entropy_contracts),
+            "ark_status_count": len(self.ark_statuses),
+            "phi_threshold": self.phi_threshold,
+            "boundary_threshold": self.boundary_threshold,
+        }
+        if self._p4_available and self._p4_store is not None:
+            store_stats = self._p4_store.get_stats()
+            state["tyido_p4"] = {
+                "available": True,
+                "store_stats": store_stats,
+                "index_stats": self._p4_index.get_stats(),
+                "forget_stats": self._p4_forget_policy.get_stats(),
+                "p4_keys": self._p4_store.keys(),
+                "verdict": "PASS" if store_stats['size'] > 0 else "EMPTY",
+            }
+        else:
+            state["tyido_p4"] = {"available": False, "verdict": "N/A"}
+        return state
 
 
 def get_instance():

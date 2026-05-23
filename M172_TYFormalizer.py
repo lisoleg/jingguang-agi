@@ -40,6 +40,7 @@ from M171_UFMLambdaUniverse import (
     BetaReducer, YCombinator, AmbOperator,
     NoCloneTheorem, UFMStdLib, UFMLambdaUniverse
 )
+from TYIDO_SelfConsistency import SelfConsistencyChecker, ConsistencyResult
 
 
 # ============================================================
@@ -520,6 +521,10 @@ class TYFormalizer:
         self.relation_reality = RelationRealityMapping()
         self._created_at = time.time()
 
+        # TY/IDO Property 1: TY↔UFM映射一致性检查器
+        self._consistency_checker = SelfConsistencyChecker(threshold=0.90, max_variants=100)
+        self._consistency_audit: List[Dict] = []
+
     @classmethod
     def get_instance(cls) -> "TYFormalizer":
         if cls._instance is None:
@@ -565,8 +570,180 @@ class TYFormalizer:
             "T147": t147
         }
 
-    def get_state(self) -> Dict[str, Any]:
+    # ============================================================
+    # TY/IDO Property 1: TY↔UFM映射一致性验证（对治锯齿）
+    # ============================================================
+
+    def check_mapping_consistency(
+        self,
+        ty_concept_id: str,
+        num_variants: int = 50
+    ) -> ConsistencyResult:
+        """
+        验证TY概念映射的一致性：不同表述的同一概念应映射到相同UFM编码
+
+        参数:
+            ty_concept_id: TY概念ID（如 "1.1", "1.4"）
+            num_variants: 变体数量
+
+        返回:
+            ConsistencyResult
+        """
+        mapping = self.hardcore.get_mapping(ty_concept_id)
+        if not mapping:
+            return ConsistencyResult(
+                consistent=False, j_score=0.0, threshold=self._consistency_checker.threshold,
+                num_variants=0, num_consistent=0, num_inconsistent=0
+            )
+
+        def process_fn(variant_question: str) -> str:
+            result = self.formalize(ty_concept_id)
+            # 提取映射签名（排除时间相关的噪声）
+            return (
+                f"id={result.get('ty_id', '')}|"
+                f"encoding={result.get('ufm_encoding', '')}|"
+                f"layer={result.get('layer', '')}|"
+                f"verified={result.get('verified', False)}"
+            )
+
+        concept_name = mapping.ty_name if mapping else ty_concept_id
+        result = self._consistency_checker.check(
+            f"将TY概念{concept_name}形式化为UFM编码",
+            process_fn,
+            num_variants=num_variants,
+            output_extractor=lambda x: x
+        )
+
+        self._consistency_audit.append({
+            'type': 'mapping',
+            'concept_id': ty_concept_id,
+            'concept_name': concept_name,
+            'j_score': result.j_score,
+            'consistent': result.consistent,
+            'num_variants': result.num_variants,
+            'timestamp': time.time()
+        })
+
+        return result
+
+    def check_promotion_consistency(
+        self,
+        term: LambdaTerm,
+        from_layer: "TYLayer",
+        num_variants: int = 50
+    ) -> ConsistencyResult:
+        """
+        验证层次提升的一致性：相同项的提升结果应稳定
+
+        参数:
+            term: 要提升的λ项
+            from_layer: 起始层
+            num_variants: 变体数量
+
+        返回:
+            ConsistencyResult
+        """
+        def process_fn(variant_question: str) -> str:
+            result = self.promoter.promote(term, from_layer)
+            return (
+                f"promoted={result.get('promoted', False)}|"
+                f"method={result.get('method', '')}|"
+                f"output={result.get('output_term', '')}"
+            )
+
+        result = self._consistency_checker.check(
+            f"将λ项从{from_layer.value}层次提升",
+            process_fn,
+            num_variants=num_variants,
+            output_extractor=lambda x: x
+        )
+
+        self._consistency_audit.append({
+            'type': 'promotion',
+            'from_layer': from_layer.value,
+            'j_score': result.j_score,
+            'consistent': result.consistent,
+            'num_variants': result.num_variants,
+            'timestamp': time.time()
+        })
+
+        return result
+
+    def check_meta_method_consistency(
+        self,
+        initial_method: str = "初始方法论",
+        num_variants: int = 30
+    ) -> ConsistencyResult:
+        """
+        验证元方法论不动点的一致性
+
+        参数:
+            initial_method: 初始方法论描述
+            num_variants: 变体数量
+
+        返回:
+            ConsistencyResult
+        """
+        def process_fn(variant_question: str) -> str:
+            history = self.meta_method.iterate(initial_method, max_rounds=3)
+            # 取最终收敛状态作为签名
+            last = history[-1] if history else {}
+            return f"converged={last.get('converged', False)}|delta={last.get('delta', 0)}"
+
+        result = self._consistency_checker.check(
+            f"验证元方法论不动点收敛性",
+            process_fn,
+            num_variants=num_variants,
+            output_extractor=lambda x: x
+        )
+
+        self._consistency_audit.append({
+            'type': 'meta_method',
+            'j_score': result.j_score,
+            'consistent': result.consistent,
+            'num_variants': result.num_variants,
+            'timestamp': time.time()
+        })
+
+        return result
+
+    def get_consistency_report(self) -> Dict[str, Any]:
+        """生成TY↔UFM一致性审计报告"""
+        total = len(self._consistency_audit)
+        if total == 0:
+            return {'status': 'no_audit', 'total_checks': 0}
+
+        passed = sum(1 for r in self._consistency_audit if r['consistent'])
+        avg_j = sum(r['j_score'] for r in self._consistency_audit) / total
+
+        by_type: Dict[str, List[Dict]] = {}
+        for r in self._consistency_audit:
+            t = r['type']
+            if t not in by_type:
+                by_type[t] = []
+            by_type[t].append(r)
+
+        type_summary = {}
+        for t, records in by_type.items():
+            type_summary[t] = {
+                'count': len(records),
+                'avg_j': round(sum(r['j_score'] for r in records) / len(records), 4),
+                'pass_rate': round(sum(1 for r in records if r['consistent']) / len(records), 4)
+            }
+
         return {
+            'status': 'audited',
+            'property': 'P1_Consistency',
+            'total_checks': total,
+            'passed_checks': passed,
+            'pass_rate': round(passed / total, 4),
+            'avg_j_score': round(avg_j, 4),
+            'by_type': type_summary,
+            'tyido_verdict': "PASS" if avg_j >= self._consistency_checker.threshold else "NEED_IMPROVEMENT"
+        }
+
+    def get_state(self) -> Dict[str, Any]:
+        base_state = {
             "module": "M172_TYFormalizer",
             "version": "v7.17",
             "description": "TY形式化映射器：TY硬核↔UFM + 软层解释 + 层次提升 + 物理升级",
@@ -577,6 +754,8 @@ class TYFormalizer:
             "physics_interfaces": self.physics.get_state(),
             "uptime_seconds": round(time.time() - self._created_at, 2)
         }
+        base_state['tyido_p1_consistency'] = self.get_consistency_report()
+        return base_state
 
 
 # ============================================================

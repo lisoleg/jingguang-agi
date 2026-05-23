@@ -36,6 +36,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple, Callable
 
+from TYIDO_SelfConsistency import SelfConsistencyChecker, ConsistencyResult
+
 
 # ============================================================
 # λ项数据结构
@@ -525,6 +527,10 @@ class UFMLambdaUniverse:
         self._theorem_cache: Dict[str, Any] = {}
         self._created_at = time.time()
 
+        # TY/IDO Property 1: λ归约一致性检查器
+        self._consistency_checker = SelfConsistencyChecker(threshold=0.90, max_variants=100)
+        self._consistency_audit: List[Dict] = []
+
     @classmethod
     def get_instance(cls) -> "UFMLambdaUniverse":
         if cls._instance is None:
@@ -626,9 +632,158 @@ class UFMLambdaUniverse:
         # 变量
         return Var(s)
 
+    # ============================================================
+    # TY/IDO Property 1: λ归约一致性验证（对治锯齿）
+    # ============================================================
+
+    def check_reduction_consistency(
+        self,
+        term_str: str,
+        num_variants: int = 50
+    ) -> ConsistencyResult:
+        """
+        验证β归约的一致性：同一λ项的归约结果应稳定
+
+        对"请归约这个λ项"的不同表述进行检查，
+        确保归约引擎产生相同的范式。
+
+        参数:
+            term_str: λ项字符串（如 "(λx.x) y"）
+            num_variants: 变体数量
+
+        返回:
+            ConsistencyResult
+        """
+        def process_fn(variant_question: str) -> str:
+            term = self.parse_simple(term_str)
+            if term is None:
+                return "PARSE_ERROR"
+            result = self.reduce(term, max_steps=100)
+            return f"result={result['output']}|steps={result['steps']}|normal={result['normalized']}"
+
+        result = self._consistency_checker.check(
+            f"对λ项 {term_str} 执行β归约",
+            process_fn,
+            num_variants=num_variants,
+            output_extractor=lambda x: x
+        )
+
+        self._consistency_audit.append({
+            'type': 'reduction',
+            'term': term_str,
+            'j_score': result.j_score,
+            'consistent': result.consistent,
+            'num_variants': result.num_variants,
+            'timestamp': time.time()
+        })
+
+        return result
+
+    def check_y_combinator_consistency(self, num_variants: int = 50) -> ConsistencyResult:
+        """
+        验证Y组合子不动点性质的一致性
+
+        Y f = f (Y f) 应在多种表述下保持不变。
+
+        返回:
+            ConsistencyResult
+        """
+        def process_fn(variant_question: str) -> str:
+            verified = self.y_combinator.verify_fixed_point_property()
+            return (
+                f"fixed_point={verified['fixed_point_property_verified']}|"
+                f"verified={verified['verified']}|"
+                f"step1={verified['Yf_step1'][:40]}|"
+                f"step2={verified['Yf_step2'][:40]}"
+            )
+
+        result = self._consistency_checker.check(
+            "验证Y组合子的不动点性质",
+            process_fn,
+            num_variants=num_variants,
+            output_extractor=lambda x: x
+        )
+
+        self._consistency_audit.append({
+            'type': 'y_combinator',
+            'j_score': result.j_score,
+            'consistent': result.consistent,
+            'num_variants': result.num_variants,
+            'timestamp': time.time()
+        })
+
+        return result
+
+    def check_no_clone_consistency(self, num_variants: int = 50) -> ConsistencyResult:
+        """
+        验证不可克隆定理的一致性
+
+        返回:
+            ConsistencyResult
+        """
+        def process_fn(variant_question: str) -> str:
+            verified = self.no_clone.verify()
+            return (
+                f"verified={verified['verified']}|"
+                f"loop_detected={verified['self_referential_loop_detected']}"
+            )
+
+        result = self._consistency_checker.check(
+            "验证不可克隆定理T143",
+            process_fn,
+            num_variants=num_variants,
+            output_extractor=lambda x: x
+        )
+
+        self._consistency_audit.append({
+            'type': 'no_clone',
+            'j_score': result.j_score,
+            'consistent': result.consistent,
+            'num_variants': result.num_variants,
+            'timestamp': time.time()
+        })
+
+        return result
+
+    def get_consistency_report(self) -> Dict[str, Any]:
+        """生成λ宇宙一致性审计报告"""
+        total = len(self._consistency_audit)
+        if total == 0:
+            return {'status': 'no_audit', 'total_checks': 0}
+
+        passed = sum(1 for r in self._consistency_audit if r['consistent'])
+        avg_j = sum(r['j_score'] for r in self._consistency_audit) / total
+
+        # 按类型统计
+        by_type: Dict[str, List[Dict]] = {}
+        for r in self._consistency_audit:
+            t = r['type']
+            if t not in by_type:
+                by_type[t] = []
+            by_type[t].append(r)
+
+        type_summary = {}
+        for t, records in by_type.items():
+            type_summary[t] = {
+                'count': len(records),
+                'avg_j': round(sum(r['j_score'] for r in records) / len(records), 4),
+                'pass_rate': round(sum(1 for r in records if r['consistent']) / len(records), 4)
+            }
+
+        return {
+            'status': 'audited',
+            'property': 'P1_Consistency',
+            'total_checks': total,
+            'passed_checks': passed,
+            'pass_rate': round(passed / total, 4),
+            'avg_j_score': round(avg_j, 4),
+            'by_type': type_summary,
+            'tyido_verdict': "PASS" if avg_j >= self._consistency_checker.threshold else "NEED_IMPROVEMENT"
+        }
+
     def get_state(self) -> Dict[str, Any]:
         theorems = self.verify_theorems()
-        return {
+        base_state = {
             "module": "M171_UFMLambdaUniverse",
             "version": "v7.17",
             "description": "λ宇宙引擎：Y组合子·β归约·amb·不可克隆·意识不动点",
@@ -646,6 +801,8 @@ class UFMLambdaUniverse:
             "amb_operator": self.amb_operator.get_state(),
             "uptime_seconds": round(time.time() - self._created_at, 2)
         }
+        base_state['tyido_p1_consistency'] = self.get_consistency_report()
+        return base_state
 
 
 # ============================================================

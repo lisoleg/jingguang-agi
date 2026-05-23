@@ -30,6 +30,15 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
+# TYIDO P4: 可寻址长期记忆
+try:
+    from TYIDO_AddressableMemory import (
+        AddressableMemoryStore, MemoryIndex, ForgetPolicy, MemoryMergeEngine
+    )
+    _P4_AVAILABLE = True
+except ImportError:
+    _P4_AVAILABLE = False
+
 
 # ============================================================
 # 记忆条目 (Memory Entry)
@@ -475,6 +484,16 @@ class OrgMemoryEngine:
         self._write_count = 0
         self._read_count = 0
 
+        # TYIDO P4: 可寻址长期记忆（桥接层）
+        self._p4_available = _P4_AVAILABLE
+        if self._p4_available:
+            self._p4_store = AddressableMemoryStore(max_size=10000)
+            self._p4_index = MemoryIndex(self._p4_store)
+            self._p4_forget_policy = ForgetPolicy(self._p4_store)
+            self._p4_merge_engine = MemoryMergeEngine(self._p4_store)
+        else:
+            self._p4_store = self._p4_index = self._p4_forget_policy = self._p4_merge_engine = None
+
     @classmethod
     def get_instance(cls) -> "OrgMemoryEngine":
         if cls._instance is None:
@@ -518,6 +537,25 @@ class OrgMemoryEngine:
                 if agent_id not in self._agent_gc_balance:
                     self._agent_gc_balance[agent_id] = 1000  # 初始1000 GC
                 self._agent_gc_balance[agent_id] -= gc_penalty
+
+        # TYIDO P4: 同步写入可寻址长期记忆
+        if self._p4_available and self._p4_store is not None:
+            p4_key = f"org_memory:{entry.entry_id}"
+            p4_tags = ["org_memory", memory_type.value, agent_id] + (tags or [])
+            self._p4_store.write(
+                p4_key, {
+                    "agent_id": agent_id,
+                    "content": content,
+                    "memory_type": memory_type.value,
+                    "tags": tags or [],
+                    "failure_case": failure_case,
+                    "confidence": confidence,
+                },
+                tags=p4_tags,
+                importance=0.9 if failure_case else 0.5,
+                protected=failure_case  # 失败案例受保护
+            )
+
         return entry
 
     def record_failure(self, agent_id: str, description: str,
@@ -588,7 +626,7 @@ class OrgMemoryEngine:
 
     def get_state(self) -> Dict[str, Any]:
         vs = self.vector_store.get_stats()
-        return {
+        state = {
             "module": "M176 OrgMemoryEngine",
             "version": "7.18",
             "theorems": ["T157", "T158", "T159"],
@@ -605,6 +643,20 @@ class OrgMemoryEngine:
             "read_count": self._read_count,
             "initialized_at": self._initialized_at,
         }
+        # TYIDO P4: 可寻址记忆诊断
+        if self._p4_available and self._p4_store is not None:
+            store_stats = self._p4_store.get_stats()
+            state["tyido_p4"] = {
+                "available": True,
+                "store_stats": store_stats,
+                "index_stats": self._p4_index.get_stats(),
+                "forget_stats": self._p4_forget_policy.get_stats(),
+                "p4_keys": self._p4_store.keys(),
+                "verdict": "PASS" if store_stats['size'] > 0 else "EMPTY",
+            }
+        else:
+            state["tyido_p4"] = {"available": False, "verdict": "N/A"}
+        return state
 
     def verify_theorems(self) -> Dict[str, Any]:
         return {

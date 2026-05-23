@@ -26,6 +26,16 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
+# TYIDO P5 责任可锚定
+try:
+    from TYIDO_AnchorableResponsibility import (
+        ResponsibilityChain, ActionGatekeeper, CircuitBreakerPolicy, AuditTrail,
+        init_p5_components, RiskLevel, ActionDecision,
+    )
+    P5_OK = True
+except ImportError:
+    P5_OK = False
+
 
 # ============================================================
 # PII 检测器
@@ -320,6 +330,13 @@ class ContentWall:
         self._log: List[ContentWallResult] = []
         self._gc_penalty_total: int = 0  # GC扣罚累计
 
+        # TYIDO P5: 责任可锚定组件初始化
+        if P5_OK:
+            self._p5_chain, self._p5_gate, self._p5_breaker, self._p5_audit = \
+                init_p5_components()
+        else:
+            self._p5_chain = self._p5_gate = self._p5_breaker = self._p5_audit = None
+
     def set_m88_bridge(self, m88_instance: Any) -> None:
         """设置 M88 桥接（可选）"""
         self._m88 = m88_instance
@@ -330,14 +347,35 @@ class ContentWall:
         1. PII 检测 + 脱敏
         2. 风险评分
         """
-        # Step 1: PII 检测
+        # TYIDO P5: 行动门禁 —— 请求许可
+        action_id = None
+        if self._p5_gate is not None:
+            ok, aid_or_reason = self._p5_gate.request_permission(
+                agent_id="SafetyShield",
+                action_type="process_input",
+                inputs={"text_len": len(text)},
+                risk_level=1,
+            )
+            if not ok:
+                return ContentWallResult(
+                    action=ContentWallAction.BLOCK,
+                    original_text=text,
+                    processed_text="",
+                    pii_detections=[],
+                    compliance_violations=[],
+                    risk_score=1.0,
+                    reason=f"P5 gate denied: {aid_or_reason}",
+                )
+            action_id = aid_or_reason
+
+        # Step1: PII 检测
         masked_text, pii_detections = self.pii_detector.mask(text)
 
-        # Step 2: 计算风险评分
+        # Step2: 计算风险评分
         pii_risk = sum(d.confidence * 0.3 for d in pii_detections)
         risk_score = min(1.0, pii_risk)
 
-        # Step 3: 决策
+        # Step3: 决策
         if pii_detections:
             action = ContentWallAction.MASK
             reason = f"检测到 {len(pii_detections)} 处 PII，已脱敏"
@@ -355,6 +393,18 @@ class ContentWall:
             reason=reason
         )
         self._log.append(result)
+
+        # TYIDO P5: 确认行动，写入责任链
+        if self._p5_gate is not None and action_id:
+            try:
+                self._p5_gate.confirm_action(action_id, {
+                    "action": action.value,
+                    "risk_score": risk_score,
+                    "pii_count": len(pii_detections),
+                })
+            except Exception:
+                pass
+
         return result
 
     def process_output(self, text: str) -> ContentWallResult:
@@ -363,6 +413,28 @@ class ContentWall:
         1. 合规审查
         2. 风险评分
         """
+        # TYIDO P5: 行动门禁 —— 请求许可
+        action_id = None
+        risk_lv = 2  # process_output 涉及合规审查，风险设为 MEDIUM
+        if self._p5_gate is not None:
+            ok, aid_or_reason = self._p5_gate.request_permission(
+                agent_id="SafetyShield",
+                action_type="process_output",
+                inputs={"text_len": len(text)},
+                risk_level=risk_lv,
+            )
+            if not ok:
+                return ContentWallResult(
+                    action=ContentWallAction.BLOCK,
+                    original_text=text,
+                    processed_text="",
+                    pii_detections=[],
+                    compliance_violations=[],
+                    risk_score=1.0,
+                    reason=f"P5 gate denied: {aid_or_reason}",
+                )
+            action_id = aid_or_reason
+
         # Step 1: 合规审查
         filtered_text, violations = self.compliance_auditor.filter(text)
 
@@ -407,6 +479,18 @@ class ContentWall:
             reason=reason
         )
         self._log.append(result)
+
+        # TYIDO P5: 确认行动，写入责任链
+        if self._p5_gate is not None and action_id:
+            try:
+                self._p5_gate.confirm_action(action_id, {
+                    "action": action.value,
+                    "risk_score": risk_score,
+                    "violation_count": len(violations),
+                })
+            except Exception:
+                pass
+
         return result
 
     def full_pipeline(self, input_text: str,
@@ -466,7 +550,7 @@ class ContentWall:
         }
 
     def get_state(self) -> Dict[str, Any]:
-        return {
+        state = {
             "total_processed": len(self._log),
             "m88_bridge_active": self._m88 is not None,
             "gc_penalty_total": self._gc_penalty_total,
@@ -475,6 +559,18 @@ class ContentWall:
                 for r in self._log[-10:]
             ]
         }
+        # TYIDO P5: 责任可锚定状态
+        if self._p5_chain is not None:
+            state["tyido_p5"] = {
+                "responsibility_chain": self._p5_chain.chain_summary(),
+                "gate_status":   "active" if self._p5_gate is not None else "disabled",
+                "circuit_breaker": self._p5_breaker.state() if self._p5_breaker else {},
+                "audit_trail": {
+                    "total_records": len(self._p5_chain._records),
+                },
+                "p5_version": "P5-v1.0.0",
+            }
+        return state
 
 
 # ============================================================

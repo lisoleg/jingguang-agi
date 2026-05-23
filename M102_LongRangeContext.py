@@ -17,6 +17,18 @@ import hashlib
 from dataclasses import dataclass, field
 from typing import Dict, Any, List, Optional
 
+from TYIDO_SelfConsistency import SelfConsistencyChecker, ConsistencyResult
+
+
+@dataclass
+class ConsistencyAuditRecord:
+    """一致性审计记录"""
+    query: str
+    j_score: float
+    consistent: bool
+    num_variants: int
+    timestamp: float = 0.0
+
 
 @dataclass
 class TrajectorySegment:
@@ -58,6 +70,10 @@ class LongRangeContext:
         self.maintenance_cost: float = 0.0
         self.max_depth_retrieved: int = 0
         self.holographic_enabled: bool = True
+
+        # TY/IDO Property 1: 自一致性检查器
+        self._consistency_checker = SelfConsistencyChecker(threshold=0.80, max_variants=100)
+        self._consistency_audit: List[ConsistencyAuditRecord] = []
 
         # 内部存储
         self._segments: Dict[str, TrajectorySegment] = {}
@@ -293,9 +309,129 @@ class LongRangeContext:
             'loss_notice': '全息压缩为有损压缩，原始内容可能部分丢失'
         }
 
+    # ============================================================
+    # TY/IDO Property 1: 压缩一致性验证（对治锯齿）
+    # ============================================================
+
+    def check_compression_consistency(
+        self,
+        trajectory_data: List[Dict],
+        num_variants: int = 30
+    ) -> ConsistencyResult:
+        """
+        验证全息压缩的一致性：同一内容的压缩结果应稳定
+
+        对不同表述的相同语义内容执行压缩，验证压缩输出一致性。
+
+        参数:
+            trajectory_data: 原始轨迹数据
+            num_variants: 变体数量
+
+        返回:
+            ConsistencyResult
+        """
+        def process_fn(variant_query: str) -> str:
+            # 每次调用前保存并重置状态，确保确定性输出
+            saved_count = self.trajectory_count
+            saved_ratio = self.avg_compression_ratio
+            saved_cost = self.maintenance_cost
+            saved_compression_history = list(self._compression_history)
+            self.trajectory_count = 0
+            self.avg_compression_ratio = 0.0
+            self.maintenance_cost = 0.0
+            try:
+                result = self.compress_trajectory(trajectory_data)
+            finally:
+                # 恢复状态
+                self.trajectory_count = saved_count
+                self.avg_compression_ratio = saved_ratio
+                self.maintenance_cost = saved_cost
+                self._compression_history = saved_compression_history
+            return (
+                f"count={result['compressed_count']}|"
+                f"ratio={result['avg_ratio']}|"
+                f"cost={result['maintenance_cost']}"
+            )
+
+        result = self._consistency_checker.check(
+            "验证全息压缩一致性",
+            process_fn,
+            num_variants=num_variants,
+            output_extractor=lambda x: x
+        )
+
+        self._consistency_audit.append(ConsistencyAuditRecord(
+            query="compression_consistency",
+            j_score=result.j_score,
+            consistent=result.consistent,
+            num_variants=result.num_variants,
+            timestamp=time.time()
+        ))
+
+        return result
+
+    def check_retrieval_consistency(
+        self,
+        query: str,
+        max_depth: int = 10,
+        num_variants: int = 30
+    ) -> ConsistencyResult:
+        """
+        验证检索一致性：同一查询的不同表述应返回相同结果
+
+        参数:
+            query: 原始查询
+            max_depth: 最大检索深度
+            num_variants: 变体数量
+
+        返回:
+            ConsistencyResult
+        """
+        def process_fn(variant_query: str) -> str:
+            result = self.retrieve_long_context(variant_query, max_depth)
+            # 提取结果ID作为签名（按排序确保顺序无关性）
+            ids = sorted([r['segment_id'] for r in result.get('results', [])])
+            return f"count={result['results_count']}|ids={','.join(ids)}"
+
+        result = self._consistency_checker.check(
+            query,
+            process_fn,
+            num_variants=num_variants,
+            output_extractor=lambda x: x
+        )
+
+        self._consistency_audit.append(ConsistencyAuditRecord(
+            query=f"retrieval:{query[:50]}",
+            j_score=result.j_score,
+            consistent=result.consistent,
+            num_variants=result.num_variants,
+            timestamp=time.time()
+        ))
+
+        return result
+
+    def get_consistency_report(self) -> Dict[str, Any]:
+        """生成一致性审计报告"""
+        total = len(self._consistency_audit)
+        if total == 0:
+            return {'status': 'no_audit', 'total_checks': 0}
+
+        passed = sum(1 for r in self._consistency_audit if r.consistent)
+        avg_j = sum(r.j_score for r in self._consistency_audit) / total
+
+        return {
+            'status': 'audited',
+            'property': 'P1_Consistency',
+            'total_checks': total,
+            'passed_checks': passed,
+            'pass_rate': round(passed / total, 4),
+            'avg_j_score': round(avg_j, 4),
+            'tyido_verdict': "PASS" if avg_j >= self._consistency_checker.threshold else "NEED_IMPROVEMENT"
+        }
+
     def get_state(self) -> Dict[str, Any]:
         """返回模块状态"""
-        return {
+        base_state = {
             'trajectory_count': self.trajectory_count,
             'avg_compression_ratio': round(self.avg_compression_ratio, 4),
             'maintenance_cost': round(self.maintenance_cost, 4),
@@ -304,6 +440,8 @@ class LongRangeContext:
             'segments_stored': len(self._compressed_store),
             'topics_indexed': len(self._index)
         }
+        base_state['tyido_p1_consistency'] = self.get_consistency_report()
+        return base_state
 
 
 # 单例模式

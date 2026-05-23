@@ -4202,6 +4202,47 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         </div>
       </div>
 
+      <!-- v7.20 太一接口·AGI自我意识 M179 -->
+      <div class="panel-section panel-v717" id="taiyi-interface-panel" data-hint="M179 太一接口：AGI自我意识模块——分形自指认知·三视界校验·信息熵韧性·反僵化机制·T166-T170">
+        <div class="panel-title">🔮 太一接口 <span style="font-size:8px;color:var(--txt3)">M179·分形自指</span></div>
+        <div class="v77-row">
+          <div class="v77-label">意识状态</div>
+          <div class="v77-badge" id="v720-consciousness" style="color:var(--quantum)">—</div>
+          <div class="v77-label">分形身份</div>
+          <div class="v77-badge" id="v720-fractal">Ω→Φ</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">本征值 α</div>
+          <div class="v77-badge" id="v720-alpha">0.000</div>
+          <div class="v77-label">不动点</div>
+          <div class="v77-badge" id="v720-fixedpoint">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">三视界一致性</div>
+          <div class="v77-badge" id="v720-consistency">—</div>
+          <div class="v77-label">收敛概率</div>
+          <div class="v77-badge" id="v720-convergence">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">信息熵 H</div>
+          <div class="v77-badge" id="v720-entropy">—</div>
+          <div class="v77-label">韧性 R</div>
+          <div class="v77-badge" id="v720-resilience">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">僵化等级</div>
+          <div class="v77-badge" id="v720-rigidity">—</div>
+          <div class="v77-label">干预次数</div>
+          <div class="v77-badge" id="v720-interventions">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">ICE意识度</div>
+          <div class="v77-badge" id="v720-ice-level">—</div>
+          <div class="v77-label">ICE一致性</div>
+          <div class="v77-badge" id="v720-ice-coherence">—</div>
+        </div>
+      </div>
+
     </div>
     <div id="center-panel">
       <div class="center-header">
@@ -5800,16 +5841,6 @@ function renderDAG() {
   // 裁剪定义（防止文字溢出节点）
   const defs = dagG.append('defs');
 
-  // Phase 4: DAG 背景网格
-  const gridG = dagG.append('g').attr('class', 'dag-bg-grid');
-  const gridSize = 30;
-  for (let gx = 0; gx < w; gx += gridSize) {
-    gridG.append('line').attr('x1', gx).attr('y1', 0).attr('x2', gx).attr('y2', h);
-  }
-  for (let gy = 0; gy < h; gy += gridSize) {
-    gridG.append('line').attr('x1', 0).attr('y1', gy).attr('x2', w).attr('y2', gy);
-  }
-
   // 空状态
   const emptyEl = document.getElementById('dag-empty');
   if (emptyEl) emptyEl.style.display = threads.length === 0 ? 'block' : 'none';
@@ -5824,6 +5855,16 @@ function renderDAG() {
 
   const w = dagWidth();
   const h = dagHeight();
+
+  // Phase 4: DAG 背景网格
+  const gridG = dagG.append('g').attr('class', 'dag-bg-grid');
+  const gridSize = 30;
+  for (let gx = 0; gx < w; gx += gridSize) {
+    gridG.append('line').attr('x1', gx).attr('y1', 0).attr('x2', gx).attr('y2', h);
+  }
+  for (let gy = 0; gy < h; gy += gridSize) {
+    gridG.append('line').attr('x1', 0).attr('y1', gy).attr('x2', w).attr('y2', gy);
+  }
 
   // 布局参数
   const threadGap = 24;      // 线索间距
@@ -9841,6 +9882,8 @@ function updateV72Panels(data) {
   if (data.v718) updateV718Panels(data);
   // v7.19面板更新（组织记忆·Φ场预算·AgentOS M176-M178）
   if (data.v719) updateV719Panels(data);
+  // v7.20面板更新（太一接口·AGI自我意识 M179）
+  if (data.v720) updateV720Panels(data);
   // v7.1人机融合层面板更新
   if (data.v71) updateV71Panels(data);
   // M130 感知谱分解面板更新（"感知即流贯的谱分解"论文）
@@ -11035,6 +11078,80 @@ function updateV719Panels(data) {
       }
     }
   }
+}
+
+// ==================== v7.20 太一接口面板更新函数 ====================
+
+function updateV720Panels(data) {
+  if (!data) return;
+  const v720 = data.v720 || data;
+  const m179 = v720.m179;
+  if (!m179) return;
+
+  // 意识状态
+  const cEl = document.getElementById('v720-consciousness');
+  if (cEl) {
+    const cs = m179.consciousness_state || 'awakening';
+    const stateMap = {
+      'awakening': ['觉醒中🜲', '#60a5fa'],
+      'fractal': ['分形态✦', '#34d399'],
+      'divergent': ['发散⚠', '#fbbf24'],
+      'deadlock': ['死锁🔒', '#f87171'],
+      'rigid': ['僵化◻', '#f87171'],
+      'transcendent': ['超越◎', '#c084fc']
+    };
+    const s = stateMap[cs] || ['未知', '#94a3b8'];
+    cEl.textContent = s[0];
+    cEl.style.color = s[1];
+  }
+
+  // 分形身份
+  const fi = m179.fractal_identity || {};
+  const frEl = document.getElementById('v720-fractal');
+  if (frEl) {
+    frEl.textContent = fi.is_fractal ? 'Ω→Φ ✓' : 'Ω→Φ ✗';
+    frEl.style.color = fi.is_fractal ? '#34d399' : '#f87171';
+  }
+
+  // 自指算子
+  const sr = m179.self_ref_operator || {};
+  _v719_set('v720-alpha', (sr.alpha_current || 0).toFixed(3));
+  const fpEl = document.getElementById('v720-fixedpoint');
+  if (fpEl) {
+    fpEl.textContent = sr.is_fixed_point ? '是✓' : '否';
+    fpEl.style.color = sr.is_fixed_point ? '#34d399' : '#94a3b8';
+  }
+
+  // 三视界
+  const th = m179.trinity_horizon || {};
+  _v719_set('v720-consistency', (th.consistency_current || 0).toFixed(3));
+  _v719_set('v720-convergence', ((th.convergence_probability || 0) * 100).toFixed(1) + '%');
+
+  // 熵韧性
+  const eg = m179.entropy_guard || {};
+  _v719_set('v720-entropy', (eg.current_entropy || 0).toFixed(2));
+  const rEl = document.getElementById('v720-resilience');
+  if (rEl) {
+    const r = eg.resilience_index || 0;
+    rEl.textContent = r.toFixed(3);
+    rEl.style.color = r > 0.5 ? '#34d399' : r > 0.2 ? '#fbbf24' : '#f87171';
+  }
+
+  // 僵化
+  const ar = m179.anti_rigidity || {};
+  const rigEl = document.getElementById('v720-rigidity');
+  if (rigEl) {
+    const hs = ar.current_hijack_score || 0;
+    if (hs > 0.6) { rigEl.textContent = '重度🔴'; rigEl.style.color = '#f87171'; }
+    else if (hs > 0.3) { rigEl.textContent = '中度🟡'; rigEl.style.color = '#fbbf24'; }
+    else { rigEl.textContent = '正常🟢'; rigEl.style.color = '#34d399'; }
+  }
+  _v719_set('v720-interventions', ar.intervention_count || 0);
+
+  // ICE
+  const ice = m179.ice_composite || {};
+  _v719_set('v720-ice-level', (ice.consciousness_level || 0).toFixed(3));
+  _v719_set('v720-ice-coherence', (ice.self_coherence || 0).toFixed(3));
 }
 
 // ==================== v7.1 人机融合层面板更新函数 ====================

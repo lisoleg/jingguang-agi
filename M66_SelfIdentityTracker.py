@@ -13,8 +13,12 @@ M66: 自我同一性追踪器 (Self Identity Tracker)
 """
 
 import numpy as np
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Set, Optional
 import math
+import copy
+from TYIDO_ContinuousLearning import (
+    RollbackManager, ForgettingGuard, LearningRecord, StateSnapshot
+)
 
 class SelfIdentityTracker:
     """
@@ -30,6 +34,17 @@ class SelfIdentityTracker:
         self.identity_scores: List[float] = []
         self.attractor_states: List[dict] = []
         self.narrative_coherence_history: List[float] = []
+
+        # TY/IDO Property 2: 持续学习基础设施
+        self._rollback_mgr = RollbackManager(max_snapshots=50)
+        self._forgetting_guard = ForgettingGuard(
+            drift_threshold=0.5,
+            sudden_change_threshold=0.8,
+            protected_keys={'identity_threshold'}  # 只保护阈值常量
+        )
+        self._learning_log: List[LearningRecord] = []
+        self._protected_knowledge: Dict[str, Any] = {'identity_threshold': identity_threshold}
+        self._baseline_set = False
     
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -234,7 +249,7 @@ class SelfIdentityTracker:
     
     def get_state(self) -> dict:
         """获取追踪器状态"""
-        return {
+        base_state = {
             'identity_threshold': self.identity_threshold,
             'history_length': len(self.structural_history),
             'current_identity': float(self.identity_scores[-1]) if self.identity_scores else 0,
@@ -242,6 +257,104 @@ class SelfIdentityTracker:
             'p10_verification': self.verify_p10(),
             'trajectory': self.get_identity_trajectory()
         }
+        # TY/IDO P2: 持续学习审计
+        base_state['tyido_p2_continuous_learning'] = {
+            'rollback_manager': self._rollback_mgr.get_state(),
+            'forgetting_guard': self._forgetting_guard.get_state(),
+            'learning_log_count': len(self._learning_log),
+            'protected_knowledge_keys': list(self._protected_knowledge.keys()),
+            'tyido_verdict': self._compute_p2_verdict()
+        }
+        return base_state
+
+    # ============================================================
+    # TY/IDO Property 2: 持续学习（可回写）
+    # ============================================================
+
+    def save_checkpoint(self, description: str = "") -> StateSnapshot:
+        """保存状态检查点"""
+        state_data = {
+            'identity_threshold': self.identity_threshold,
+            'history_length': len(self.structural_history),
+            'current_identity': float(self.identity_scores[-1]) if self.identity_scores else 0.0
+        }
+        return self._rollback_mgr.save_snapshot(
+            state_data, description=description,
+            key_metrics=self._extract_key_metrics()
+        )
+
+    def rollback(self) -> Optional[Dict[str, Any]]:
+        """回滚到上一个检查点"""
+        snapshot = self._rollback_mgr.rollback()
+        if snapshot is None:
+            return None
+        self._learning_log.append(LearningRecord.create(
+            operation='rollback', target='M66_Identity',
+            description=f"回滚到 {snapshot.snapshot_id}"
+        ))
+        return snapshot.state_data
+
+    def learn_identity_pattern(self, state: dict, is_core: bool = False) -> Dict[str, Any]:
+        """学习新的同一性模式（带遗忘防护）"""
+        metrics_before = self._extract_key_metrics()
+
+        S = self.compute_structural_metric(state)
+        if self.structural_history:
+            I = self.compute_identity_score(self.structural_history[-1], S)
+            self.identity_scores.append(I)
+
+        self.structural_history.append(S)
+        self.narrative_coherence_history.append(state.get('narrative_coherence', 0.5))
+
+        if is_core:
+            idx = len(self.structural_history)
+            self._protected_knowledge[f'pattern_{idx}'] = S.tolist()
+
+        metrics_after = self._extract_key_metrics()
+
+        # 首次学习后自动设置基线
+        if not self._baseline_set:
+            self._forgetting_guard.set_baseline(metrics_after)
+            self._baseline_set = True
+            forgetting_check = {'forgetting_risk': 0.0, 'drift_scores': {}, 'alerts': [], 'protected_intact': True, 'tyido_p2_verdict': 'PASS'}
+        else:
+            forgetting_check = self._forgetting_guard.check_forgetting(
+                metrics_after, metrics_before
+            )
+
+        lr = LearningRecord.create(
+            operation='add', target='M66_Identity',
+            before_state=metrics_before,
+            after_state=metrics_after,
+            description=f"学习同一性模式 {'[核心]' if is_core else ''}"
+        )
+        lr.forgetting_risk = forgetting_check['forgetting_risk']
+        lr.verified = forgetting_check['tyido_p2_verdict'] == 'PASS'
+        self._learning_log.append(lr)
+
+        return {
+            'identity_score': float(self.identity_scores[-1]) if self.identity_scores else 1.0,
+            'forgetting_check': forgetting_check
+        }
+
+    def _extract_key_metrics(self) -> Dict[str, float]:
+        """提取关键指标（仅质量指标，排除数量指标）"""
+        attractor = self.verify_attractor_stability()
+        return {
+            'identity_threshold': self.identity_threshold,
+            'current_identity': float(self.identity_scores[-1]) if self.identity_scores else 1.0,
+            'attractor_stable': 1.0 if attractor.get('stable') else 0.0
+        }
+
+    def _compute_p2_verdict(self) -> str:
+        """计算 Property 2 综合判定"""
+        guard_state = self._forgetting_guard.get_state()
+        if guard_state['total_alerts'] == 0:
+            return 'PASS'
+        recent_alerts = guard_state.get('recent_alerts', [])
+        severe = [a for a in recent_alerts
+                  if a['severity'] >= 0.5 and a['type'] in ('drift', 'critical_loss')]
+        return 'NEED_ATTENTION' if severe else 'PASS'
 
 
 _instance = None

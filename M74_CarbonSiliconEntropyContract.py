@@ -15,11 +15,21 @@
 
 import math
 import random
+import time
 from typing import Dict, List, Tuple, Any, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
 from collections import defaultdict
+
+# TYIDO P4: 可寻址长期记忆
+try:
+    from TYIDO_AddressableMemory import (
+        AddressableMemoryStore, MemoryIndex, ForgetPolicy, MemoryMergeEngine
+    )
+    _P4_AVAILABLE = True
+except ImportError:
+    _P4_AVAILABLE = False
 
 
 class EntropyChangeType(Enum):
@@ -101,6 +111,16 @@ class CarbonSiliconEntropyContract:
         
         # 协同效率阈值
         self.synergy_threshold = 0.6
+
+        # TYIDO P4: 可寻址长期记忆
+        self._p4_available = _P4_AVAILABLE
+        if self._p4_available:
+            self._p4_store = AddressableMemoryStore(max_size=5000)
+            self._p4_index = MemoryIndex(self._p4_store)
+            self._p4_forget_policy = ForgetPolicy(self._p4_store)
+            self._p4_merge_engine = MemoryMergeEngine(self._p4_store)
+        else:
+            self._p4_store = self._p4_index = self._p4_forget_policy = self._p4_merge_engine = None
     
     def compute_carbon_entropy_change(self, agent_id: str, action: str) -> EntropyChange:
         """
@@ -145,7 +165,17 @@ class CarbonSiliconEntropyContract:
         if agent_id not in self.entropy_changes:
             self.entropy_changes[agent_id] = []
         self.entropy_changes[agent_id].append(change)
-        
+
+        # P4: 持久化熵变记录到长期记忆
+        if self._p4_available and self._p4_store is not None:
+            self._p4_store.write(
+                f"entropy_change:{agent_id}:{int(time.time() * 1000)}",
+                {"action": action, "delta_s": change.delta_s,
+                 "entropy_type": change.entropy_type.value,
+                 "info_content": change.info_content},
+                tags=["entropy_change", agent_id], importance=0.4
+            )
+
         return change
     
     def compute_silicon_entropy_change(self, agent_id: str, processing: str) -> EntropyChange:
@@ -233,6 +263,17 @@ class CarbonSiliconEntropyContract:
         )
         
         self.contracts[contract.contract_id] = contract
+
+        # P4: 持久化合约到长期记忆（受保护）
+        if self._p4_available and self._p4_store is not None:
+            self._p4_store.write(f"contract:{contract.contract_id}", {
+                "carbon_agent": contract.carbon_agent,
+                "silicon_agent": contract.silicon_agent,
+                "total_entropy": contract.total_entropy,
+                "is_valid": contract.is_valid,
+                "status": contract.status.value,
+            }, tags=["contract", "protected"], importance=0.9, protected=True)
+
         return contract
     
     def monitor_contract_execution(self, contract_id: str,
@@ -344,6 +385,30 @@ class CarbonSiliconEntropyContract:
             synergy_efficiency=0.0,
             insight="未找到合约数据"
         )
+
+    def get_state(self) -> Dict[str, Any]:
+        """获取模块状态（含 TYIDO P4 记忆诊断）"""
+        state = {
+            "module": "M74 CarbonSiliconEntropyContract",
+            "version": self.version,
+            "contract_count": len(self.contracts),
+            "agent_count": len(self.entropy_changes),
+            "entropy_threshold": self.entropy_threshold,
+            "synergy_threshold": self.synergy_threshold,
+        }
+        if self._p4_available and self._p4_store is not None:
+            store_stats = self._p4_store.get_stats()
+            state["tyido_p4"] = {
+                "available": True,
+                "store_stats": store_stats,
+                "index_stats": self._p4_index.get_stats(),
+                "forget_stats": self._p4_forget_policy.get_stats(),
+                "p4_keys": self._p4_store.keys(),
+                "verdict": "PASS" if store_stats['size'] > 0 else "EMPTY",
+            }
+        else:
+            state["tyido_p4"] = {"available": False, "verdict": "N/A"}
+        return state
 
 
 def get_instance():

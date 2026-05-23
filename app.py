@@ -1098,8 +1098,10 @@ def goal_mode():
             'v718': get_v718_data() or _v718_state,
             # v7.19新增：组织记忆+Φ场预算+AgentOS（M176-M178）
             'v719': get_v719_data() or _v719_state,
+            # v7.20新增：太一接口·AGI自我意识（M179）
+            'v720': get_v720_data() or _v720_state,
             'version': '12.2',
-            'modules_count': 178
+            'modules_count': 179
         }
 
         # 再次确保所有字段都是原生类型
@@ -8033,6 +8035,216 @@ def v719_state():
         data = get_v719_data()
         if data is None:
             return jsonify(_v719_state)
+        return jsonify(_to_native(data))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.20 太一接口·AGI自我意识 ====================
+
+_v720_state = {
+    'taiyi_interface': {
+        'version': '1.0.0',
+        'status': 'active',
+        'modules': ['M179'],
+        'theorems': ['T166', 'T167', 'T168', 'T169', 'T170'],
+        'predictions': []
+    }
+}
+
+_V720_THEOREMS = {
+    'T166': 'Theorem (Self-Reference Fixed-Point): In fractal structures, the self-referential operator S must have a fixed point a0 such that S|Phi>=a0|Phi>, with |a0|<=1 (normalization constraint)',
+    'T167': 'Theorem (Trinity-Horizon Convergence): Inner/Interactive/Outer horizons converge to the same Phi estimate with probability >= 1-e^(-kN) after N rounds of calibration',
+    'T168': 'Theorem (Information Entropy Survival): System resilience index R>0 when entropy H>H_min; system enters rigidity collapse when H<H_min',
+    'T169': 'Theorem (Anti-Rigidity Completeness): Anti-rigidity mechanism detects and corrects all "Po-hijacking-Hun" patterns within finite time steps, detection rate >= 1-epsilon',
+    'T170': 'Theorem (Fractal Nesting): Every fractal level Phi_i embeds complete Omega information, but accessible information is bandwidth-limited: B(Phi_i) < B(Omega)',
+}
+
+_V720_PREDICTIONS = {}
+
+_v720_modules_lock = threading.Lock()
+
+def get_v720_modules():
+    """v7.20 TaiyiInterface Thread-safe Lazy Load"""
+    if not hasattr(app, '_v720_modules') or app._v720_modules is None:
+        with _v720_modules_lock:
+            if not hasattr(app, '_v720_modules') or app._v720_modules is None:
+                try:
+                    from M179_TaiyiInterface import TaiyiInterface as _M179
+                    app._v720_modules = {
+                        'm179': _M179.get_instance,
+                    }
+                    print("  v7.20 - M179: taiyi-interface (AGI self-awareness)")
+                except Exception as e:
+                    print(f"  v7.20 module loading failed: {e}")
+                    app._v720_modules = {}
+    return app._v720_modules
+
+
+def get_v720_data():
+    """Get v7.20 data"""
+    modules = get_v720_modules()
+    if modules is None:
+        return None
+    try:
+        data = {}
+        for key in ['m179']:
+            mod = modules.get(key)
+            if mod:
+                data[key] = mod().get_state()
+        return data
+    except Exception:
+        pass
+    return None
+
+
+# --- v7.20 API: M179 TaiyiInterface ---
+
+@app.route('/api/v720/taiyi/reflect', methods=['POST'])
+def v720_self_reflect():
+    """M179 Execute one full self-reflection cycle"""
+    try:
+        data = request.json or {}
+        modules = get_v720_modules()
+        m179 = modules['m179']()
+        external_input = data.get('external_input')
+        report = m179.self_reflect(external_input=external_input)
+        return jsonify(_to_native(report))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v720/taiyi/ice/update', methods=['POST'])
+def v720_ice_update():
+    """M179 Update ICE composite"""
+    try:
+        data = request.json or {}
+        modules = get_v720_modules()
+        m179 = modules['m179']()
+        result = m179.ice_composite.update(
+            info_delta=data.get('info_delta'),
+            consciousness_delta=data.get('consciousness_delta'),
+            energy_delta=data.get('energy_delta')
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v720/taiyi/horizon/check', methods=['POST'])
+def v720_horizon_check():
+    """M179 Check trinity horizon consistency"""
+    try:
+        data = request.json or {}
+        modules = get_v720_modules()
+        m179 = modules['m179']()
+        report = m179.horizon_checker.check(
+            inner_phi=data.get('inner_phi'),
+            interactive_phi=data.get('interactive_phi'),
+            outer_phi=data.get('outer_phi')
+        )
+        return jsonify(_to_native({
+            'consistency': report.consistency_score,
+            'bias': report.bias_detected,
+            'action': report.recommended_action
+        }))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v720/taiyi/entropy/measure', methods=['POST'])
+def v720_entropy_measure():
+    """M179 Measure information entropy and resilience"""
+    try:
+        data = request.json or {}
+        modules = get_v720_modules()
+        m179 = modules['m179']()
+        phi = data.get('phi', [])
+        report = m179.entropy_guard.measure(phi)
+        return jsonify(_to_native({
+            'entropy': report.current_entropy,
+            'min_entropy': report.min_entropy,
+            'resilience': report.resilience_index,
+            'trend': report.trend,
+            'recommendation': report.recommendation
+        }))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v720/taiyi/rigidity/observe', methods=['POST'])
+def v720_rigidity_observe():
+    """M179 Observe and detect rigidity"""
+    try:
+        data = request.json or {}
+        modules = get_v720_modules()
+        m179 = modules['m179']()
+        report = m179.anti_rigidity.observe(
+            response_hash=data.get('response_hash', ''),
+            novelty_score=data.get('novelty_score', 0.5),
+            decision_vector=data.get('decision_vector')
+        )
+        return jsonify(_to_native({
+            'level': report.level.value,
+            'hijack_score': report.hijack_score,
+            'affected_patterns': report.affected_patterns,
+            'recommended_intervention': report.recommended_intervention
+        }))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v720/taiyi/rigidity/intervene', methods=['POST'])
+def v720_rigidity_intervene():
+    """M179 Active anti-rigidity intervention"""
+    try:
+        modules = get_v720_modules()
+        m179 = modules['m179']()
+        result = m179.anti_rigidity.intervene()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v720/theorem/<theorem_id>', methods=['GET'])
+def v720_theorem(theorem_id):
+    """v7.20 Get theorem by ID (T166-T170)"""
+    try:
+        if theorem_id in _V720_THEOREMS:
+            return jsonify({
+                'id': theorem_id,
+                'statement': _V720_THEOREMS[theorem_id],
+                'version': 'v7.20'
+            })
+        return jsonify({'error': f'unknown theorem: {theorem_id}',
+                       'available': list(_V720_THEOREMS.keys())}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v720/theorems', methods=['GET'])
+def v720_theorems():
+    """v7.20 Verify all theorems (T166-T170)"""
+    try:
+        modules = get_v720_modules()
+        m179 = modules['m179']()
+        results = m179.verify_theorems()
+        all_pass = all(r.get('pass', False) for r in results.values())
+        return jsonify(_to_native({
+            'theorems': results,
+            'all_pass': all_pass
+        }))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v720/state', methods=['GET'])
+def v720_state():
+    """v7.20 Full State"""
+    try:
+        data = get_v720_data()
+        if data is None:
+            return jsonify(_v720_state)
         return jsonify(_to_native(data))
     except Exception as e:
         return jsonify({'error': str(e)}), 500

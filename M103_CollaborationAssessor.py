@@ -15,6 +15,18 @@ import time
 from dataclasses import dataclass, field
 from typing import Dict, Any, List, Optional
 
+from TYIDO_SelfConsistency import SelfConsistencyChecker, ConsistencyResult
+
+
+@dataclass
+class ConsistencyAuditRecord:
+    """一致性审计记录"""
+    session_key: str
+    j_score: float
+    consistent: bool
+    num_variants: int
+    timestamp: float = 0.0
+
 
 @dataclass
 class CollaborationSession:
@@ -50,6 +62,10 @@ class CollaborationAssessor:
         self.avg_synergy: float = 0.5
         self.bottleneck_count: int = 0
         self.improvement_suggestions: int = 0
+
+        # TY/IDO Property 1: 自一致性检查器
+        self._consistency_checker = SelfConsistencyChecker(threshold=0.85, max_variants=100)
+        self._consistency_audit: List[ConsistencyAuditRecord] = []
 
         self._session_history: List[CollaborationSession] = []
         self._synergy_history: List[float] = []
@@ -254,14 +270,124 @@ class CollaborationAssessor:
         else:
             return '待改进：协同效果不足，建议重新设计协作流程'
 
+    # ============================================================
+    # TY/IDO Property 1: 协作评估一致性验证（对治锯齿）
+    # ============================================================
+
+    def check_assessment_consistency(
+        self,
+        session_data: Dict,
+        num_variants: int = 20
+    ) -> ConsistencyResult:
+        """
+        验证协作评估的一致性：相同协作数据应产生稳定评估结果
+
+        参数:
+            session_data: 协作会话数据
+            num_variants: 变体数量
+
+        返回:
+            ConsistencyResult
+        """
+        def process_fn(variant_question: str) -> str:
+            result = self.assess_collaboration(session_data)
+            metrics = result.get('synergy_metrics', {})
+            return (
+                f"eff={metrics.get('efficiency', 0):.6f}|"
+                f"sat={metrics.get('satisfaction', 0):.6f}|"
+                f"qual={metrics.get('quality', 0):.6f}|"
+                f"syn={metrics.get('synergy_score', 0):.6f}"
+            )
+
+        result = self._consistency_checker.check(
+            f"评估协作会话{session_data.get('session_id', 'unknown')}",
+            process_fn,
+            num_variants=num_variants,
+            output_extractor=lambda x: x
+        )
+
+        self._consistency_audit.append(ConsistencyAuditRecord(
+            session_key=f"assessment_{session_data.get('session_id', '')}",
+            j_score=result.j_score,
+            consistent=result.consistent,
+            num_variants=result.num_variants,
+            timestamp=time.time()
+        ))
+
+        return result
+
+    def check_synergy_consistency(
+        self,
+        human_contrib: float,
+        ai_contrib: float,
+        num_variants: int = 50
+    ) -> ConsistencyResult:
+        """
+        验证协同分数计算的一致性：相同输入 → 稳定输出
+
+        参数:
+            human_contrib: 人类贡献度
+            ai_contrib: AI贡献度
+            num_variants: 变体数量
+
+        返回:
+            ConsistencyResult
+        """
+        def process_fn(variant_question: str) -> str:
+            metrics = self.compute_synergy_score(human_contrib, ai_contrib)
+            return (
+                f"eff={metrics.efficiency:.6f}|"
+                f"sat={metrics.satisfaction:.6f}|"
+                f"qual={metrics.quality:.6f}|"
+                f"syn={metrics.synergy_score:.6f}"
+            )
+
+        result = self._consistency_checker.check(
+            f"计算human={human_contrib}和ai={ai_contrib}的协同分数",
+            process_fn,
+            num_variants=num_variants,
+            output_extractor=lambda x: x
+        )
+
+        self._consistency_audit.append(ConsistencyAuditRecord(
+            session_key=f"synergy({human_contrib},{ai_contrib})",
+            j_score=result.j_score,
+            consistent=result.consistent,
+            num_variants=result.num_variants,
+            timestamp=time.time()
+        ))
+
+        return result
+
+    def get_consistency_report(self) -> Dict[str, Any]:
+        """生成一致性审计报告"""
+        total = len(self._consistency_audit)
+        if total == 0:
+            return {'status': 'no_audit', 'total_checks': 0}
+
+        passed = sum(1 for r in self._consistency_audit if r.consistent)
+        avg_j = sum(r.j_score for r in self._consistency_audit) / total
+
+        return {
+            'status': 'audited',
+            'property': 'P1_Consistency',
+            'total_checks': total,
+            'passed_checks': passed,
+            'pass_rate': round(passed / total, 4),
+            'avg_j_score': round(avg_j, 4),
+            'tyido_verdict': "PASS" if avg_j >= self._consistency_checker.threshold else "NEED_IMPROVEMENT"
+        }
+
     def get_state(self) -> Dict[str, Any]:
         """返回模块状态"""
-        return {
+        base_state = {
             'total_sessions': self.total_sessions,
             'avg_synergy': round(self.avg_synergy, 4),
             'bottleneck_count': self.bottleneck_count,
             'improvement_suggestions': self.improvement_suggestions
         }
+        base_state['tyido_p1_consistency'] = self.get_consistency_report()
+        return base_state
 
 
 # 单例模式

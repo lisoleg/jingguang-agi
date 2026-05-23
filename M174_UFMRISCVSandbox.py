@@ -27,6 +27,16 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
+# TYIDO P5 责任可锚定
+try:
+    from TYIDO_AnchorableResponsibility import (
+        ResponsibilityChain, ActionGatekeeper, CircuitBreakerPolicy, AuditTrail,
+        init_p5_components, RiskLevel, ActionDecision,
+    )
+    P5_OK = True
+except ImportError:
+    P5_OK = False
+
 
 # ============================================================
 # 执行快照 (T151)
@@ -282,6 +292,13 @@ class DualIsolationManager:
         self._violation_log: List[Dict] = []
         self._isolation_active = False
 
+        # TYIDO P5: 责任可锚定组件初始化
+        if P5_OK:
+            self._p5_chain, self._p5_gate, self._p5_breaker, self._p5_audit = \
+                init_p5_components()
+        else:
+            self._p5_chain = self._p5_gate = self._p5_breaker = self._p5_audit = None
+
     def activate(self) -> Dict[str, Any]:
         """激活双重隔离"""
         self._isolation_active = True
@@ -316,6 +333,27 @@ class DualIsolationManager:
     def check_violation(self, operation: str, resource_type: str,
                         requested_amount: int) -> Dict[str, Any]:
         """检查操作是否违反隔离策略"""
+        # TYIDO P5: 行动门禁 —— 请求许可
+        action_id = None
+        if self._p5_gate is not None:
+            ok, aid_or_reason = self._p5_gate.request_permission(
+                agent_id="DualIsolationManager",
+                action_type="check_isolation",
+                inputs={"operation": operation, "resource_type": resource_type,
+                        "requested_amount": requested_amount},
+                risk_level=1,
+            )
+            if not ok:
+                return {
+                    "operation": operation,
+                    "resource_type": resource_type,
+                    "requested_amount": requested_amount,
+                    "violations": [{"layer": "p5_gate", "violation": f"denied: {aid_or_reason}"}],
+                    "allowed": False,
+                    "p5_denied": True,
+                }
+            action_id = aid_or_reason
+
         violations = []
 
         # 内层检查
@@ -355,6 +393,16 @@ class DualIsolationManager:
         if violations:
             self._violation_log.append(result)
 
+        # TYIDO P5: 确认行动，写入责任链
+        if self._p5_gate is not None and action_id:
+            try:
+                self._p5_gate.confirm_action(action_id, {
+                    "allowed": result["allowed"],
+                    "violation_count": len(violations),
+                })
+            except Exception:
+                pass
+
         return result
 
     def verify_theorem(self) -> Dict[str, Any]:
@@ -372,7 +420,7 @@ class DualIsolationManager:
         }
 
     def get_state(self) -> Dict[str, Any]:
-        return {
+        state = {
             "isolation_active": self._isolation_active,
             "violation_count": len(self._violation_log),
             "recent_violations": self._violation_log[-5:],
@@ -387,6 +435,18 @@ class DualIsolationManager:
                 "leak_probability": self.os_config.leak_probability
             }
         }
+        # TYIDO P5: 责任可锚定状态
+        if self._p5_chain is not None:
+            state["tyido_p5"] = {
+                "responsibility_chain": self._p5_chain.chain_summary(),
+                "gate_status":   "active" if self._p5_gate is not None else "disabled",
+                "circuit_breaker": self._p5_breaker.state() if self._p5_breaker else {},
+                "audit_trail": {
+                    "total_records": len(self._p5_chain._records),
+                },
+                "p5_version": "P5-v1.0.0",
+            }
+        return state
 
 
 # ============================================================
@@ -595,6 +655,13 @@ class UFMRISCVSandbox:
         except Exception:
             pass
 
+        # TYIDO P5: 责任可锚定组件（主入口层统一初始化）
+        if P5_OK:
+            self._p5_chain, self._p5_gate, self._p5_breaker, self._p5_audit = \
+                init_p5_components()
+        else:
+            self._p5_chain = self._p5_gate = self._p5_breaker = self._p5_audit = None
+
     @classmethod
     def get_instance(cls) -> "UFMRISCVSandbox":
         if cls._instance is None:
@@ -694,18 +761,30 @@ class UFMRISCVSandbox:
         }
 
     def get_state(self) -> Dict[str, Any]:
-        return {
-            "module": "M174_UFMRISCVSandbox",
-            "version": "v7.18",
-            "description": "UFM-RISC-V沙箱增强：快照+断点续跑+VM双重隔离+资源有界执行+审计",
-            "snapshot_store": self.snapshot_store.get_state(),
-            "resume_engine": self.resume_engine.get_state(),
-            "isolation": self.isolation_manager.get_state(),
-            "resource_executor": self.resource_executor.get_state(),
-            "auditor": self.auditor.get_state(),
-            "m173_bridge": self._m173 is not None,
-            "uptime_seconds": round(time.time() - self._created_at, 2)
-        }
+            state = {
+                "module": "M174_UFMRISCVSandbox",
+                "version": "v7.18",
+                "description": "UFM-RISC-V沙箱增强：快照+断点续跑+VM双重隔离+资源有界执行+审计",
+                "snapshot_store": self.snapshot_store.get_state(),
+                "resume_engine": self.resume_engine.get_state(),
+                "isolation": self.isolation_manager.get_state(),
+                "resource_executor": self.resource_executor.get_state(),
+                "auditor": self.auditor.get_state(),
+                "m173_bridge": self._m173 is not None,
+                "uptime_seconds": round(time.time() - self._created_at, 2)
+            }
+            # TYIDO P5: 责任可锚定状态（主入口层）
+            if self._p5_chain is not None:
+                state["tyido_p5"] = {
+                    "responsibility_chain": self._p5_chain.chain_summary(),
+                    "gate_status":   "active" if self._p5_gate is not None else "disabled",
+                    "circuit_breaker": self._p5_breaker.state() if self._p5_breaker else {},
+                    "audit_trail": {
+                        "total_records": len(self._p5_chain._records),
+                    },
+                    "p5_version": "P5-v1.0.0",
+                }
+            return state
 
 
 # ============================================================

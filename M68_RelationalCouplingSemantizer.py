@@ -10,18 +10,47 @@ M68: 关系耦合语义器 (Relational Coupling Semantizer)
 - T21: 关系翻转临界定理
 
 预言P9: 语义理解质量∝关系耦合度
+
+TY/IDO Property 3 集成 (长程推理/可保持):
+- 子目标分解: 将语义理解拆分为多步推理链
+- 每步验证: 每步结果经 StepVerifier 验收
+- 错误恢复: Plan B 降级策略（近似嵌入 → 零向量）
+- 资源预算: 超时/算力限制下优雅降级
 """
+# [_modified] M68 integrated with TYIDO P3 LongRangeReasoning
 
 import numpy as np
 from typing import List, Dict, Any, Tuple, Optional
 from collections import Counter
 import re
+import sys
+import os
+
+# 导入 TY/IDO Property 3 共享基础设施
+_tyido_path = os.path.dirname(os.path.abspath(__file__))
+if _tyido_path not in sys.path:
+    sys.path.insert(0, _tyido_path)
+
+try:
+    from TYIDO_LongRangeReasoning import (
+        SubGoal, SubGoalDecomposer, StepVerifier,
+        PlanBFallback, ResourceBudget, FallbackPlan
+    )
+    _P3_AVAILABLE = True
+except ImportError:
+    _P3_AVAILABLE = False
 
 class RelationalCouplingSemantizer:
     """
     关系耦合语义器
     
     来源: §3.2 EML加法与关系翻转
+    
+    TY/IDO Property 3 (长程推理/可保持) 集成:
+    - 子目标分解: 将语义理解拆分为多步推理链
+    - 每步验证: 每步结果经 StepVerifier 验收
+    - 错误恢复: Plan B 降级策略
+    - 资源预算: 超时/算力限制下优雅降级
     """
     _instance = None
     
@@ -30,6 +59,68 @@ class RelationalCouplingSemantizer:
         self.semantic_strength_history: List[float] = []
         self.phase_coupling_coefficients: List[float] = []
         self.flip_count = 0
+        
+        # TY/IDO Property 3 组件
+        if _P3_AVAILABLE:
+            self._p3_decomposer = SubGoalDecomposer(task_name="SemanticCoupling")
+            self._p3_verifier = StepVerifier()
+            self._p3_fallback = PlanBFallback()
+            self._p3_budget = ResourceBudget(max_time=10.0, max_steps=500)
+            self._init_p3_fallbacks()
+        else:
+            self._p3_decomposer = None
+            self._p3_verifier = None
+            self._p3_fallback = None
+            self._p3_budget = None
+        self._p3_last_verdict = 'PASS'
+
+    def _init_p3_fallbacks(self):
+        """初始化 P3 降级策略"""
+        if not self._p3_fallback:
+            return
+        # Plan B: 使用简单词袋替代 EML 嵌入
+        self._p3_fallback.register_plan(FallbackPlan(
+            plan_name="Plan B: bag_of_words",
+            priority=1,
+            strategy=self._fallback_bag_of_words,
+            description="使用词袋相似度替代 EML 嵌入"
+        ))
+        # Plan C: 返回零向量
+        self._p3_fallback.register_plan(FallbackPlan(
+            plan_name="Plan C: zero_vector",
+            priority=2,
+            strategy=self._fallback_zero_vector,
+            description="返回零向量作为保底结果"
+        ))
+    
+    def _fallback_bag_of_words(self, context: Dict[str, Any]) -> dict:
+        """Plan B: 词袋近似"""
+        e1 = context.get('entity1', '')
+        e2 = context.get('entity2', '')
+        # 简单字符交叠相似度
+        set1 = set(e1)
+        set2 = set(e2)
+        if not set1 and not set2:
+            similarity = 0.0
+        else:
+            similarity = len(set1 & set2) / max(len(set1 | set2), 1)
+        return {
+            'entity1': e1,
+            'entity2': e2,
+            'phase_coupling_coefficient': float(similarity),
+            'flip_occurred': False,
+            'fallback': 'bag_of_words'
+        }
+    
+    def _fallback_zero_vector(self, context: Dict[str, Any]) -> dict:
+        """Plan C: 零向量保底"""
+        return {
+            'entity1': context.get('entity1', ''),
+            'entity2': context.get('entity2', ''),
+            'phase_coupling_coefficient': 0.0,
+            'flip_occurred': False,
+            'fallback': 'zero_vector'
+        }
     
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -91,47 +182,131 @@ class RelationalCouplingSemantizer:
     def compute_phase_coupling(self, entity1: str, entity2: str) -> dict:
         """
         计算两个实体间的相位耦合
+        
+        TY/IDO P3: 子目标链 S1(嵌入1)→S2(嵌入2)→S3(EML加法)→S4(验证)
         """
-        # 获取嵌入
-        e1 = self.compute_entity_embedding(entity1)
-        e2 = self.compute_entity_embedding(entity2)
+        # --- TY/IDO P3: 资源预算启动 ---
+        if self._p3_budget:
+            self._p3_budget.start()
         
-        # 相位 = 嵌入的归一化角度
-        phase1 = np.arctan2(e1[1], e1[0]) if len(e1) > 1 else 0
-        phase2 = np.arctan2(e2[1], e2[0]) if len(e2) > 1 else 0
+        p3_diagnostics = {'budget_exhausted': False, 'fallback_used': None}
+        coupling_result = None
         
-        # 幅值 = 嵌入的范数
-        amp1 = np.linalg.norm(e1)
-        amp2 = np.linalg.norm(e2)
+        try:
+            # S1: 计算实体1嵌入
+            if self._p3_budget and self._p3_budget.exhausted():
+                raise TimeoutError("Budget exhausted at S1")
+            e1 = self.compute_entity_embedding(entity1)
+            if self._p3_budget:
+                self._p3_budget.tick()
+            if self._p3_budget and self._p3_budget.exhausted():
+                raise TimeoutError("Budget exhausted at S2")
+            e2 = self.compute_entity_embedding(entity2)
+            if self._p3_budget:
+                self._p3_budget.tick()
+            if self._p3_budget and self._p3_budget.exhausted():
+                raise TimeoutError("Budget exhausted at S3")
+            
+            phase1 = np.arctan2(e1[1], e1[0]) if len(e1) > 1 else 0
+            phase2 = np.arctan2(e2[1], e2[0]) if len(e2) > 1 else 0
+            amp1 = np.linalg.norm(e1)
+            amp2 = np.linalg.norm(e2)
+            
+            coupled = self.EML_addition(
+                type('M', (), {'amplitude': amp1, 'phase': phase1})(),
+                type('M', (), {'amplitude': amp2, 'phase': phase2})()
+            )
+            
+            # S4: 每步验证
+            if self._p3_verifier:
+                v = self._p3_verifier.verify(
+                    coupled['amplitude'],
+                    {'name': 'coupled_amp_non_negative', 'type': 'min', 'expected': 0}
+                )
+                if not v['passed']:
+                    recovery = self._p3_fallback.try_recover(
+                        failed_goal="S4_verify_coupling",
+                        error=ValueError(v['details']),
+                        context={'entity1': entity1, 'entity2': entity2}
+                    )
+                    p3_diagnostics['fallback_used'] = recovery['plan_used']
+                    coupled['amplitude'] = recovery['result'] if isinstance(recovery['result'], (int, float)) else 0.5
+            
+            phase_diff = abs(phase1 - phase2)
+            coupling_coefficient = np.cos(phase_diff)
+            
+            coupling_result = {
+                'entity1': entity1,
+                'entity2': entity2,
+                'phase1': float(phase1),
+                'phase2': float(phase2),
+                'amplitude1': float(amp1),
+                'amplitude2': float(amp2),
+                'coupled_amplitude': coupled['amplitude'],
+                'coupled_phase': coupled['phase'],
+                'phase_coupling_coefficient': float(coupling_coefficient),
+                'flip_occurred': coupled['flip_occurred']
+            }
+            
+            if self._p3_budget:
+                self._p3_budget.tick()
         
-        # EML加法
-        coupled = self.EML_addition(
-            type('M', (), {'amplitude': amp1, 'phase': phase1})(),
-            type('M', (), {'amplitude': amp2, 'phase': phase2})()
-        )
+        except TimeoutError:
+            p3_diagnostics['budget_exhausted'] = True
+            # 优雅降级
+            if self._p3_fallback:
+                recovery = self._p3_fallback.try_recover(
+                    failed_goal="compute_phase_coupling",
+                    error=TimeoutError("Budget exhausted"),
+                    context={'entity1': entity1, 'entity2': entity2}
+                )
+                p3_diagnostics['fallback_used'] = recovery['plan_used']
+                coupling_result = recovery['result']
+            else:
+                coupling_result = {
+                    'entity1': entity1, 'entity2': entity2,
+                    'phase_coupling_coefficient': 0.0, 'flip_occurred': False
+                }
         
-        # 相位耦合系数
-        phase_diff = abs(phase1 - phase2)
-        coupling_coefficient = np.cos(phase_diff)
+        except Exception as e:
+            if self._p3_fallback:
+                recovery = self._p3_fallback.try_recover(
+                    failed_goal="compute_phase_coupling",
+                    error=e,
+                    context={'entity1': entity1, 'entity2': entity2}
+                )
+                p3_diagnostics['fallback_used'] = recovery['plan_used']
+                coupling_result = recovery['result']
+            else:
+                raise
         
-        return {
-            'entity1': entity1,
-            'entity2': entity2,
-            'phase1': float(phase1),
-            'phase2': float(phase2),
-            'amplitude1': float(amp1),
-            'amplitude2': float(amp2),
-            'coupled_amplitude': coupled['amplitude'],
-            'coupled_phase': coupled['phase'],
-            'phase_coupling_coefficient': float(coupling_coefficient),
-            'flip_occurred': coupled['flip_occurred']
-        }
+        finally:
+            if self._p3_budget:
+                self._p3_budget.stop()
+        
+        # 附加 P3 诊断 — budget_exhausted 优先于 fallback_used
+        if p3_diagnostics.get('budget_exhausted'):
+            coupling_result['tyido_p3'] = {'verdict': 'DEGRADED'}
+            self._p3_last_verdict = 'DEGRADED'
+        elif p3_diagnostics.get('fallback_used'):
+            coupling_result['tyido_p3'] = {
+                'verdict': 'RECOVERED',
+                'fallback_used': p3_diagnostics['fallback_used']
+            }
+            self._p3_last_verdict = 'RECOVERED'
+        elif _P3_AVAILABLE:
+            coupling_result['tyido_p3'] = {'verdict': 'PASS'}
+            self._p3_last_verdict = 'PASS'
+        
+        return coupling_result
     
     def compute_semantic_strength(self, entities: List[str]) -> dict:
         """
         计算语义理解强度
         
         P9: 语义理解质量∝关系耦合度
+        
+        TY/IDO P3: 子目标链 + 每步验证
         """
         if len(entities) < 2:
             return {
@@ -139,30 +314,81 @@ class RelationalCouplingSemantizer:
                 'avg_coupling': 0.5,
                 'entity_count': len(entities)
             }
-        
+
+        # --- TY/IDO P3: 每步验证 ---
+        p3_diagnostics = {'budget_exhausted': False, 'fallback_used': None}
         couplings = []
-        for i in range(len(entities)):
-            for j in range(i + 1, len(entities)):
-                coupling = self.compute_phase_coupling(entities[i], entities[j])
-                couplings.append(coupling)
-        
-        avg_coupling = np.mean([c['phase_coupling_coefficient'] for c in couplings])
-        
+
+        if self._p3_budget:
+            self._p3_budget.start()
+
+        try:
+            for i in range(len(entities)):
+                for j in range(i + 1, len(entities)):
+                    if self._p3_budget and self._p3_budget.exhausted():
+                        p3_diagnostics['budget_exhausted'] = True
+                        # 优雅降级：用简单相似度
+                        recovery = self._p3_fallback.try_recover(
+                            failed_goal="coupling_computation",
+                            error=TimeoutError("Budget exhausted"),
+                            context={'entity1': entities[i], 'entity2': entities[j]}
+                        )
+                        couplings.append({
+                            'entity1': entities[i], 'entity2': entities[j],
+                            'phase_coupling_coefficient': recovery['result'] if isinstance(recovery.get('result'), (int, float)) else 0.5,
+                            'fallback': True
+                        })
+                        continue
+
+                    coupling = self.compute_phase_coupling(entities[i], entities[j])
+
+                    # 每步验证：耦合系数应在 [-1, 1]
+                    if self._p3_verifier:
+                        v = self._p3_verifier.verify(
+                            coupling['phase_coupling_coefficient'],
+                            {'name': 'coupling_range', 'type': 'range', 'low': -1, 'high': 1}
+                        )
+                        if not v['passed']:
+                            coupling['phase_coupling_coefficient'] = 0.0  # 修正
+
+                    couplings.append(coupling)
+
+                    if self._p3_budget:
+                        self._p3_budget.tick()
+
+        finally:
+            if self._p3_budget:
+                self._p3_budget.stop()
+
+        avg_coupling = np.mean([c['phase_coupling_coefficient'] for c in couplings]) if couplings else 0.5
+
         # 语义强度 = 平均耦合 × 实体数量因子
         entity_factor = np.log(len(entities) + 1)
         semantic_strength = min(1.0, avg_coupling * entity_factor)
-        
+
         # 记录历史
         self.semantic_strength_history.append(semantic_strength)
         self.coupling_history.extend(couplings)
         self.phase_coupling_coefficients.append(avg_coupling)
-        
-        return {
+
+        result = {
             'semantic_strength': float(semantic_strength),
             'avg_coupling': float(avg_coupling),
             'entity_count': len(entities),
             'couplings': couplings
         }
+
+        if p3_diagnostics.get('fallback_used'):
+            result['tyido_p3'] = {
+                'verdict': 'RECOVERED',
+                'fallback_used': p3_diagnostics['fallback_used']
+            }
+        elif p3_diagnostics.get('budget_exhausted'):
+            result['tyido_p3'] = {'verdict': 'DEGRADED'}
+        elif _P3_AVAILABLE:
+            result['tyido_p3'] = {'verdict': 'PASS'}
+
+        return result
     
     def verify_eml_conservation(self) -> dict:
         """
@@ -223,8 +449,8 @@ class RelationalCouplingSemantizer:
         return self.flip_count
     
     def get_state(self) -> dict:
-        """获取语义器状态"""
-        return {
+        """获取语义器状态（含 TY/IDO P3 诊断）"""
+        state = {
             'coupling_count': len(self.coupling_history),
             'flip_count': self.flip_count,
             'current_semantic_strength': float(self.semantic_strength_history[-1]) if self.semantic_strength_history else 0,
@@ -233,6 +459,16 @@ class RelationalCouplingSemantizer:
             'eml_conservation': self.verify_eml_conservation(),
             'p9_verification': self.verify_p9()
         }
+        # TY/IDO P3 诊断
+        if _P3_AVAILABLE and self._p3_decomposer:
+            state['tyido_p3'] = {
+                'subgoal_progress': self._p3_decomposer.get_progress(),
+                'verifier_state': self._p3_verifier.get_state() if self._p3_verifier else {},
+                'fallback_state': self._p3_fallback.get_state() if self._p3_fallback else {},
+                'budget_state': self._p3_budget.get_state() if self._p3_budget else {},
+                'verdict': self._p3_last_verdict
+            }
+        return state
 
 
 _instance = None

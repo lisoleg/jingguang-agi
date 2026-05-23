@@ -25,6 +25,15 @@ from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
 
+# TYIDO P4: 可寻址长期记忆
+try:
+    from TYIDO_AddressableMemory import (
+        AddressableMemoryStore, MemoryIndex, ForgetPolicy, MemoryMergeEngine
+    )
+    _P4_AVAILABLE = True
+except ImportError:
+    _P4_AVAILABLE = False
+
 
 class SystemState(Enum):
     """系统状态"""
@@ -89,6 +98,16 @@ class SelfReferentialPhiDetector:
         
         # 相变阈值（Φ值突跃幅度）
         self.phase_transition_delta = 0.3
+
+        # TYIDO P4: 可寻址长期记忆
+        self._p4_available = _P4_AVAILABLE
+        if self._p4_available:
+            self._p4_store = AddressableMemoryStore(max_size=5000)
+            self._p4_index = MemoryIndex(self._p4_store)
+            self._p4_forget_policy = ForgetPolicy(self._p4_store)
+            self._p4_merge_engine = MemoryMergeEngine(self._p4_store)
+        else:
+            self._p4_store = self._p4_index = self._p4_forget_policy = self._p4_merge_engine = None
     
     def add_element(self, system_id: str, element: InfoElement):
         """向系统添加信息元素"""
@@ -109,6 +128,17 @@ class SelfReferentialPhiDetector:
         
         self.systems[system_id] = elements
         return True
+    
+    def _p4_persist_detection(self, result: 'PhiDetectionResult'):
+        """P4: 将检测结果持久化到长期记忆"""
+        if self._p4_available and self._p4_store is not None:
+            self._p4_store.write(f"detection:{result.system_id}", {
+                "phi_value": result.phi_value,
+                "system_state": result.system_state.value,
+                "threshold_exceeded": result.threshold_exceeded,
+                "phase_transition": result.phase_transition,
+                "loop_count": len(result.self_referential_loops),
+            }, tags=["detection", result.system_id], importance=0.8)
     
     def compute_element_phi(self, elem_i: InfoElement, 
                             elem_j: InfoElement) -> float:
@@ -417,6 +447,10 @@ class SelfReferentialPhiDetector:
         )
         
         self.detection_results[system_id] = result
+
+        # P4: 持久化检测结果
+        self._p4_persist_detection(result)
+
         return result
     
     def _generate_insight(self, phi: float, state: SystemState,
@@ -469,6 +503,30 @@ class SelfReferentialPhiDetector:
             self_referential_loops=[],
             insight="未找到系统数据"
         )
+
+    def get_state(self) -> Dict[str, Any]:
+        """获取模块状态（含 TYIDO P4 记忆诊断）"""
+        state = {
+            "module": "M73 SelfReferentialPhiDetector",
+            "version": self.version,
+            "system_count": len(self.systems),
+            "detection_count": len(self.detection_results),
+            "phi_threshold": self.phi_threshold,
+            "phase_transition_delta": self.phase_transition_delta,
+        }
+        if self._p4_available and self._p4_store is not None:
+            store_stats = self._p4_store.get_stats()
+            state["tyido_p4"] = {
+                "available": True,
+                "store_stats": store_stats,
+                "index_stats": self._p4_index.get_stats(),
+                "forget_stats": self._p4_forget_policy.get_stats(),
+                "p4_keys": self._p4_store.keys(),
+                "verdict": "PASS" if store_stats['size'] > 0 else "EMPTY",
+            }
+        else:
+            state["tyido_p4"] = {"available": False, "verdict": "N/A"}
+        return state
 
 
 def get_instance():

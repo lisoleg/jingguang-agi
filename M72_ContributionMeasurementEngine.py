@@ -23,6 +23,15 @@ from enum import Enum
 from datetime import datetime
 from collections import defaultdict
 
+# TYIDO P4: 可寻址长期记忆
+try:
+    from TYIDO_AddressableMemory import (
+        AddressableMemoryStore, MemoryIndex, ForgetPolicy, MemoryMergeEngine
+    )
+    _P4_AVAILABLE = True
+except ImportError:
+    _P4_AVAILABLE = False
+
 
 @dataclass
 class AgentContribution:
@@ -84,6 +93,16 @@ class ContributionMeasurementEngine:
         
         # 基尼系数阈值
         self.gini_threshold = 0.3  # 基尼系数<0.3为公平
+
+        # TYIDO P4: 可寻址长期记忆
+        self._p4_available = _P4_AVAILABLE
+        if self._p4_available:
+            self._p4_store = AddressableMemoryStore(max_size=5000)
+            self._p4_index = MemoryIndex(self._p4_store)
+            self._p4_forget_policy = ForgetPolicy(self._p4_store)
+            self._p4_merge_engine = MemoryMergeEngine(self._p4_store)
+        else:
+            self._p4_store = self._p4_index = self._p4_forget_policy = self._p4_merge_engine = None
     
     def compute_mutual_information(self, agent_data: List[float], 
                                    model_data: List[float]) -> float:
@@ -431,6 +450,35 @@ class ContributionMeasurementEngine:
         if agent_id not in self.agent_profiles:
             self.agent_profiles[agent_id] = {}
         self.agent_profiles[agent_id][key] = value
+        # P4: 持久化到记忆存储
+        if self._p4_available and self._p4_store is not None:
+            mem_key = f"profile:{agent_id}:{key}"
+            self._p4_store.write(mem_key, value, tags=["profile", agent_id], importance=0.6)
+
+    def get_state(self) -> Dict[str, Any]:
+        """获取模块状态（含 TYIDO P4 记忆诊断）"""
+        state = {
+            "module": "M72 ContributionMeasurementEngine",
+            "version": self.version,
+            "contribution_count": len(self.contributions),
+            "coalition_game_count": len(self.coalition_games),
+            "agent_count": len(self.agent_profiles),
+            "fairness_threshold": self.fairness_threshold,
+            "gini_threshold": self.gini_threshold,
+        }
+        if self._p4_available and self._p4_store is not None:
+            store_stats = self._p4_store.get_stats()
+            state["tyido_p4"] = {
+                "available": True,
+                "store_stats": store_stats,
+                "index_stats": self._p4_index.get_stats(),
+                "forget_stats": self._p4_forget_policy.get_stats(),
+                "p4_keys": self._p4_store.keys(),
+                "verdict": "PASS" if store_stats['size'] > 0 else "EMPTY",
+            }
+        else:
+            state["tyido_p4"] = {"available": False, "verdict": "N/A"}
+        return state
 
 
 def get_instance():

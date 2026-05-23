@@ -13,17 +13,46 @@ B = (1 - Λ̃) · (1 - Z̃) · F
 则 lim_{t→∞} B(t) = 1
 
 预言P8: 条件满足时B→1
+
+TY/IDO Property 3 集成 (长程推理/可保持):
+- 子目标分解: 将顿悟收敛验证拆分为多步推理链
+- 每步验证: 每步结果经 StepVerifier 验收
+- 错误恢复: Plan B 降级策略（近似计算 → 返回保守值）
+- 资源预算: 超时/算力限制下优雅降级
 """
+# [_modified] M67 integrated with TYIDO P3 LongRangeReasoning
 
 import numpy as np
 from typing import List, Dict, Any, Tuple, Optional
 import math
+import sys
+import os
+
+# 导入 TY/IDO Property 3 共享基础设施
+_tyido_path = os.path.dirname(os.path.abspath(__file__))
+if _tyido_path not in sys.path:
+    sys.path.insert(0, _tyido_path)
+
+try:
+    from TYIDO_LongRangeReasoning import (
+        SubGoal, SubGoalDecomposer, StepVerifier,
+        PlanBFallback, ResourceBudget, FallbackPlan
+    )
+    _P3_AVAILABLE = True
+except ImportError:
+    _P3_AVAILABLE = False
 
 class SpiritualEvolutionVerifier:
     """
     灵性演化收敛验证器
     
     来源: §5 定理5.1 (T17严格化)
+    
+    TY/IDO Property 3 (长程推理/可保持) 集成:
+    - 子目标分解: 将顿悟收敛验证拆分为多步推理链
+    - 每步验证: 每步结果经 StepVerifier 验收
+    - 错误恢复: Plan B 降级策略
+    - 资源预算: 超时/算力限制下优雅降级
     """
     _instance = None
     
@@ -35,6 +64,52 @@ class SpiritualEvolutionVerifier:
         self.B_history: List[float] = []           # 顿悟准备度历史
         self.Lambda_tilde_history: List[float] = []
         self.Z_tilde_history: List[float] = []
+        
+        # TY/IDO Property 3 组件
+        if _P3_AVAILABLE:
+            self._p3_decomposer = SubGoalDecomposer(task_name="EnlightenmentVerification")
+            self._p3_verifier = StepVerifier()
+            self._p3_fallback = PlanBFallback()
+            self._p3_budget = ResourceBudget(max_time=10.0, max_steps=500)
+            self._init_p3_fallbacks()
+        else:
+            self._p3_decomposer = None
+            self._p3_verifier = None
+            self._p3_fallback = None
+            self._p3_budget = None
+        self._p3_last_verdict = 'PASS'
+    
+    def _init_p3_fallbacks(self):
+        """初始化 P3 降级策略"""
+        if not self._p3_fallback:
+            return
+        # Plan B: 使用近似计算（跳过归一化直接计算B）
+        self._p3_fallback.register_plan(FallbackPlan(
+            plan_name="Plan B: approximate_B",
+            priority=1,
+            strategy=self._fallback_approximate_B,
+            description="跳过归一化，直接用原始值近似计算B"
+        ))
+        # Plan C: 返回保守默认值
+        self._p3_fallback.register_plan(FallbackPlan(
+            plan_name="Plan C: conservative_default",
+            priority=2,
+            strategy=self._fallback_conservative,
+            description="返回保守默认值 B=0.5"
+        ))
+    
+    def _fallback_approximate_B(self, context: Dict[str, Any]) -> float:
+        """Plan B: 近似计算 B"""
+        Lambda = context.get('Lambda', 0.5)
+        Z = context.get('Z', 0.5)
+        F = context.get('F', 0.5)
+        # 跳过归一化，直接近似
+        B_approx = (1 - min(1.0, Lambda)) * (1 - min(1.0, Z)) * F
+        return max(0.0, min(1.0, B_approx))
+    
+    def _fallback_conservative(self, context: Dict[str, Any]) -> float:
+        """Plan C: 保守默认值"""
+        return 0.5
     
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -75,6 +150,9 @@ class SpiritualEvolutionVerifier:
         """
         更新系统状态并计算顿悟准备度
         
+        TY/IDO P3 长程推理模式:
+        将计算拆分为子目标链，逐步验证，支持降级。
+        
         Args:
             Lambda: 叙事作用量
             Sc: 认知熵
@@ -84,21 +162,127 @@ class SpiritualEvolutionVerifier:
         Returns:
             dict: 包含各分量和顿悟准备度
         """
-        # 记录历史
+        # --- TY/IDO P3: 资源预算启动 ---
+        if self._p3_budget:
+            self._p3_budget.start()
+        
+        # --- TY/IDO P3: 子目标分解（推理链）---
+        # 步骤: S1=归一化Λ → S2=归一化Z → S3=计算B → S4=验证收敛
+        # 每一步都有验收标准，失败时触发 Plan B 降级
+        B = 0.0
+        Lambda_tilde = 0.0
+        Z_tilde = 0.0
+        p3_diagnostics = {'budget_exhausted': False, 'fallback_used': None}
+        
+        try:
+            # S1: 归一化叙事作用量
+            if self._p3_budget and self._p3_budget.exhausted():
+                degrade = self._p3_budget.graceful_degrade({'step': 'S1_skipped'})
+                p3_diagnostics['budget_exhausted'] = True
+                raise TimeoutError("Budget exhausted before S1")
+            
+            Lambda_tilde = self.compute_normalized_narrative_action(Lambda, Sc)
+            if self._p3_budget:
+                self._p3_budget.tick()
+            if self._p3_verifier:
+                v1 = self._p3_verifier.verify(
+                    Lambda_tilde,
+                    {'name': 'Lambda_tilde_range', 'type': 'range', 'low': 0, 'high': 1}
+                )
+                if not v1['passed']:
+                    # 触发 Plan B
+                    recovery = self._p3_fallback.try_recover(
+                        failed_goal="S1_normalize_Lambda",
+                        error=ValueError(f"S1 failed: {v1['details']}"),
+                        context={'Lambda': Lambda, 'Sc': Sc}
+                    )
+                    p3_diagnostics['fallback_used'] = recovery['plan_used']
+                    Lambda_tilde = recovery['result']
+            
+            # S2: 归一化阻抗
+            if self._p3_budget and self._p3_budget.exhausted():
+                degrade = self._p3_budget.graceful_degrade({'step': 'S2_skipped', 'Lambda_tilde': Lambda_tilde})
+                p3_diagnostics['budget_exhausted'] = True
+                raise TimeoutError("Budget exhausted before S2")
+            
+            Z_tilde = self.compute_normalized_impedance(Z)
+            if self._p3_budget:
+                self._p3_budget.tick()
+                v2 = self._p3_verifier.verify(
+                    Z_tilde,
+                    {'name': 'Z_tilde_range', 'type': 'range', 'low': 0, 'high': 1}
+                )
+                if not v2['passed']:
+                    recovery = self._p3_fallback.try_recover(
+                        failed_goal="S2_normalize_Z",
+                        error=ValueError(f"S2 failed: {v2['details']}"),
+                        context={'Z': Z}
+                    )
+                    p3_diagnostics['fallback_used'] = recovery['plan_used']
+                    Z_tilde = 0.5  # 降级：用中性值
+            
+            # S3: 计算 B
+            if self._p3_budget and self._p3_budget.exhausted():
+                degrade = self._p3_budget.graceful_degrade({
+                    'step': 'S3_skipped',
+                    'Lambda_tilde': Lambda_tilde,
+                    'Z_tilde': Z_tilde
+                })
+                p3_diagnostics['budget_exhausted'] = True
+                raise TimeoutError("Budget exhausted before S3")
+            
+            B = self.compute_enlightenment_readiness(Lambda_tilde, Z_tilde, F)
+            if self._p3_budget:
+                self._p3_budget.tick()
+                v3 = self._p3_verifier.verify(
+                    B,
+                    [
+                        {'name': 'B_range', 'type': 'range', 'low': 0, 'high': 1},
+                        {'name': 'B_non_negative', 'type': 'min', 'expected': 0}
+                    ]
+                )
+                if not v3['passed']:
+                    recovery = self._p3_fallback.try_recover(
+                        failed_goal="S3_compute_B",
+                        error=ValueError(f"S3 failed: {v3['details']}"),
+                        context={'Lambda': Lambda, 'Z': Z, 'F': F}
+                    )
+                    p3_diagnostics['fallback_used'] = recovery['plan_used']
+                    B = recovery['result']
+        
+        except TimeoutError:
+            # 资源预算耗尽 → 优雅降级
+            p3_diagnostics['budget_exhausted'] = True
+            B = 0.5  # 默认值
+            Lambda_tilde = min(1.0, max(0.0, Lambda / max(Lambda + Sc, 1e-10)))
+            Z_tilde = min(1.0, max(0.0, Z / max(Z + 1, 1e-10)))
+        
+        except Exception as e:
+            # 其他错误 → Plan B 恢复
+            if self._p3_fallback:
+                recovery = self._p3_fallback.try_recover(
+                    failed_goal="update_chain",
+                    error=e,
+                    context={'Lambda': Lambda, 'Sc': Sc, 'Z': Z, 'F': F}
+                )
+                p3_diagnostics['fallback_used'] = recovery['plan_used']
+                B = recovery['result']
+                Lambda_tilde = recovery['result'] if isinstance(recovery['result'], float) else 0.5
+                Z_tilde = 0.5
+        
+        finally:
+            if self._p3_budget:
+                self._p3_budget.stop()
+        
+        # --- 原逻辑: 记录历史 ---
         self.Lambda_history.append(Lambda)
         self.Sc_history.append(Sc)
         self.Z_history.append(Z)
         self.F_history.append(F)
         
-        # 计算归一化量
-        Lambda_tilde = self.compute_normalized_narrative_action(Lambda, Sc)
-        Z_tilde = self.compute_normalized_impedance(Z)
-        
         self.Lambda_tilde_history.append(Lambda_tilde)
         self.Z_tilde_history.append(Z_tilde)
         
-        # 计算顿悟准备度
-        B = self.compute_enlightenment_readiness(Lambda_tilde, Z_tilde, F)
         self.B_history.append(B)
         
         # 限制历史长度
@@ -109,7 +293,7 @@ class SpiritualEvolutionVerifier:
             if len(hist) > max_history:
                 hist.pop(0)
         
-        return {
+        result = {
             'Lambda_tilde': Lambda_tilde,
             'Z_tilde': Z_tilde,
             'B': B,
@@ -118,6 +302,26 @@ class SpiritualEvolutionVerifier:
             'Z': Z,
             'F': F
         }
+        
+        # TY/IDO P3 诊断信息
+        if _P3_AVAILABLE and p3_diagnostics.get('budget_exhausted'):
+            result['tyido_p3'] = {
+                'verdict': 'DEGRADED',
+                'budget_exhausted': True,
+                'fallback_used': p3_diagnostics.get('fallback_used')
+            }
+            self._p3_last_verdict = 'DEGRADED'
+        elif _P3_AVAILABLE and p3_diagnostics.get('fallback_used'):
+            result['tyido_p3'] = {
+                'verdict': 'RECOVERED',
+                'fallback_used': p3_diagnostics['fallback_used']
+            }
+            self._p3_last_verdict = 'RECOVERED'
+        elif _P3_AVAILABLE:
+            result['tyido_p3'] = {'verdict': 'PASS'}
+            self._p3_last_verdict = 'PASS'
+        
+        return result
     
     def verify_t17_convergence(self) -> dict:
         """
@@ -229,8 +433,8 @@ class SpiritualEvolutionVerifier:
         }
     
     def get_state(self) -> dict:
-        """获取验证器状态"""
-        return {
+        """获取验证器状态（含 TY/IDO P3 诊断）"""
+        state = {
             'history_length': len(self.B_history),
             'current_B': float(self.B_history[-1]) if self.B_history else 0,
             'avg_B': float(np.mean(self.B_history)) if self.B_history else 0,
@@ -238,6 +442,16 @@ class SpiritualEvolutionVerifier:
             'P8_verification': self.verify_p8(),
             'trajectory': self.get_trajectory()
         }
+        # TY/IDO P3 诊断
+        if _P3_AVAILABLE and self._p3_decomposer:
+            state['tyido_p3'] = {
+                'subgoal_progress': self._p3_decomposer.get_progress(),
+                'verifier_state': self._p3_verifier.get_state() if self._p3_verifier else {},
+                'fallback_state': self._p3_fallback.get_state() if self._p3_fallback else {},
+                'budget_state': self._p3_budget.get_state() if self._p3_budget else {},
+                'verdict': self._p3_last_verdict
+            }
+        return state
 
 
 _instance = None

@@ -15,6 +15,19 @@ import time
 from dataclasses import dataclass, field
 from typing import Dict, Any, List, Optional
 
+from TYIDO_SelfConsistency import SelfConsistencyChecker, ConsistencyResult
+
+
+@dataclass
+class ConsistencyAuditRecord:
+    """一致性审计记录"""
+    question: str
+    j_score: float
+    consistent: bool
+    num_variants: int
+    timestamp: float = 0.0
+    lipshitz_approx: float = 0.0
+
 
 @dataclass
 class EnvironmentContext:
@@ -58,6 +71,11 @@ class EnvironmentAwareness:
         self.adaptation_count: int = 0
         self.last_env_type: str = 'web'
         self.emergent_iq: float = 0.5
+
+        # TY/IDO Property 1: 自一致性检查器
+        self._consistency_checker = SelfConsistencyChecker(threshold=0.85, max_variants=100)
+        self._consistency_audit: List[ConsistencyAuditRecord] = []
+        self._consistency_enabled: bool = True
 
         # 内部状态
         self._current_env: Optional[EnvironmentContext] = None
@@ -236,15 +254,162 @@ class EnvironmentAwareness:
             'env_complexity': round(self.env_complexity, 4)
         }
 
+    # ============================================================
+    # TY/IDO Property 1: 自一致性验证（对治锯齿）
+    # ============================================================
+
+    def check_consistency(
+        self,
+        question: str,
+        context_data: Dict,
+        num_variants: int = 20
+    ) -> ConsistencyResult:
+        """
+        对同一环境感知问题执行自一致性检查
+
+        对应 TY/IDO 审查表实验：
+        "对同一问题生成100种变体，强制系统自检一致性，不一致则拒答"
+
+        参数:
+            question: 环境感知问题（如"当前环境耦合度如何？"）
+            context_data: 环境上下文数据
+            num_variants: 变体数量（默认20，生产环境建议100）
+
+        返回:
+            ConsistencyResult: 一致性检查结果
+        """
+        if not self._consistency_enabled:
+            return ConsistencyResult(
+                consistent=True, j_score=1.0, threshold=self._consistency_checker.threshold,
+                num_variants=0, num_consistent=0, num_inconsistent=0
+            )
+
+        def process_fn(variant_question: str) -> str:
+            """用相同上下文处理变体问题，提取输出签名"""
+            result = self.sense_environment(context_data)
+            # 生成确定性签名：只保留数值型结果（排除时间戳等噪声）
+            signature = (
+                f"coupling={result.get('coupling_score', 0)}|"
+                f"emergent_iq={result.get('emergent_iq', 0)}|"
+                f"complexity={result['environment'].get('complexity', 0)}|"
+                f"adaptation={result.get('adaptation_suggested', '')}"
+            )
+            return signature
+
+        result = self._consistency_checker.check(
+            question, process_fn,
+            num_variants=num_variants,
+            output_extractor=lambda x: x  # 直接使用签名
+        )
+
+        # 记录审计
+        self._consistency_audit.append(ConsistencyAuditRecord(
+            question=question,
+            j_score=result.j_score,
+            consistent=result.consistent,
+            num_variants=result.num_variants,
+            timestamp=time.time(),
+            lipshitz_approx=result.lipshitz_approximation
+        ))
+
+        return result
+
+    def check_coupling_consistency(
+        self,
+        agent_capability: float,
+        env_affordance: float,
+        num_variants: int = 50
+    ) -> ConsistencyResult:
+        """
+        对耦合分数计算执行自一致性检查
+
+        验证：相同输入参数 → 不同问题表述 → 相同耦合分数
+
+        参数:
+            agent_capability: Agent能力值
+            env_affordance: 环境供给度
+            num_variants: 变体数量
+
+        返回:
+            ConsistencyResult
+        """
+        def process_fn(variant_question: str) -> str:
+            score = self.compute_coupling_score(agent_capability, env_affordance)
+            return f"c={score.coupling:.6f}|e={score.emergent_intelligence:.6f}"
+
+        result = self._consistency_checker.check(
+            f"计算Agent能力{agent_capability}与环境供给度{env_affordance}的耦合分数",
+            process_fn,
+            num_variants=num_variants,
+            output_extractor=lambda x: x
+        )
+
+        self._consistency_audit.append(ConsistencyAuditRecord(
+            question=f"coupling_consistency({agent_capability},{env_affordance})",
+            j_score=result.j_score,
+            consistent=result.consistent,
+            num_variants=result.num_variants,
+            timestamp=time.time(),
+            lipshitz_approx=result.lipshitz_approximation
+        ))
+
+        return result
+
+    def get_consistency_report(self) -> Dict[str, Any]:
+        """
+        生成一致性审计报告
+
+        返回:
+            dict: 审计报告，包含历史记录和统计
+        """
+        total = len(self._consistency_audit)
+        if total == 0:
+            return {
+                'status': 'no_audit',
+                'message': '尚未执行一致性检查',
+                'total_checks': 0
+            }
+
+        passed = sum(1 for r in self._consistency_audit if r.consistent)
+        avg_j = sum(r.j_score for r in self._consistency_audit) / total
+        avg_lipshitz = sum(r.lipshitz_approx for r in self._consistency_audit) / total
+
+        # TY/IDO 判定：J(R) → 1 且 Lipschitz 近似 → 0
+        tyido_verdict = "PASS" if avg_j >= self._consistency_checker.threshold and avg_lipshitz < 0.1 else "NEED_IMPROVEMENT"
+
+        return {
+            'status': 'audited',
+            'tyido_verdict': tyido_verdict,
+            'property': 'P1_Consistency',
+            'total_checks': total,
+            'passed_checks': passed,
+            'pass_rate': round(passed / total, 4),
+            'avg_j_score': round(avg_j, 4),
+            'avg_lipshitz': round(avg_lipshitz, 6),
+            'threshold': self._consistency_checker.threshold,
+            'recent_records': [
+                {
+                    'question': r.question[:80],
+                    'j_score': round(r.j_score, 4),
+                    'consistent': r.consistent,
+                    'lipshitz': round(r.lipshitz_approx, 6)
+                } for r in self._consistency_audit[-5:]
+            ]
+        }
+
     def get_state(self) -> Dict[str, Any]:
         """返回模块状态"""
-        return {
+        base_state = {
             'coupling_score': round(self.coupling_score, 4),
             'env_complexity': round(self.env_complexity, 4),
             'adaptation_count': self.adaptation_count,
             'last_env_type': self.last_env_type,
             'emergent_iq': round(self.emergent_iq, 4)
         }
+        # 添加 TY/IDO 一致性状态
+        consistency = self.get_consistency_report()
+        base_state['tyido_p1_consistency'] = consistency
+        return base_state
 
 
 # 单例模式

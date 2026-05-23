@@ -15,8 +15,12 @@ M64: 叙事作用量引擎 (Narrative Action Engine)
 
 import math
 import re
-from typing import List, Tuple, Optional
+import copy
+from typing import List, Tuple, Optional, Dict, Any
 import numpy as np
+from TYIDO_ContinuousLearning import (
+    RollbackManager, ForgettingGuard, LearningRecord, StateSnapshot
+)
 
 class NarrativeActionEngine:
     """
@@ -33,6 +37,19 @@ class NarrativeActionEngine:
         self.Lambda_history: List[float] = []
         self.complexity_history: List[float] = []
         self.change_cost_history: List[float] = []
+
+        # TY/IDO Property 2: 持续学习基础设施
+        self._rollback_mgr = RollbackManager(max_snapshots=50)
+        self._forgetting_guard = ForgettingGuard(
+            drift_threshold=0.5,
+            sudden_change_threshold=0.8,
+            protected_keys={}  # p7/decay 是动态指标，不设为 protected
+        )
+        self._learning_log: List[LearningRecord] = []
+        self._protected_knowledge: Dict[str, Any] = {}
+        self._initial_alpha = alpha
+        self._initial_beta = beta
+        self._baseline_set = False
     
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -217,25 +234,151 @@ class NarrativeActionEngine:
             'P7_status': 'CONFIRMED' if is_decreasing else 'REJECTED'
         }
     
+    def reset(self):
+        """重置引擎"""
+        # TY/IDO P2: 重置前保存检查点
+        self.save_checkpoint("pre_reset")
+        self.narrative_history = []
+        self.Lambda_history = []
+        self.complexity_history = []
+        self.change_cost_history = []
+
     def get_state(self) -> dict:
         """获取引擎状态"""
-        return {
+        base_state = {
             'alpha': self.alpha,
             'beta': self.beta,
             'history_length': len(self.Lambda_history),
             'current_Lambda': self.Lambda_history[-1] if self.Lambda_history else 0,
             'avg_Lambda': np.mean(self.Lambda_history) if self.Lambda_history else 0,
-            'Lambda_trend': 'decreasing' if len(self.Lambda_history) > 1 and 
+            'Lambda_trend': 'decreasing' if len(self.Lambda_history) > 1 and
                            self.Lambda_history[-1] < self.Lambda_history[0] else 'stable/increasing',
             'p7_verification': self.verify_p7()
         }
-    
-    def reset(self):
-        """重置引擎"""
-        self.narrative_history = []
-        self.Lambda_history = []
-        self.complexity_history = []
-        self.change_cost_history = []
+        # TY/IDO P2: 持续学习审计
+        base_state['tyido_p2_continuous_learning'] = {
+            'rollback_manager': self._rollback_mgr.get_state(),
+            'forgetting_guard': self._forgetting_guard.get_state(),
+            'learning_log_count': len(self._learning_log),
+            'protected_knowledge_keys': list(self._protected_knowledge.keys()),
+            'tyido_verdict': self._compute_p2_verdict()
+        }
+        return base_state
+
+    # ============================================================
+    # TY/IDO Property 2: 持续学习（可回写）
+    # ============================================================
+
+    def save_checkpoint(self, description: str = "") -> StateSnapshot:
+        """保存状态检查点"""
+        state_data = {
+            'alpha': self.alpha,
+            'beta': self.beta,
+            'history_length': len(self.Lambda_history),
+            'current_Lambda': float(self.Lambda_history[-1]) if self.Lambda_history else 0.0
+        }
+        return self._rollback_mgr.save_snapshot(
+            state_data, description=description,
+            key_metrics=self._extract_key_metrics()
+        )
+
+    def rollback(self) -> Optional[Dict[str, Any]]:
+        """回滚到上一个检查点"""
+        snapshot = self._rollback_mgr.rollback()
+        if snapshot is None:
+            return None
+        # 恢复关键状态
+        if 'alpha' in snapshot.state_data:
+            self.alpha = snapshot.state_data['alpha']
+        if 'beta' in snapshot.state_data:
+            self.beta = snapshot.state_data['beta']
+        self._learning_log.append(LearningRecord.create(
+            operation='rollback', target='M64_Narrative',
+            description=f"回滚到 {snapshot.snapshot_id}"
+        ))
+        return snapshot.state_data
+
+    def learn_narrative(self, narrative: str, old_narrative: str = "",
+                        is_core: bool = False) -> Dict[str, Any]:
+        """学习新叙事（带遗忘防护）"""
+        metrics_before = self._extract_key_metrics()
+
+        result = self.compute_lambda(narrative, old_narrative)
+
+        if is_core:
+            idx = len(self.narrative_history)
+            self._protected_knowledge[f'narrative_{idx}'] = narrative
+
+        metrics_after = self._extract_key_metrics()
+
+        # 首次学习后自动设置基线（用学习后的状态作为基准）
+        if not self._baseline_set:
+            self._forgetting_guard.set_baseline(metrics_after)
+            self._baseline_set = True
+            forgetting_check = {'forgetting_risk': 0.0, 'drift_scores': {}, 'alerts': [], 'protected_intact': True, 'tyido_p2_verdict': 'PASS'}
+        else:
+            forgetting_check = self._forgetting_guard.check_forgetting(
+                metrics_after, metrics_before
+            )
+
+        lr = LearningRecord.create(
+            operation='add', target='M64_Narrative',
+            before_state=metrics_before,
+            after_state=metrics_after,
+            description=f"学习叙事 {'[核心]' if is_core else ''}"
+        )
+        lr.forgetting_risk = forgetting_check['forgetting_risk']
+        lr.verified = forgetting_check['tyido_p2_verdict'] == 'PASS'
+        self._learning_log.append(lr)
+
+        return {**result, 'forgetting_check': forgetting_check}
+
+    def update_weights(self, new_alpha: float, new_beta: float) -> Dict[str, Any]:
+        """更新权重参数（带遗忘防护）"""
+        metrics_before = self._extract_key_metrics()
+        old_alpha, old_beta = self.alpha, self.beta
+
+        # 临时修改权重，检查是否会导致遗忘
+        self.alpha = new_alpha
+        self.beta = new_beta
+
+        metrics_after = self._extract_key_metrics()
+        forgetting_check = self._forgetting_guard.check_forgetting(
+            metrics_after, metrics_before
+        )
+
+        if forgetting_check['tyido_p2_verdict'] == 'NEED_ATTENTION':
+            # 恢复原权重
+            self.alpha = old_alpha
+            self.beta = old_beta
+            return {'updated': False, 'reason': '遗忘风险过高，已恢复原参数', 'check': forgetting_check}
+
+        self._learning_log.append(LearningRecord.create(
+            operation='update', target='M64_Narrative.weights',
+            description=f"更新权重 alpha={new_alpha}, beta={new_beta}"
+        ))
+        return {'updated': True, 'forgetting_check': forgetting_check}
+
+    def _extract_key_metrics(self) -> Dict[str, float]:
+        """提取关键指标（仅质量指标，排除自然增长的数量指标）"""
+        p7 = self.verify_p7()
+        current_lambda = self.Lambda_history[-1] if self.Lambda_history else 0.0
+        return {
+            'p7_confirmed': 1.0 if p7.get('P7_status') == 'CONFIRMED' else 0.0,
+            'decay_trend': 1.0 if p7.get('is_decreasing', False) else 0.0,
+            'current_lambda': float(current_lambda)
+        }
+
+    def _compute_p2_verdict(self) -> str:
+        """计算 Property 2 综合判定"""
+        guard_state = self._forgetting_guard.get_state()
+        if guard_state['total_alerts'] == 0:
+            return 'PASS'
+        recent_alerts = guard_state.get('recent_alerts', [])
+        # 只关注 drift 和 critical_loss，忽略 sudden_change（正常学习行为）
+        severe = [a for a in recent_alerts
+                  if a['severity'] >= 0.5 and a['type'] in ('drift', 'critical_loss')]
+        return 'NEED_ATTENTION' if severe else 'PASS'
 
 
 _instance = None

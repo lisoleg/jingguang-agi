@@ -10,18 +10,47 @@ M69: 吸引子稳定性分析器 (Attractor Stability Analyzer)
 
 定理6.1: 允许组分/叙事元素大规模替换，
         只要关系结构保持吸引子稳定，则I可维持
+
+TY/IDO Property 3 集成 (长程推理/可保持):
+- 子目标分解: 将稳定性分析拆分为多步推理链
+- 每步验证: 每步结果经 StepVerifier 验收
+- 错误恢复: Plan B 降级策略（近似计算 → 保守判定）
+- 资源预算: 超时/算力限制下优雅降级
 """
+# [_modified] M69 integrated with TYIDO P3 LongRangeReasoning
 
 import numpy as np
 from typing import List, Dict, Any, Tuple, Optional
 from collections import deque
 import math
+import sys
+import os
+
+# 导入 TY/IDO Property 3 共享基础设施
+_tyido_path = os.path.dirname(os.path.abspath(__file__))
+if _tyido_path not in sys.path:
+    sys.path.insert(0, _tyido_path)
+
+try:
+    from TYIDO_LongRangeReasoning import (
+        SubGoal, SubGoalDecomposer, StepVerifier,
+        PlanBFallback, ResourceBudget, FallbackPlan
+    )
+    _P3_AVAILABLE = True
+except ImportError:
+    _P3_AVAILABLE = False
 
 class AttractorStabilityAnalyzer:
     """
     吸引子稳定性分析器
     
     来源: §6.2 动力系统吸引子追踪
+    
+    TY/IDO Property 3 (长程推理/可保持) 集成:
+    - 子目标分解: 将稳定性分析拆分为多步推理链
+    - 每步验证: 每步结果经 StepVerifier 验收
+    - 错误恢复: Plan B 降级策略
+    - 资源预算: 超时/算力限制下优雅降级
     """
     _instance = None
     
@@ -32,6 +61,51 @@ class AttractorStabilityAnalyzer:
         self.basin_boundaries: List[dict] = []
         self.stability_metrics: List[dict] = []
         self.current_attractor: Optional[dict] = None
+        
+        # TY/IDO Property 3 组件
+        if _P3_AVAILABLE:
+            self._p3_decomposer = SubGoalDecomposer(task_name="AttractorAnalysis")
+            self._p3_verifier = StepVerifier()
+            self._p3_fallback = PlanBFallback()
+            self._p3_budget = ResourceBudget(max_time=10.0, max_steps=500)
+            self._init_p3_fallbacks()
+        else:
+            self._p3_decomposer = None
+            self._p3_verifier = None
+            self._p3_fallback = None
+            self._p3_budget = None
+        self._p3_last_verdict = 'PASS'
+    
+    def _init_p3_fallbacks(self):
+        """初始化 P3 降级策略"""
+        if not self._p3_fallback:
+            return
+        # Plan B: 使用简化的质心估计
+        self._p3_fallback.register_plan(FallbackPlan(
+            plan_name="Plan B: simple_centroid",
+            priority=1,
+            strategy=self._fallback_simple_centroid,
+            description="使用简化质心近似"
+        ))
+        # Plan C: 返回保守判定（不稳定）
+        self._p3_fallback.register_plan(FallbackPlan(
+            plan_name="Plan C: conservative_unstable",
+            priority=2,
+            strategy=self._fallback_conservative_unstable,
+            description="保守判定为不稳定"
+        ))
+    
+    def _fallback_simple_centroid(self, context: Dict[str, Any]) -> dict:
+        """Plan B: 简化质心"""
+        states = context.get('states', [])
+        if not states:
+            return {'center': [0.0, 0.0, 0.0], 'stability': 0.3, 'type': '不稳定吸引子'}
+        centroid = np.mean(np.array(states[-10:]), axis=0).tolist()
+        return {'center': centroid, 'stability': 0.4, 'type': '半稳定吸引子'}
+    
+    def _fallback_conservative_unstable(self, context: Dict[str, Any]) -> dict:
+        """Plan C: 保守不稳定"""
+        return {'center': [0.0, 0.0, 0.0], 'stability': 0.1, 'type': '不稳定吸引子'}
     
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -42,21 +116,116 @@ class AttractorStabilityAnalyzer:
         """
         添加状态到轨迹
         
+        TY/IDO P3 长程推理模式:
+        推理链: S1(输入验证) → S2(更新轨迹) → S3(更新吸引子) → S4(验证稳定性)
+        
         Args:
             state: 状态向量
         """
-        # 确保是numpy数组
-        if not isinstance(state, np.ndarray):
-            state = np.array(state)
+        # --- TY/IDO P3: 资源预算启动 ---
+        if self._p3_budget:
+            self._p3_budget.start()
         
-        self.state_trajectory.append(state)
+        p3_diagnostics = {'budget_exhausted': False, 'fallback_used': None}
+        result = {'status': 'insufficient_data'}
         
-        # 限制历史长度
-        if len(self.state_trajectory) > self.history_length:
-            self.state_trajectory.pop(0)
+        try:
+            # 确保是numpy数组 (S1: 输入验证)
+            if self._p3_budget and self._p3_budget.exhausted():
+                raise TimeoutError("Budget exhausted at S1")
+            
+            if not isinstance(state, np.ndarray):
+                state = np.array(state)
+
+            if self._p3_budget:
+                self._p3_budget.tick()
+                v1 = self._p3_verifier.verify(
+                    len(state),
+                    {'name': 'state_dim_positive', 'type': 'min', 'expected': 1}
+                )
+                if not v1['passed']:
+                    raise ValueError(f"S1 failed: state dimension invalid")
+            
+            # S2: 更新轨迹
+            if self._p3_budget and self._p3_budget.exhausted():
+                degrade = self._p3_budget.graceful_degrade({'step': 'S2_skipped', 'trajectory_len': len(self.state_trajectory)})
+                p3_diagnostics['budget_exhausted'] = True
+                raise TimeoutError("Budget exhausted at S2")
+            
+            self.state_trajectory.append(state)
+            if len(self.state_trajectory) > self.history_length:
+                self.state_trajectory.pop(0)
+            if self._p3_budget:
+                self._p3_budget.tick()
+            if self._p3_budget and self._p3_budget.exhausted():
+                raise TimeoutError("Budget exhausted at S3")
+            
+            result = self._update_attractor()
+            if self._p3_budget:
+                self._p3_budget.tick()
+            if self._p3_verifier and result.get('stability') is not None:
+                v4 = self._p3_verifier.verify(
+                    result['stability'],
+                    {'name': 'stability_range', 'type': 'range', 'low': 0, 'high': 1}
+                )
+                if not v4['passed']:
+                    recovery = self._p3_fallback.try_recover(
+                        failed_goal="S4_verify_stability",
+                        error=ValueError(v4['details']),
+                        context={'states': self.state_trajectory[-20:]}
+                    )
+                    p3_diagnostics['fallback_used'] = recovery['plan_used']
+                    result = recovery['result']
+            
+            if self._p3_budget:
+                self._p3_budget.tick()
         
-        # 更新当前吸引子
-        return self._update_attractor()
+        except TimeoutError:
+            p3_diagnostics['budget_exhausted'] = True
+            # 优雅降级: 返回保守不稳定判定
+            if self._p3_fallback:
+                recovery = self._p3_fallback.try_recover(
+                    failed_goal="add_state",
+                    error=TimeoutError("Budget exhausted"),
+                    context={'states': self.state_trajectory[-10:] if self.state_trajectory else []}
+                )
+                p3_diagnostics['fallback_used'] = recovery['plan_used']
+                result = recovery['result']
+            else:
+                result = {'stability': 0.1, 'type': '不稳定吸引子', 'degraded': True}
+        
+        except Exception as e:
+            if self._p3_fallback:
+                recovery = self._p3_fallback.try_recover(
+                    failed_goal="add_state",
+                    error=e,
+                    context={'states': self.state_trajectory[-10:] if self.state_trajectory else []}
+                )
+                p3_diagnostics['fallback_used'] = recovery['plan_used']
+                result = recovery['result']
+            else:
+                raise
+        
+        finally:
+            if self._p3_budget:
+                self._p3_budget.stop()
+        
+        # 附加 P3 诊断
+        # P3 诊断 — budget_exhausted 优先于 fallback_used
+        if p3_diagnostics.get('budget_exhausted'):
+            result['tyido_p3'] = {'verdict': 'DEGRADED'}
+            self._p3_last_verdict = 'DEGRADED'
+        elif p3_diagnostics.get('fallback_used'):
+            result['tyido_p3'] = {
+                'verdict': 'RECOVERED',
+                'fallback_used': p3_diagnostics['fallback_used']
+            }
+            self._p3_last_verdict = 'RECOVERED'
+        elif _P3_AVAILABLE:
+            result['tyido_p3'] = {'verdict': 'PASS'}
+            self._p3_last_verdict = 'PASS'
+        
+        return result
     
     def _update_attractor(self) -> dict:
         """更新当前吸引子"""
@@ -226,14 +395,24 @@ class AttractorStabilityAnalyzer:
         }
     
     def get_state(self) -> dict:
-        """获取分析器状态"""
-        return {
+        """获取分析器状态（含 TY/IDO P3 诊断）"""
+        state = {
             'trajectory_length': len(self.state_trajectory),
             'attractor': self.current_attractor,
             'attractor_state': self.get_attractor_state(),
             'basin_info': self.get_basin_info(),
             'stability_metrics': self.stability_metrics[-10:] if self.stability_metrics else []
         }
+        # TY/IDO P3 诊断
+        if _P3_AVAILABLE and self._p3_decomposer:
+            state['tyido_p3'] = {
+                'subgoal_progress': self._p3_decomposer.get_progress(),
+                'verifier_state': self._p3_verifier.get_state() if self._p3_verifier else {},
+                'fallback_state': self._p3_fallback.get_state() if self._p3_fallback else {},
+                'budget_state': self._p3_budget.get_state() if self._p3_budget else {},
+                'verdict': self._p3_last_verdict
+            }
+        return state
 
 
 _instance = None

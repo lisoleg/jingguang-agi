@@ -12,8 +12,12 @@ M65: 意识流贯监测器 (Consciousness Flow Monitor)
 """
 
 import numpy as np
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 import math
+import copy
+from TYIDO_ContinuousLearning import (
+    RollbackManager, ForgettingGuard, LearningRecord, StateSnapshot
+)
 
 class ConsciousnessFlowMonitor:
     """
@@ -28,6 +32,17 @@ class ConsciousnessFlowMonitor:
         self.flow_accesses: List[complex] = []
         self.consciousness_contents: List[dict] = []
         self.qualia_signatures: List[np.ndarray] = []
+
+        # TY/IDO Property 2: 持续学习基础设施
+        self._rollback_mgr = RollbackManager(max_snapshots=50)
+        self._forgetting_guard = ForgettingGuard(
+            drift_threshold=0.5,
+            sudden_change_threshold=0.8,
+            protected_keys={}  # 动态指标不设为 protected
+        )
+        self._learning_log: List[LearningRecord] = []
+        self._protected_knowledge: Dict[str, Any] = {}
+        self._baseline_set = False
     
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -216,13 +231,20 @@ class ConsciousnessFlowMonitor:
         if not self.consciousness_contents:
             return {
                 'monitoring_active': False,
-                'history_length': 0
+                'history_length': 0,
+                'tyido_p2_continuous_learning': {
+                    'rollback_manager': self._rollback_mgr.get_state(),
+                    'forgetting_guard': self._forgetting_guard.get_state(),
+                    'learning_log_count': 0,
+                    'protected_knowledge_keys': [],
+                    'tyido_verdict': 'PASS'
+                }
             }
-        
+
         recent = self.consciousness_contents[-5:]
         avg_strength = np.mean([c['strength'] for c in recent])
         avg_complexity = np.mean([c['relational_complexity'] for c in recent])
-        
+
         return {
             'monitoring_active': True,
             'history_length': len(self.consciousness_contents),
@@ -231,8 +253,102 @@ class ConsciousnessFlowMonitor:
             'current_experience_type': self._classify_experience(avg_strength),
             'flow_trend': 'increasing' if len(self.consciousness_contents) > 1 and
                          self.consciousness_contents[-1]['strength'] > self.consciousness_contents[0]['strength']
-                         else 'stable/decreasing'
+                         else 'stable/decreasing',
+            'tyido_p2_continuous_learning': {
+                'rollback_manager': self._rollback_mgr.get_state(),
+                'forgetting_guard': self._forgetting_guard.get_state(),
+                'learning_log_count': len(self._learning_log),
+                'protected_knowledge_keys': list(self._protected_knowledge.keys()),
+                'tyido_verdict': self._compute_p2_verdict()
+            }
         }
+
+    # ============================================================
+    # TY/IDO Property 2: 持续学习（可回写）
+    # ============================================================
+
+    def save_checkpoint(self, description: str = "") -> StateSnapshot:
+        """保存状态检查点"""
+        state_data = self._get_serializable_state()
+        return self._rollback_mgr.save_snapshot(
+            state_data, description=description,
+            key_metrics=self._extract_key_metrics()
+        )
+
+    def rollback(self) -> Optional[Dict[str, Any]]:
+        """回滚到上一个检查点"""
+        snapshot = self._rollback_mgr.rollback()
+        if snapshot is None:
+            return None
+        self._learning_log.append(LearningRecord.create(
+            operation='rollback', target='M65_Consciousness',
+            description=f"回滚到 {snapshot.snapshot_id}"
+        ))
+        return snapshot.state_data
+
+    def learn_consciousness_pattern(self, state: dict, is_core: bool = False) -> Dict[str, Any]:
+        """学习新的意识模式（带遗忘防护）"""
+        metrics_before = self._extract_key_metrics()
+
+        content = self.compute_consciousness_content(state)
+
+        if is_core:
+            idx = len(self.consciousness_contents)
+            self._protected_knowledge[f'pattern_{idx}'] = {
+                'strength': content['strength'],
+                'phase': content['phase']
+            }
+
+        metrics_after = self._extract_key_metrics()
+
+        # 首次学习后自动设置基线
+        if not self._baseline_set:
+            self._forgetting_guard.set_baseline(metrics_after)
+            self._baseline_set = True
+            forgetting_check = {'forgetting_risk': 0.0, 'drift_scores': {}, 'alerts': [], 'protected_intact': True, 'tyido_p2_verdict': 'PASS'}
+        else:
+            forgetting_check = self._forgetting_guard.check_forgetting(
+                metrics_after, metrics_before
+            )
+
+        lr = LearningRecord.create(
+            operation='add', target='M65_Consciousness',
+            before_state=metrics_before,
+            after_state=metrics_after,
+            description=f"学习意识模式 {'[核心]' if is_core else ''}"
+        )
+        lr.forgetting_risk = forgetting_check['forgetting_risk']
+        lr.verified = forgetting_check['tyido_p2_verdict'] == 'PASS'
+        self._learning_log.append(lr)
+
+        return {**content, 'forgetting_check': forgetting_check}
+
+    def _extract_key_metrics(self) -> Dict[str, float]:
+        """提取关键指标（仅质量指标，排除数量指标）"""
+        active = 1.0 if self.consciousness_contents else 0.0
+        avg_strength = float(np.mean([c['strength'] for c in self.consciousness_contents[-5:]])) if self.consciousness_contents else 0.0
+        return {
+            'consciousness_active': active,
+            'avg_strength': avg_strength,
+            'flow_intact': 1.0 if avg_strength > 0.1 else 0.0
+        }
+
+    def _get_serializable_state(self) -> Dict[str, Any]:
+        """获取可序列化的状态"""
+        return {
+            'history_length': len(self.consciousness_contents),
+            'avg_strength': float(np.mean([c['strength'] for c in self.consciousness_contents[-5:]])) if self.consciousness_contents else 0.0
+        }
+
+    def _compute_p2_verdict(self) -> str:
+        """计算 Property 2 综合判定"""
+        guard_state = self._forgetting_guard.get_state()
+        if guard_state['total_alerts'] == 0:
+            return 'PASS'
+        recent_alerts = guard_state.get('recent_alerts', [])
+        severe = [a for a in recent_alerts
+                  if a['severity'] >= 0.5 and a['type'] in ('drift', 'critical_loss')]
+        return 'NEED_ATTENTION' if severe else 'PASS'
 
 
 _instance = None

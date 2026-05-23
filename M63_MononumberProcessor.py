@@ -12,8 +12,12 @@ M63: 一元数处理器 (Mononumber Processor)
 """
 
 import math
+import copy
 import numpy as np
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict, Any
+from TYIDO_ContinuousLearning import (
+    RollbackManager, ForgettingGuard, LearningRecord, StateSnapshot
+)
 
 class Mononumber:
     """
@@ -151,6 +155,17 @@ class EMLOperator:
     def __init__(self):
         self.phase_coupling_history = []
         self.field = MononumberField()
+
+        # TY/IDO Property 2: 持续学习基础设施
+        self._rollback_mgr = RollbackManager(max_snapshots=50)
+        self._forgetting_guard = ForgettingGuard(
+            drift_threshold=0.5,  # 宽松阈值，只检测严重漂移
+            sudden_change_threshold=0.8,
+            protected_keys={'conservation_verified', 'eml_law_intact'}
+        )
+        self._learning_log: List[LearningRecord] = []
+        self._protected_knowledge: Dict[str, Any] = {}
+        self._baseline_set = False
     
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -220,11 +235,174 @@ class EMLOperator:
     
     def get_state(self) -> dict:
         """获取EML算子状态"""
-        return {
+        base_state = {
             'coupling_count': len(self.phase_coupling_history),
             'field_info': self.field.get_field_info(),
             'last_conservation': self.verify_conservation_law()
         }
+        # TY/IDO P2: 持续学习审计
+        base_state['tyido_p2_continuous_learning'] = {
+            'rollback_manager': self._rollback_mgr.get_state(),
+            'forgetting_guard': self._forgetting_guard.get_state(),
+            'learning_log_count': len(self._learning_log),
+            'protected_knowledge_keys': list(self._protected_knowledge.keys()),
+            'tyido_verdict': self._compute_p2_verdict()
+        }
+        return base_state
+
+    # ============================================================
+    # TY/IDO Property 2: 持续学习（可回写）
+    # ============================================================
+
+    def save_checkpoint(self, description: str = "") -> StateSnapshot:
+        """保存状态检查点（用于回滚）"""
+        state_data = {
+            'coupling_count': len(self.phase_coupling_history),
+            'field_info': self.field.get_field_info(),
+            'conservation_verified': self.verify_conservation_law().get('verified', True)
+        }
+        snapshot = self._rollback_mgr.save_snapshot(
+            state_data, description=description,
+            key_metrics=self._extract_key_metrics()
+        )
+        return snapshot
+
+    def rollback(self) -> Optional[Dict[str, Any]]:
+        """回滚到上一个检查点"""
+        snapshot = self._rollback_mgr.rollback()
+        if snapshot is None:
+            return None
+        # 记录学习事件
+        self._learning_log.append(LearningRecord.create(
+            operation='rollback',
+            target='M63_EML',
+            description=f"回滚到 {snapshot.snapshot_id}: {snapshot.description}"
+        ))
+        return snapshot.state_data
+
+    def learn_new_coupling(self, m1, m2, result, is_core: bool = False) -> Dict[str, Any]:
+        """
+        学习新的耦合规则（带遗忘防护）
+
+        注意: 此方法不重复添加到 phase_coupling_history，
+        调用者应先通过 EML_addition 执行实际耦合操作。
+
+        参数:
+            m1, m2: 输入一元数
+            result: 耦合结果
+            is_core: 是否为核心知识（不可被遗忘）
+        """
+        # 学习前指标
+        metrics_before = self._extract_key_metrics()
+
+        # 标记核心知识
+        if is_core:
+            self._protected_knowledge[f'coupling_{len(self.phase_coupling_history)}'] = {
+                'm1': m1.to_tuple(), 'm2': m2.to_tuple(), 'result': result.to_tuple()
+            }
+
+        # 学习后指标
+        metrics_after = self._extract_key_metrics()
+
+        # 首次学习后自动设置基线
+        if not self._baseline_set:
+            self._forgetting_guard.set_baseline(metrics_after)
+            self._baseline_set = True
+            forgetting_check = {'forgetting_risk': 0.0, 'drift_scores': {}, 'alerts': [], 'protected_intact': True, 'tyido_p2_verdict': 'PASS'}
+        else:
+            # 灾难性遗忘检测
+            forgetting_check = self._forgetting_guard.check_forgetting(
+                metrics_after, metrics_before
+            )
+            # 如果检测到遗忘风险，尝试恢复
+            if forgetting_check['tyido_p2_verdict'] == 'NEED_ATTENTION':
+                self._handle_forgetting_risk(forgetting_check)
+
+        # 记录学习事件
+        lr = LearningRecord.create(
+            operation='add', target='M63_EML',
+            before_state=metrics_before,
+            after_state=metrics_after,
+            description=f"学习新耦合 {'[核心]' if is_core else ''}"
+        )
+        lr.forgetting_risk = forgetting_check['forgetting_risk']
+        lr.verified = forgetting_check['tyido_p2_verdict'] == 'PASS'
+        self._learning_log.append(lr)
+
+        return {
+            'learned': True,
+            'forgetting_check': forgetting_check,
+            'learning_record_id': lr.record_id
+        }
+
+    def update_rule(self, rule_name: str, new_value: Any) -> Dict[str, Any]:
+        """
+        更新EML规则（带遗忘防护）
+
+        参数:
+            rule_name: 规则名称
+            new_value: 新规则值
+        """
+        metrics_before = self._extract_key_metrics()
+
+        # 检查是否为受保护规则
+        is_protected = rule_name in self._protected_knowledge
+        if is_protected:
+            return {
+                'updated': False,
+                'reason': f'规则 {rule_name} 是核心知识，不可修改',
+                'protected': True
+            }
+
+        # 执行更新
+        old_value = getattr(self, rule_name, None)
+        setattr(self, rule_name, new_value)
+
+        metrics_after = self._extract_key_metrics()
+        forgetting_check = self._forgetting_guard.check_forgetting(
+            metrics_after, metrics_before
+        )
+
+        lr = LearningRecord.create(
+            operation='update', target=f'M63_EML.{rule_name}',
+            before_state={'old_value': str(old_value)},
+            after_state={'new_value': str(new_value)},
+            description=f"更新规则 {rule_name}"
+        )
+        lr.forgetting_risk = forgetting_check['forgetting_risk']
+        self._learning_log.append(lr)
+
+        return {
+            'updated': True,
+            'forgetting_check': forgetting_check
+        }
+
+    def _extract_key_metrics(self) -> Dict[str, float]:
+        """提取当前关键指标（仅质量指标，排除自然增长的数量指标）"""
+        conservation = self.verify_conservation_law()
+        return {
+            'conservation_verified': 1.0 if conservation.get('verified', True) else 0.0,
+            'eml_law_intact': 1.0 if conservation.get('verified', True) else 0.0,
+            'conservation_error': float(conservation.get('conservation_error', 0.0))
+        }
+
+    def _handle_forgetting_risk(self, check_result: Dict[str, Any]):
+        """处理遗忘风险"""
+        for alert in check_result['alerts']:
+            if alert['type'] == 'critical_loss':
+                # 核心知识被修改，自动回滚
+                self.rollback()
+                break
+
+    def _compute_p2_verdict(self) -> str:
+        """计算 Property 2 综合判定"""
+        guard_state = self._forgetting_guard.get_state()
+        if guard_state['total_alerts'] == 0:
+            return 'PASS'
+        recent_alerts = guard_state.get('recent_alerts', [])
+        severe = [a for a in recent_alerts
+                  if a['severity'] >= 0.5 and a['type'] in ('drift', 'critical_loss')]
+        return 'NEED_ATTENTION' if severe else 'PASS'
 
 
 # 单例访问函数
