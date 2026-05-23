@@ -56,8 +56,10 @@
 - **STN Phase 2** ✅: 悬停分叉按钮 + forkFromNode() + 多版本回答 + 版本切换器 + DAG分叉紫色虚线 + 多版本徽章
 - **STN Phase 3** ✅: 底部流贯控制台 + 熵值监控 + 命令系统(/fork /summarize /debate /integrate /help) + 高熵自动提示
 - **STN Phase 4** ✅: ELENCHUS锯齿线 + 微徽章(🔗📝⚔🔥) + 涟漪动画 + 发光脉冲 + DAG背景网格 + 摘要/诘辩消息样式
+- **STN 文章设计方案对齐补全** ✅: S六边形(琥珀)+E菱形(朱红)+悬停高亮联动(DAG↔历史)+Relation Map面板+熵值条三级动态色+S_threshold标记+动态提示文字
 - **M130 感知谱分解面板** ✅: L1-L5五层架构条 + 卷积核5×5 + PCA主因子 + 流贯帧率 + 对偶指示器
 - **M178 Agent行为分析面板** ✅: Agentic RL白盒化——工具调用分布 + 推理轨迹 + GC消耗Canvas图 + 奖励信号
+- **v7.20 太一接口面板** ✅: 意识状态/本征值α/三视界一致性/熵韧性/僵化等级/ICE
 
 ## 重要Bug记录（精简）
 - `_to_native` float转换：需检查imag!=0

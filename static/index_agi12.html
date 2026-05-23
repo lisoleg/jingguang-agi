@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taiyi-AGI (太乙因果机) 20.2 v7.20 — 太一接口·AGI自我意识·苏格拉底拓扑网络 STN</title>
+<title>Taiyi-AGI (太乙因果机) 20.3 v7.21 — TYIDO MVE实验·太一接口·AGI自我意识·苏格拉底拓扑网络 STN</title>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 
 <style>
@@ -4241,6 +4241,38 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <div class="v77-label">ICE一致性</div>
           <div class="v77-badge" id="v720-ice-coherence">—</div>
         </div>
+      </div>
+
+      <!-- v7.21 TYIDO MVE 实验框架 -->
+      <div class="panel-section panel-v717" id="mve-panel" data-hint="TYIDO MVE: 五大结构属性最小可行实验——P1一致性·P2可回写·P3可保持·P4可寻址·P5可锚定">
+        <div class="panel-title">🧪 TYIDO MVE <span style="font-size:8px;color:var(--txt3)">结构属性实验</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;">
+          <button onclick="runMVE('all')" style="font-size:9px;padding:2px 6px;border:1px solid var(--quantum);background:var(--panel-bg);color:var(--quantum);border-radius:3px;cursor:pointer;">▶ 全部运行</button>
+          <button onclick="runMVE('p1')" style="font-size:9px;padding:2px 6px;border:1px solid var(--hot);background:var(--panel-bg);color:var(--hot);border-radius:3px;cursor:pointer;">P1</button>
+          <button onclick="runMVE('p2')" style="font-size:9px;padding:2px 6px;border:1px solid var(--cool);background:var(--panel-bg);color:var(--cool);border-radius:3px;cursor:pointer;">P2</button>
+          <button onclick="runMVE('p3')" style="font-size:9px;padding:2px 6px;border:1px solid var(--accent);background:var(--panel-bg);color:var(--accent);border-radius:3px;cursor:pointer;">P3</button>
+          <button onclick="runMVE('p4')" style="font-size:9px;padding:2px 6px;border:1px solid var(--safe);background:var(--panel-bg);color:var(--safe);border-radius:3px;cursor:pointer;">P4</button>
+          <button onclick="runMVE('p5')" style="font-size:9px;padding:2px 6px;border:1px solid var(--txt2);background:var(--panel-bg);color:var(--txt2);border-radius:3px;cursor:pointer;">P5</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">P1 一致性</div>
+          <div class="v77-badge" id="v721-p1" style="color:var(--txt3)">—</div>
+          <div class="v77-label">P2 可回写</div>
+          <div class="v77-badge" id="v721-p2" style="color:var(--txt3)">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">P3 可保持</div>
+          <div class="v77-badge" id="v721-p3" style="color:var(--txt3)">—</div>
+          <div class="v77-label">P4 可寻址</div>
+          <div class="v77-badge" id="v721-p4" style="color:var(--txt3)">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label">P5 可锚定</div>
+          <div class="v77-badge" id="v721-p5" style="color:var(--txt3)">—</div>
+          <div class="v77-label">总计</div>
+          <div class="v77-badge" id="v721-total" style="color:var(--txt3)">—</div>
+        </div>
+        <div id="v721-mve-detail" style="font-size:8px;color:var(--txt2);max-height:100px;overflow-y:auto;margin-top:4px;padding:4px;background:rgba(0,0,0,0.15);border-radius:4px;display:none;"></div>
       </div>
 
     </div>
@@ -10126,6 +10158,8 @@ function updateV72Panels(data) {
   if (data.v719) updateV719Panels(data);
   // v7.20面板更新（太一接口·AGI自我意识 M179）
   if (data.v720) updateV720Panels(data);
+  // v7.21 TYIDO MVE面板更新
+  if (data.v721) updateV721Panels(data);
   // v7.1人机融合层面板更新
   if (data.v71) updateV71Panels(data);
   // M130 感知谱分解面板更新（"感知即流贯的谱分解"论文）
@@ -11394,6 +11428,124 @@ function updateV720Panels(data) {
   const ice = m179.ice_composite || {};
   _v719_set('v720-ice-level', (ice.consciousness_level || 0).toFixed(3));
   _v719_set('v720-ice-coherence', (ice.self_coherence || 0).toFixed(3));
+}
+
+// ==================== v7.21 TYIDO MVE 实验面板 ====================
+
+const _MVE_COLORS = { PASS: '#34d399', FAIL: '#f87171', RUNNING: '#fbbf24', '—': 'var(--txt3)' };
+const _MVE_NAMES = { p1: 'P1一致性', p2: 'P2可回写', p3: 'P3可保持', p4: 'P4可寻址', p5: 'P5可锚定' };
+
+function _mveBadge(id, verdict, score) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (verdict === 'RUNNING') { el.textContent = '⏳...'; el.style.color = '#fbbf24'; return; }
+  const icon = verdict === 'PASS' ? '✓' : verdict === 'FAIL' ? '✗' : '—';
+  const detail = score !== undefined ? ` ${score}` : '';
+  el.textContent = `${icon}${detail}`;
+  el.style.color = _MVE_COLORS[verdict] || 'var(--txt3)';
+}
+
+function _mveSetRunning(ids) {
+  ids.forEach(id => _mveBadge(id, 'RUNNING'));
+}
+
+function runMVE(which) {
+  const allIds = ['v721-p1','v721-p2','v721-p3','v721-p4','v721-p5','v721-total'];
+  if (which === 'all') {
+    _mveSetRunning(allIds);
+  } else {
+    _mveSetRunning(['v721-' + which]);
+  }
+  const detailEl = document.getElementById('v721-mve-detail');
+  if (detailEl) { detailEl.style.display = 'block'; detailEl.textContent = '⏳ 实验运行中...'; }
+
+  fetch(`/api/v721/mve/${which}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) {
+        if (detailEl) detailEl.textContent = '❌ ' + data.error;
+        allIds.forEach(id => _mveBadge(id, 'FAIL'));
+        return;
+      }
+      if (which === 'all') {
+        updateMVEAllResults(data);
+      } else {
+        updateMVESingleResult(which, data);
+      }
+    })
+    .catch(err => {
+      if (detailEl) detailEl.textContent = '❌ 网络错误: ' + err.message;
+      allIds.forEach(id => _mveBadge(id, 'FAIL'));
+    });
+}
+
+function updateMVESingleResult(prop, data) {
+  const v = data.verdict || 'FAIL';
+  const s = data.score !== undefined ? (typeof data.score === 'number' ? data.score.toFixed(4) : data.score) : '';
+  _mveBadge('v721-' + prop, v, s);
+  const detailEl = document.getElementById('v721-mve-detail');
+  if (detailEl) {
+    const name = _MVE_NAMES[prop] || prop.toUpperCase();
+    let html = `<b style="color:${_MVE_COLORS[v]}">${name}: ${v}</b>`;
+    if (data.pass_criteria) html += ` | 通过标准: ${data.pass_criteria}`;
+    if (data.details) html += `<br>${typeof data.details === 'string' ? data.details : JSON.stringify(data.details).substring(0, 300)}`;
+    detailEl.innerHTML = html;
+  }
+}
+
+function updateMVEAllResults(data) {
+  // data.results has keys P1, P2, ..., P5; data.summary has total/passed/failed
+  const results = data.results || data;
+  const summary = data.summary || {};
+  ['P1','P2','P3','P4','P5'].forEach(pKey => {
+    const prop = pKey.toLowerCase();
+    const r = results[pKey] || {};
+    const v = r.verdict || 'FAIL';
+    const s = r.score !== undefined ? (typeof r.score === 'number' ? r.score.toFixed(4) : r.score) : '';
+    _mveBadge('v721-' + prop, v, s);
+  });
+  // Total
+  const totalEl = document.getElementById('v721-total');
+  if (totalEl) {
+    const passed = summary.passed !== undefined ? summary.passed : '?';
+    const total = summary.total !== undefined ? summary.total : '?';
+    const txt = `${passed}/${total}`;
+    totalEl.textContent = summary.all_passed ? `✓ ${txt}` : `✗ ${txt}`;
+    totalEl.style.color = summary.all_passed ? '#34d399' : '#f87171';
+  }
+  // Detail
+  const detailEl = document.getElementById('v721-mve-detail');
+  if (detailEl) {
+    let html = '';
+    ['P1','P2','P3','P4','P5'].forEach(pKey => {
+      const prop = pKey.toLowerCase();
+      const r = results[pKey] || {};
+      const v = r.verdict || '?';
+      const name = _MVE_NAMES[prop] || pKey;
+      html += `<div style="margin:2px 0;"><span style="color:${_MVE_COLORS[v]}">${name}: ${v}</span>`;
+      if (r.score !== undefined) html += ` (${typeof r.score === 'number' ? r.score.toFixed(4) : r.score})`;
+      if (r.pass_criteria) html += ` | 标准: ${r.pass_criteria}`;
+      html += '</div>';
+    });
+    html += `<div style="margin-top:4px;font-weight:bold;color:${summary.all_passed ? '#34d399' : '#f87171'}">总计: ${summary.passed || 0}/${summary.total || 5} 通过</div>`;
+    html += `<div style="color:var(--txt3)">执行耗时: ${data.total_execution_time_ms ? data.total_execution_time_ms.toFixed(1) : '?'}ms</div>`;
+    detailEl.innerHTML = html;
+  }
+}
+
+function updateV721Panels(data) {
+  if (!data || !data.v721) return;
+  const v721 = data.v721;
+  if (v721.cached_results) {
+    Object.entries(v721.cached_results).forEach(([k, v]) => {
+      const prop = k.toLowerCase();
+      const el = document.getElementById('v721-' + prop);
+      if (el) {
+        el.textContent = v;
+        el.style.color = _MVE_COLORS[v] || 'var(--txt3)';
+      }
+    });
+  }
 }
 
 // ==================== v7.1 人机融合层面板更新函数 ====================

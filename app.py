@@ -1100,7 +1100,9 @@ def goal_mode():
             'v719': get_v719_data() or _v719_state,
             # v7.20新增：太一接口·AGI自我意识（M179）
             'v720': get_v720_data() or _v720_state,
-            'version': '12.2',
+            # v7.21新增：TYIDO MVE实验框架（强制执行逻辑验证）
+            'v721': _v721_mve_state,
+            'version': '12.3',
             'modules_count': 179
         }
 
@@ -8246,6 +8248,137 @@ def v720_state():
         if data is None:
             return jsonify(_v720_state)
         return jsonify(_to_native(data))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.21 TYIDO MVE 实验框架 ====================
+
+_v721_mve_state = {
+    'mve_framework': {
+        'version': '1.0.0',
+        'status': 'active',
+        'description': 'TY/IDO L2 Shell structural property MVE experiments',
+        'properties': {
+            'P1': '一致性 (Self-Consistency, J(R)->1)',
+            'P2': '可回写 (Continuous Learning, Forgetting Rate <5%)',
+            'P3': '可保持 (Long-Range Reasoning, Completion >80%)',
+            'P4': '可寻址 (Addressable Memory, Accuracy >90%)',
+            'P5': '可锚定 (Anchorable Responsibility, 100% Traceability)'
+        }
+    }
+}
+
+_v721_mve_lock = threading.Lock()
+_v721_mve_cache = {}  # Cache recent MVE results
+_v721_mve_cache_ttl = 120  # seconds
+
+
+def _run_mve_safe(func, property_name):
+    """Safely run an MVE experiment with caching and error handling."""
+    cache_key = property_name
+    now = time.time()
+    if cache_key in _v721_mve_cache:
+        cached = _v721_mve_cache[cache_key]
+        if now - cached['timestamp'] < _v721_mve_cache_ttl:
+            return cached['result']
+    with _v721_mve_lock:
+        try:
+            result = func()
+            # Ensure native types
+            if hasattr(result, '__dict__'):
+                result = _to_native(result)
+            elif isinstance(result, dict):
+                result = _to_native(result)
+            _v721_mve_cache[cache_key] = {'result': result, 'timestamp': now}
+            return result
+        except Exception as e:
+            return {'error': str(e), 'property': property_name, 'traceback': traceback.format_exc()}
+
+
+@app.route('/api/v721/mve/all', methods=['GET'])
+def v721_mve_all():
+    """Run all 5 MVE experiments (P1-P5)"""
+    try:
+        from TYIDO_MVE_Experiments import run_all_mve
+        result = _run_mve_safe(run_all_mve, 'all')
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v721/mve/p1', methods=['GET'])
+def v721_mve_p1():
+    """P1 Self-Consistency Sawtooth Experiment: J(R)->1 + forced rejection"""
+    try:
+        from TYIDO_MVE_Experiments import run_p1_sawtooth
+        result = _run_mve_safe(run_p1_sawtooth, 'p1')
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v721/mve/p2', methods=['GET'])
+def v721_mve_p2():
+    """P2 Continuous Learning Experiment: Forgetting Rate <5%"""
+    try:
+        from TYIDO_MVE_Experiments import run_p2_continuous_learning
+        result = _run_mve_safe(run_p2_continuous_learning, 'p2')
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v721/mve/p3', methods=['GET'])
+def v721_mve_p3():
+    """P3 Long-Range Reasoning Experiment: DAG completion >80%"""
+    try:
+        from TYIDO_MVE_Experiments import run_p3_long_range
+        result = _run_mve_safe(run_p3_long_range, 'p3')
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v721/mve/p4', methods=['GET'])
+def v721_mve_p4():
+    """P4 Addressable Memory Experiment: Query accuracy >90%"""
+    try:
+        from TYIDO_MVE_Experiments import run_p4_memory
+        result = _run_mve_safe(run_p4_memory, 'p4')
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v721/mve/p5', methods=['GET'])
+def v721_mve_p5():
+    """P5 Anchorable Responsibility Experiment: 100% traceability"""
+    try:
+        from TYIDO_MVE_Experiments import run_p5_responsibility
+        result = _run_mve_safe(run_p5_responsibility, 'p5')
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v721/mve/state', methods=['GET'])
+def v721_mve_state():
+    """Get v7.21 MVE framework state"""
+    try:
+        # Include cached results if available
+        cached_summary = {}
+        for key in ['p1', 'p2', 'p3', 'p4', 'p5', 'all']:
+            if key in _v721_mve_cache:
+                r = _v721_mve_cache[key]['result']
+                if isinstance(r, dict) and 'verdict' in r:
+                    cached_summary[key.upper()] = r['verdict']
+                elif isinstance(r, dict) and 'summary' in r:
+                    cached_summary['ALL'] = r['summary']
+        state = dict(_v721_mve_state)
+        state['cached_results'] = cached_summary
+        state['cache_ttl'] = _v721_mve_cache_ttl
+        return jsonify(_to_native(state))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
