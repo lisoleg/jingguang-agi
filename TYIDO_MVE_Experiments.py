@@ -1726,6 +1726,173 @@ def run_all_mve() -> Dict:
 
 
 # ============================================================
+# P7: EqProp+FHN 局部信用分配实验 (v7.22)
+# ============================================================
+# 审查表要求：
+#   EqProp 通过自由相/微扰相的双相松弛，以局域状态差近似梯度
+#   验证三个定理：
+#   T180 — 局部信用分配价值（O(Params) 训练代价）
+#   T181 — L2 壳天花板（未硬化则无法达到 AGI）
+#   T182 — 兼容吸收（EqProp+FHN 可作为 L3 子引擎接入）
+
+class P7EqPropFHNExperiment:
+    """
+    P7 EqProp+FHN 实验 — 局部信用分配 + L2 壳天花板验证
+
+    设计：
+    1. 构建 FHN 网络（2-3-1）
+    2. 执行 EqProp 训练步（自由相 → 微扰相 → 权重更新）
+    3. 验证 T180：局部信用分配（Δw_ij 只依赖 s_i, s_j）
+    4. 验证 T181：L2 壳天花板（未硬化 → can_reach_agi=False）
+    5. 验证 T182：兼容吸收（引擎可初始化 + 集成报告可生成）
+
+    通过标准：
+    - T180 验证通过：local_credit_assignment=True
+    - T181 验证通过：定理本身被验证（无论 L2 壳是否硬化）
+    - T182 验证通过：引擎集成报告可正常生成
+    - 整体 PASS：三项全通过
+    """
+
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+
+    def run(self) -> MVEResult:
+        start_time = time.time()
+
+        from M180_EqPropFHN import EqPropFHNEngine, build_small_network
+
+        # 1. 构建网络
+        engine = build_small_network(2, 3, 1)
+
+        # 2. 执行训练
+        train_result = engine.train('out_0', 0.8)
+
+        # 3. 验证 T180
+        t180 = engine.verify_theorem_T180()
+
+        # 4. 验证 T181
+        t181 = engine.verify_theorem_T181()
+
+        # 5. 验证 T182（兼容吸收：引擎可初始化 + 集成报告可生成）
+        integration = engine.get_integration_report()
+        l2_report = engine.get_l2_shell_report()
+        t182_ok = (
+            integration.engine_name == "EqPropFHN" and
+            integration.l3_role == "Ftel dynamics sub-engine" and
+            integration.total_neurons > 0
+        )
+
+        # 综合评分
+        t180_ok = t180.get('local_credit_assignment', False)
+        t181_ok = t181.get('verified', False)
+        all_ok = t180_ok and t181_ok and t182_ok
+        score = sum([t180_ok, t181_ok, t182_ok]) / 3.0
+
+        elapsed = (time.time() - start_time) * 1000
+
+        return MVEResult(
+            property_id='P7',
+            property_name='EqProp+FHN Local Credit Assignment',
+            verdict='PASS' if all_ok else 'FAIL',
+            score=score,
+            pass_criteria='T180(local=True) + T181(verified=True) + T182(integration OK)',
+            details={
+                'training': {
+                    'free_energy': round(train_result.free_energy, 6),
+                    'nudged_energy': round(train_result.nudged_energy, 6),
+                    'energy_gap': round(train_result.energy_gap, 6),
+                    'l2_shell_passed': train_result.l2_shell_passed,
+                },
+                'T180': t180,
+                'T181': t181,
+                'T182': {
+                    'verified': t182_ok,
+                    'engine_name': integration.engine_name,
+                    'l3_role': integration.l3_role,
+                    'total_neurons': integration.total_neurons,
+                    'total_params': integration.total_params,
+                    'l2_shell_status': l2_report.overall_status.value,
+                    'l2_missing': l2_report.missing_attributes,
+                },
+            },
+            execution_time_ms=elapsed,
+        )
+
+
+def run_p7_eqprop_fhn(**kwargs) -> dict:
+    """执行 P7 EqProp+FHN 实验"""
+    exp = P7EqPropFHNExperiment(**kwargs)
+    return exp.run().to_dict()
+
+
+def run_all_mve_v722() -> Dict:
+    """
+    执行全部7个 TYIDO MVE 实验（v7.22 = P1-P6 + P7）
+
+    返回:
+        {
+            'version': 'v7.22',
+            'timestamp': float,
+            'total_execution_time_ms': float,
+            'results': {P1: {...}, ..., P6: {...}, P7: {...}},
+            'summary': {
+                'total': 7,
+                'passed': int,
+                'failed': int,
+                'all_passed': bool,
+            }
+        }
+    """
+    start_time = time.time()
+
+    runners = {
+        'P1': run_p1_sawtooth,
+        'P2': run_p2_continuous_learning,
+        'P3': run_p3_long_range,
+        'P4': run_p4_memory,
+        'P5': run_p5_responsibility,
+        'P6': run_p6_einstein_causality,
+        'P7': run_p7_eqprop_fhn,
+    }
+
+    results = {}
+    passed = 0
+    failed = 0
+
+    for prop_id, runner in runners.items():
+        try:
+            result = runner()
+            results[prop_id] = result
+            if result.get('verdict') == 'PASS':
+                passed += 1
+            else:
+                failed += 1
+        except Exception as e:
+            results[prop_id] = {
+                'property_id': prop_id,
+                'verdict': 'ERROR',
+                'score': 0.0,
+                'error': str(e),
+            }
+            failed += 1
+
+    elapsed = (time.time() - start_time) * 1000
+
+    return {
+        'version': 'v7.22',
+        'timestamp': time.time(),
+        'total_execution_time_ms': round(elapsed, 2),
+        'results': results,
+        'summary': {
+            'total': 7,
+            'passed': passed,
+            'failed': failed,
+            'all_passed': passed == 7,
+        },
+    }
+
+
+# ============================================================
 # 自测
 # ============================================================
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taiyi-AGI (太乙因果机) 20.3 v7.21 — TYIDO MVE实验·太一接口·AGI自我意识·苏格拉底拓扑网络 STN</title>
+<title>Taiyi-AGI (太乙因果机) 20.3 v7.22 — EqProp+FHN流贯引擎·TYIDO MVE实验·太一接口·AGI自我意识·苏格拉底拓扑网络 STN</title>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 
 <style>
@@ -4637,6 +4637,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <button onclick="runMVE('p4')" style="font-size:11px;padding:3px 8px;border:1px solid var(--safe);background:var(--panel-bg);color:var(--safe);border-radius:4px;cursor:pointer;">P4</button>
           <button onclick="runMVE('p5')" style="font-size:11px;padding:3px 8px;border:1px solid var(--txt2);background:var(--panel-bg);color:var(--txt2);border-radius:4px;cursor:pointer;">P5</button>
           <button onclick="runMVE('p6')" style="font-size:11px;padding:3px 8px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;">P6</button>
+          <button onclick="runMVE('p7')" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;">P7</button>
         </div>
         <div class="v77-row">
           <div class="v77-label" style="font-size:11px;">P1 一致性</div>
@@ -4657,13 +4658,45 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <div class="v77-badge" id="v721-p6" style="color:var(--txt3);font-size:11px;">—</div>
         </div>
         <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">P7 EqProp</div>
+          <div class="v77-badge" id="v721-p7" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;"></div>
+          <div class="v77-badge" style="font-size:11px;"></div>
+        </div>
+        <div class="v77-row">
           <div class="v77-label" style="font-size:11px;">总计</div>
           <div class="v77-badge" id="v721-total" style="color:var(--txt3);font-size:11px;">—</div>
           <div class="v77-label" style="font-size:11px;">版本</div>
-          <div class="v77-badge" id="v721-version" style="color:var(--txt3);font-size:10px;">v7.21</div>
+          <div class="v77-badge" id="v721-version" style="color:var(--txt3);font-size:10px;">v7.22</div>
         </div>
         <div id="v721-mve-detail" style="font-size:11px;color:var(--txt2);max-height:140px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;"></div>
         <canvas id="p6-lightcone-canvas" width="300" height="240" style="display:none;margin-top:8px;border:1px solid rgba(167,139,250,0.3);border-radius:6px;background:rgba(0,0,0,0.25);"></canvas>
+      </div>
+
+      <!-- v7.22 EqProp+FHN 流贯引擎 M180 -->
+      <div class="panel-section panel-v717" id="eqprop-panel" data-hint="EqProp+FHN: 平衡传播+FitzHugh-Nagumo可激发介质·L3流贯子引擎·T180局部信用分配·T181天花板定理·T182兼容吸收">
+        <div class="panel-title">⚡ EqProp+FHN <span style="font-size:10px;color:var(--txt3)">L3 流贯引擎 M180</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="eqpropTrain()" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;font-weight:bold;">▶ 训练</button>
+          <button onclick="eqpropTheorem('T180')" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">T180</button>
+          <button onclick="eqpropTheorem('T181')" style="font-size:11px;padding:3px 8px;border:1px solid #f87171;background:var(--panel-bg);color:#f87171;border-radius:4px;cursor:pointer;">T181</button>
+          <button onclick="eqpropNetwork()" style="font-size:11px;padding:3px 8px;border:1px solid #60a5fa;background:var(--panel-bg);color:#60a5fa;border-radius:4px;cursor:pointer;">🌐网络</button>
+          <button onclick="eqpropL2Shell()" style="font-size:11px;padding:3px 8px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;">L2壳</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">L2壳</div>
+          <div class="v77-badge" id="eqprop-l2" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;">参数</div>
+          <div class="v77-badge" id="eqprop-params" style="color:var(--txt3);font-size:11px;">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">T180</div>
+          <div class="v77-badge" id="eqprop-t180" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;">T181</div>
+          <div class="v77-badge" id="eqprop-t181" style="color:var(--txt3);font-size:11px;">—</div>
+        </div>
+        <div id="eqprop-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;"></div>
+        <canvas id="eqprop-canvas" width="300" height="200" style="display:none;margin-top:8px;border:1px solid rgba(245,158,11,0.3);border-radius:6px;background:rgba(0,0,0,0.25);"></canvas>
       </div>
       </div><!-- END dashboard-content -->
 
@@ -10759,6 +10792,8 @@ function updateV72Panels(data) {
   if (data.v720 || data.v73) updateConsciousnessDashboard(data);
   // v7.21 TYIDO MVE面板更新
   if (data.v721) updateV721Panels(data);
+  // v7.22 EqProp+FHN面板更新
+  if (data.v722) updateV722EqPropPanels(data);
   // v7.1人机融合层面板更新
   if (data.v71) updateV71Panels(data);
   // M130 感知谱分解面板更新（"感知即流贯的谱分解"论文）
@@ -12096,7 +12131,7 @@ function updateConsciousnessDashboard(data) {
 // ==================== v7.21 TYIDO MVE 实验面板 ====================
 
 const _MVE_COLORS = { PASS: '#34d399', FAIL: '#f87171', RUNNING: '#fbbf24', '—': 'var(--txt3)' };
-const _MVE_NAMES = { p1: 'P1一致性', p2: 'P2可回写', p3: 'P3可保持', p4: 'P4可寻址', p5: 'P5可锚定', p6: 'P6因果性' };
+const _MVE_NAMES = { p1: 'P1一致性', p2: 'P2可回写', p3: 'P3可保持', p4: 'P4可寻址', p5: 'P5可锚定', p6: 'P6因果性', p7: 'P7 EqProp' };
 
 function _mveBadge(id, verdict, score) {
   const el = document.getElementById(id);
@@ -12113,7 +12148,7 @@ function _mveSetRunning(ids) {
 }
 
 function runMVE(which) {
-  const allIds = ['v721-p1','v721-p2','v721-p3','v721-p4','v721-p5','v721-p6','v721-version','v721-total'];
+  const allIds = ['v721-p1','v721-p2','v721-p3','v721-p4','v721-p5','v721-p6','v721-p7','v721-version','v721-total'];
   if (which === 'all') {
     _mveSetRunning(allIds);
   } else {
@@ -12122,7 +12157,9 @@ function runMVE(which) {
   const detailEl = document.getElementById('v721-mve-detail');
   if (detailEl) { detailEl.style.display = 'block'; detailEl.textContent = '⏳ 实验运行中...'; }
 
-  fetch(`/api/v721/mve/${which}`)
+  // P7 uses v722 API, others use v721
+  const apiBase = (which === 'p7' || which === 'all') ? '/api/v722/eqprop/mve' : '/api/v721/mve';
+  fetch(`${apiBase}/${which}`)
     .then(r => r.json())
     .then(data => {
       if (data.error) {
@@ -12200,7 +12237,7 @@ function updateMVESingleResult(prop, data) {
 function updateMVEAllResults(data) {
   const results = data.results || data;
   const summary = data.summary || {};
-  ['P1','P2','P3','P4','P5','P6'].forEach(pKey => {
+  ['P1','P2','P3','P4','P5','P6','P7'].forEach(pKey => {
     const prop = pKey.toLowerCase();
     const r = results[pKey] || {};
     const v = r.verdict || 'FAIL';
@@ -12218,7 +12255,7 @@ function updateMVEAllResults(data) {
   const detailEl = document.getElementById('v721-mve-detail');
   if (detailEl) {
     let html = `<div style="font-size:12px;font-weight:bold;margin-bottom:6px;">📊 TYIDO 结构属性审计结果</div>`;
-    ['P1','P2','P3','P4','P5','P6'].forEach(pKey => {
+    ['P1','P2','P3','P4','P5','P6','P7'].forEach(pKey => {
       const prop = pKey.toLowerCase();
       const r = results[pKey] || {};
       const v = r.verdict || '?';
@@ -12233,7 +12270,7 @@ function updateMVEAllResults(data) {
       }
     });
     html += `<div style="margin-top:8px;padding:6px;background:rgba(52,211,153,0.08);border-radius:4px;font-size:13px;font-weight:bold;color:${summary.all_passed ? '#34d399' : '#f87171'}">`;
-    html += `🎯 总计: ${summary.passed || 0}/${summary.total || 6} 通过${summary.all_passed ? ' 🎉 全部通过！' : ''}`;
+    html += `🎯 总计: ${summary.passed || 0}/${summary.total || 7} 通过${summary.all_passed ? ' 🎉 全部通过！' : ''}`;
     html += `</div>`;
     if (data.total_execution_time_ms) {
       html += `<div style="color:var(--txt3);font-size:10px;margin-top:4px;">⏱️ 执行耗时: ${data.total_execution_time_ms.toFixed(1)}ms</div>`;
@@ -12419,6 +12456,228 @@ function updateV721Panels(data) {
         el.style.color = _MVE_COLORS[v] || 'var(--txt3)';
       }
     });
+  }
+}
+
+// ==================== v7.22 EqProp+FHN 流贯引擎面板 ====================
+
+function _eqBadge(id, text, color) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = text; el.style.color = color || 'var(--txt3)'; }
+}
+
+function _eqDetail(html) {
+  const el = document.getElementById('eqprop-detail');
+  if (el) { el.style.display = 'block'; el.innerHTML = html; }
+}
+
+function eqpropTrain() {
+  _eqDetail('⏳ EqProp 训练中...');
+  fetch('/api/v722/eqprop/train', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ target_id: 'out_0', target_value: 0.8 })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.error) { _eqDetail('❌ ' + data.error); return; }
+    const fe = typeof data.free_energy === 'number' ? data.free_energy.toFixed(4) : '?';
+    const ne = typeof data.nudged_energy === 'number' ? data.nudged_energy.toFixed(4) : '?';
+    const gap = typeof data.energy_gap === 'number' ? data.energy_gap.toFixed(4) : '?';
+    const l2 = data.l2_shell_passed;
+    let html = `<div style="font-weight:bold;color:#f59e0b;margin-bottom:4px;">⚡ EqProp 训练结果</div>`;
+    html += `<div>自由相能量: <b>${fe}</b> | 微扰相能量: <b>${ne}</b></div>`;
+    html += `<div>能量差 ΔE: <b>${gap}</b></div>`;
+    html += `<div>L2壳校验: <b style="color:${l2 ? '#34d399' : '#f87171'}">${l2 ? '✓ PASS' : '✗ FAIL'}</b></div>`;
+    if (data.weight_updates) {
+      const n = Object.keys(data.weight_updates).length;
+      html += `<div style="margin-top:4px;color:var(--txt3);">权重更新: ${n} 个突触</div>`;
+    }
+    _eqDetail(html);
+  })
+  .catch(err => _eqDetail('❌ 网络错误: ' + err.message));
+}
+
+function eqpropTheorem(tid) {
+  const tname = tid === 'T180' ? 'EqProp-FHN 价值定理' : 'EqProp-FHN 天花板定理';
+  _eqDetail(`⏳ 验证 ${tid} ${tname}...`);
+  fetch(`/api/v722/eqprop/theorem/${tid}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { _eqDetail('❌ ' + data.error); return; }
+      const v = data.verified;
+      const color = v ? '#34d399' : '#f87171';
+      if (tid === 'T180') {
+        _eqBadge('eqprop-t180', v ? '✓' : '✗', color);
+        let html = `<div style="font-weight:bold;color:${color};">T180 价值定理: ${v ? '✓ 验证通过' : '✗ 未通过'}</div>`;
+        html += `<div>局部信用分配: <b>${data.local_credit_assignment ? '✓' : '✗'}</b></div>`;
+        html += `<div>参数量: <b>${data.parameter_count}</b> | 代价: <b>${data.cost_scaling}</b></div>`;
+        html += `<div>生物可解释: <b>${data.biologically_plausible ? '✓' : '✗'}</b> | 神经形态兼容: <b>${data.neuromorphic_compatible ? '✓' : '✗'}</b></div>`;
+        _eqDetail(html);
+      } else {
+        _eqBadge('eqprop-t181', v ? '✓' : '✗', color);
+        let html = `<div style="font-weight:bold;color:${color};">T181 天花板定理: ${v ? '✓ 验证通过' : '✗ 未通过'}</div>`;
+        html += `<div>L2壳硬化: <b style="color:${data.l2_shell_hardened ? '#34d399' : '#f87171'}">${data.l2_shell_hardened ? '✓' : '✗'}</b></div>`;
+        html += `<div>可达AGI: <b style="color:${data.can_reach_agi ? '#34d399' : '#f87171'}">${data.can_reach_agi ? '✓' : '✗'}</b></div>`;
+        if (data.missing_attributes && data.missing_attributes.length > 0) {
+          html += `<div style="color:#f87171;">缺失属性: ${data.missing_attributes.join(', ')}</div>`;
+        }
+        if (data.note) html += `<div style="color:var(--txt3);margin-top:4px;">${data.note}</div>`;
+        _eqDetail(html);
+      }
+    })
+    .catch(err => _eqDetail('❌ 网络错误: ' + err.message));
+}
+
+function eqpropNetwork() {
+  _eqDetail('⏳ 获取网络状态...');
+  fetch('/api/v722/eqprop/network')
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { _eqDetail('❌ ' + data.error); return; }
+      let html = `<div style="font-weight:bold;color:#60a5fa;margin-bottom:4px;">🌐 FHN 网络状态</div>`;
+      if (data.neurons) {
+        html += `<div>神经元: <b>${data.neurons.length}</b> | 能量: <b>${typeof data.network_energy === 'number' ? data.network_energy.toFixed(4) : '?'}</b></div>`;
+        html += `<div style="margin-top:4px;">`;
+        data.neurons.forEach(n => {
+          const stateColor = n.state === 'excited' ? '#f59e0b' : n.state === 'recovery' ? '#60a5fa' : 'var(--txt3)';
+          html += `<span style="display:inline-block;margin:1px 4px;padding:1px 5px;border-radius:3px;background:rgba(0,0,0,0.3);font-size:10px;">`;
+          html += `<span style="color:${stateColor};">●</span> ${n.neuron_id}: v=${typeof n.v === 'number' ? n.v.toFixed(2) : '?'}`;
+          html += `</span>`;
+        });
+        html += `</div>`;
+      }
+      if (data.credit_heatmap && data.credit_heatmap.length > 0) {
+        html += `<div style="margin-top:6px;color:#f59e0b;">信用分配热图: ${data.credit_heatmap.length} 条突触</div>`;
+      }
+      _eqDetail(html);
+      // 绘制网络可视化
+      _drawEqPropNetwork(data);
+    })
+    .catch(err => _eqDetail('❌ 网络错误: ' + err.message));
+}
+
+function eqpropL2Shell() {
+  _eqDetail('⏳ 检查 L2 代数壳...');
+  fetch('/api/v722/eqprop/l2_shell')
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { _eqDetail('❌ ' + data.error); return; }
+      const ok = data.overall_status === 'hardened';
+      const statusColor = ok ? '#34d399' : data.overall_status === 'partial' ? '#f59e0b' : '#f87171';
+      _eqBadge('eqprop-l2', ok ? '✓硬化' : '✗' + data.overall_status, statusColor);
+      let html = `<div style="font-weight:bold;color:${statusColor};margin-bottom:4px;">🛡️ L2 代数壳: ${data.overall_status}</div>`;
+      const attrs = [
+        { key: 'consistency_ok', label: '一致性(M88)', icon: '🔍' },
+        { key: 'writeback_ok', label: '可回写(M176)', icon: '📝' },
+        { key: 'preservation_ok', label: '可保持(M175)', icon: '🔒' },
+        { key: 'addressability_ok', label: '可寻址(M176)', icon: '📍' },
+        { key: 'anchorability_ok', label: '可锚定(M175)', icon: '⚓' },
+      ];
+      attrs.forEach(a => {
+        const v = data[a.key];
+        html += `<div>${a.icon} ${a.label}: <b style="color:${v ? '#34d399' : '#f87171'}">${v ? '✓' : '✗'}</b></div>`;
+      });
+      if (data.missing_attributes && data.missing_attributes.length > 0) {
+        html += `<div style="color:#f87171;margin-top:6px;">⚠️ 缺失: ${data.missing_attributes.join(', ')}</div>`;
+      }
+      _eqDetail(html);
+    })
+    .catch(err => _eqDetail('❌ 网络错误: ' + err.message));
+}
+
+function _drawEqPropNetwork(data) {
+  const canvas = document.getElementById('eqprop-canvas');
+  if (!canvas || !data.neurons) return;
+  canvas.style.display = 'block';
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // 分层布局
+  const layers = { in: [], hid: [], out: [] };
+  data.neurons.forEach(n => {
+    if (n.neuron_id.startsWith('in_')) layers.in.push(n);
+    else if (n.neuron_id.startsWith('hid_')) layers.hid.push(n);
+    else if (n.neuron_id.startsWith('out_')) layers.out.push(n);
+  });
+
+  function pos(layer, idx, total) {
+    const x = layer === 'in' ? 50 : layer === 'hid' ? 150 : 250;
+    const y = 30 + (H - 60) * (idx + 0.5) / Math.max(total, 1);
+    return { x, y };
+  }
+
+  const positions = {};
+  ['in', 'hid', 'out'].forEach(layer => {
+    layers[layer].forEach((n, i) => {
+      positions[n.neuron_id] = pos(layer, i, layers[layer].length);
+    });
+  });
+
+  // 绘制连接
+  if (data.credit_heatmap) {
+    data.credit_heatmap.forEach(c => {
+      const from = positions[c.source], to = positions[c.target];
+      if (from && to) {
+        const intensity = Math.min(Math.abs(c.credit) * 5, 1);
+        ctx.strokeStyle = c.credit > 0 ? `rgba(52,211,153,${intensity})` : `rgba(248,113,113,${intensity})`;
+        ctx.lineWidth = 1 + intensity * 2;
+        ctx.beginPath();
+        ctx.moveTo(from.x, from.y);
+        ctx.lineTo(to.x, to.y);
+        ctx.stroke();
+      }
+    });
+  }
+
+  // 绘制神经元
+  data.neurons.forEach(n => {
+    const p = positions[n.neuron_id];
+    if (!p) return;
+    const stateColor = n.state === 'excited' ? '#f59e0b' : n.state === 'recovery' ? '#60a5fa' : '#6b7280';
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 12, 0, Math.PI * 2);
+    ctx.fillStyle = stateColor;
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    // 标签
+    ctx.fillStyle = '#fff';
+    ctx.font = '9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(n.neuron_id, p.x, p.y + 22);
+    // 电位值
+    if (typeof n.v === 'number') {
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '8px sans-serif';
+      ctx.fillText(n.v.toFixed(2), p.x, p.y + 3);
+    }
+  });
+
+  // 图例
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '9px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('● 静息  ● 激发  ● 恢复', 10, H - 8);
+}
+
+function updateV722EqPropPanels(data) {
+  if (!data || !data.v722) return;
+  const v722 = data.v722;
+  // 更新 L2 壳状态
+  if (v722.l2_shell) {
+    const l2 = v722.l2_shell;
+    const ok = l2.overall_status === 'hardened';
+    _eqBadge('eqprop-l2', ok ? '✓硬化' : '✗' + (l2.overall_status || '?'), ok ? '#34d399' : '#f59e0b');
+  }
+  // 更新参数数
+  if (v722.integration) {
+    const integ = v722.integration;
+    const params = integ.total_params || '?';
+    const neurons = integ.total_neurons || '?';
+    _eqBadge('eqprop-params', `${params}p/${neurons}n`, '#60a5fa');
   }
 }
 

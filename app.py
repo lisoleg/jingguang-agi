@@ -573,6 +573,10 @@ def _to_native(obj, _depth=0):
             except (AttributeError, ValueError):
                 pass
 
+        # bool 必须在 float 检查之前（bool 是 int 子类，有 __float__ 和 __int__）
+        if isinstance(obj, bool):
+            return obj
+
         # 检查可转换为 float 的对象（排除复数）
         if hasattr(obj, '__float__') and hasattr(obj, '__int__'):
             try:
@@ -1121,8 +1125,10 @@ def goal_mode():
             'v720': get_v720_data() or _v720_state,
             # v7.21新增：TYIDO MVE实验框架（强制执行逻辑验证）
             'v721': _v721_mve_state,
+            # v7.22新增：EqProp+FHN流贯引擎（M180, T180-T182）
+            'v722': _v722_state,
             'version': '12.3',
-            'modules_count': 179
+            'modules_count': 180
         }
 
         # 再次确保所有字段都是原生类型
@@ -8413,6 +8419,163 @@ def v721_mve_p6():
         return jsonify(_to_native(result))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+# ==================== v7.22 EqProp+FHN 流贯引擎 ====================
+
+_v722_state = {
+    'eqprop_fhn_engine': {
+        'version': '1.0.0',
+        'status': 'active',
+        'description': 'EqProp+FHN L3 Ftel dynamics engine (M180)',
+        'theorems': ['T180', 'T181', 'T182'],
+        'capacity': {
+            'T180': 'EqProp-FHN Value Theorem (local credit assignment)',
+            'T181': 'EqProp-FHN Ceiling Theorem (L2 shell deficiency)',
+            'T182': 'Compatible Absorption Theorem (L3 sub-engine integration)',
+        }
+    }
+}
+
+_v722_lock = threading.Lock()
+_v722_cache = {}
+_v722_cache_ttl = 120
+
+
+def _run_eqprop_safe(func, cache_key):
+    """Safely run EqProp+FHN experiment with caching."""
+    now = time.time()
+    if cache_key in _v722_cache:
+        cached = _v722_cache[cache_key]
+        if now - cached['timestamp'] < _v722_cache_ttl:
+            return cached['result']
+    with _v722_lock:
+        try:
+            result = func()
+            if hasattr(result, '__dict__'):
+                result = _to_native(result)
+            elif isinstance(result, dict):
+                result = _to_native(result)
+            _v722_cache[cache_key] = {'result': result, 'timestamp': now}
+            return result
+        except Exception as e:
+            return {'error': str(e), 'traceback': traceback.format_exc()}
+
+
+@app.route('/api/v722/eqprop/state', methods=['GET'])
+def v722_eqprop_state():
+    """Get v7.22 EqProp+FHN engine state"""
+    try:
+        from M180_EqPropFHN import EqPropFHNEngine, build_small_network
+        engine = build_small_network(2, 3, 1)
+        report = engine.get_integration_report()
+        l2 = engine.get_l2_shell_report()
+        state = dict(_v722_state)
+        state['integration'] = report.to_dict()
+        state['l2_shell'] = l2.to_dict()
+        state['module'] = 'M180_EqPropFHN'
+        state['version'] = 'v7.22'
+        return jsonify(_to_native(state))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v722/eqprop/train', methods=['POST'])
+def v722_eqprop_train():
+    """Train one step: free phase -> nudged phase -> weight update"""
+    try:
+        from dataclasses import asdict
+        data = request.get_json(force=True) or {}
+        target_id = data.get('target_id', 'out_0')
+        target_value = float(data.get('target_value', 0.8))
+        n_inputs = int(data.get('n_inputs', 2))
+        n_hidden = int(data.get('n_hidden', 3))
+        n_outputs = int(data.get('n_outputs', 1))
+
+        from M180_EqPropFHN import EqPropFHNEngine, build_small_network
+        engine = build_small_network(n_inputs, n_hidden, n_outputs)
+        result = engine.train(target_id, target_value)
+        return jsonify(_to_native(result.to_dict()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v722/eqprop/network', methods=['GET'])
+def v722_eqprop_network():
+    """Get network neuron states and credit heatmap"""
+    try:
+        from M180_EqPropFHN import EqPropFHNEngine, build_small_network
+        engine = build_small_network(2, 3, 1)
+        engine.train('out_0', 0.8)
+        neurons = engine.get_neuron_states()
+        heatmap = engine.get_credit_heatmap()
+        return jsonify(_to_native({
+            'neurons': neurons,
+            'credit_heatmap': heatmap,
+            'network_energy': engine.trainer.get_network_energy(),
+        }))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v722/eqprop/theorem/T180', methods=['GET'])
+def v722_eqprop_T180():
+    """Verify Theorem T180: EqProp-FHN Value Theorem"""
+    try:
+        from M180_EqPropFHN import EqPropFHNEngine, build_small_network
+        engine = build_small_network(2, 3, 1)
+        engine.train('out_0', 0.8)
+        result = engine.verify_theorem_T180()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v722/eqprop/theorem/T181', methods=['GET'])
+def v722_eqprop_T181():
+    """Verify Theorem T181: EqProp-FHN Ceiling Theorem (L2 shell deficiency)"""
+    try:
+        from M180_EqPropFHN import EqPropFHNEngine, build_small_network
+        engine = build_small_network(2, 3, 1)
+        result = engine.verify_theorem_T181()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v722/eqprop/l2_shell', methods=['GET'])
+def v722_eqprop_l2_shell():
+    """Check L2 algebraic shell hardening status (5 attributes)"""
+    try:
+        from M180_EqPropFHN import EqPropFHNEngine, build_small_network
+        engine = build_small_network(2, 3, 1)
+        report = engine.get_l2_shell_report()
+        return jsonify(_to_native(report.to_dict()))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v722/eqprop/mve/p7', methods=['GET'])
+def v722_eqprop_mve_p7():
+    """P7 EqProp+FHN MVE experiment: local credit assignment verification"""
+    try:
+        from TYIDO_MVE_Experiments import run_p7_eqprop_fhn
+        result = _run_eqprop_safe(run_p7_eqprop_fhn, 'p7')
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v722/eqprop/mve/all', methods=['GET'])
+def v722_eqprop_mve_all():
+    """Run all MVE experiments including P7"""
+    try:
+        from TYIDO_MVE_Experiments import run_all_mve_v722
+        result = _run_eqprop_safe(run_all_mve_v722, 'all_v722')
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 
 # ==================== v7.18 沙箱增强·安全护盾 ====================

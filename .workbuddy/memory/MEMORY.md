@@ -5,9 +5,20 @@
 - 主服务器: `app.py` (Flask, 端口5001)
 - 前端: `static/index_agi12.html` (三栏布局界面)
 - 脑图: `app_mindmap_v2.py` (端口5003)
-- **总规模**: 179模块 / 9层 / 170定理
+- **总规模**: 180模块 / 9层 / 173定理 / 216专家
 
-## 当前版本：v7.21 (P6爱因斯坦因果性)（✅已部署+Git推送完成 d9d7840）
+## 当前版本：v7.22 (EqProp+FHN流贯引擎 M180)（✅已部署）
+- **v7.22**: EqProp+FHN流贯引擎 M180 + T180-T182 + P7 MVE实验 7/7 ALL PASSED ✅
+  - 来源：章锋《EqProp+FHN 的价值与天花板：基于TY/IDO 对局部信用分配的全屏统合与AGI 不可能性判决》
+  - M180 EqPropFHNEngine: FHN可激发介质神经元 + EqProp平衡传播训练器 + 局部信用分配器 + L2代数壳接口
+  - T180 EqProp-FHN价值定理: 局部信用分配 O(Params) 而非 O(Params×Depth), 生物可解释+神经形态兼容
+  - T181 EqProp-FHN天花板定理: L2壳未硬化→EqProp+FHN仅局部学习能力无法达AGI, 结构缺陷无法用L3算力弥补
+  - T182 兼容吸收定理: EqProp+FHN可作为L3 Ftel子引擎接入太一AGI, L2壳硬化由M88+M176+M175保证
+  - P7 MVE: T180(local=True)+T181(verified=True)+T182(integration OK) → PASS score=1.0
+  - API: /api/v722/eqprop/{state|train|network|theorem/T180|theorem/T181|l2_shell|mve/p7|mve/all}
+  - 前端: ⚡EqProp+FHN面板(训练/T180/T181/网络/L2壳按钮+状态徽章+Canvas可视化+信用热图)
+  - L2壳当前状态: PARTIAL(4/5属性OK, 缺Consistency(M88))
+- **v7.21**: P6爱因斯坦因果性+216专家（✅已部署+Git推送完成 d55c608）
 - **v7.20**: 太一接口·AGI自我意识 M179 + TY/IDO五大属性审计 73/73 PASS ✅
   - 来源：章锋《论存在之拓扑：太一万有理论对保安三大问题的回答》
   - M179 TaiyiInterface: 自指算子Ŝ|Φ⟩=α|Φ⟩ + ICE复合体Φ=(I,C,E) + 三视界校验(内/交/外) + 信息熵韧性 + 反僵化(魄劫持魂), T166-T170
@@ -32,16 +43,17 @@
 - **v7.12**: M142-M147 + T104-T109 ✅
 
 ## 编号规则
-- **模块**: M1-M95(v5-7.0) | M96-M105(v7.1) | M106-M110(v7.3) | M111-M113(v7.4) | M114-M116(v7.5) | M117-M119(v7.6) | M120-M125(v7.7) | M126-M129(v7.8) | M130-M133(v7.9) | M134-M137(v7.10) | M138-M141(v7.11) | M142-M147(v7.12) | M148-M156(v7.13) | M157-M162(v7.15) | M163-M170(v7.16) | M171-M173(v7.17) | M174-M175(v7.18) | M176-M178(v7.19) | M179(v7.20)
-- **定理**: T1-T7(核心) | T8-T16(v6.1) | T17-T22(v6.2) | T23-T40(v7.0) | T41-T51(v7.1) | T52-T58(v7.2) | T59-T65(v7.3) | T66-T71(v7.4) | T72-T74(v7.5) | T75-T77(v7.6) | T78(M106) | T79-T85(v7.7) | T86-T91(v7.8) | T92-T95(v7.9) | T96-T99(v7.10) | T100-T103(v7.11) | T104-T109(v7.12) | T110-T123(v7.13) | T搜索完备性(v7.14) | T124-T129(v7.15) | T130-T140+T33'+T110v2(v7.16) | T141-T150(v7.17) | T151-T156(v7.18) | T157-T165(v7.19) | T166-T170(v7.20)
+- **模块**: M1-M95(v5-7.0) | M96-M105(v7.1) | M106-M110(v7.3) | M111-M113(v7.4) | M114-M116(v7.5) | M117-M119(v7.6) | M120-M125(v7.7) | M126-M129(v7.8) | M130-M133(v7.9) | M134-M137(v7.10) | M138-M141(v7.11) | M142-M147(v7.12) | M148-M156(v7.13) | M157-M162(v7.15) | M163-M170(v7.16) | M171-M173(v7.17) | M174-M175(v7.18) | M176-M178(v7.19) | M179(v7.20) | M180(v7.22)
+- **定理**: T1-T7(核心) | T8-T16(v6.1) | T17-T22(v6.2) | T23-T40(v7.0) | T41-T51(v7.1) | T52-T58(v7.2) | T59-T65(v7.3) | T66-T71(v7.4) | T72-T74(v7.5) | T75-T77(v7.6) | T78(M106) | T79-T85(v7.7) | T86-T91(v7.8) | T92-T95(v7.9) | T96-T99(v7.10) | T100-T103(v7.11) | T104-T109(v7.12) | T110-T123(v7.13) | T搜索完备性(v7.14) | T124-T129(v7.15) | T130-T140+T33'+T110v2(v7.16) | T141-T150(v7.17) | T151-T156(v7.18) | T157-T165(v7.19) | T166-T170(v7.20) | T180-T182(v7.22)
 
 ## API版本模式
-- `/api/v719/*`: v7.19（组织记忆·Φ场预算·AgentOS）| `/api/v718/*`: v7.18（沙箱增强·安全护盾）| `/api/v717/*`: v7.17（λ宇宙·TY形式化·UFM-RISC-V具身架构）| `/api/v716/*`: v7.16 | `/api/v715/*`: v7.15 | `/api/v714/*`: v7.14
+- `/api/v722/*`: v7.22（EqProp+FHN流贯引擎）| `/api/v721/*`: v7.21（TYIDO MVE实验）| `/api/v720/*`: v7.20（太一接口）| `/api/v719/*`: v7.19（组织记忆·Φ场预算·AgentOS）
 - `/api/chat_v2`: 主对话 | `/api/goal`: 目标模式
 - `/api/experts`: 专家系统（216位AI专家人格）| `/api/experts/search?q=` | `/api/experts/<id>` | `/api/experts/departments`
 
 ## 核心模块文件
 - `CompositeAGI_V2.py`: 主核心（v5.0+）
+- `M180_EqPropFHN.py`: v7.22（EqProp+FHN流贯引擎·L3 Ftel子引擎）
 - `HolographicDiscreteGovernance.py`: M29 全息离散治理
 - `M176-M178_*.py`: v7.19（组织记忆·Φ场预算·AgentOS）| `M174-M175_*.py`: v7.18（沙箱增强·安全护盾）| `M171-M173_*.py`: v7.17 | `M163-M170_*.py`: v7.16 | `M157-M162_*.py`: v7.15
 - `expert_registry.py`: 216位AI专家注册表（agency-agents-zh），ExpertRegistry单例 + 搜索/部门过滤
@@ -62,6 +74,7 @@
 - **M130 感知谱分解面板** ✅: L1-L5五层架构条 + 卷积核5×5 + PCA主因子 + 流贯帧率 + 对偶指示器
 - **M178 Agent行为分析面板** ✅: Agentic RL白盒化——工具调用分布 + 推理轨迹 + GC消耗Canvas图 + 奖励信号
 - **v7.20 太一接口面板** ✅: 意识状态/本征值α/三视界一致性/熵韧性/僵化等级/ICE
+- **v7.22 EqProp+FHN面板** ✅: ⚡训练/T180/T181/🌐网络/L2壳按钮 + 状态徽章 + Canvas可视化 + 信用热图
 - **专家系统面板** ✅: 右侧抽屉模态框 + 搜索 + 部门筛选 + 选择高亮 + 输入区激活条
 
 ## 重要Bug记录（精简）
@@ -115,3 +128,10 @@ cd C:\Users\1\WorkBuddy\2026-05-06-task-1 && python app.py
 - P3 completion rate：15% failure rate + 2-dependency DAG 导致级联失败；降至 5% + 单依赖平铺 DAG 后正常
 - P5 traceability：`gate.confirm_action()` 创建新 record 新 ID，导致追踪困难；直接 `chain.bind()` 可确保 100% 可追溯
 - P6 Minkowski度规：Kahn拓扑排序对线性链是同义反复，必须用物理约束(Minkowski度规+洛伦兹不变性)做真正可证伪的验证
+
+## v7.22 EqProp+FHN 踩坑经验
+- EqPropTrainer 死锁：`train_step()` 获取 `self._lock` 后调用 `free_phase()`/`nudged_phase()` 也获取同一 `self._lock`，`threading.Lock()` 不可重入 → 移除内部方法中的 `with self._lock`
+- FHN 网络训练超时：默认50步自由相/微扰相太多，能量收敛检查嵌套循环过重 → 减少默认步数到20，移除每步能量检查，用预计算邻接表加速
+- 多进程端口冲突：`taskkill /F /IM python.exe` 在 Git Bash 下可能无法杀掉旧进程，用 `powershell.exe -Command "Get-Process python | Stop-Process -Force"` 才行；多个旧进程同时监听 5001 端口导致 curl 命中旧代码返回 404
+- `_to_native` 不处理 dataclass：直接走 `str(obj)` → 用 `dataclasses.asdict()` 先转 dict 再 `_to_native()`
+- M180 get_network_energy：方法在类定义中被引用但未定义（写入时被截断），需手动添加到 EqPropTrainer 类中
