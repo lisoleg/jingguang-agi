@@ -463,14 +463,14 @@ document.addEventListener('DOMContentLoaded', function() {
   // 延迟初始化（等主JS加载完毕）
   setTimeout(function() {
     buildForestFromHistory();
-    // 默认显示森林视图和对话工作区
+    // 默认显示分析仪表盘（不切换到森林，防止仪表盘内容被隐藏）
     if (typeof switchLeftPanel === 'function') {
-      switchLeftPanel('forest');
+      switchLeftPanel('dashboard');
     }
     // 确保流贯控制台可见
     var ftel = document.getElementById('ftel-console');
     if (ftel) ftel.classList.remove('hidden');
-    console.log('[STN] 苏格拉底拓扑网络 v1.0 已加载');
+    console.log('[STN] 苏格拉底拓扑网络 v1.0 已加载，默认显示分析仪表盘');
   }, 800);
 });
 

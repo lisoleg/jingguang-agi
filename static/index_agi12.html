@@ -4680,7 +4680,23 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
       <div id="stn-breadcrumb"><span class="stn-bc-item" onclick="showAllHistory()">📋 全部对话</span></div>
 
       <!-- 对话历史 -->
-      <div id="history"></div>
+      <div id="history">
+        <!-- 空状态提示 -->
+        <div id="history-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--txt3);user-select:none;pointer-events:none;">
+          <div style="font-size:36px;opacity:0.4">🧠</div>
+          <div style="font-size:13px;font-weight:600;color:var(--txt2)">净光哥 AGI · 太乙因果机</div>
+          <div style="font-size:11px;color:var(--txt3);text-align:center;line-height:1.8;max-width:240px">
+            179模块 · 170定理 · 9层架构<br>
+            在下方输入框发送问题，开启认知探索
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:280px;margin-top:4px">
+            <span style="font-size:10px;padding:3px 8px;background:var(--bg3);border:1px solid var(--bdr);border-radius:10px;color:var(--txt2);cursor:default">💡 刘原理</span>
+            <span style="font-size:10px;padding:3px 8px;background:var(--bg3);border:1px solid var(--bdr);border-radius:10px;color:var(--txt2);cursor:default">🌀 三视界法</span>
+            <span style="font-size:10px;padding:3px 8px;background:var(--bg3);border:1px solid var(--bdr);border-radius:10px;color:var(--txt2);cursor:default">⚡ 太乙预言机</span>
+            <span style="font-size:10px;padding:3px 8px;background:var(--bg3);border:1px solid var(--bdr);border-radius:10px;color:var(--txt2);cursor:default">🔗 全息拓扑</span>
+          </div>
+        </div>
+      </div>
 
       <!-- 底部输入区 -->
       <div class="input-section">
@@ -4863,7 +4879,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
     </svg>
   </div>
 
-  <script src="/static/state_init.js"></script>
+  <script src="/static/main_app.js"></script>
   <script src="/static/stn_core.js"></script>
   <script src="/static/chen_test_core.js"></script>
   <script src="/static/chen_test_mode.js"></script>
