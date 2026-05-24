@@ -8711,9 +8711,16 @@ def v723_e2e_diagnose():
     """Diagnose E2E model L2 shell deficiencies"""
     try:
         from M181_E2EReduction import EndToEndReductionEngine
+        from dataclasses import asdict
         engine = EndToEndReductionEngine()
         diagnosis = engine.get_l2_diagnosis()
-        return jsonify(_to_native(diagnosis))
+        result = asdict(diagnosis) if hasattr(diagnosis, '__dataclass_fields__') else diagnosis
+        # Add computed properties not included by asdict
+        if hasattr(diagnosis, 'overall_status'):
+            result['overall_status'] = diagnosis.overall_status
+        if hasattr(diagnosis, 'missing_attributes'):
+            result['missing_attributes'] = diagnosis.missing_attributes
+        return jsonify(_to_native(result))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -8723,10 +8730,12 @@ def v723_e2e_reduce():
     """Execute L3 reduction: R_TY(x) = R_L2 ∘ f_θ(x)"""
     try:
         from M181_E2EReduction import EndToEndReductionEngine
+        from dataclasses import asdict
         data = request.get_json(force=True) or {}
         x = data.get('input', [1.0, 0.5, 0.3, 0.8])
         engine = EndToEndReductionEngine()
         result = engine.reduce(x)
+        result = asdict(result) if hasattr(result, '__dataclass_fields__') else result
         return jsonify(_to_native(result))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -8867,10 +8876,12 @@ def v723_bootstrap_step():
     """Execute one bootstrap cycle"""
     try:
         from M183_BootstrapIntelligence import BootstrapIntelligenceEngine
+        from dataclasses import asdict
         data = request.get_json(force=True) or {}
         n_interactions = int(data.get('n_interactions', 20))
         engine = BootstrapIntelligenceEngine()
         result = engine.bootstrap_cycle(n_interactions)
+        result = asdict(result) if hasattr(result, '__dataclass_fields__') else result
         return jsonify(_to_native(result))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
