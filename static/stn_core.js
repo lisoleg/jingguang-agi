@@ -294,6 +294,77 @@ function updateConsoleCTX(used, total) {
   stnState.ctxUsage = pct;
 }
 
+// ─── 陈天桥测试 / 右侧面板更新函数 ───
+// 熵值面板更新 (Si/Sg/Sc 三维熵条)
+function updateEntropyPanel(data) {
+  if (!data) return;
+  const si = data.Si || data.S_i || data.si || 0.35;
+  const sg = data.Sg || data.S_g || data.sg || 0.28;
+  const sc = data.Sc || data.S_c || data.sc || 0.18;
+  const siVal = Math.max(0.05, Math.min(0.95, Number(si)));
+  const sgVal = Math.max(0.05, Math.min(0.95, Number(sg)));
+  const scVal = Math.max(0.05, Math.min(0.95, Number(sc)));
+  const barSi = document.getElementById('bar-si');
+  const barSg = document.getElementById('bar-sg');
+  const barSc = document.getElementById('bar-sc');
+  const valSi = document.getElementById('val-si');
+  const valSg = document.getElementById('val-sg');
+  const valSc = document.getElementById('val-sc');
+  if (barSi) barSi.style.width = (siVal * 100) + '%';
+  if (barSg) barSg.style.width = (sgVal * 100) + '%';
+  if (barSc) barSc.style.width = (scVal * 100) + '%';
+  if (valSi) valSi.textContent = siVal.toFixed(2);
+  if (valSg) valSg.textContent = sgVal.toFixed(2);
+  if (valSc) valSc.textContent = scVal.toFixed(2);
+}
+
+// 五行仪表盘更新 (木/火/土/金/水)
+function updateFivePhasePanel(data) {
+  if (!data) return;
+  const ids = ['wood', 'fire', 'earth', 'metal', 'water'];
+  ids.forEach(k => {
+    const el = document.getElementById('val-' + k);
+    if (el) el.textContent = Number(data[k] || 0).toFixed(2);
+  });
+}
+
+// 锚定验证面板更新
+function updateAnchorPanel(data) {
+  if (!data) { data = { verified: false }; }
+  const indicator = document.getElementById('anchor-indicator');
+  const text = document.getElementById('anchor-text');
+  if (indicator && text) {
+    if (data.verified) {
+      indicator.className = 'anchor-indicator';
+      text.textContent = '锚定验证通过';
+    } else if (data.warning) {
+      indicator.className = 'anchor-indicator warning';
+      text.textContent = '部分约束待验证';
+    } else {
+      indicator.className = 'anchor-indicator danger';
+      text.textContent = '等待验证';
+    }
+  }
+  ['energy', 'semantic', 'causal', 'empirical'].forEach(k => {
+    const dot = document.getElementById('anchor-' + k);
+    if (dot) dot.className = 'anchor-dot ' + ((data[k] !== false) ? 'ok' : 'fail');
+  });
+}
+
+// 介质共振面板更新 (stub - 完整实现依赖其他面板元素)
+function updateMediumPanel(data) {
+  if (!data) return;
+  const phaseLock = Number(data.phase_lock || 0);
+  const fill = document.getElementById('phase-ring-fill');
+  const ringText = document.getElementById('phase-ring-text');
+  if (fill) {
+    const circumference = 2 * Math.PI * 18;
+    fill.setAttribute('stroke-dasharray', (circumference * phaseLock) + ' ' + circumference);
+    fill.setAttribute('stroke', phaseLock > 0.7 ? 'var(--xinzhai)' : phaseLock > 0.4 ? 'var(--medium)' : 'var(--phase-low)');
+  }
+  if (ringText) ringText.textContent = Math.round(phaseLock * 100) + '%';
+}
+
 // ─── STN 面板显示/隐藏 ───
 function toggleSTNPanel(panel, btn) {
   document.querySelectorAll('.stn-toggle-btn').forEach(b => b.classList.remove('active'));
