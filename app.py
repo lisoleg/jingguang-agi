@@ -874,6 +874,8 @@ def chat_v2():
             'v716': get_v716_data() or _v716_state,
             # v7.17新增：λ宇宙+TY形式化+UFM-RISC-V具身架构（M171-M173）
             'v717': get_v717_data() or _v717_state,
+            # v7.22新增：EqProp+FHN流贯引擎 M180 + T180-T182 + P7 MVE
+            'v722': _v722_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
         }))
@@ -8434,6 +8436,24 @@ _v722_state = {
             'T181': 'EqProp-FHN Ceiling Theorem (L2 shell deficiency)',
             'T182': 'Compatible Absorption Theorem (L3 sub-engine integration)',
         }
+    },
+    'l2_shell': {
+        'consistency_ok': False,
+        'writeback_ok': True,
+        'preservation_ok': True,
+        'addressability_ok': True,
+        'anchorability_ok': True,
+        'overall_status': 'partial',
+        'missing_attributes': ['Consistency(M88)'],
+    },
+    'integration': {
+        'engine_name': 'EqPropFHN',
+        'l3_role': 'Ftel dynamics sub-engine',
+        'l2_shell_status': 'partial',
+        'local_learning_active': False,
+        'total_params': 18,
+        'total_neurons': 6,
+        'energy_consumption': 0.0,
     }
 }
 
