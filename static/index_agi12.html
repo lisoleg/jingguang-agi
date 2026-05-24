@@ -2082,40 +2082,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
     <div id="left-panel">
       <div class="panel-header" data-hint="显示系统实时分析指标，包括熵耦合、五行状态和语义锚定验证">
         <span class="panel-header-title">&#128202; 分析仪表盘</span>
-        <div style="display:flex;gap:3px;margin-left:auto">
-          <button class="forest-btn" onclick="switchLeftPanel('dashboard')" id="btn-view-dashboard" title="分析仪表盘" style="padding:2px 5px;border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:3px;cursor:pointer;font-size:9px">&#128202;</button>
-          <button class="forest-btn" onclick="switchLeftPanel('forest')" id="btn-view-forest" title="思维森林视图" style="padding:2px 5px;border:1px solid var(--bdr);background:transparent;color:var(--txt2);border-radius:3px;cursor:pointer;font-size:9px">&#127794;</button>
-        </div>
-      </div>
-
-      <!-- 思维森林视图（默认隐藏） -->
-      <div id="forest-view-panel" style="display:none;flex-direction:column;height:100%;overflow:hidden">
-        <div id="forest-header" style="padding:6px 8px;border-bottom:1px solid var(--bdr);flex-shrink:0">
-          <div style="display:flex;gap:3px;justify-content:flex-end">
-            <button class="forest-btn" onclick="forestExpandAll()" title="展开全部" style="width:20px;height:20px;border:1px solid var(--bdr);background:var(--bg3);color:var(--txt2);border-radius:3px;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center">&#8862;</button>
-            <button class="forest-btn" onclick="forestCollapseAll()" title="折叠全部" style="width:20px;height:20px;border:1px solid var(--bdr);background:var(--bg3);color:var(--txt2);border-radius:3px;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center">&#8863;</button>
-            <button class="forest-btn" onclick="forestScrollToActive()" title="定位活跃节点" style="width:20px;height:20px;border:1px solid var(--bdr);background:var(--bg3);color:var(--txt2);border-radius:3px;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center">&#8857;</button>
-          </div>
-        </div>
-        <div style="padding:4px 8px;border-bottom:1px solid var(--bdr);flex-shrink:0">
-          <input type="text" id="forest-search" placeholder="搜索节点..."
-                 style="width:100%;background:var(--bg3);border:1px solid var(--bdr);border-radius:4px;color:var(--txt);font-size:9px;padding:3px 6px;font-family:inherit;outline:none"
-                 oninput="forestFilter(this.value)">
-        </div>
-        <div id="stn-breadcrumb" style="padding:4px 8px;border-bottom:1px solid var(--bdr);flex-shrink:0;font-size:9px;color:var(--txt3);display:flex;gap:3px;overflow-x:auto;white-space:nowrap">
-          <span class="stn-bc-item active" onclick="showAllHistory()" style="cursor:pointer;color:var(--sky)">&#128203; 全部对话</span>
-        </div>
-        <div id="forest-view" style="flex:1;overflow:auto;padding:4px 6px;position:relative">
-          <div class="forest-empty-state" id="forest-empty" style="text-align:center;padding:20px 10px;color:var(--txt3);font-size:10px">
-            &#127793; 发送消息后此处显示<br>对话树状结构
-          </div>
-          <svg id="forest-links-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0"></svg>
-          <div id="forest-tree" style="position:relative;z-index:1"></div>
-        </div>
-        <div style="padding:3px 8px;border-top:1px solid var(--bdr);flex-shrink:0;font-size:8px;color:var(--txt3);display:flex;justify-content:space-between">
-          <span id="forest-stats">节点: 0</span>
-          <span id="forest-depth">深度: 0</span>
-        </div>
       </div>
 
       <!-- 分析仪表盘内容（默认显示） -->
@@ -4728,14 +4694,21 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           </div>
         </div>
       </div>
-      <!-- 对话关系链面板 -->
-      <div id="right-panel" data-hint="对话关系图：展示多线索问答结构。点击节点可跳转到对应对话，线条颜色区分话题">
+      <!-- 对话关系链面板（思维森林） -->
+      <div id="right-panel" data-hint="思维森林：展示多线索对话树状结构，支持搜索、折叠展开、定位活跃节点">
         <div class="right-header">
-          <span class="right-icon">&#128279;</span>
-          <span class="right-title">对话关系链</span>
+          <span class="right-icon">&#127794;</span>
+          <span class="right-title">思维森林</span>
           <span class="rel-badge" id="rel-badge">0 节点</span>
-          <button class="btn-dag-fullscreen" id="btn-dag-fullscreen" onclick="toggleDAGFullscreen()" title="全屏查看">&#9974;</button>
-          <button class="btn-dag-toggle" id="btn-dag-toggle" onclick="toggleDAG()" title="折叠/展开">▼</button>
+          <div style="display:flex;gap:2px;margin-left:auto;align-items:center">
+            <input type="text" id="forest-search" placeholder="搜索节点..." oninput="forestFilter(this.value)"
+              style="width:80px;background:var(--bg3);border:1px solid var(--bdr);border-radius:4px;color:var(--txt);font-size:9px;padding:2px 6px;font-family:inherit;outline:none">
+            <button class="forest-btn" onclick="forestExpandAll()" title="展开全部" style="width:20px;height:20px;border:1px solid var(--bdr);background:var(--bg3);color:var(--txt2);border-radius:3px;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center">&#8862;</button>
+            <button class="forest-btn" onclick="forestCollapseAll()" title="折叠全部" style="width:20px;height:20px;border:1px solid var(--bdr);background:var(--bg3);color:var(--txt2);border-radius:3px;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center">&#8863;</button>
+            <button class="forest-btn" onclick="forestScrollToActive()" title="定位活跃节点" style="width:20px;height:20px;border:1px solid var(--bdr);background:var(--bg3);color:var(--txt2);border-radius:3px;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center">&#8857;</button>
+            <button class="btn-dag-fullscreen" id="btn-dag-fullscreen" onclick="toggleDAGFullscreen()" title="全屏查看" style="width:20px;height:20px;border:1px solid var(--bdr);background:var(--bg3);color:var(--txt2);border-radius:3px;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;padding:0">&#9974;</button>
+            <button class="btn-dag-toggle" id="btn-dag-toggle" onclick="toggleDAG()" title="折叠/展开" style="width:20px;height:20px;border:1px solid var(--bdr);background:var(--bg3);color:var(--txt2);border-radius:3px;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;padding:0">&#9660;</button>
+          </div>
         </div>
         <div id="dag-container">
           <svg id="dag-svg">
@@ -4753,8 +4726,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
             <g id="dag-g"></g>
           </svg>
           <div class="dag-empty-state" id="dag-empty">
-            <div class="dag-empty-icon">&#128279;</div>
-            <div class="dag-empty-text">发送消息开始构建<br>对话关系链</div>
+            <div class="dag-empty-icon">&#127794;</div>
+            <div class="dag-empty-text">发送消息开始构建<br>思维森林</div>
           </div>
           <div id="tooltip"></div>
         </div>
@@ -4764,6 +4737,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <div class="dag-stat" title="引用关系：引用之前的问答"><div class="dag-dot dot-ref"></div><span>引用</span></div>
           <div class="dag-stat" title="整合关系：横向整合多线索"><div class="dag-dot dot-follow"></div><span>整合</span></div>
           <div class="dag-stat" title="诘辩关系：苏格拉底诘辩追问"><div style="width:8px;height:8px;border-radius:50%;background:#f97316;display:inline-block"></div><span>诘辩</span></div>
+          <div class="dag-stat" title="分叉关系：从某个节点分叉出新线索"><div style="width:8px;height:8px;border-radius:50%;background:#a855f7;display:inline-block"></div><span>分叉</span></div>
+          <span style="margin-left:auto;font-size:8px;color:var(--txt3)" id="forest-stats"></span>
+          <span style="font-size:8px;color:var(--txt3)" id="forest-depth"></span>
         </div>
         <!-- STN Phase 4: Relation Map 面板 -->
         <div id="relation-map-panel" style="display:none;flex-direction:column;height:50%;border-top:1px solid var(--bdr);" data-hint="Relation Map：显示当前选中节点的入度/出度关系图谱（苏格拉底拓扑）">
@@ -6258,6 +6234,7 @@ function renderDAG() {
 
   if (threads.length === 0) {
     document.getElementById('rel-badge').textContent = '0 线索';
+    if (typeof updateForestStats === 'function') updateForestStats([]);
     return;
   }
 
@@ -6618,6 +6595,10 @@ function renderDAG() {
     const contentHeight = currentY + 20;
     svgEl.setAttribute('height', Math.max(minHeight, contentHeight));
     svgEl.style.height = Math.max(minHeight, contentHeight) + 'px';
+  }
+  // 同步更新思维森林统计
+  if (typeof updateForestStats === 'function' && stnState.forestData) {
+    updateForestStats(stnState.forestData);
   }
   // 如果处于全屏模式，同步更新全屏视图
   if (DAG_FULLSCREEN) {
@@ -7412,6 +7393,8 @@ function pushMsg(role, content, meta = {}) {
 
   renderHistory();
   updateQABadge();
+  // 同步更新思维森林数据（供搜索/统计使用）
+  if (typeof buildForestFromHistory === 'function') buildForestFromHistory();
 }
 
 function updateQABadge() {
@@ -12997,156 +12980,23 @@ function updateOntoNav(rootText) {
   if (el) el.textContent = rootText || '未初始化';
 }
 
-// ─── 左侧面板视图切换（仪表盘 ↔ 森林） ───
+// ─── 左侧面板视图切换（思维森林已合并到右侧DAG面板，此处仅保留兼容） ───
 function switchLeftPanel(view) {
-  stnState.currentView = view;
-  var dashboard = document.getElementById('dashboard-content');
-  var forest = document.getElementById('forest-view-panel');
-  var btnD = document.getElementById('btn-view-dashboard');
-  var btnF = document.getElementById('btn-view-forest');
-  if (dashboard) dashboard.style.display = view === 'dashboard' ? 'flex' : 'none';
-  if (forest) forest.style.display = view === 'forest' ? 'flex' : 'none';
-  if (btnD) {
-    btnD.style.background = view === 'dashboard' ? 'var(--acc)' : 'transparent';
-    btnD.style.color = view === 'dashboard' ? '#fff' : 'var(--txt2)';
-  }
-  if (btnF) {
-    btnF.style.background = view === 'forest' ? 'var(--acc)' : 'transparent';
-    btnF.style.color = view === 'forest' ? '#fff' : 'var(--txt2)';
-  }
-  if (view === 'forest') renderForestView();
-}
-
-// ─── 思维森林视图渲染 ───
-function renderForestView() {
-  var container = document.getElementById('forest-tree');
-  var empty = document.getElementById('forest-empty');
-  if (!container) return;
-  var data = stnState.forestData;
-  if (!data || data.length === 0) {
-    if (empty) empty.style.display = 'block';
-    container.innerHTML = '';
+  // 思维森林已统一到右侧"对话关系链"面板
+  // 此函数保留但不再切换面板
+  if (view === 'forest') {
+    // 直接跳转到右侧面板，让用户看到思维森林
+    var rightPanel = document.getElementById('right-panel');
+    if (rightPanel) {
+      var btn = document.getElementById('btn-dag-toggle');
+      if (btn) { var isCollapsed = btn.textContent === '▶'; if (isCollapsed) toggleDAG(); }
+      rightPanel.scrollIntoView({ behavior: 'smooth' });
+    }
     return;
   }
-  if (empty) empty.style.display = 'none';
-  var rootNodes = data.filter(function(n) { return !n.parent || n.parent === null; });
-  container.innerHTML = rootNodes.map(function(n) { return renderForestNode(n, data, 0); }).join('');
-  updateForestStats(data);
 }
 
-function renderForestNode(node, allData, depth) {
-  var isCollapsed = stnState.collapsedNodes.has(node.id);
-  var children = allData.filter(function(n) { return n.id && n.parent === node.id; });
-  var hasChildren = children.length > 0;
-  var isActive = node.id === stnState.activeNodeId;
-  var isRoot = !node.parent;
-  var iconClass = node.type === 'Q' ? 'q' : node.type === 'A' ? 'a' : node.type === 'G' ? 'g' : node.type === 'S' ? 's' : 'e';
-  var html = '<div class="forest-node' +
-    (isActive ? ' active' : '') +
-    (isRoot ? ' forest-node-root' : '') +
-    '" data-id="' + node.id + '" onclick="selectForestNode(\'' + node.id + '\')">';
-  if (depth > 0) html += '<span style="display:inline-block;width:' + (depth * 14) + 'px"></span>';
-  if (hasChildren) {
-    html += '<span class="forest-collapse-btn' + (isCollapsed ? ' collapsed' : '') +
-      '" onclick="event.stopPropagation();toggleForestNode(\'' + node.id + '\')">';
-    html += isCollapsed ? '&#9656;' : '&#9662;';
-    html += '</span> ';
-  } else {
-    html += '<span style="display:inline-block;width:14px"></span> ';
-  }
-  html += '<span class="forest-node-icon ' + iconClass + '">' + (node.type || 'Q') + '</span> ';
-  var label = (node.label || node.text || '节点').substring(0, 40);
-  var filter = stnState.forestFilter.toLowerCase();
-  var display = label;
-  if (filter) {
-    var idx = label.toLowerCase().indexOf(filter);
-    if (idx >= 0) {
-      display = label.substring(0, idx) + '<mark style="background:var(--acc-glow);color:var(--acc2)">' +
-        label.substring(idx, idx + filter.length) + '</mark>' + label.substring(idx + filter.length);
-    }
-  }
-  html += '<span>' + display + '</span>';
-  if (node.isFork) html += ' <span style="color:#a855f7;font-size:8px">&#9862;</span>';
-  html += '</div>';
-  if (hasChildren && !isCollapsed) {
-    html += '<div class="forest-node-children">';
-    children.forEach(function(child) {
-      html += renderForestNode(child, allData, depth + 1);
-    });
-    html += '</div>';
-  }
-  return html;
-}
-
-function toggleForestNode(id) {
-  if (stnState.collapsedNodes.has(id)) {
-    stnState.collapsedNodes.delete(id);
-  } else {
-    stnState.collapsedNodes.add(id);
-  }
-  renderForestView();
-}
-
-function selectForestNode(id) {
-  stnState.activeNodeId = id;
-  renderForestView();
-  var msgEl = document.querySelector('[data-node-id="' + id + '"]');
-  if (msgEl) {
-    msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    msgEl.classList.add('msg-stn-active');
-    setTimeout(function() { msgEl.classList.remove('msg-stn-active'); }, 2000);
-  }
-}
-
-function forestExpandAll() {
-  stnState.collapsedNodes.clear();
-  renderForestView();
-}
-
-function forestCollapseAll() {
-  stnState.forestData.forEach(function(n) {
-    var children = stnState.forestData.filter(function(c) { return c.parent === n.id; });
-    if (children.length > 0) stnState.collapsedNodes.add(n.id);
-  });
-  renderForestView();
-}
-
-function forestScrollToActive() {
-  if (!stnState.activeNodeId) return;
-  var el = document.querySelector('#forest-tree [data-id="' + stnState.activeNodeId + '"]');
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-function forestGoToRoot() {
-  if (stnState.rootNodeId) {
-    selectForestNode(stnState.rootNodeId);
-  }
-}
-
-function forestFilter(val) {
-  stnState.forestFilter = val;
-  renderForestView();
-}
-
-function updateForestStats(data) {
-  var statsEl = document.getElementById('forest-stats');
-  var depthEl = document.getElementById('forest-depth');
-  if (statsEl) statsEl.textContent = '节点: ' + data.length;
-  if (depthEl && data.length > 0) {
-    var maxDepth = 0;
-    data.forEach(function(n) {
-      var d = 0; var cur = n;
-      while (cur && cur.parent) {
-        d++; cur = data.find(function(p) { return p.id === cur.parent; });
-        if (d > 20) break;
-      }
-      if (d > maxDepth) maxDepth = d;
-    });
-    depthEl.textContent = '深度: ' + maxDepth;
-  }
-}
-
-// ─── 从对话数据构建森林树 ───
+// ─── 思维森林：从对话数据构建森林树（供搜索/统计使用） ───
 function buildForestFromHistory() {
   var history = STATE.history || [];
   if (history.length === 0) {
@@ -13178,8 +13028,138 @@ function buildForestFromHistory() {
     stnState.forestData = nodes;
     if (nodes.length > 0) { stnState.rootNodeId = nodes[0].id; stnState.activeNodeId = nodes[nodes.length - 1].id; }
   }
-  renderForestView();
+  updateForestStats(stnState.forestData);
   updateOntoNav(stnState.forestData[0] && stnState.forestData[0].label);
+}
+
+// ─── 森林搜索过滤（高亮DAG中的匹配节点） ───
+function forestFilter(keyword) {
+  stnState.forestFilter = keyword.trim().toLowerCase();
+  // 重新渲染DAG，高亮匹配节点
+  renderDAG();
+  if (stnState.forestFilter) {
+    const matched = stnState.forestData.filter(function(n) {
+      return n.text && n.text.toLowerCase().indexOf(stnState.forestFilter) >= 0;
+    });
+    // 在DAG中高亮匹配节点
+    d3.select('#dag-g').selectAll('.dag-node').each(function() {
+      var el = d3.select(this);
+      var nodeId = el.attr('data-global-id') || '';
+      var isMatch = matched.some(function(m) {
+        return nodeId.indexOf('Q') >= 0 && m.type === 'Q' || nodeId.indexOf('A') >= 0 && m.type === 'A';
+      });
+      el.style('opacity', isMatch ? '1' : '0.3');
+      if (isMatch) el.attr('stroke', 'var(--amber)').attr('stroke-width', '2');
+    });
+  } else {
+    d3.select('#dag-g').selectAll('.dag-node').style('opacity', '1');
+  }
+}
+
+// ─── 森林展开/折叠全部（控制DAG节点的collapsed状态） ───
+function forestExpandAll() {
+  var threads = STATE.dag_data.threads || [];
+  threads.forEach(function(t) {
+    (t.qa_pairs || []).forEach(function(qa) { qa.collapsed = false; });
+  });
+  stnState.collapsedNodes.clear();
+  renderDAG();
+}
+
+function forestCollapseAll() {
+  var threads = STATE.dag_data.threads || [];
+  threads.forEach(function(t) {
+    (t.qa_pairs || []).forEach(function(qa) { qa.collapsed = true; });
+  });
+  stnState.collapsedNodes = new Set();
+  renderDAG();
+}
+
+// ─── 森林定位活跃节点 ───
+function forestScrollToActive() {
+  var activeId = stnState.activeNodeId;
+  if (!activeId) return;
+  // 在DAG中找到对应节点并滚动到可见区域
+  var dagSvg = document.getElementById('dag-svg');
+  var dagContainer = document.getElementById('dag-container');
+  if (!dagSvg || !dagContainer) return;
+  // 找到活跃节点的Y位置
+  var threads = STATE.dag_data.threads || [];
+  var targetY = 0;
+  var found = false;
+  threads.forEach(function(t) {
+    (t.qa_pairs || []).forEach(function(qa) {
+      if (qa.global_id === activeId && qa.y) {
+        targetY = qa.y;
+        found = true;
+      }
+    });
+  });
+  if (found && dagContainer) {
+    dagContainer.scrollTop = Math.max(0, targetY - 60);
+  }
+}
+
+// ─── 森林统计信息更新 ───
+function updateForestStats(data) {
+  var statsEl = document.getElementById('forest-stats');
+  var depthEl = document.getElementById('forest-depth');
+  if (!statsEl || !depthEl) return;
+  var totalNodes = data ? data.length : 0;
+  var maxDepth = 0;
+  if (data && data.length > 0) {
+    data.forEach(function(node) {
+      var d = 0, cur = node;
+      while (cur && cur.parent) {
+        d++; cur = data.find(function(p) { return p.id === cur.parent; });
+        if (d > 20) break;
+      }
+      if (d > maxDepth) maxDepth = d;
+    });
+  }
+  statsEl.textContent = totalNodes + ' 节点';
+  depthEl.textContent = '深度 ' + maxDepth;
+}
+
+// ─── 思维森林视图渲染（兼容函数，现在数据更新到DAG） ───
+function renderForestView() {
+  // 思维森林已统一到右侧DAG面板，此函数仅更新统计
+  buildForestFromHistory();
+}
+
+// ─── 从对话数据构建森林树（已移至上方统一版本） ───
+// 旧的 renderForestView/renderForestNode/toggleForestNode/selectForestNode/forestExpandAll/forestCollapseAll/forestScrollToActive/forestFilter/updateForestStats 已合并到上方
+// 保留 toggleForestNode/selectForestNode 的兼容版本
+function toggleForestNode(id) {
+  if (stnState.collapsedNodes.has(id)) {
+    stnState.collapsedNodes.delete(id);
+  } else {
+    stnState.collapsedNodes.add(id);
+  }
+  // 在DAG中找到对应节点并toggle
+  var threads = STATE.dag_data.threads || [];
+  threads.forEach(function(t) {
+    (t.qa_pairs || []).forEach(function(qa) {
+      if (qa.global_id === id || qa.id === id) qa.collapsed = stnState.collapsedNodes.has(id);
+    });
+  });
+  renderDAG();
+}
+
+function selectForestNode(id) {
+  stnState.activeNodeId = id;
+  var msgEl = document.querySelector('[data-node-id="' + id + '"]');
+  if (msgEl) {
+    msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    msgEl.classList.add('msg-stn-active');
+    setTimeout(function() { msgEl.classList.remove('msg-stn-active'); }, 2000);
+  }
+}
+
+function forestGoToRoot() {
+  if (stnState.rootNodeId) {
+    selectForestNode(stnState.rootNodeId);
+  }
 }
 
 // ─── 流贯控制台辅助 ───
