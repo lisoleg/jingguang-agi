@@ -6848,11 +6848,11 @@ function addQA2DAG(type, content, meta = {}) {
 
     currentThread.qa_pairs.push(qa);
 
-    // Phase 1: 更新 STN 活跃路径
+    // Phase 1: 更新 STN 活跃路径（正常对话时保持 show_all=true，不隐藏其他消息）
     if (stn) {
       stn.active_node_id = globalId;
       stn.active_path = getSTNPathToNode(globalId);
-      stn.show_all = false;
+      // 不再设 show_all = false —— 只有用户主动导航 STN 时才进入路径过滤模式
     }
 
     renderDAG();
@@ -7467,11 +7467,11 @@ function pushMsg(role, content, meta = {}) {
         }
         currentThread.qa_pairs.push(ansQA);
 
-        // 更新 STN 活跃路径
+        // 更新 STN 活跃路径（正常对话时保持 show_all=true，不隐藏其他消息）
         if (stn) {
           stn.active_node_id = ansQA.global_id;
           stn.active_path = getSTNPathToNode(ansQA.global_id);
-          stn.show_all = false;
+          // 不再设 show_all = false —— 只有用户主动导航 STN 时才进入路径过滤模式
         }
         renderDAG();
         renderSTNBreadcrumb();
