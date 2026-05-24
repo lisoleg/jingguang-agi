@@ -3308,7 +3308,18 @@ function openDesignDoc() {
   // 打开设计文档 - HTML版本
   const docPath = '净光哥AGI_设计文档.html';
   const docUrl = '/static/' + encodeURIComponent(docPath);
-  window.open(docUrl, '_blank', 'width=1200,height=900');
+  // 先尝试 window.open，如果被拦截则降级到 location.href
+  const newWin = window.open(docUrl, '_blank');
+  if (!newWin) {
+    // 弹出窗口被拦截，降级方案：直接导航
+    const link = document.createElement('a');
+    link.href = docUrl;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 }
 
 // ESC键关闭弹窗 - 已在DOMContentLoaded中绑定
