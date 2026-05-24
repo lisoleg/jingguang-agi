@@ -98,6 +98,7 @@
 - M171 API返回值是dict(非object)：reduce()返回{'output','steps','normalized'}而非属性；verify_fixed_point_property()无'converges'字段
 - M102 compress_trajectory有状态：每次调用trajectory_count++，测试一致性需保存/恢复状态
 - M63 Mononumber用__new__ singleton：每次创建返回同一实例
+- dataclass@_to_native：`_to_native()`不处理dataclass，需`asdict()`转换；`@property`不包含在asdict()中需手动补全（v7.23 diagnose/reduce/bootstrap_cycle路由）
 
 ## TY/IDO 审计基础设施
 - `TYIDO_SelfConsistency.py`: P1共享基模块（SelfConsistencyChecker + ConsistencyResult）
