@@ -86,9 +86,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 #left-panel::-webkit-scrollbar{width:4px}
 #left-panel::-webkit-scrollbar-track{background:transparent}
 #left-panel::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
-#dashboard-content{
-  display:flex;flex-direction:column;flex:1;overflow-y:auto;
-}
 .panel-header{
   padding:10px 14px;border-bottom:1px solid var(--bdr);flex-shrink:0;
   display:flex;align-items:center;gap:8px;
@@ -2040,41 +2037,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
   #forest-panel{display:none}
   #dag-panel{display:none}
 }
-/* STN Fix: Ensure input is visible */
-#main-input2, #goal-input2 {
-  width: 100%;
-  min-height: 60px;
-  background: var(--bg3);
-  border: 1px solid var(--bdr);
-  border-radius: 8px;
-  color: var(--txt);
-  padding: 10px 12px;
-  font-family: inherit;
-  font-size: 13px;
-  resize: vertical;
-  outline: none;
-}
-#main-input2:focus, #goal-input2:focus {
-  border-color: var(--acc);
-}
-
-/* STN Panel Labels */
-[data-panel-label]::before {
-  content: attr(data-panel-label);
-  position: absolute;
-  top: 2px;
-  right: 6px;
-  font-size: 9px;
-  color: var(--txt3);
-  background: rgba(0,0,0,0.5);
-  padding: 1px 4px;
-  border-radius: 3px;
-  pointer-events: none;
-  z-index: 10;
-}
-#center-panel[data-panel-label], #right-panel[data-panel-label] {
-  position: relative;
-}
 </style>
 </head>
 <body>
@@ -2127,7 +2089,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
       </div>
 
       <!-- 思维森林视图（默认隐藏） -->
-      <div id="forest-view-panel" style="display:none;flex-direction:column;height:100%;overflow:hidden" data-panel-label="L3 思维森林">
+      <div id="forest-view-panel" style="display:none;flex-direction:column;height:100%;overflow:hidden">
         <div id="forest-header" style="padding:6px 8px;border-bottom:1px solid var(--bdr);flex-shrink:0">
           <div style="display:flex;gap:3px;justify-content:flex-end">
             <button class="forest-btn" onclick="forestExpandAll()" title="展开全部" style="width:20px;height:20px;border:1px solid var(--bdr);background:var(--bg3);color:var(--txt2);border-radius:3px;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center">⊞</button>
@@ -2159,7 +2121,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
       </div>
 
       <!-- 分析仪表盘内容（默认显示） -->
-      <div id="dashboard-content" style="display:flex;flex-direction:column">
+      <div id="dashboard-content">
       <!-- 三相熵仪表 -->
       <div class="panel-section" id="entropy-panel" data-hint="三相熵：Si=信息熵(紫色)、Sg=生成熵(青色)、Sc=认知熵(粉色)。数值越高表示熵增越大，认知越活跃">
         <div class="panel-title">&#9889; 三相熵耦合</div>
@@ -4660,7 +4622,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
       </div>
 
     </div>
-    <div id="center-panel" data-panel-label="L4 语境工作区">
+    <div id="center-panel">
 
       <!-- GC 余额横条（醒目显示） -->
       <div id="gc-balance-bar" style="display:flex;align-items:center;gap:8px;padding:4px 10px;background:linear-gradient(90deg,rgba(52,211,153,0.12),rgba(167,139,250,0.10));border-bottom:1px solid rgba(52,211,153,0.2);font-size:12px;font-weight:bold;color:#34d399;">
@@ -4683,23 +4645,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
       <div id="stn-breadcrumb"><span class="stn-bc-item" onclick="showAllHistory()">📋 全部对话</span></div>
 
       <!-- 对话历史 -->
-      <div id="history">
-        <!-- 空状态提示 -->
-        <div id="history-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--txt3);user-select:none;pointer-events:none;">
-          <div style="font-size:36px;opacity:0.4">🧠</div>
-          <div style="font-size:13px;font-weight:600;color:var(--txt2)">净光哥 AGI · 太乙因果机</div>
-          <div style="font-size:11px;color:var(--txt3);text-align:center;line-height:1.8;max-width:240px">
-            179模块 · 170定理 · 9层架构<br>
-            在下方输入框发送问题，开启认知探索
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:280px;margin-top:4px">
-            <span style="font-size:10px;padding:3px 8px;background:var(--bg3);border:1px solid var(--bdr);border-radius:10px;color:var(--txt2);cursor:default">💡 刘原理</span>
-            <span style="font-size:10px;padding:3px 8px;background:var(--bg3);border:1px solid var(--bdr);border-radius:10px;color:var(--txt2);cursor:default">🌀 三视界法</span>
-            <span style="font-size:10px;padding:3px 8px;background:var(--bg3);border:1px solid var(--bdr);border-radius:10px;color:var(--txt2);cursor:default">⚡ 太乙预言机</span>
-            <span style="font-size:10px;padding:3px 8px;background:var(--bg3);border:1px solid var(--bdr);border-radius:10px;color:var(--txt2);cursor:default">🔗 全息拓扑</span>
-          </div>
-        </div>
-      </div>
+      <div id="history"></div>
 
       <!-- 底部输入区 -->
       <div class="input-section">
@@ -4727,7 +4673,29 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         </div>
       </div>
 
-
+      <!-- STN Phase 3: 流贯控制台 -->
+      <div id="ftel-console">
+        <div class="console-entropy">
+          <span style="font-size:10px;color:var(--txt2)">H</span>
+          <div style="position:relative;display:inline-block">
+            <div class="console-entropy-track">
+              <div class="console-entropy-fill" id="console-entropy-fill" style="width:30%"></div>
+            </div>
+            <!-- S_threshold 阈值标记（推论3.1.1临界点） -->
+            <div id="console-threshold-marker" style="position:absolute;left:50%;top:-3px;width:1px;height:12px;background:var(--amber);opacity:.7" title="S_threshold: 信息熵临界阈值"></div>
+          </div>
+          <span class="console-entropy-val" id="console-entropy-val">0.30</span>
+        </div>
+        <div class="console-btns">
+          <button class="console-btn" onclick="handleConsoleCmd('summarize')" title="对当前对话路径自动摘要">&#128220; 摘要</button>
+          <button class="console-btn" onclick="handleConsoleCmd('debate')" title="对当前问题启动诘辩模式">&#9876; 诘辩</button>
+          <button class="console-btn" onclick="handleConsoleCmd('integrate')" title="整合多版本答案">&#128259; 整合</button>
+        </div>
+        <input type="text" class="console-cmd-input" id="console-cmd-input"
+               placeholder="/fork Q3  |  /summarize  |  /debate  |  /integrate  |  /help"
+               onkeydown="if(event.key==='Enter'){handleConsoleCmdInput(this.value);this.value='';}">
+        <span class="console-status" id="console-status">就绪</span>
+      </div>
     </div>
 
     <!-- ═══════════════════════════════════════════════════════
@@ -4762,7 +4730,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         </div>
       </div>
       <!-- 对话关系链面板 -->
-      <div id="right-panel" data-hint="对话关系图：展示多线索问答结构。点击节点可跳转到对应对话，线条颜色区分话题" data-panel-label="DAG关系图">
+      <div id="right-panel" data-hint="对话关系图：展示多线索问答结构。点击节点可跳转到对应对话，线条颜色区分话题">
         <div class="right-header">
           <span class="right-icon">&#128279;</span>
           <span class="right-title">对话关系链</span>
@@ -4814,11 +4782,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           </div>
         </div>
       </div>
-      </div>  <!-- /relation-map-panel -->
-      </div>  <!-- /right-panel -->
-    </div>  <!-- /right-column -->
-  </div>  <!-- /main -->
-
+    </div>
+  </div>
+  
   <!-- 帮助弹窗 -->
   <div id="help-modal">
     <div class="help-content">
@@ -4881,11 +4847,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
       <g id="zoom-layer"></g>
     </svg>
   </div>
+</div>
 
-  <script src="/static/main_app.js"></script>
-  <script src="/static/stn_core.js"></script>
-  <script src="/static/chen_test_core.js"></script>
-  <script src="/static/chen_test_mode.js"></script>
+  <script src="stn_core.js"></script>
+
+<!-- AI进度指示器弹窗 -->
 <div id="ai-progress-overlay">
   <div class="ai-progress-modal">
     <div class="ai-progress-icon">&#129504;</div>
@@ -4905,25 +4871,23 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
   </div>
 </div>
 
+  <script src="chen_test_mode.js"></script>
 
   <!-- ═══════════════════════════════════════════════════════════════
        全局浮层：本体导航 (Ontology Navigator) — L1本体层
        始终显示当前对话的"核心意图"Root Node
    ════════════════════════════════════════════════════════════════ -->
-  <!-- ═══════════════════════════════════════════════════════════════
-       L1 本体导航 (Ontology Navigator) — 始终显示核心意图
-  ════════════════════════════════════════════════════════════════ -->
   <div id="ontology-nav">
-    <span class="onto-label">◆ 本体导航 [L1]：</span>
+    <span class="onto-label">◆ 本体导航：</span>
     <span class="onto-root" id="onto-root" title="点击回到根节点">未初始化</span>
     <span class="onto-spacer"></span>
     <button class="onto-toggle" onclick="toggleOntoNav()" title="收起本体导航">✕</button>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════════
-       L2 流贯控制台 (Ftel Console) — 投射生成层
-  ════════════════════════════════════════════════════════════════ -->
-  <div id="ftel-console" data-panel-label="L2 流贯控制台">
+       底部：流贯控制台 (Ftel Console) — L2投射生成层
+   ════════════════════════════════════════════════════════════════ -->
+  <div id="ftel-console">
     <div class="ftel-section" title="上下文进度（已用/总容量）">
       <span class="ftel-label">CTX</span>
       <div class="ftel-progress">
@@ -4949,7 +4913,459 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
     <span class="console-status" id="ftel-status">就绪</span>
   </div>
 
+  <script>
+  // ═══════════════════════════════════════════════════════════════
+  //  STN 苏格拉底拓扑网络 — 核心JS函数
+  //  ═══════════════════════════════════════════════════════════════
 
+  // ─── 全局状态 ───
+  let stnState = {
+    forestData: [],       // 森林树数据
+    activeNodeId: null,   // 当前活跃节点
+    rootNodeId: null,     // 根节点ID
+    collapsedNodes: new Set(),  // 折叠的节点
+    forestFilter: '',       // 过滤关键词
+    consoleEntropy: 0.20,  // 控制台熵值
+    ctxUsage: 0,          // 上下文使用率
+    ontoVisible: false,     // 本体导航是否可见
+    currentView: 'dashboard' // 'dashboard' | 'forest'
+  };
+
+  // ─── 本体导航 (Ontology Navigator) ───
+  function toggleOntoNav() {
+    stnState.ontoVisible = !stnState.ontoVisible;
+    const el = document.getElementById('ontology-nav');
+    if (el) el.classList.toggle('visible', stnState.ontoVisible);
+  }
+
+  function updateOntoNav(rootText) {
+    const el = document.getElementById('onto-root');
+    if (el) el.textContent = rootText || '未初始化';
+  }
+
+  // ─── 左侧面板视图切换 ───
+  function switchLeftPanel(view) {
+    stnState.currentView = view;
+    const dashboard = document.getElementById('dashboard-content');
+    const forest = document.getElementById('forest-view-panel');
+    const btnD = document.getElementById('btn-view-dashboard');
+    const btnF = document.getElementById('btn-view-forest');
+    if (dashboard) dashboard.style.display = view === 'dashboard' ? 'flex' : 'none';
+    if (forest) forest.style.display = view === 'forest' ? 'flex' : 'none';
+    if (btnD) {
+      btnD.style.background = view === 'dashboard' ? 'var(--acc)' : 'transparent';
+      btnD.style.color = view === 'dashboard' ? '#fff' : 'var(--txt2)';
+    }
+    if (btnF) {
+      btnF.style.background = view === 'forest' ? 'var(--acc)' : 'transparent';
+      btnF.style.color = view === 'forest' ? '#fff' : 'var(--txt2)';
+    }
+    if (view === 'forest') renderForestView();
+  }
+
+  // ─── 思维森林视图渲染 ───
+  function renderForestView() {
+    const container = document.getElementById('forest-tree');
+    const empty = document.getElementById('forest-empty');
+    if (!container) return;
+
+    const data = stnState.forestData;
+    if (!data || data.length === 0) {
+      if (empty) empty.style.display = 'block';
+      container.innerHTML = '';
+      return;
+    }
+    if (empty) empty.style.display = 'none';
+
+    // 构建嵌套HTML
+    const rootNodes = data.filter(n => !n.parent || n.parent === null);
+    container.innerHTML = rootNodes.map(n => renderForestNode(n, data, 0)).join('');
+
+    // 更新统计
+    updateForestStats(data);
+  }
+
+  function renderForestNode(node, allData, depth) {
+    const isCollapsed = stnState.collapsedNodes.has(node.id);
+    const children = allData.filter(n => n.id && n.parent === node.id);
+    const hasChildren = children.length > 0;
+    const isActive = node.id === stnState.activeNodeId;
+    const isRoot = !node.parent;
+    const iconClass = node.type === 'Q' ? 'q' : node.type === 'A' ? 'a' : node.type === 'G' ? 'g' : node.type === 'S' ? 's' : 'e';
+
+    let html = '<div class="forest-node' +
+      (isActive ? ' active' : '') +
+      (isRoot ? ' forest-node-root' : '') +
+      '" data-id="' + node.id + '" onclick="selectForestNode(\'' + node.id + '\')">';
+
+    // 缩进
+    if (depth > 0) html += '<span style="display:inline-block;width:' + (depth * 14) + 'px"></span>';
+
+    // 折叠按钮
+    if (hasChildren) {
+      html += '<span class="forest-collapse-btn' + (isCollapsed ? ' collapsed' : '') +
+        '" onclick="event.stopPropagation();toggleForestNode(\'' + node.id + '\')">';
+      html += isCollapsed ? '▸' : '▾';
+      html += '</span> ';
+    } else {
+      html += '<span style="display:inline-block;width:14px"></span> ';
+    }
+
+    // 图标
+    html += '<span class="forest-node-icon ' + iconClass + '">' + (node.type || 'Q') + '</span> ';
+
+    // 文本
+    const label = (node.label || node.text || '节点').substring(0, 40);
+    const filter = stnState.forestFilter.toLowerCase();
+    let display = label;
+    if (filter) {
+      const idx = label.toLowerCase().indexOf(filter);
+      if (idx >= 0) {
+        display = label.substring(0, idx) + '<mark style="background:var(--acc-glow);color:var(--acc2)">' +
+          label.substring(idx, idx + filter.length) + '</mark>' + label.substring(idx + filter.length);
+      }
+    }
+    html += '<span>' + display + '</span>';
+
+    // 分叉标记
+    if (node.isFork) html += ' <span style="color:#a855f7;font-size:8px">⑂</span>';
+
+    html += '</div>';
+
+    // 子节点
+    if (hasChildren && !isCollapsed) {
+      html += '<div class="forest-node-children">';
+      children.forEach(child => {
+        html += renderForestNode(child, allData, depth + 1);
+      });
+      html += '</div>';
+    }
+
+    return html;
+  }
+
+  function toggleForestNode(id) {
+    if (stnState.collapsedNodes.has(id)) {
+      stnState.collapsedNodes.delete(id);
+    } else {
+      stnState.collapsedNodes.add(id);
+    }
+    renderForestView();
+  }
+
+  function selectForestNode(id) {
+    stnState.activeNodeId = id;
+    renderForestView();
+    // 滚到对应消息
+    const msgEl = document.querySelector('[data-node-id="' + id + '"]');
+    if (msgEl) {
+      msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      msgEl.classList.add('msg-stn-active');
+      setTimeout(() => msgEl.classList.remove('msg-stn-active'), 2000);
+    }
+    // 更新工作区
+    updateWorkspaceForNode(id);
+  }
+
+  function forestExpandAll() {
+    stnState.collapsedNodes.clear();
+    renderForestView();
+  }
+
+  function forestCollapseAll() {
+    stnState.forestData.forEach(n => {
+      const children = stnState.forestData.filter(c => c.parent === n.id);
+      if (children.length > 0) stnState.collapsedNodes.add(n.id);
+    });
+    renderForestView();
+  }
+
+  function forestScrollToActive() {
+    if (!stnState.activeNodeId) return;
+    const el = document.querySelector('#forest-tree [data-id="' + stnState.activeNodeId + '"]');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function forestGoToRoot() {
+    if (stnState.rootNodeId) {
+      selectForestNode(stnState.rootNodeId);
+    }
+  }
+
+  function forestFilter(val) {
+    stnState.forestFilter = val;
+    renderForestView();
+  }
+
+  function updateForestStats(data) {
+    const statsEl = document.getElementById('forest-stats');
+    const depthEl = document.getElementById('forest-depth');
+    if (statsEl) statsEl.textContent = '节点: ' + data.length;
+    if (depthEl && data.length > 0) {
+      let maxDepth = 0;
+      data.forEach(n => {
+        let d = 0;
+        let cur = n;
+        while (cur && cur.parent) {
+          d++;
+          cur = data.find(p => p.id === cur.parent);
+          if (d > 20) break; // 防止死循环
+        }
+        if (d > maxDepth) maxDepth = d;
+      });
+      depthEl.textContent = '深度: ' + maxDepth;
+    }
+  }
+
+  // ─── 工作区控制 ───
+  function updateWorkspaceForNode(nodeId) {
+    // 查找节点数据并显示在工作区
+    const node = stnState.forestData.find(n => n.id === nodeId);
+    if (!node) return;
+    const wsContent = document.getElementById('workspace-content');
+    if (!wsContent) return;
+    // 高亮对应消息
+    const msgs = wsContent.querySelectorAll('.ws-msg');
+    msgs.forEach(m => m.classList.remove('ws-msg-active'));
+    const target = wsContent.querySelector('[data-node-id="' + nodeId + '"]');
+    if (target) target.classList.add('ws-msg-active');
+  }
+
+  function wsSwitchMode(mode, btn) {
+    document.querySelectorAll('#ws-mode-tabs .input-tab').forEach(t => t.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    const input = document.getElementById('workspace-input');
+    const hint = document.getElementById('ws-input-hint');
+    const forkHint = document.getElementById('ws-fork-hint');
+    if (input) {
+      if (mode === 'fork') {
+        input.placeholder = '输入分叉消息... (将从选中节点创建新分支)';
+        if (hint) hint.textContent = 'Enter 创建分叉 · Shift+Enter 换行';
+        if (forkHint) forkHint.style.display = 'block';
+      } else if (mode === 'goal') {
+        input.placeholder = '输入目标...';
+        if (hint) hint.textContent = 'Enter 发送目标 · Shift+Enter 换行';
+        if (forkHint) forkHint.style.display = 'none';
+      } else {
+        input.placeholder = '输入消息... (Shift+Enter 换行，Enter 发送)';
+        if (hint) hint.textContent = 'Enter 发送 · Shift+Enter 换行';
+        if (forkHint) forkHint.style.display = 'none';
+      }
+    }
+  }
+
+  function wsInputKeyDown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      wsSendMessage();
+    }
+  }
+
+  function wsSendMessage() {
+    const input = document.getElementById('workspace-input');
+    if (!input || !input.value.trim()) return;
+    const text = input.value.trim();
+    input.value = '';
+    // 调用主对话API
+    if (typeof sendMessage === 'function') {
+      sendMessage(text);
+    } else {
+      // fallback：直接添加到工作区
+      addWorkspaceMessage(text, 'user');
+    }
+  }
+
+  function addWorkspaceMessage(text, type) {
+    const wsContent = document.getElementById('ws-messages');
+    const empty = document.getElementById('ws-empty-state');
+    if (empty) empty.style.display = 'none';
+    if (!wsContent) return;
+    const div = document.createElement('div');
+    div.className = 'ws-msg ' + (type === 'user' ? 'ws-msg-user' : 'ws-msg-ai');
+    div.innerHTML = '<div class="ws-msg-meta">' + (type === 'user' ? '你' : 'AGI') + ' · ' + new Date().toLocaleTimeString() + '</div>' +
+      '<div>' + escapeHtml(text) + '</div>';
+    wsContent.appendChild(div);
+    div.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // ─── 流贯控制台 (Ftel Console) ───
+  function ftelSummarize() {
+    setConsoleStatus('正在总结...', 'warn');
+    if (typeof sendMessage === 'function') {
+      sendMessage('/summarize');
+    }
+  }
+
+  function ftelDebate() {
+    setConsoleStatus('正在发起诘辩...', 'warn');
+    if (typeof sendMessage === 'function') {
+      sendMessage('/debate');
+    }
+  }
+
+  function ftelIntegrate() {
+    setConsoleStatus('正在整合...', 'warn');
+    if (typeof sendMessage === 'function') {
+      sendMessage('/integrate');
+    }
+  }
+
+  function ftelCmdKeyDown(e) {
+    if (e.key === 'Enter') {
+      const input = document.getElementById('ftel-cmd-input');
+      if (input && input.value.trim()) {
+        const cmd = input.value.trim();
+        input.value = '';
+        if (typeof sendMessage === 'function') {
+          sendMessage(cmd);
+        }
+        setConsoleStatus('命令执行中...', 'warn');
+      }
+    }
+  }
+
+  function setConsoleStatus(text, type) {
+    const el = document.getElementById('ftel-status');
+    if (el) {
+      el.textContent = text;
+      el.style.color = type === 'warn' ? 'var(--amber)' : type === 'error' ? 'var(--red)' : 'var(--txt2)';
+    }
+  }
+
+  function updateConsoleEntropy(val) {
+    const fill = document.getElementById('ftel-entropy-fill');
+    const valEl = document.getElementById('ftel-entropy-val');
+    if (fill) {
+      const pct = Math.min(100, val * 100);
+      fill.style.width = pct + '%';
+      fill.style.background = pct > 70 ? 'var(--red)' : pct > 40 ? 'var(--amber)' : 'var(--green)';
+    }
+    if (valEl) valEl.textContent = val.toFixed(2);
+    stnState.consoleEntropy = val;
+  }
+
+  function updateConsoleCTX(used, total) {
+    const fill = document.getElementById('ftel-ctx-fill');
+    const valEl = document.getElementById('ftel-ctx-val');
+    const pct = total > 0 ? (used / total * 100) : 0;
+    if (fill) fill.style.width = Math.min(100, pct) + '%';
+    if (valEl) valEl.textContent = Math.round(pct) + '%';
+    stnState.ctxUsage = pct;
+  }
+
+  // ─── STN 面板显示/隐藏 ───
+  function toggleSTNPanel(panel, btn) {
+    // 更新按钮状态
+    document.querySelectorAll('.stn-toggle-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    const forest = document.getElementById('forest-panel');
+    const dag = document.getElementById('dag-panel');
+    const console = document.getElementById('ftel-console');
+
+    if (panel === 'forest') {
+      if (forest) forest.classList.remove('hidden');
+      if (dag) dag.classList.add('hidden');
+      if (console) console.classList.add('hidden');
+    } else if (panel === 'dag') {
+      if (forest) forest.classList.add('hidden');
+      if (dag) dag.classList.remove('hidden');
+      if (console) console.classList.add('hidden');
+    } else if (panel === 'console') {
+      if (forest) forest.classList.add('hidden');
+      if (dag) dag.classList.add('hidden');
+      if (console) console.classList.remove('hidden');
+    }
+  }
+
+  // ─── 从现有对话数据构建森林树 ───
+  function buildForestFromHistory() {
+    // 从 appState.chatHistory 或 DOM 构建树结构
+    const history = (window.appState && appState.chatHistory) || [];
+    if (history.length === 0) {
+      // 尝试从 DOM 读取
+      const msgs = document.querySelectorAll('#history .msg, #ws-messages .ws-msg');
+      if (msgs.length === 0) return;
+      const nodes = [];
+      msgs.forEach((msg, i) => {
+        const isUser = msg.classList.contains('msg-user') || msg.classList.contains('ws-msg-user');
+        const textEl = msg.querySelector('.msg-text, .ws-msg-text') || msg;
+        const text = textEl.textContent || msg.textContent || '';
+        nodes.push({
+          id: 'node_' + i,
+          type: isUser ? 'Q' : 'A',
+          label: text.substring(0, 50),
+          text: text,
+          parent: i > 0 ? 'node_' + (i - 1) : null,
+          isFork: false
+        });
+      });
+      stnState.forestData = nodes;
+      if (nodes.length > 0) stnState.rootNodeId = nodes[0].id;
+      if (nodes.length > 0) stnState.activeNodeId = nodes[nodes.length - 1].id;
+    } else {
+      const nodes = [];
+      history.forEach((item, i) => {
+        const isUser = item.role === 'user';
+        nodes.push({
+          id: 'node_' + i,
+          type: isUser ? 'Q' : 'A',
+          label: (item.content || '').substring(0, 50),
+          text: item.content || '',
+          parent: i > 0 ? 'node_' + (i - 1) : null,
+          isFork: false
+        });
+      });
+      stnState.forestData = nodes;
+      if (nodes.length > 0) stnState.rootNodeId = nodes[0].id;
+      if (nodes.length > 0) stnState.activeNodeId = nodes[nodes.length - 1].id;
+    }
+    renderForestView();
+    updateOntoNav(stnState.forestData[0] && stnState.forestData[0].label);
+  }
+
+  // ─── 拦截现有 sendMessage 来更新森林 ───
+  const _origSendMessage = window.sendMessage;
+  window.sendMessage = function(text) {
+    if (typeof _origSendMessage === 'function') _origSendMessage(text);
+    // 延迟更新森林（等AI回复后）
+    setTimeout(buildForestFromHistory, 1000);
+  };
+
+  // ─── 初始化 ───
+  document.addEventListener('DOMContentLoaded', function() {
+    // 绑定工作区回车发送
+    const wsInput = document.getElementById('workspace-input');
+    if (wsInput) wsInput.addEventListener('keydown', wsInputKeyDown);
+
+    // 绑定控制台命令输入
+    const cmdInput = document.getElementById('ftel-cmd-input');
+    if (cmdInput) cmdInput.addEventListener('keydown', ftelCmdKeyDown);
+
+    // 初始渲染
+    setTimeout(buildForestFromHistory, 500);
+  });
+
+  // ─── 覆盖 updateDashboard 来同步控制台熵值 ───
+  const _origUpdateDashboard = window.updateDashboard;
+  window.updateDashboard = function(d) {
+    if (typeof _origUpdateDashboard === 'function') _origUpdateDashboard(d);
+    if (d && d.entropy !== undefined) {
+      updateConsoleEntropy(d.entropy);
+    }
+    if (d && d.ctx_usage !== undefined) {
+      updateConsoleCTX(d.ctx_usage.used || 0, d.ctx_usage.total || 100);
+    }
+  };
+
+  console.log('[STN] 苏格拉底拓扑网络 v1.0 已加载');
+  </script>
 
 </body>
 </html>
