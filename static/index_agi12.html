@@ -2037,6 +2037,83 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
   #forest-panel{display:none}
   #dag-panel{display:none}
 }
+/* ── 专家系统面板 ───────────────────────────────── */
+#expert-toggle-btn{
+  position:relative;padding:4px 12px;border:1px solid var(--acc);border-radius:6px;
+  background:transparent;color:var(--acc);font-size:12px;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;gap:4px;
+}
+#expert-toggle-btn:hover{background:var(--acc);color:#fff}
+#expert-toggle-btn .expert-badge{
+  display:none;width:18px;height:18px;border-radius:50%;font-size:10px;
+  background:var(--acc);color:#fff;align-items:center;justify-content:center;
+}
+#expert-toggle-btn.active{background:var(--acc);color:#fff}
+#expert-toggle-btn.active .expert-badge{display:flex}
+
+/* 专家模态框 */
+#expert-modal{
+  display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,.5);z-index:9000;
+}
+#expert-modal.open{display:flex}
+#expert-drawer{
+  position:absolute;right:0;top:0;width:420px;max-width:92vw;height:100%;
+  background:var(--bg0);border-left:1px solid var(--bdr);
+  display:flex;flex-direction:column;box-shadow:-4px 0 20px rgba(0,0,0,.3);
+  animation:slideInRight .25s ease;
+}
+@keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}
+#expert-drawer-header{
+  padding:16px 20px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;gap:12px;flex-shrink:0;
+}
+#expert-drawer-header h3{margin:0;font-size:16px;color:var(--txt)}
+#expert-close-btn{
+  margin-left:auto;background:none;border:none;color:var(--txt2);
+  font-size:20px;cursor:pointer;padding:0 4px;
+}
+#expert-close-btn:hover{color:var(--txt)}
+#expert-search{
+  margin:12px 20px;padding:8px 12px;border:1px solid var(--bdr);border-radius:6px;
+  background:var(--bg1);color:var(--txt);font-size:13px;width:calc(100% - 40px);
+  outline:none;
+}
+#expert-search:focus{border-color:var(--acc)}
+#expert-dept-filter{
+  margin:0 20px 12px;padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;
+  background:var(--bg1);color:var(--txt);font-size:12px;width:calc(100% - 40px);
+  outline:none;
+}
+#expert-list{
+  flex:1;overflow-y:auto;padding:0 12px 12px;
+}
+.expert-card{
+  padding:10px 14px;margin:4px 0;border-radius:8px;cursor:pointer;
+  border:1px solid transparent;transition:all .15s;
+}
+.expert-card:hover{background:var(--bg2);border-color:var(--bdr)}
+.expert-card.selected{background:rgba(99,102,241,.12);border-color:var(--acc)}
+.expert-card .ec-top{display:flex;align-items:center;gap:8px}
+.expert-card .ec-emoji{font-size:18px}
+.expert-card .ec-name{font-size:13px;font-weight:600;color:var(--txt)}
+.expert-card .ec-dept{
+  font-size:10px;padding:1px 6px;border-radius:4px;
+  background:var(--bg2);color:var(--txt2);
+}
+.expert-card .ec-desc{font-size:11px;color:var(--txt2);margin-top:4px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#expert-active-bar{
+  display:none;align-items:center;gap:8px;padding:6px 14px;
+  margin:0 0 8px;border-radius:6px;
+  background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.25);
+  font-size:12px;color:var(--acc);
+}
+#expert-active-bar .ea-clear{
+  margin-left:auto;background:none;border:1px solid rgba(99,102,241,.3);
+  color:var(--acc);padding:1px 8px;border-radius:4px;cursor:pointer;font-size:10px;
+}
+#expert-active-bar .ea-clear:hover{background:rgba(99,102,241,.2)}
 </style>
 </head>
 <body>
@@ -2070,6 +2147,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         <button class="mode-btn active" data-mode="chat">对话模式</button>
         <button class="mode-btn" data-mode="goal">Goal模式</button>
       </div>
+      <button id="expert-toggle-btn" onclick="toggleExpertModal()" data-hint="选择专家人格（216位AI专家）">
+        <span class="expert-badge" id="expert-badge-icon"></span>
+        &#129302; 专家
+      </button>
       <button class="btn-reset" id="btn-reset">&#8634; 重置</button>
     </div>
   </div>
@@ -7782,7 +7863,7 @@ async function doMainChat(message) {
     const res = await fetch('/api/chat_v2', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message, session_id: STATE.session_id })
+      body: JSON.stringify({ message, session_id: STATE.session_id, expert_id: STATE.expert_id || null })
     });
     
     if (!res.ok) {
@@ -13207,6 +13288,187 @@ console.log('[STN] 苏格拉底拓扑网络 Phase 1 辅助函数已加载');
 </div>
 
   <script src="chen_test_mode.js"></script>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       专家系统 JS (Expert System) — 216位AI专家注册表
+       ════════════════════════════════════════════════════════════════ -->
+  <script>
+  (function() {
+    'use strict';
+    // STATE 扩展
+    STATE.expert_id = null;       // 当前选中专家ID
+    STATE.experts_all = [];       // 全部专家列表缓存
+    STATE.experts_loaded = false; // 是否已加载
+
+    // ── 模态框开关 ──
+    window.toggleExpertModal = function() {
+      const modal = document.getElementById('expert-modal');
+      const isOpen = modal.classList.toggle('open');
+      if (isOpen && !STATE.experts_loaded) {
+        loadExperts();
+      }
+    };
+
+    // 点击遮罩关闭
+    document.addEventListener('click', function(e) {
+      if (e.target.id === 'expert-modal') {
+        document.getElementById('expert-modal').classList.remove('open');
+      }
+    });
+
+    // ── 加载专家列表 ──
+    async function loadExperts() {
+      try {
+        const res = await fetch('/api/experts');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        STATE.experts_all = data.experts || [];
+        STATE.experts_loaded = true;
+        document.getElementById('expert-count-label').textContent = data.total + ' 位专家';
+        // 填充部门筛选器
+        populateDeptFilter();
+        renderExperts(STATE.experts_all);
+      } catch (err) {
+        console.error('[ExpertSystem] 加载失败:', err);
+        document.getElementById('expert-list').innerHTML =
+          '<div style="padding:20px;text-align:center;color:var(--red)">专家列表加载失败: ' + err.message + '</div>';
+      }
+    }
+
+    // ── 部门筛选器 ──
+    function populateDeptFilter() {
+      const select = document.getElementById('expert-dept-filter');
+      const depts = {};
+      STATE.experts_all.forEach(function(e) {
+        depts[e.department] = (depts[e.department] || 0) + 1;
+      });
+      Object.keys(depts).sort().forEach(function(dept) {
+        const opt = document.createElement('option');
+        opt.value = dept;
+        opt.textContent = dept + ' (' + depts[dept] + ')';
+        select.appendChild(opt);
+      });
+    }
+
+    // ── 渲染专家卡片 ──
+    function renderExperts(experts) {
+      const list = document.getElementById('expert-list');
+      if (experts.length === 0) {
+        list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--txt2)">无匹配专家</div>';
+        return;
+      }
+      // 最多显示50个
+      const show = experts.slice(0, 50);
+      list.innerHTML = show.map(function(e) {
+        const sel = STATE.expert_id === e.id ? ' selected' : '';
+        return '<div class="expert-card' + sel + '" data-id="' + e.id + '" onclick="selectExpert(\'' + e.id + '\')">' +
+          '<div class="ec-top">' +
+            '<span class="ec-emoji">' + (e.emoji || '') + '</span>' +
+            '<span class="ec-name">' + escHtml(e.name) + '</span>' +
+            '<span class="ec-dept">' + escHtml(e.department) + '</span>' +
+          '</div>' +
+          '<div class="ec-desc">' + escHtml(e.description || '') + '</div>' +
+        '</div>';
+      }).join('') + (experts.length > 50 ? '<div style="padding:10px;text-align:center;color:var(--txt2);font-size:11px">还有 ' + (experts.length - 50) + ' 位专家未显示，请缩小搜索范围</div>' : '');
+    }
+
+    function escHtml(s) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    // ── 搜索 + 筛选 ──
+    window.filterExperts = function() {
+      if (!STATE.experts_loaded) return;
+      const q = (document.getElementById('expert-search').value || '').trim().toLowerCase();
+      const dept = document.getElementById('expert-dept-filter').value;
+      let filtered = STATE.experts_all;
+      if (dept) {
+        filtered = filtered.filter(function(e) { return e.department === dept; });
+      }
+      if (q) {
+        filtered = filtered.filter(function(e) {
+          return (e.name + ' ' + e.description + ' ' + (e.tags || []).join(' ')).toLowerCase().indexOf(q) !== -1;
+        });
+      }
+      renderExperts(filtered);
+    };
+
+    // ── 选择专家 ──
+    window.selectExpert = function(id) {
+      const btn = document.getElementById('expert-toggle-btn');
+      if (STATE.expert_id === id) {
+        // 取消选择
+        STATE.expert_id = null;
+        btn.classList.remove('active');
+        document.getElementById('expert-badge-icon').textContent = '';
+        updateActiveBar();
+      } else {
+        STATE.expert_id = id;
+        const expert = STATE.experts_all.find(function(e) { return e.id === id; });
+        if (expert) {
+          btn.classList.add('active');
+          document.getElementById('expert-badge-icon').textContent = expert.emoji || '';
+        }
+        updateActiveBar();
+      }
+      // 更新选中高亮
+      document.querySelectorAll('.expert-card').forEach(function(card) {
+        card.classList.toggle('selected', card.dataset.id === STATE.expert_id);
+      });
+      // 关闭模态框
+      document.getElementById('expert-modal').classList.remove('open');
+    };
+
+    // ── 更新输入区激活指示条 ──
+    function updateActiveBar() {
+      const inputChat = document.getElementById('input-chat');
+      let bar = document.getElementById('expert-active-bar');
+      if (STATE.expert_id) {
+        const expert = STATE.experts_all.find(function(e) { return e.id === STATE.expert_id; });
+        if (!bar) {
+          bar = document.createElement('div');
+          bar.id = 'expert-active-bar';
+          const textarea = document.getElementById('main-input2');
+          if (textarea) textarea.parentNode.insertBefore(bar, textarea);
+        }
+        bar.style.display = 'flex';
+        bar.innerHTML = '<span>' + (expert ? expert.emoji + ' ' : '') + '专家模式: ' +
+          (expert ? escHtml(expert.name) : STATE.expert_id) + '</span>' +
+          '<button class="ea-clear" onclick="clearExpert()">清除</button>';
+      } else if (bar) {
+        bar.style.display = 'none';
+      }
+    }
+
+    window.clearExpert = function() {
+      STATE.expert_id = null;
+      document.getElementById('expert-toggle-btn').classList.remove('active');
+      document.getElementById('expert-badge-icon').textContent = '';
+      updateActiveBar();
+    };
+  })();
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       专家系统模态框 (Expert Panel) — 216位AI专家
+   ════════════════════════════════════════════════════════════════ -->
+  <div id="expert-modal">
+    <div id="expert-drawer">
+      <div id="expert-drawer-header">
+        <span style="font-size:20px">&#129302;</span>
+        <h3>专家系统</h3>
+        <span style="font-size:11px;color:var(--txt2)" id="expert-count-label">加载中...</span>
+        <button id="expert-close-btn" onclick="toggleExpertModal()">&times;</button>
+      </div>
+      <input type="text" id="expert-search" placeholder="搜索专家（名称/技能/领域）..." oninput="filterExperts()">
+      <select id="expert-dept-filter" onchange="filterExperts()">
+        <option value="">全部部门</option>
+      </select>
+      <div id="expert-list"></div>
+    </div>
+  </div>
 
   <!-- ═══════════════════════════════════════════════════════════════
        全局浮层：本体导航 (Ontology Navigator) — L1本体层

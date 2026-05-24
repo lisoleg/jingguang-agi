@@ -1,11 +1,11 @@
 # Taiyi-AGI (太乙因果机) 12.0 系统设计文档
-## 基于复合体理学(Taiyi-AGI)的AGI架构（v7.6.0 - 111模块）
+## 基于复合体理学(Taiyi-AGI)的AGI架构（v7.21 - 179模块）
 
-> **文档版本**: v7.6.0
-> **最后更新**: 2026-05-20
+> **文档版本**: v7.21
+> **最后更新**: 2026-05-24
 > **作者**: Taiyi-AGI研究团队 · 净光哥
 > **项目**: Taiyi-AGI系统 - 复合体理学v4.0版
-> **版本**: 7.6.0 (111模块8层架构·78定理·22预言)
+> **版本**: 7.21 (179模块9层架构·170定理·40预言·216专家)
 
 ---
 
@@ -1521,4 +1521,71 @@ Taiyi-AGI = **IAWW介质在人工系统中的工程化实现**
 - **定理总数**: 40个 (T1-T40)
 - **层次数**: 8层
 - **理论框架**: 复合体理学 v4.0
+
+---
+
+## v7.21 更新：专家系统 + TYIDO MVE实验框架 + 爱因斯坦因果性 (2026-05-24)
+
+### 新增：216位AI专家系统
+
+**来源**: [agency-agents-zh](https://github.com/jnMetaCode/agency-agents-zh) — 23部门216位中文AI专家人格
+
+**架构**:
+
+```python
+# expert_registry.py — ExpertRegistry单例
+class ExpertRegistry:
+    def list_experts(department=None) -> List[Expert]  # 按部门筛选
+    def get_expert(expert_id: str) -> Expert            # 获取专家详情
+    def search(query: str, limit=20) -> List[Expert]    # 关键词搜索
+    def list_departments() -> List[Dict]                # 23个部门
+    def get_system_prompt(expert_id: str) -> str        # 获取system_prompt
+```
+
+**专家ID格式**: `{department}-{filename}`，例如 `engineering-ai-engineer`
+
+**人格注入机制**: 当chat_v2请求携带`expert_id`时，专家的`system_prompt`**替换**整个基础system prompt（非追加），确保专家人格主导响应。
+
+**23个部门**: academic(6), engineering(35), marketing(36), specialized(46), testing(9), design(8), finance(8), sales(8), paid-media(7), support(7), project-management(6), spatial-computing(6), game-development(5), product(5), supply-chain(4), unity(4), unreal-engine(4), godot(3), roblox-studio(3), hr(2), legal(2), blender(1), mcp-memory(1)
+
+**API端点**:
+
+| 端点 | 方法 | 功能 |
+|------|------|------|
+| `/api/experts` | GET | 列出所有专家（支持`?department=`筛选） |
+| `/api/experts/<expert_id>` | GET | 专家详情（含完整system_prompt） |
+| `/api/experts/search?q=keyword` | GET | 搜索专家 |
+| `/api/experts/departments` | GET | 列出部门及专家数 |
+
+### 新增：TYIDO MVE实验框架 (P1-P6)
+
+**文件**: `TYIDO_MVE_Experiments.py` (~1500行)
+
+| 实验 | 验证属性 | 核心指标 | 结果 |
+|------|---------|---------|------|
+| P1 | 一致性(锯齿检测) | J(R)=1.0000, sawtooth_detected=True | ✅ PASS |
+| P2 | 持续学习 | 0.00% forgetting_rate, 10/10 tasks | ✅ PASS |
+| P3 | 长程推理 | 94.55% completion (52/55 goals) | ✅ PASS |
+| P4 | 可寻址记忆 | 100% exact_query_accuracy | ✅ PASS |
+| P5 | 可锚定责任 | 100% traceability, CircuitBreaker OPEN | ✅ PASS |
+| P6 | 爱因斯坦因果性 | 100% causal_consistency, 100% lorentz_invariance | ✅ PASS |
+
+**P6 Minkowski时空验证**（真实物理验证，非图论自证）:
+- Minkowski度规: ds²=-dt²+dx²+dy² (c=1自然单位制)
+- 光锥分类: 类时(ds²<0因果可达)/类光(ds²=0)/类空(ds²>0禁止因果)
+- 30个Minkowski事件 + 185条因果边(光锥内) + 250个类空对(光锥外)
+- 注入测试: 8条故意类空因果边 → 100%检出 + CausalityViolationError
+- 洛伦兹boost不变性: 15对事件 x 随机β∈[-0.8,0.8]，ds²变换后完全不变
+
+**MVE API端点**: `/api/v721/mve/{all|p1|p2|p3|p4|p5|p6|state}`
+
+### 系统状态
+
+- **版本**: v7.21
+- **模块总数**: 179个
+- **定理总数**: 170个 (T1-T170)
+- **预言总数**: 40个 (P1-P40)
+- **层次数**: 9层
+- **专家数**: 216位（23部门）
+- **理论框架**: 复合体理学 v4.0 + TY/IDO + 爱因斯坦因果性
 

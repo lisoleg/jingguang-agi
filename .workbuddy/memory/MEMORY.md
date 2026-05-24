@@ -38,11 +38,13 @@
 ## API版本模式
 - `/api/v719/*`: v7.19（组织记忆·Φ场预算·AgentOS）| `/api/v718/*`: v7.18（沙箱增强·安全护盾）| `/api/v717/*`: v7.17（λ宇宙·TY形式化·UFM-RISC-V具身架构）| `/api/v716/*`: v7.16 | `/api/v715/*`: v7.15 | `/api/v714/*`: v7.14
 - `/api/chat_v2`: 主对话 | `/api/goal`: 目标模式
+- `/api/experts`: 专家系统（216位AI专家人格）| `/api/experts/search?q=` | `/api/experts/<id>` | `/api/experts/departments`
 
 ## 核心模块文件
 - `CompositeAGI_V2.py`: 主核心（v5.0+）
 - `HolographicDiscreteGovernance.py`: M29 全息离散治理
 - `M176-M178_*.py`: v7.19（组织记忆·Φ场预算·AgentOS）| `M174-M175_*.py`: v7.18（沙箱增强·安全护盾）| `M171-M173_*.py`: v7.17 | `M163-M170_*.py`: v7.16 | `M157-M162_*.py`: v7.15
+- `expert_registry.py`: 216位AI专家注册表（agency-agents-zh），ExpertRegistry单例 + 搜索/部门过滤
 
 ## v7.19 GC代币体系
 - M176: GC账本在OrgMemoryEngine中，每个Agent初始1000 GC，翻车扣罚
@@ -60,6 +62,7 @@
 - **M130 感知谱分解面板** ✅: L1-L5五层架构条 + 卷积核5×5 + PCA主因子 + 流贯帧率 + 对偶指示器
 - **M178 Agent行为分析面板** ✅: Agentic RL白盒化——工具调用分布 + 推理轨迹 + GC消耗Canvas图 + 奖励信号
 - **v7.20 太一接口面板** ✅: 意识状态/本征值α/三视界一致性/熵韧性/僵化等级/ICE
+- **专家系统面板** ✅: 右侧抽屉模态框 + 搜索 + 部门筛选 + 选择高亮 + 输入区激活条
 
 ## 重要Bug记录（精简）
 - `_to_native` float转换：需检查imag!=0

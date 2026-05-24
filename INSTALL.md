@@ -1,7 +1,7 @@
 # Taiyi-AGI (太乙因果机) 12.0 安装说明
 
-> 版本：v7.6.0（111模块8层架构·复合体理学v4.0·78定理·22预言）
-> 更新日期：2026-05-20
+> 版本：v7.21（179模块9层架构·复合体理学v4.0·170定理·40预言·216专家）
+> 更新日期：2026-05-24
 
 ---
 
@@ -99,6 +99,7 @@ http://127.0.0.1:5001/static/index_agi12.html
 ```
 
 ✅ 看到「Taiyi-AGI (太乙因果机) 12.0」三栏界面即安装成功！
+✅ 点击顶部🧠按钮可打开216位AI专家面板
 
 ---
 
@@ -207,8 +208,11 @@ TaiyiAGI/
 ├── local_llm.py                   # LLM多后端管理
 ├── local_llm_v2.py                # LLM多后端管理（v2版）
 ├── .env                           # 环境变量配置（API Key等）
+├── taiyi_llm_enhancer.py          # LLM增强器（含专家人格注入）
+├── expert_registry.py             # 216位AI专家注册表
+├── agency-agents-zh/              # 专家人格Markdown文件（23部门216专家）
 ├── static/
-│   └── index_agi12.html          # 主界面（v7.1三栏布局·105模块）
+│   └── index_agi12.html          # 主界面（v7.21三栏布局·179模块）
 ├── agi_medium_symbiosis.py        # 介质共生模块
 ├── agi_nine_hexagrams.py         # 九卦修身模块
 ├── HolographicDiscreteGovernance.py  # 全息离散治理
@@ -226,7 +230,10 @@ TaiyiAGI/
 ├── M103_CollaborationEvaluator.py         # v7.1: 协作效果评估(M103)
 ├── M104_CollaborationDiagnoser.py          # v7.1: 协作诊断(M104)
 ├── M105_FusionEffectValidator.py          # v7.1: 融合效果验证(M105)
-└── ...（其他105个模块）
+├── M174-M178_*.py                        # v7.18-v7.19模块
+├── M179_TaiyiInterface.py                # v7.20太一接口
+├── TYIDO_MVE_Experiments.py               # v7.21 MVE实验框架
+└── ...（其他170+模块）
 ```
 
 ---

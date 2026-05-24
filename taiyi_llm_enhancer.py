@@ -534,8 +534,17 @@ class TaiyiLLMEnhancer:
                             knowledge_context: str = "",
                             memory_context: str = "",
                             user_preference: Dict = None,
-                            enable_tool: bool = False) -> str:  # 新增参数
+                            enable_tool: bool = False,
+                            expert_prompt: str = None) -> str:  # 新增 expert_prompt
         """构建系统提示"""
+        # 如果是专家模式，直接返回专家专用 system prompt（替换整个基础 prompt）
+        if expert_prompt:
+            # 如果有工具定义，追加到专家 prompt 末尾
+            tool_def = ""
+            if enable_tool:
+                tool_def = self._build_tool_definitions()
+            return expert_prompt + "\n\n" + tool_def
+        
         # 获取用户偏好
         tone = "专业"
         if user_preference:
@@ -549,32 +558,41 @@ class TaiyiLLMEnhancer:
         }
         tone_req = tone_requirements.get(tone, tone_requirements["专业"])
         
-        # 工具定义（新增）
+        # 工具定义
         tool_def = ""
         if enable_tool:
-            tool_def = "\n\n【可用工具】（前五识 - Indriya）\n"
-            tool_def += "你可以使用以下工具来帮助回答问题：\n"
-            for tool in self.tool_engine.get_tool_definitions():
-                params = ", ".join([f"{p['name']}: {p['type']}" for p in tool.get("parameters", {}).get("properties", {}).values()])
-                tool_def += f"- {tool['name']}: {tool['description']} (参数: {params})\n"
-            tool_def += "\n当需要使用工具时，请在回复末尾添加以下格式的工具调用：\n"
-            tool_def += "```json\n{\"tool\": \"工具名称\", \"args\": {\"参数名\": \"参数值\"}}\n```"
+            tool_def = self._build_tool_definitions()
         
         # 选择提示模板
         if knowledge_context and self.enable_rag:
             return SYSTEM_PROMPT_RAG.format(
-                knowledge_context=knowledge_context[:1200],  # 限制长度（原2000→1200，防止input length）
+                knowledge_context=knowledge_context[:1200],
                 memory_context=memory_context[:600] if memory_context else "无相关记忆",
                 tone_requirement=tone_req
             ) + tool_def
         elif memory_context and self.enable_memory:
             return SYSTEM_PROMPT_WITH_MEMORY.format(
-                memory_context=memory_context[:800],  # 原1500→800
+                memory_context=memory_context[:800],
                 tone_requirement=tone_req
             ) + tool_def
         else:
             return SYSTEM_PROMPT_BASE + tool_def
-    
+
+    def _build_tool_definitions(self) -> str:
+        """构建前五识工具定义文本"""
+        if not self.enable_tool:
+            return ""
+        tool_def = "\n\n【可用工具】（前五识 - Indriya）\n"
+        tool_def += "你可以使用以下工具来帮助回答问题：\n"
+        try:
+            for tool in self.tool_engine.get_tool_definitions():
+                params = ", ".join([f"{p['name']}: {p['type']}" for p in tool.get("parameters", {}).get("properties", {}).values()])
+                tool_def += f"- {tool['name']}: {tool['description']} (参数: {params})\n"
+        except Exception:
+            pass
+        tool_def += "\n当需要使用工具时，请在回复末尾添加以下格式的工具调用：\n"
+        tool_def += "```json\n{\"tool\": \"工具名称\", \"args\": {\"参数名\": \"参数值\"}}\n```"
+        return tool_def
     def _retrieve_knowledge(self, question: str) -> str:
         """检索相关知识"""
         if not self.enable_rag:
@@ -632,7 +650,8 @@ class TaiyiLLMEnhancer:
                 stream_callback: callable = None,  # 新增：流式输出回调
                 temperature: float = 0.7,
                 enable_tool_call: bool = True,
-                image_base64: str = None) -> TaiyiResponse:  # 新增：图片支持
+                image_base64: str = None,  # 新增：图片支持
+                expert_id: str = None) -> TaiyiResponse:  # 新增：专家ID
         """
         生成增强回复
         
@@ -709,12 +728,24 @@ class TaiyiLLMEnhancer:
             self.stats["rag_hits"] += 1
         if memory_context:
             self.stats["memory_hits"] += 1
-        # Step 3: 构建提示
+        # Step 3: 构建提示（支持专家模式）
+        expert_prompt = None
+        if expert_id:
+            try:
+                from expert_registry import get_registry
+                reg = get_registry()
+                expert_prompt = reg.get_system_prompt(expert_id)
+                if expert_prompt:
+                    print(f"🧠 专家模式: {expert_id}")
+            except Exception as e:
+                print(f"⚠️ 专家加载失败({expert_id}): {e}")
+        
         system_prompt = self._build_system_prompt(
             knowledge_context=knowledge_context,
             memory_context=memory_context,
             user_preference=None,
-            enable_tool=use_tool  # 新增：传递工具启用状态
+            enable_tool=use_tool,
+            expert_prompt=expert_prompt
         )
         user_prompt = self._build_user_prompt(question, knowledge_context, enable_tool=use_tool)
 

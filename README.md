@@ -1,16 +1,16 @@
 # Taiyi-AGI (太乙因果机) 12.0 · 净光哥
 
-> **项目名**: Taiyi-AGI (太乙因果机) · **净光哥** v7.6.0
-> **版本**: v7.6.0 (111模块 / 8层架构)
-> **核心理论**: 复合体理学 v4.0 + HoTT高阶逻辑 + EML算子 + 全息离散治理 + 流贯学
-> **最后更新**: 2026-05-20
+> **项目名**: Taiyi-AGI (太乙因果机) · **净光哥** v7.21
+> **版本**: v7.21 (179模块 / 9层架构 / 170定理 / 40预言)
+> **核心理论**: 复合体理学 v4.0 + HoTT高阶逻辑 + EML算子 + 全息离散治理 + 流贯学 + TY/IDO框架 + 爱因斯坦因果性
+> **最后更新**: 2026-05-24
 > **作者**: 高见远 (JianYuan Gao)
 
 ---
 
 ## 项目简介
 
-**Taiyi-AGI (太乙因果机) 12.0 · 净光哥** 是基于复合体理学的完整AGI/ASI系统实现。项目从v4.2（29模块）逐步演化至v7.6（111模块），整合了：
+**Taiyi-AGI (太乙因果机) 12.0 · 净光哥** 是基于复合体理学的完整AGI/ASI系统实现。项目从v4.2（29模块）逐步演化至v7.21（179模块），整合了：
 
 - **复合体理学四重理论基石**: 刘原理、三视界法、太乙预言机、全息拓扑动力学
 - **HoTT高阶逻辑**: Univalence公理、Pi-Type/Sigma-Type重构、范畴论融合
@@ -25,12 +25,15 @@
 - **HoTT截面搜索**: 类型空间构造+曲率收敛+Wait诚实拒绝
 - **Ftel目的约束**: S_total=S_data+λ·V_ftel(ψ,φ_goal)+认知递归动力学+层间保真度
 - **八大论文启发**: v6.1（5篇）+ v6.2（8篇）+ v7.0（5篇）+ v7.1（4篇）→ 22篇新论文核心概念
+- **TY/IDO框架**: 一致性(P1)+持续学习(P2)+长程推理(P3)+可寻址记忆(P4)+可锚定责任(P5) 73/73 PASS
+- **爱因斯坦因果性(P6)**: Minkowski时空验证+洛伦兹不变性+光锥分类 6/6 ALL PASSED
+- **216位AI专家系统**: agency-agents-zh集成，23部门专家人格注入，对话即时切换
 
 ---
 
 ## 核心特性
 
-### 🌀 系统架构 (111模块 / 8层)
+### 🌀 系统架构 (179模块 / 9层)
 
 ```
 L1 本体层:     M1(三视界) M2(自我意识) M12(Φ场) M84(刘原理) M93(范畴演化)
@@ -181,30 +184,21 @@ jingguang-agi/
 ├── app.py                          # 主服务（端口5001）
 ├── app_mindmap_v2.py              # 脑图服务（端口5003）
 ├── local_llm.py                   # LLM多后端管理
+├── taiyi_llm_enhancer.py          # LLM增强器（含专家人格注入）
+├── expert_registry.py             # 216位AI专家注册表
+├── agency-agents-zh/              # 专家人格Markdown文件（23部门216专家）
 ├── static/
-│   └── index_agi12.html          # 主界面（v6.3三栏布局·82模块）
-├── CompositeAGI_V2.py        # 主系统类（82模块）
+│   └── index_agi12.html          # 主界面（v7.21三栏布局·179模块）
+├── CompositeAGI_V2.py        # 主系统类
 ├── HolographicDiscreteGovernance.py  # 全息离散治理（M29）
-├── M71_WalletPropertyBoundaryManager.py    # 钱包属性边界(M71)
-├── M73_SelfReferentialPhiDetector.py        # 自指Φ值检测(M73)
-├── M74_CarbonSiliconEntropyContract.py      # 碳硅熵合约(M74)
-├── M76_FiveElementTransformEngine.py         # 五行变换引擎(M76)
-├── M77_EMLPhaseCouplingZ5.py               # EML相位耦合ℤ₅(M77)
-├── M78_HoTTReasoningEngine.py              # HoTT推理引擎(M78)
-├── M79_ConstructiveAGICore.py               # 构造型AGI内核(M79)
-├── M81_HigherOrderLogicReconstructor.py    # 高阶逻辑重构器(M81)
-├── M84_LiuPrincipleFixedPoint.py            # 刘原理不动点(M84)
-├── M88_TypeCheckFirewall.py                 # 类型检查防火墙(M88)
-├── M90_SemanticManifoldCurvature.py        # 语义流形曲率(M90)
-├── M91_UnivalenceEquivalenceChecker.py     # Univalence等价检查(M91)
-├── M95_ConstructiveAGIEvaluator.py        # 构造型AGI评估(M95)
-├── ...（其他82个核心模块）
-├── DESIGN.md                            # 系统设计文档（82模块详解）
+├── TYIDO_MVE_Experiments.py       # TYIDO MVE实验框架（P1-P6）
+├── M174-M178_*.py                # v7.18-v7.19模块
+├── M179_TaiyiInterface.py         # v7.20太一接口
+├── ...（其他170+核心模块）
+├── DESIGN.md                            # 系统设计文档
 ├── USER_GUIDE.md                       # 用户使用说明书
 ├── INSTALL.md                          # 安装说明
-├── AGI_v6.1_Theory_Upgrade.md         # v6.1理论升级报告
-├── AGI_6.2_Upgrade_Plan.md            # v6.2升级方案
-├── AGI_v7.0_Falsifiable_Experiments.md  # v7.0可证伪实验方案
+├── 太乙AGI的设计与实现_完整学术论文.md  # 完整学术论文
 └── requirements.txt
 ```
 
@@ -396,7 +390,16 @@ POST /api/cognition/test
 | `/api/v71/collaboration/diagnose` | POST | 协作诊断 | T49 |
 | `/api/v71/fusion/validate` | POST | 融合效果验证 | T50 |
 
-### v7.3-v7.6 API端点
+### 专家系统API端点（v7.21新增）
+
+| 端点 | 方法 | 功能 |
+|------|------|------|
+| `/api/experts` | GET | 列出所有216位专家（支持`?department=`筛选） |
+| `/api/experts/<expert_id>` | GET | 专家详情（含完整system_prompt） |
+| `/api/experts/search?q=keyword` | GET | 搜索专家 |
+| `/api/experts/departments` | GET | 列出23个部门及专家数 |
+
+### v7.21 MVE实验API端点
 
 | 端点 | 方法 | 功能 | 版本 |
 |------|------|------|------|
@@ -459,7 +462,35 @@ POST /api/cognition/test
 
 ## 更新日志
 
-### v7.6.0 (2026-05-20) - 🚀 最新版本
+### v7.21 (2026-05-24) - 🚀 最新版本
+
+**新增**:
+- ✅ TYIDO MVE实验框架：P1锯齿检测+P2持续学习+P3长程推理+P4可寻址记忆+P5可锚定责任+P6爱因斯坦因果性
+- ✅ 6/6 ALL PASSED — P6 Minkowski时空验证(100%因果一致性+100%洛伦兹不变性)
+- ✅ 216位AI专家系统（agency-agents-zh集成，23部门，专家人格注入对话）
+- ✅ 170个核心定理（T1-T170）完整证明体系
+- ✅ 40个可证伪预言（P1-P40）完整实验方案
+- ✅ 学术论文已同步更新至v7.21（3658行，179模块/170定理/40预言）
+
+**核心升级**:
+- 专家系统：ExpertRegistry单例 + YAML frontmatter解析 + 专家system_prompt替换 + 前端抽屉面板
+- P6爱因斯坦因果性：Minkowski度规 ds²=-dt²+dx²+dy² + 光锥分类(类时/类光/类空) + 洛伦兹boost不变性
+- 前端：MVE面板(7按钮+PASS/FAIL徽章+P6光锥Canvas) + 专家系统面板(搜索+部门筛选+激活指示条)
+
+### v7.20 (2026-05-23)
+
+**新增**:
+- ✅ M179 TaiyiInterface: 自指算子Ŝ|Φ⟩=α|Φ⟩ + ICE复合体 + 三视界校验 + 信息熵韧性 + 反僵化
+- ✅ TY/IDO五大属性审计 73/73 PASS
+- ✅ T166-T170 五大核心定理
+
+### v7.19 (2026-05-22)
+
+**新增**:
+- ✅ M176 OrgMemoryEngine: 双层存储+失败案例库+定理提炼+GC账本
+- ✅ M177 PhiBudgetSystem: 四级Φ场预算+生存焦虑指数
+- ✅ M178 TaiyiAgentOS: Agent注册表+消息总线+推理内核+工作流DAG
+- ✅ T157-T165 定理
 
 **新增**:
 - ✅ M117-M119 (3个新模块，Ftel目的约束+认知递归动力学+层间保真度)
@@ -563,11 +594,11 @@ POST /api/cognition/test
 
 | 文档 | 内容 |
 |------|------|
-| `DESIGN.md` | 系统设计文档（111模块详解、78定理、API设计） |
+| `DESIGN.md` | 系统设计文档（179模块详解、170定理、API设计） |
 | `USER_GUIDE.md` | 用户使用说明书（快速开始、核心概念、基本使用） |
 | `INSTALL.md` | 安装说明（环境要求、快速安装、Docker部署） |
-| `太乙AGI的设计与实现_完整学术论文.md` | 完整学术论文（形式化方法、定理证明、参考文献） |
-| `AGI_v7.0_Falsifiable_Experiments.md` | v7.0可证伪预言实验方案（P1-P18完整） |
+| `太乙AGI的设计与实现_完整学术论文.md` | 完整学术论文（3658行，179模块/170定理/40预言） |
+| `AGI_v7.0_Falsifiable_Experiments.md` | v7.0可证伪预言实验方案（P1-P40完整） |
 
 ---
 
@@ -587,4 +618,4 @@ MIT License
 ---
 
 *让AGI成为真正的智能伙伴——简单、可信、透明、高效。*  
-*Taiyi-AGI (太乙因果机) 12.0 - 111模块太乙AGI系统，基于复合体理学(Taiyi-AGI)数学完备化理论，78定理+22预言。*
+*Taiyi-AGI (太乙因果机) 12.0 - 179模块太乙AGI系统，基于复合体理学(Taiyi-AGI)数学完备化理论，170定理+40预言+216专家。*

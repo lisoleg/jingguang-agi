@@ -665,6 +665,7 @@ def chat_v2():
 
         message = data.get('message', '').strip()
         session_id = data.get('session_id')
+        expert_id = data.get('expert_id', '').strip() or None  # 新增：专家ID
         if not message:
             return jsonify({'error': '消息不能为空'}), 400
 
@@ -685,7 +686,8 @@ def chat_v2():
             llm_response = enhancer.generate(
                 question=message,
                 reasoning_mode=ReasoningMode.TAIYI,
-                use_taiyi_format=True
+                use_taiyi_format=True,
+                expert_id=expert_id,  # 新增：传入专家ID
             )
             if llm_response and llm_response.content:
                 reply = llm_response.content
@@ -10776,11 +10778,118 @@ def v717_state():
         return jsonify({'error': str(e)}), 500
 
 
+# ==================== 专家系统 API（agency-agents-zh 215位专家）====================
+
+# 懒加载全局注册表
+_expert_registry = None
+_expert_registry_lock = threading.Lock()
+
+def get_expert_registry() -> 'ExpertRegistry':
+    """获取全局 ExpertRegistry 单例（懒加载）"""
+    global _expert_registry
+    if _expert_registry is None:
+        with _expert_registry_lock:
+            if _expert_registry is None:
+                try:
+                    from expert_registry import get_registry
+                    _expert_registry = get_registry()
+                except Exception as e:
+                    print(f"⚠️ 专家注册表加载失败: {e}")
+                    _expert_registry = None
+    return _expert_registry
+
+
+@app.route('/api/experts', methods=['GET'])
+def list_experts():
+    """
+    列出所有专家摘要（不含 system_prompt 全文）
+    参数: department (可选) — 按部门过滤
+    """
+    department = request.args.get('department', '').strip()
+    try:
+        reg = get_expert_registry()
+        if reg is None:
+            return jsonify({'error': '专家系统未加载', 'experts': []}), 500
+        result = reg.list_experts(department=department or None)
+        return jsonify({
+            'total': len(result),
+            'department': department or 'all',
+            'experts': result
+        })
+    except Exception as e:
+        return jsonify({'error': str(e), 'experts': []}), 500
+
+
+@app.route('/api/experts/<expert_id>', methods=['GET'])
+def get_expert_detail(expert_id):
+    """
+    获取单个专家的完整详情（含 system_prompt）
+    """
+    try:
+        reg = get_expert_registry()
+        if reg is None:
+            return jsonify({'error': '专家系统未加载'}), 500
+        expert = reg.get_expert(expert_id)
+        if not expert:
+            return jsonify({'error': f'专家不存在: {expert_id}'}), 404
+        return jsonify(expert.to_detail_dict())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/experts/search', methods=['GET'])
+def search_experts():
+    """
+    搜索专家
+    参数: q — 搜索关键词
+          limit (可选) — 最多返回数量，默认 20
+    """
+    query = request.args.get('q', '').strip()
+    if not query:
+        return jsonify({'error': '请提供搜索关键词 q', 'results': []}), 400
+    try:
+        limit = min(int(request.args.get('limit', 20)), 50)
+    except ValueError:
+        limit = 20
+    try:
+        reg = get_expert_registry()
+        if reg is None:
+            return jsonify({'error': '专家系统未加载', 'results': []}), 500
+        results = reg.search(query, limit=limit)
+        return jsonify({
+            'query': query,
+            'total': len(results),
+            'results': results
+        })
+    except Exception as e:
+        return jsonify({'error': str(e), 'results': []}), 500
+
+
+@app.route('/api/experts/departments', methods=['GET'])
+def list_expert_departments():
+    """列出所有部门及专家数量"""
+    try:
+        reg = get_expert_registry()
+        if reg is None:
+            return jsonify({'error': '专家系统未加载', 'departments': {}}), 500
+        return jsonify({'departments': reg.list_departments()})
+    except Exception as e:
+        return jsonify({'error': str(e), 'departments': {}}), 500
+
+
+# ==================== 以下为主程序入口 ====================
+
 if __name__ == '__main__':
     print("=" * 60)
     print("🌌 统一太乙系统 Web 服务 (Phase 2 具身+心架构)")
     print("   前端: http://localhost:5000")
     print("   API:  http://localhost:5000/api/chat")
+    print("   专家系统 API:")
+    print("   - /api/experts                    (列出所有专家)")
+    print("   - /api/experts?department=engineering  (按部门过滤)")
+    print("   - /api/experts/<expert_id>        (专家详情)")
+    print("   - /api/experts/search?q=写作       (搜索专家)")
+    print("   - /api/experts/departments        (部门列表)")
     print("   Phase 2 新增API:")
     print("   前五识工具:")
     print("   - /api/tools/list     (前五识工具列表)")

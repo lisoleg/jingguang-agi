@@ -1,9 +1,9 @@
 # Taiyi-AGI (太乙因果机) 12.0 用户使用说明
 ## 基于复合体理学的AGI操作指南 · 净光哥
 
-> **版本**: v7.6.0 | **最后更新**: 2026-05-20
+> **版本**: v7.21 | **最后更新**: 2026-05-24
 > **项目**: Taiyi-AGI系统 - 复合体理学v4.0
-> **核心**: 111模块8层架构 + 78定理 + 22预言 + HoTT高阶逻辑 + 全息离散治理 + 人机融合 + Ftel目的约束
+> **核心**: 179模块9层架构 + 170定理 + 40预言 + 216专家 + HoTT高阶逻辑 + 全息离散治理 + 人机融合 + TY/IDO + 爱因斯坦因果性
 
 ---
 
@@ -28,6 +28,7 @@
 17. [API接口](#十七api接口)
 18. [常见问题](#十八常见问题)
 19. [理论背景](#十九理论背景)
+20. [216位AI专家系统](#二十216位ai专家系统)
 
 
 
@@ -2437,4 +2438,64 @@ Taiyi-AGI: 12.0
 
 
 *让AGI成为真正的智能伙伴——简单、可信、透明、高效*
+
+---
+
+## 二十、216位AI专家系统【v7.21新增】
+
+### 20.1 什么是专家系统？
+
+太乙AGI集成了216位中文AI专家人格（来自[agency-agents-zh](https://github.com/jnMetaCode/agency-agents-zh)），覆盖23个专业领域。选择专家后，对话将以该专家的人格、风格和专业视角回答问题。
+
+### 20.2 如何使用
+
+**Web界面操作**：
+
+1. 点击顶栏的 🧠 按钮，打开专家面板
+2. 使用搜索框输入关键词（如"AI"、"产品"、"测试"）
+3. 或使用部门下拉菜单筛选特定领域的专家
+4. 点击专家卡片选择专家
+5. 输入区上方会出现蓝色激活指示条，显示当前专家
+6. 开始对话，AI将以该专家的人格回答
+7. 点击激活条上的 ✕ 可清除专家，恢复默认模式
+
+**API调用**：
+
+```bash
+# 搜索专家
+curl http://127.0.0.1:5001/api/experts/search?q=AI
+
+# 查看特定专家
+curl http://127.0.0.1:5001/api/experts/engineering-ai-engineer
+
+# 使用专家对话
+curl -X POST http://127.0.0.1:5001/api/chat_v2 \
+  -H "Content-Type: application/json" \
+  -d '{"message": "分析微服务架构", "expert_id": "engineering-ai-engineer"}'
+```
+
+### 20.3 23个部门概览
+
+| 部门 | 专家数 | 示例 |
+|------|--------|------|
+| engineering | 35 | AI工程师、全栈工程师、DevOps |
+| specialized | 46 | 研究员、顾问、分析师 |
+| marketing | 36 | 品牌策略、内容营销、SEO |
+| testing | 9 | QA工程师、测试自动化 |
+| design | 8 | UI设计师、UX研究员 |
+| finance | 8 | 财务分析师、风控专家 |
+| product | 5 | 产品经理、增长专家 |
+| academic | 6 | 教授、研究员 |
+| 其他15部门 | 63 | 销售、法务、HR、游戏开发等 |
+
+### 20.4 专家选择建议
+
+| 场景 | 推荐部门 | 推荐专家 |
+|------|---------|---------|
+| 代码开发 | engineering | ai-engineer, full-stack-developer |
+| 产品设计 | product | product-manager |
+| 质量保证 | testing | qa-engineer |
+| 市场分析 | marketing | brand-strategist |
+| 学术研究 | academic | researcher |
+| 技术架构 | engineering | software-architect |
 
