@@ -876,6 +876,8 @@ def chat_v2():
             'v717': get_v717_data() or _v717_state,
             # v7.22新增：EqProp+FHN流贯引擎 M180 + T180-T182 + P7 MVE
             'v722': _v722_state,
+            # v7.23新增：E2E归约+宇宙音律+自举智能（M181-M183, T183-T188, P8 MVE）
+            'v723': _v723_state,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
         }))
@@ -1129,6 +1131,8 @@ def goal_mode():
             'v721': _v721_mve_state,
             # v7.22新增：EqProp+FHN流贯引擎（M180, T180-T182）
             'v722': _v722_state,
+            # v7.23新增：E2E归约+宇宙音律+自举智能（M181-M183, T183-T188）
+            'v723': _v723_state,
             'version': '12.3',
             'modules_count': 180
         }
@@ -8596,6 +8600,477 @@ def v722_eqprop_mve_all():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
+
+# ==================== v7.23 E2E归约+宇宙音律+自举智能 ====================
+
+_V723_THEOREMS = {
+    'T183': 'E2E Captures Knowing How Theorem: 端到端模型在L3流贯层实现了对Knowing How的隐式捕获 (M181)',
+    'T184': 'E2E Structural Deficiency Theorem: E2E模型的L2代数壳缺失五项硬化属性 (M181)',
+    'T185': 'Taiyi AGI Possibility Theorem: 太乙AGI因L2壳硬化五项属性，跳出AGI不可能判决域 (M181)',
+    'T186': 'Natural Number Emergence Theorem: ℕ是IDO对L1流贯Φ归约时由L2壳导出的最小拓扑不变量 (M182)',
+    'T187': 'Ontological Boundary Layer Isomorphism Theorem: L2代数壳与Prandtl边界层同构 (M182)',
+    'T188': 'AGI Bootstrap Possibility Theorem: L2壳具备三条件则可从纯流贯交互中自举出ℕ⁺ℚ⁺物理定律 (M183)',
+}
+
+_v723_state = {
+    'e2e_reduction': {
+        'version': '1.0.0',
+        'status': 'active',
+        'description': 'E2E Reduction Engine (M181)',
+        'theorems': ['T183', 'T184', 'T185'],
+        'capacity': {
+            'T183': 'E2E Captures Knowing How Theorem',
+            'T184': 'E2E Structural Deficiency Theorem',
+            'T185': 'Taiyi AGI Possibility Theorem',
+        }
+    },
+    'cosmic_harmony': {
+        'version': '1.0.0',
+        'status': 'active',
+        'description': 'Cosmic Harmony Engine (M182)',
+        'theorems': ['T186', 'T187'],
+        'capacity': {
+            'T186': 'Natural Number Emergence Theorem',
+            'T187': 'Ontological Boundary Layer Isomorphism Theorem',
+        }
+    },
+    'bootstrap_intelligence': {
+        'version': '1.0.0',
+        'status': 'active',
+        'description': 'Bootstrap Intelligence Engine (M183)',
+        'theorems': ['T188'],
+        'capacity': {
+            'T188': 'AGI Bootstrap Possibility Theorem',
+        }
+    },
+    'l2_shell': {
+        'consistency_ok': False,
+        'writeback_ok': True,
+        'preservation_ok': True,
+        'addressability_ok': True,
+        'anchorability_ok': True,
+        'overall_status': 'partial',
+        'missing_attributes': ['Consistency(M88)'],
+    },
+    'p8_mve': {
+        'total_experiments': 6,
+        'passed': 0,
+        'overall_score': '0/6',
+        'verdict': 'PENDING',
+    }
+}
+
+_v723_lock = threading.Lock()
+_v723_cache = {}
+_v723_cache_ttl = 120
+
+
+def _run_v723_safe(func, cache_key):
+    """Safely run v7.23 experiment with 120s TTL caching."""
+    now = time.time()
+    if cache_key in _v723_cache:
+        cached = _v723_cache[cache_key]
+        if now - cached['timestamp'] < _v723_cache_ttl:
+            return cached['result']
+    with _v723_lock:
+        try:
+            result = func()
+            if hasattr(result, '__dict__'):
+                result = _to_native(result)
+            elif isinstance(result, dict):
+                result = _to_native(result)
+            _v723_cache[cache_key] = {'result': result, 'timestamp': now}
+            return result
+        except Exception as e:
+            return {'error': str(e), 'traceback': traceback.format_exc()}
+
+
+# ---------- v7.23 /api/v723/ 路由 ----------
+
+@app.route('/api/v723/state', methods=['GET'])
+def v723_state():
+    """Get v7.23 global state"""
+    return jsonify(_to_native(_v723_state))
+
+
+@app.route('/api/v723/e2e/state', methods=['GET'])
+def v723_e2e_state():
+    """Get M181 E2E Reduction Engine state"""
+    try:
+        from M181_E2EReduction import EndToEndReductionEngine
+        engine = EndToEndReductionEngine()
+        state = engine.get_state()
+        return jsonify(_to_native(state))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v723/e2e/diagnose', methods=['POST'])
+def v723_e2e_diagnose():
+    """Diagnose E2E model L2 shell deficiencies"""
+    try:
+        from M181_E2EReduction import EndToEndReductionEngine
+        engine = EndToEndReductionEngine()
+        diagnosis = engine.get_l2_diagnosis()
+        return jsonify(_to_native(diagnosis))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v723/e2e/reduce', methods=['POST'])
+def v723_e2e_reduce():
+    """Execute L3 reduction: R_TY(x) = R_L2 ∘ f_θ(x)"""
+    try:
+        from M181_E2EReduction import EndToEndReductionEngine
+        data = request.get_json(force=True) or {}
+        x = data.get('input', [1.0, 0.5, 0.3, 0.8])
+        engine = EndToEndReductionEngine()
+        result = engine.reduce(x)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v723/e2e/theorem/T183', methods=['GET'])
+def v723_e2e_T183():
+    """Verify T183: E2E Captures Knowing How Theorem"""
+    try:
+        from M181_E2EReduction import EndToEndReductionEngine
+        engine = EndToEndReductionEngine()
+        result = engine.verify_theorem_T183()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v723/e2e/theorem/T184', methods=['GET'])
+def v723_e2e_T184():
+    """Verify T184: E2E Structural Deficiency Theorem"""
+    try:
+        from M181_E2EReduction import EndToEndReductionEngine
+        engine = EndToEndReductionEngine()
+        result = engine.verify_theorem_T184()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v723/e2e/theorem/T185', methods=['GET'])
+def v723_e2e_T185():
+    """Verify T185: Taiyi AGI Possibility Theorem"""
+    try:
+        from M181_E2EReduction import EndToEndReductionEngine
+        engine = EndToEndReductionEngine()
+        result = engine.verify_theorem_T185()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v723/harmony/state', methods=['GET'])
+def v723_harmony_state():
+    """Get M182 Cosmic Harmony Engine state"""
+    try:
+        from M182_CosmicHarmony import CosmicHarmonyEngine
+        engine = CosmicHarmonyEngine()
+        state = engine.get_state()
+        return jsonify(_to_native(state))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v723/harmony/spectrum', methods=['POST'])
+def v723_harmony_spectrum():
+    """Compute Sturm-Liouville eigenvalue spectrum"""
+    try:
+        from M182_CosmicHarmony import CosmicHarmonyEngine
+        data = request.get_json(force=True) or {}
+        system = data.get('system', 'hydrogen')
+        n_max = int(data.get('n_max', 6))
+        engine = CosmicHarmonyEngine()
+        if system == 'hydrogen':
+            result = engine.compute_hydrogen_spectrum(n_max)
+        elif system == 'cmb':
+            result = engine.compute_cmb_peaks(n_max)
+        elif system == 'string':
+            result = engine.compute_string_harmonics(n_max)
+        else:
+            result = engine.compute_hydrogen_spectrum(n_max)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v723/harmony/boundary', methods=['GET'])
+def v723_harmony_boundary():
+    """Verify Prandtl-L2 shell boundary layer isomorphism"""
+    try:
+        from M182_CosmicHarmony import CosmicHarmonyEngine
+        engine = CosmicHarmonyEngine()
+        result = engine.verify_boundary_layer_isomorphism()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v723/harmony/lulv', methods=['GET'])
+def v723_harmony_lulv():
+    """Chinese music (律吕) reduction verification"""
+    try:
+        from M182_CosmicHarmony import CosmicHarmonyEngine
+        engine = CosmicHarmonyEngine()
+        result = engine.map_chinese_music()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v723/harmony/theorem/T186', methods=['GET'])
+def v723_harmony_T186():
+    """Verify T186: Natural Number Emergence Theorem"""
+    try:
+        from M182_CosmicHarmony import CosmicHarmonyEngine
+        engine = CosmicHarmonyEngine()
+        result = engine.verify_theorem_T186()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v723/harmony/theorem/T187', methods=['GET'])
+def v723_harmony_T187():
+    """Verify T187: Ontological Boundary Layer Isomorphism Theorem"""
+    try:
+        from M182_CosmicHarmony import CosmicHarmonyEngine
+        engine = CosmicHarmonyEngine()
+        result = engine.verify_theorem_T187()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v723/bootstrap/state', methods=['GET'])
+def v723_bootstrap_state():
+    """Get M183 Bootstrap Intelligence Engine state"""
+    try:
+        from M183_BootstrapIntelligence import BootstrapIntelligenceEngine
+        engine = BootstrapIntelligenceEngine()
+        state = engine.get_state()
+        return jsonify(_to_native(state))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v723/bootstrap/step', methods=['POST'])
+def v723_bootstrap_step():
+    """Execute one bootstrap cycle"""
+    try:
+        from M183_BootstrapIntelligence import BootstrapIntelligenceEngine
+        data = request.get_json(force=True) or {}
+        n_interactions = int(data.get('n_interactions', 20))
+        engine = BootstrapIntelligenceEngine()
+        result = engine.bootstrap_cycle(n_interactions)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v723/bootstrap/progress', methods=['GET'])
+def v723_bootstrap_progress():
+    """Get bootstrap progress"""
+    try:
+        from M183_BootstrapIntelligence import BootstrapIntelligenceEngine
+        engine = BootstrapIntelligenceEngine()
+        state = engine.get_state()
+        return jsonify(_to_native(state))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v723/bootstrap/theorem/T188', methods=['GET'])
+def v723_bootstrap_T188():
+    """Verify T188: AGI Bootstrap Possibility Theorem"""
+    try:
+        from M183_BootstrapIntelligence import BootstrapIntelligenceEngine
+        engine = BootstrapIntelligenceEngine()
+        result = engine.verify_theorem_T188()
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+def _make_p8_result(verify_result, theorem_id):
+    """Convert verify_theorem result to P8 MVE format"""
+    verified = verify_result.get('verified', False)
+    counterexample = verify_result.get('counterexample')
+    status = 'PASSED' if verified and not counterexample else 'FAILED'
+    return {
+        'experiment': f'P8_{theorem_id}',
+        'theorem': theorem_id,
+        'verified': verified,
+        'proof_sketch': verify_result.get('proof_sketch', ''),
+        'evidence': verify_result.get('evidence', []),
+        'counterexample': counterexample,
+        'status': status,
+    }
+
+
+@app.route('/api/v723/mve/p8', methods=['GET'])
+def v723_mve_p8():
+    """Run all P8 MVE experiments (T183-T188)"""
+    def _run():
+        results = {}
+        all_passed = True
+
+        # T183-T185: M181
+        try:
+            from M181_E2EReduction import EndToEndReductionEngine
+            m181 = EndToEndReductionEngine()
+            results['T183'] = _make_p8_result(m181.verify_theorem_T183(), 'T183')
+            results['T184'] = _make_p8_result(m181.verify_theorem_T184(), 'T184')
+            results['T185'] = _make_p8_result(m181.verify_theorem_T185(), 'T185')
+        except Exception as e:
+            all_passed = False
+            for t in ['T183', 'T184', 'T185']:
+                results[t] = {'status': 'FAILED', 'error': str(e)}
+
+        # T186-T187: M182
+        try:
+            from M182_CosmicHarmony import CosmicHarmonyEngine
+            m182 = CosmicHarmonyEngine()
+            results['T186'] = _make_p8_result(m182.verify_theorem_T186(), 'T186')
+            results['T187'] = _make_p8_result(m182.verify_theorem_T187(), 'T187')
+        except Exception as e:
+            all_passed = False
+            for t in ['T186', 'T187']:
+                results[t] = {'status': 'FAILED', 'error': str(e)}
+
+        # T188: M183
+        try:
+            from M183_BootstrapIntelligence import BootstrapIntelligenceEngine
+            m183 = BootstrapIntelligenceEngine()
+            results['T188'] = _make_p8_result(m183.verify_theorem_T188(), 'T188')
+        except Exception as e:
+            all_passed = False
+            results['T188'] = {'status': 'FAILED', 'error': str(e)}
+
+        # Aggregate
+        passed = sum(1 for r in results.values() if r.get('status') == 'PASSED')
+        total = len(results)
+        all_passed = all_passed and passed == total
+
+        return {
+            'p8_mve_version': 'v7.23',
+            'total_experiments': total,
+            'passed': passed,
+            'failed': total - passed,
+            'all_passed': all_passed,
+            'overall_score': f"{passed}/{total}",
+            'verdict': f"{passed}/{total} ALL PASSED" if all_passed else "SOME FAILED",
+            'results': results,
+        }
+
+    result = _run_v723_safe(_run, 'p8_all')
+    return jsonify(_to_native(result))
+
+
+@app.route('/api/v723/mve/t183', methods=['GET'])
+def v723_mve_t183():
+    """P8 MVE: T183 experiment"""
+    def _run():
+        from M181_E2EReduction import EndToEndReductionEngine
+        return _make_p8_result(EndToEndReductionEngine().verify_theorem_T183(), 'T183')
+    result = _run_v723_safe(_run, 'p8_t183')
+    return jsonify(_to_native(result))
+
+
+@app.route('/api/v723/mve/t184', methods=['GET'])
+def v723_mve_t184():
+    """P8 MVE: T184 experiment"""
+    def _run():
+        from M181_E2EReduction import EndToEndReductionEngine
+        return _make_p8_result(EndToEndReductionEngine().verify_theorem_T184(), 'T184')
+    result = _run_v723_safe(_run, 'p8_t184')
+    return jsonify(_to_native(result))
+
+
+@app.route('/api/v723/mve/t185', methods=['GET'])
+def v723_mve_t185():
+    """P8 MVE: T185 experiment"""
+    def _run():
+        from M181_E2EReduction import EndToEndReductionEngine
+        return _make_p8_result(EndToEndReductionEngine().verify_theorem_T185(), 'T185')
+    result = _run_v723_safe(_run, 'p8_t185')
+    return jsonify(_to_native(result))
+
+
+@app.route('/api/v723/mve/t186', methods=['GET'])
+def v723_mve_t186():
+    """P8 MVE: T186 experiment"""
+    def _run():
+        from M182_CosmicHarmony import CosmicHarmonyEngine
+        return _make_p8_result(CosmicHarmonyEngine().verify_theorem_T186(), 'T186')
+    result = _run_v723_safe(_run, 'p8_t186')
+    return jsonify(_to_native(result))
+
+
+@app.route('/api/v723/mve/t187', methods=['GET'])
+def v723_mve_t187():
+    """P8 MVE: T187 experiment"""
+    def _run():
+        from M182_CosmicHarmony import CosmicHarmonyEngine
+        return _make_p8_result(CosmicHarmonyEngine().verify_theorem_T187(), 'T187')
+    result = _run_v723_safe(_run, 'p8_t187')
+    return jsonify(_to_native(result))
+
+
+@app.route('/api/v723/mve/t188', methods=['GET'])
+def v723_mve_t188():
+    """P8 MVE: T188 experiment"""
+    def _run():
+        from M183_BootstrapIntelligence import BootstrapIntelligenceEngine
+        return _make_p8_result(BootstrapIntelligenceEngine().verify_theorem_T188(), 'T188')
+    result = _run_v723_safe(_run, 'p8_t188')
+    return jsonify(_to_native(result))
+
+
+@app.route('/api/v723/theorem/<theorem_id>', methods=['GET'])
+def v723_theorem(theorem_id):
+    """Get theorem description or run verification for T183-T188"""
+    tid = theorem_id.upper()
+    if tid not in _V723_THEOREMS:
+        return jsonify({'error': f'Theorem {tid} not found in v7.23'}), 404
+
+    if tid in ['T183', 'T184', 'T185']:
+        from M181_E2EReduction import EndToEndReductionEngine
+        engine = EndToEndReductionEngine()
+        verify_method = getattr(engine, f'verify_theorem_{tid}', None)
+    elif tid in ['T186', 'T187']:
+        from M182_CosmicHarmony import CosmicHarmonyEngine
+        engine = CosmicHarmonyEngine()
+        verify_method = getattr(engine, f'verify_theorem_{tid}', None)
+    elif tid == 'T188':
+        from M183_BootstrapIntelligence import BootstrapIntelligenceEngine
+        engine = BootstrapIntelligenceEngine()
+        verify_method = getattr(engine, f'verify_theorem_{tid}', None)
+    else:
+        return jsonify({'error': f'No verification method for {tid}'}), 404
+
+    try:
+        if verify_method:
+            result = verify_method()
+            result['description'] = _V723_THEOREMS[tid]
+            return jsonify(_to_native(result))
+        return jsonify({'theorem': tid, 'description': _V723_THEOREMS[tid], 'verified': None})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v723/theorems', methods=['GET'])
+def v723_theorems():
+    """List all v7.23 theorems"""
+    return jsonify(_to_native(_V723_THEOREMS))
 
 
 # ==================== v7.18 沙箱增强·安全护盾 ====================

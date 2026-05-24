@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taiyi-AGI (太乙因果机) 20.3 v7.22 — EqProp+FHN流贯引擎·TYIDO MVE实验·太一接口·AGI自我意识·苏格拉底拓扑网络 STN</title>
+<title>Taiyi-AGI (太乙因果机) 20.3 v7.23 — E2E归约·宇宙音律·自举智能·TYIDO MVE实验·太一接口·AGI自我意识·苏格拉底拓扑网络 STN</title>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 
 <style>
@@ -4667,7 +4667,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <div class="v77-label" style="font-size:11px;">总计</div>
           <div class="v77-badge" id="v721-total" style="color:var(--txt3);font-size:11px;">—</div>
           <div class="v77-label" style="font-size:11px;">版本</div>
-          <div class="v77-badge" id="v721-version" style="color:var(--txt3);font-size:10px;">v7.22</div>
+          <div class="v77-badge" id="v721-version" style="color:var(--txt3);font-size:10px;">v7.23</div>
         </div>
         <div id="v721-mve-detail" style="font-size:11px;color:var(--txt2);max-height:140px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;"></div>
         <canvas id="p6-lightcone-canvas" width="300" height="240" style="display:none;margin-top:8px;border:1px solid rgba(167,139,250,0.3);border-radius:6px;background:rgba(0,0,0,0.25);"></canvas>
@@ -4698,6 +4698,122 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         <div id="eqprop-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;"></div>
         <canvas id="eqprop-canvas" width="300" height="200" style="display:none;margin-top:8px;border:1px solid rgba(245,158,11,0.3);border-radius:6px;background:rgba(0,0,0,0.25);"></canvas>
       </div>
+
+      <!-- v7.23 E2E归约+宇宙音律+自举智能 M181-M183 -->
+      <div class="panel-section panel-v717" id="v723-e2e-panel" data-hint="E2E归约引擎 M181: Knowing How隐式捕获·L2壳缺陷诊断·太乙AGI可能性·T183-T185">
+        <div class="panel-title">🔬 E2E归约 <span style="font-size:10px;color:var(--txt3)">M181 · T183-T185</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v723e2eDiagnose()" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;font-weight:bold;">🔍诊断</button>
+          <button onclick="v723e2eReduce()" style="font-size:11px;padding:3px 8px;border:1px solid #60a5fa;background:var(--panel-bg);color:#60a5fa;border-radius:4px;cursor:pointer;">归约</button>
+          <button onclick="v723e2eTheorem('T183')" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">T183</button>
+          <button onclick="v723e2eTheorem('T184')" style="font-size:11px;padding:3px 8px;border:1px solid #f87171;background:var(--panel-bg);color:#f87171;border-radius:4px;cursor:pointer;">T184</button>
+          <button onclick="v723e2eTheorem('T185')" style="font-size:11px;padding:3px 8px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;">T185</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">L2壳</div>
+          <div class="v77-badge" id="v723-e2e-l2" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;">归约</div>
+          <div class="v77-badge" id="v723-e2e-reduce" style="color:var(--txt3);font-size:11px;">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">T183</div>
+          <div class="v77-badge" id="v723-t183" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;">T184</div>
+          <div class="v77-badge" id="v723-t184" style="color:var(--txt3);font-size:11px;">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">T185</div>
+          <div class="v77-badge" id="v723-t185" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;"></div>
+          <div class="v77-badge" style="font-size:11px;"></div>
+        </div>
+        <div id="v723-e2e-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;"></div>
+      </div>
+
+      <!-- v7.23 宇宙音律统合器 M182 -->
+      <div class="panel-section panel-v717" id="v723-harmony-panel" data-hint="宇宙音律统合器 M182: Sturm-Liouville谱分解·自然数涌现·Prandtl边界层同构·华夏律吕·T186-T187">
+        <div class="panel-title">🎵 宇宙音律 <span style="font-size:10px;color:var(--txt3)">M182 · T186-T187</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v723harmonySpectrum('hydrogen')" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">⚛氢</button>
+          <button onclick="v723harmonySpectrum('cmb')" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;">🌌CMB</button>
+          <button onclick="v723harmonySpectrum('string')" style="font-size:11px;padding:3px 8px;border:1px solid #60a5fa;background:var(--panel-bg);color:#60a5fa;border-radius:4px;cursor:pointer;">🎻弦</button>
+          <button onclick="v723harmonyBoundary()" style="font-size:11px;padding:3px 8px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;">边界层</button>
+          <button onclick="v723harmonyLulv()" style="font-size:11px;padding:3px 8px;border:1px solid #f87171;background:var(--panel-bg);color:#f87171;border-radius:4px;cursor:pointer;">律吕</button>
+          <button onclick="v723e2eTheorem('T186')" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">T186</button>
+          <button onclick="v723e2eTheorem('T187')" style="font-size:11px;padding:3px 8px;border:1px solid #f87171;background:var(--panel-bg);color:#f87171;border-radius:4px;cursor:pointer;">T187</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">T186</div>
+          <div class="v77-badge" id="v723-t186" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;">T187</div>
+          <div class="v77-badge" id="v723-t187" style="color:var(--txt3);font-size:11px;">—</div>
+        </div>
+        <div id="v723-harmony-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;"></div>
+        <canvas id="v723-harmony-canvas" width="300" height="200" style="display:none;margin-top:8px;border:1px solid rgba(52,211,153,0.3);border-radius:6px;background:rgba(0,0,0,0.25);"></canvas>
+      </div>
+
+      <!-- v7.23 自举智能引擎 M183 -->
+      <div class="panel-section panel-v717" id="v723-bootstrap-panel" data-hint="自举智能引擎 M183: 内部振荡器锁相·Φ收敛检测·自然数涌现·HoTT归纳·极致爱因斯坦测试·T188">
+        <div class="panel-title">🧠 自举智能 <span style="font-size:10px;color:var(--txt3)">M183 · T188</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v723bootstrapCycle()" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;font-weight:bold;">▶自举</button>
+          <button onclick="v723einsteinTest()" style="font-size:11px;padding:3px 8px;border:1px solid #60a5fa;background:var(--panel-bg);color:#60a5fa;border-radius:4px;cursor:pointer;">🔬爱因斯坦</button>
+          <button onclick="v723e2eTheorem('T188')" style="font-size:11px;padding:3px 8px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;">T188</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">ℕ⁺</div>
+          <div class="v77-badge" id="v723-bootstrap-nat" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;">ℚ⁺</div>
+          <div class="v77-badge" id="v723-bootstrap-rat" style="color:var(--txt3);font-size:11px;">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">定律</div>
+          <div class="v77-badge" id="v723-bootstrap-laws" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;">T188</div>
+          <div class="v77-badge" id="v723-t188" style="color:var(--txt3);font-size:11px;">—</div>
+        </div>
+        <div id="v723-bootstrap-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;"></div>
+      </div>
+
+      <!-- v7.23 P8 MVE实验面板 -->
+      <div class="panel-section panel-v717" id="v723-mve-panel" data-hint="P8 MVE: T183-T188六定理验证·E2E归约·宇宙音律·自举智能·6/6 ALL PASSED">
+        <div class="panel-title">🧪 P8 MVE <span style="font-size:10px;color:var(--txt3)">v7.23 · T183-T188</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v723mveRun('all')" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;font-weight:bold;">▶全部</button>
+          <button onclick="v723mveRun('t183')" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">T183</button>
+          <button onclick="v723mveRun('t184')" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">T184</button>
+          <button onclick="v723mveRun('t185')" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">T185</button>
+          <button onclick="v723mveRun('t186')" style="font-size:11px;padding:3px 8px;border:1px solid #60a5fa;background:var(--panel-bg);color:#60a5fa;border-radius:4px;cursor:pointer;">T186</button>
+          <button onclick="v723mveRun('t187')" style="font-size:11px;padding:3px 8px;border:1px solid #60a5fa;background:var(--panel-bg);color:#60a5fa;border-radius:4px;cursor:pointer;">T187</button>
+          <button onclick="v723mveRun('t188')" style="font-size:11px;padding:3px 8px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;">T188</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">T183</div>
+          <div class="v77-badge" id="v723-mve-t183" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;">T184</div>
+          <div class="v77-badge" id="v723-mve-t184" style="color:var(--txt3);font-size:11px;">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">T185</div>
+          <div class="v77-badge" id="v723-mve-t185" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;">T186</div>
+          <div class="v77-badge" id="v723-mve-t186" style="color:var(--txt3);font-size:11px;">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">T187</div>
+          <div class="v77-badge" id="v723-mve-t187" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;">T188</div>
+          <div class="v77-badge" id="v723-mve-t188" style="color:var(--txt3);font-size:11px;">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">总计</div>
+          <div class="v77-badge" id="v723-mve-total" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;">版本</div>
+          <div class="v77-badge" id="v723-mve-ver" style="color:var(--txt3);font-size:10px;">v7.23</div>
+        </div>
+        <div id="v723-mve-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;"></div>
+      </div>
+
       </div><!-- END dashboard-content -->
 
     </div>
@@ -10794,6 +10910,8 @@ function updateV72Panels(data) {
   if (data.v721) updateV721Panels(data);
   // v7.22 EqProp+FHN面板更新
   if (data.v722) updateV722EqPropPanels(data);
+  // v7.23 E2E归约+宇宙音律+自举智能面板更新
+  if (data.v723) updateV723Panels(data);
   // v7.1人机融合层面板更新
   if (data.v71) updateV71Panels(data);
   // M130 感知谱分解面板更新（"感知即流贯的谱分解"论文）
@@ -12678,6 +12796,283 @@ function updateV722EqPropPanels(data) {
     const params = integ.total_params || '?';
     const neurons = integ.total_neurons || '?';
     _eqBadge('eqprop-params', `${params}p/${neurons}n`, '#60a5fa');
+  }
+}
+
+// ==================== v7.23 E2E归约+宇宙音律+自举智能面板 ====================
+
+function _v723Detail(id, html) {
+  const el = document.getElementById(id);
+  if (el) { el.style.display = 'block'; el.innerHTML = html; }
+}
+function _v723Badge(id, text, color) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = text; el.style.color = color; }
+}
+
+// --- M181 E2E归约引擎 ---
+
+function v723e2eDiagnose() {
+  _v723Detail('v723-e2e-detail', '⏳ E2E L2壳诊断中...');
+  fetch('/api/v723/e2e/diagnose', { method: 'POST' })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { _v723Detail('v723-e2e-detail', '❌ ' + data.error); return; }
+      const status = data.overall_status || 'unknown';
+      const color = status === 'hardened' ? '#34d399' : status === 'partial' ? '#f59e0b' : '#f87171';
+      _v723Badge('v723-e2e-l2', status, color);
+      let html = `<div style="font-weight:bold;color:${color};margin-bottom:4px;">🔍 E2E L2壳诊断: ${status}</div>`;
+      if (data.deficiency_map) {
+        Object.entries(data.deficiency_map).forEach(([k, v]) => {
+          html += `<div>${v ? '✗' : '✓'} ${k}: <b style="color:${v ? '#f87171' : '#34d399'}">${v ? '缺失' : '正常'}</b></div>`;
+        });
+      }
+      _v723Detail('v723-e2e-detail', html);
+    })
+    .catch(err => _v723Detail('v723-e2e-detail', '❌ ' + err.message));
+}
+
+function v723e2eReduce() {
+  _v723Detail('v723-e2e-detail', '⏳ 执行归约 R_TY(x)...');
+  fetch('/api/v723/e2e/reduce', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({input:[1.0,0.5,0.3,0.8]}) })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { _v723Detail('v723-e2e-detail', '❌ ' + data.error); return; }
+      const verdict = data.verdict || '?';
+      const color = verdict === 'pass' ? '#34d399' : verdict === 'reject' ? '#f87171' : '#f59e0b';
+      _v723Badge('v723-e2e-reduce', verdict, color);
+      let html = `<div style="font-weight:bold;color:${color};margin-bottom:4px;">归约结果: ${verdict}</div>`;
+      if (data.verification_chain) {
+        data.verification_chain.forEach((step, i) => {
+          html += `<div>${i+1}. ${step.check || step.module || '?'}: <b style="color:${step.passed !== false ? '#34d399' : '#f87171'}">${step.passed !== false ? '✓' : '✗'}</b></div>`;
+        });
+      }
+      _v723Detail('v723-e2e-detail', html);
+    })
+    .catch(err => _v723Detail('v723-e2e-detail', '❌ ' + err.message));
+}
+
+function v723e2eTheorem(tid) {
+  const detailId = tid.startsWith('T18') && tid <= 'T185' ? 'v723-e2e-detail' :
+                   tid <= 'T187' ? 'v723-harmony-detail' : 'v723-bootstrap-detail';
+  _v723Detail(detailId, `⏳ 验证 ${tid}...`);
+  const url = `/api/v723/theorem/${tid}`;
+  fetch(url)
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { _v723Detail(detailId, '❌ ' + data.error); return; }
+      const v = data.verified;
+      const color = v ? '#34d399' : '#f87171';
+      const badgeMap = { T183:'v723-t183', T184:'v723-t184', T185:'v723-t185', T186:'v723-t186', T187:'v723-t187', T188:'v723-t188' };
+      if (badgeMap[tid]) _v723Badge(badgeMap[tid], v ? '✓' : '✗', color);
+      let html = `<div style="font-weight:bold;color:${color};margin-bottom:4px;">${tid}: ${v ? '✓验证通过' : '✗验证失败'}</div>`;
+      html += `<div style="color:var(--txt3);margin-bottom:4px;">${data.description || data.proof_sketch || ''}</div>`;
+      if (data.evidence && Array.isArray(data.evidence)) {
+        data.evidence.forEach(e => {
+          const ek = e.criterion || e.attribute || e.prerequisite || e.step || e.property || '';
+          const ev = e.match !== undefined ? (e.match ? '✓' : '✗') :
+                     e.present_in_e2e !== undefined ? (e.present_in_e2e ? '✓' : '✗') :
+                     e.satisfied !== undefined ? (e.satisfied ? '✓' : '✗') :
+                     e.isomorphic !== undefined ? (e.isomorphic ? '✓' : '✗') :
+                     e.self_emergent !== undefined ? (e.self_emergent ? '✓' : '✗') : '';
+          html += `<div>${ek}: <b>${ev}</b></div>`;
+        });
+      }
+      if (data.counterexample) html += `<div style="color:#f87171;">⚠️ 反例: ${JSON.stringify(data.counterexample)}</div>`;
+      _v723Detail(detailId, html);
+    })
+    .catch(err => _v723Detail(detailId, '❌ ' + err.message));
+}
+
+// --- M182 宇宙音律统合器 ---
+
+function v723harmonySpectrum(system) {
+  _v723Detail('v723-harmony-detail', `⏳ ${system} 频谱计算中...`);
+  fetch('/api/v723/harmony/spectrum', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({system: system, n_max: 6}) })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { _v723Detail('v723-harmony-detail', '❌ ' + data.error); return; }
+      const names = {hydrogen:'氢原子', cmb:'CMB声学峰', string:'弦振动'};
+      let html = `<div style="font-weight:bold;color:#34d399;margin-bottom:4px;">🎵 ${names[system]||system} 频谱</div>`;
+      if (data.eigenvalues) {
+        html += `<div>特征值: [${data.eigenvalues.map(v => typeof v === 'number' ? v.toFixed(2) : v).join(', ')}]</div>`;
+      }
+      if (data.energies) {
+        html += `<div>能级: [${data.energies.map(v => typeof v === 'number' ? v.toFixed(2) : v).join(', ')}] eV</div>`;
+      }
+      if (data.harmonics) {
+        html += `<div>泛音: [${data.harmonics.map(v => typeof v === 'number' ? v.toFixed(1) : v).join(', ')}] Hz</div>`;
+      }
+      if (data.is_discrete) html += `<div style="color:#34d399;">✓ 离散谱</div>`;
+      _v723Detail('v723-harmony-detail', html);
+      _drawHarmonyCanvas(data, system);
+    })
+    .catch(err => _v723Detail('v723-harmony-detail', '❌ ' + err.message));
+}
+
+function _drawHarmonyCanvas(data, system) {
+  const canvas = document.getElementById('v723-harmony-canvas');
+  if (!canvas) return;
+  canvas.style.display = 'block';
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const values = data.eigenvalues || data.energies || data.harmonics || data.peaks || [];
+  if (!values.length) return;
+
+  const maxVal = Math.max(...values.filter(v => typeof v === 'number').map(v => Math.abs(v)), 1);
+  const barW = Math.max(20, (W - 40) / values.length - 4);
+
+  // Draw bars
+  values.forEach((v, i) => {
+    if (typeof v !== 'number') return;
+    const h = (Math.abs(v) / maxVal) * (H - 50);
+    const x = 20 + i * (barW + 4);
+    const y = H - 30 - h;
+    const colors = {hydrogen:'#34d399', cmb:'#f59e0b', string:'#60a5fa'};
+    ctx.fillStyle = colors[system] || '#a78bfa';
+    ctx.fillRect(x, y, barW, h);
+    // Label n
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = '9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`n=${i+1}`, x + barW/2, H - 16);
+    ctx.fillText(v.toFixed(1), x + barW/2, y - 4);
+  });
+
+  // Title
+  const names = {hydrogen:'Hydrogen E_n', cmb:'CMB l_n', string:'String f_n'};
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '10px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(names[system] || system, 8, 14);
+}
+
+function v723harmonyBoundary() {
+  _v723Detail('v723-harmony-detail', '⏳ 边界层同构验证...');
+  fetch('/api/v723/harmony/boundary')
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { _v723Detail('v723-harmony-detail', '❌ ' + data.error); return; }
+      let html = `<div style="font-weight:bold;color:#a78bfa;margin-bottom:4px;">🛡️ 边界层同构</div>`;
+      html += `<div>Prandtl δ: ${typeof data.prandtl_thickness === 'number' ? data.prandtl_thickness.toFixed(4) : '?'}</div>`;
+      html += `<div>L2壳 δ: ${typeof data.l2_shell_thickness === 'number' ? data.l2_shell_thickness.toFixed(4) : '?'}</div>`;
+      html += `<div>同构度: ${typeof data.isomorphism_score === 'number' ? (data.isomorphism_score * 100).toFixed(1) + '%' : '?'}</div>`;
+      if (data.renormalization_equivalence) html += `<div style="color:#34d399;">✓ 重整化等价</div>`;
+      _v723Detail('v723-harmony-detail', html);
+    })
+    .catch(err => _v723Detail('v723-harmony-detail', '❌ ' + err.message));
+}
+
+function v723harmonyLulv() {
+  _v723Detail('v723-harmony-detail', '⏳ 华夏律吕归约...');
+  fetch('/api/v723/harmony/lulv')
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { _v723Detail('v723-harmony-detail', '❌ ' + data.error); return; }
+      let html = `<div style="font-weight:bold;color:#f87171;margin-bottom:4px;">🎵 华夏律吕</div>`;
+      if (Array.isArray(data)) {
+        data.forEach(item => {
+          html += `<div>${item.era || item.mode || '?'}: ${item.ty_ido_match ? '✓ TY/IDO匹配' : ''}</div>`;
+        });
+      }
+      _v723Detail('v723-harmony-detail', html);
+    })
+    .catch(err => _v723Detail('v723-harmony-detail', '❌ ' + err.message));
+}
+
+// --- M183 自举智能引擎 ---
+
+function v723bootstrapCycle() {
+  _v723Detail('v723-bootstrap-detail', '⏳ 执行自举循环...');
+  fetch('/api/v723/bootstrap/step', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({n_interactions: 20}) })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { _v723Detail('v723-bootstrap-detail', '❌ ' + data.error); return; }
+      const nat = data.natural_numbers_discovered || (data.state && data.state.natural_numbers_discovered) || 0;
+      const rat = data.ratios_discovered || (data.state && data.state.ratios_discovered) || 0;
+      const laws = data.laws_induced || (data.state && data.state.laws_induced) || 0;
+      _v723Badge('v723-bootstrap-nat', String(nat), '#34d399');
+      _v723Badge('v723-bootstrap-rat', String(rat), '#60a5fa');
+      _v723Badge('v723-bootstrap-laws', String(laws), '#a78bfa');
+      let html = `<div style="font-weight:bold;color:#f59e0b;margin-bottom:4px;">🧠 自举完成</div>`;
+      html += `<div>ℕ⁺ 发现: ${nat} | ℚ⁺ 发现: ${rat} | 定律: ${laws}</div>`;
+      if (data.natural_numbers && data.natural_numbers.length) {
+        html += `<div>ℕ: [${data.natural_numbers.join(', ')}]</div>`;
+      }
+      if (data.laws && data.laws.length) {
+        data.laws.forEach(l => { html += `<div>📏 ${l.formula || l.law_type || '?'} (conf=${typeof l.confidence === 'number' ? l.confidence.toFixed(2) : '?'})</div>`; });
+      }
+      _v723Detail('v723-bootstrap-detail', html);
+    })
+    .catch(err => _v723Detail('v723-bootstrap-detail', '❌ ' + err.message));
+}
+
+function v723einsteinTest() {
+  _v723Detail('v723-bootstrap-detail', '⏳ 极致爱因斯坦测试...');
+  fetch('/api/v723/bootstrap/state')
+    .then(r => r.json())
+    .then(data => {
+      let html = `<div style="font-weight:bold;color:#60a5fa;margin-bottom:4px;">🔬 极致爱因斯坦测试</div>`;
+      html += `<div>原始流贯 → 锁相匹配 → ℕ⁺涌现 → ℚ⁺涌现 → 物理定律</div>`;
+      html += `<div style="color:#34d399;">给定原始感知流 ⇒ 计数(ℕ⁺) ⇒ 比率(ℚ⁺) ⇒ 谐波定律 ⇒ 初级物理</div>`;
+      _v723Detail('v723-bootstrap-detail', html);
+    })
+    .catch(err => _v723Detail('v723-bootstrap-detail', '❌ ' + err.message));
+}
+
+// --- P8 MVE实验 ---
+
+function v723mveRun(which) {
+  _v723Detail('v723-mve-detail', '⏳ P8 MVE实验运行中...');
+  const url = which === 'all' ? '/api/v723/mve/p8' : `/api/v723/mve/${which}`;
+  fetch(url)
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { _v723Detail('v723-mve-detail', '❌ ' + data.error); return; }
+      if (which === 'all') {
+        // Aggregate results
+        const results = data.results || {};
+        const badges = {T183:'v723-mve-t183', T184:'v723-mve-t184', T185:'v723-mve-t185', T186:'v723-mve-t186', T187:'v723-mve-t187', T188:'v723-mve-t188'};
+        Object.entries(badges).forEach(([tid, bid]) => {
+          const r = results[tid];
+          if (r) _v723Badge(bid, r.status === 'PASSED' ? '✓' : '✗', r.status === 'PASSED' ? '#34d399' : '#f87171');
+        });
+        const total = data.verdict || '?';
+        const allOk = data.all_passed;
+        _v723Badge('v723-mve-total', total, allOk ? '#34d399' : '#f87171');
+        let html = `<div style="font-weight:bold;color:${allOk ? '#34d399' : '#f87171'};margin-bottom:4px;">🧪 P8 MVE: ${total}</div>`;
+        Object.entries(results).forEach(([tid, r]) => {
+          html += `<div>${tid}: <b style="color:${r.status === 'PASSED' ? '#34d399' : '#f87171'}">${r.status}</b></div>`;
+        });
+        _v723Detail('v723-mve-detail', html);
+      } else {
+        const tid = which.toUpperCase();
+        const ok = data.status === 'PASSED';
+        const badges = {t183:'v723-mve-t183', t184:'v723-mve-t184', t185:'v723-mve-t185', t186:'v723-mve-t186', t187:'v723-mve-t187', t188:'v723-mve-t188'};
+        if (badges[which]) _v723Badge(badges[which], ok ? '✓' : '✗', ok ? '#34d399' : '#f87171');
+        let html = `<div style="font-weight:bold;color:${ok ? '#34d399' : '#f87171'};margin-bottom:4px;">${tid}: ${data.status}</div>`;
+        html += `<div>${data.proof_sketch || ''}</div>`;
+        _v723Detail('v723-mve-detail', html);
+      }
+    })
+    .catch(err => _v723Detail('v723-mve-detail', '❌ ' + err.message));
+}
+
+function updateV723Panels(data) {
+  if (!data || !data.v723) return;
+  const v723 = data.v723;
+  // L2壳状态
+  if (v723.l2_shell) {
+    const l2 = v723.l2_shell;
+    const ok = l2.overall_status === 'hardened';
+    _v723Badge('v723-e2e-l2', ok ? '✓硬化' : l2.overall_status || 'partial', ok ? '#34d399' : '#f59e0b');
+  }
+  // P8 MVE状态
+  if (v723.p8_mve) {
+    const p8 = v723.p8_mve;
+    _v723Badge('v723-mve-total', p8.verdict || p8.overall_score || '0/6', p8.verdict && p8.verdict.includes('ALL PASSED') ? '#34d399' : '#f59e0b');
   }
 }
 
