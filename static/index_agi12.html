@@ -6630,124 +6630,137 @@ function highlightHistory(idx) {
 // 添加问答对到DAG - 多线索版本
 // ════════════════════════════════════════════════════════════════
 function addQA2DAG(type, content, meta = {}) {
-  STATE.qa_counter++;
-  const { threads, stn } = STATE.dag_data;
-  // Phase 1: 兼容 stn 字段
-  if (!STATE.dag_data.stn) STATE.dag_data.stn = { active_node_id: null, active_path: [], show_all: true, fork_counter: 0 };
+  try {
+    STATE.qa_counter++;
+    const { threads } = STATE.dag_data;
+    // Phase 1: 兼容 stn 字段
+    if (!STATE.dag_data.stn) STATE.dag_data.stn = { active_node_id: null, active_path: [], show_all: true, fork_counter: 0 };
+    const stn = STATE.dag_data.stn;
 
-  // Phase 2: 支持分叉来源
-  const forkFrom = STATE.dag_data._fork_from;
-  if (forkFrom && (type === 'question' || type === 'user')) {
-    meta.fork_from = forkFrom;
-    // 分叉后清除标记
-    STATE.dag_data._fork_from = null;
-  }
-
-  // 用户消息：检测是否开新线索 或 是否是子树分叉
-  if (type === 'question' || type === 'goal') {
-    const isNewThread = meta.force_new_thread || meta.fork_from || detectNewThread(content);
-
-    if (isNewThread || threads.length === 0) {
-      STATE.thread_counter++;
-      const newThread = {
-        id: 'thread_' + STATE.thread_counter,
-        qa_pairs: [],
-        links: [],  // 跨线索链接
-      };
-      threads.push(newThread);
+    // Phase 2: 支持分叉来源
+    const forkFrom = STATE.dag_data._fork_from;
+    if (forkFrom && (type === 'question' || type === 'user')) {
+      meta.fork_from = forkFrom;
+      // 分叉后清除标记
+      STATE.dag_data._fork_from = null;
     }
-  }
 
-  const currentThread = threads[threads.length - 1];
-  if (!currentThread) return null;
-  if (!currentThread.links) currentThread.links = [];
+    // 用户消息：检测是否开新线索 或 是否是子树分叉
+    if (type === 'question' || type === 'goal' || type === 'user') {
+      const isNewThread = meta.force_new_thread || meta.fork_from || detectNewThread(content);
 
-  // 全局编号
-  let globalId = '';
-  if (type === 'question' || type === 'goal' || type === 'user') {
-    STATE.global_q_counter++;
-    globalId = 'Q' + STATE.global_q_counter;
-  } else {
-    STATE.global_a_counter++;
-    globalId = 'A' + STATE.global_a_counter;
-  }
-
-  // Phase 1: 建立父子关系（树结构）
-  let parentId = null;
-  if (type === 'answer') {
-    // AI回答 → 父节点是同一个 thread 中最后一个 question
-    const lastQ = [...currentThread.qa_pairs].reverse().find(q => q.type === 'question' || q.type === 'user' || q.type === 'goal');
-    if (lastQ) parentId = lastQ.global_id;
-  } else if (type === 'question') {
-    // 新反问/追问 → 父节点是同一个 thread 中最后一个 answer
-    const lastA = [...currentThread.qa_pairs].reverse().find(q => q.type === 'answer');
-    if (lastA) parentId = lastA.global_id;
-  }
-  // 如果 meta.fork_from 指定了父节点（分叉），优先使用
-  if (meta.fork_from) parentId = meta.fork_from;
-
-  const qa = {
-    id: type[0].toUpperCase() + '_' + STATE.qa_counter,
-    global_id: globalId,
-    type: type,
-    content: content,
-    timestamp: new Date().toISOString(),
-    hist_idx: STATE.history.length,
-    relation: 'QA',       // QA / REF / INTEGRATE / ELENCHUS
-    ref_targets: [],      // 引用的目标global_id列表
-    // Phase 1: STN 树结构字段
-    parent_id: parentId,  // 父节点 global_id
-    children_ids: [],     // 子节点 global_id 列表
-    versions: [globalId],// 同一语义节点的不同版本（分叉）
-    node_type: 'Q',      // Q / A / S(摘要) / E(诘辩)
-    collapsed: false,     // 子树是否折叠
-  };
-  // 反向链接：把当前节点加入父节点的 children_ids
-  if (parentId) {
-    const parentNode = findSTNNode(parentId);
-    if (parentNode && !parentNode.children_ids.includes(globalId)) {
-      parentNode.children_ids.push(globalId);
+      if (isNewThread || threads.length === 0) {
+        STATE.thread_counter++;
+        const newThread = {
+          id: 'thread_' + STATE.thread_counter,
+          qa_pairs: [],
+          links: [],  // 跨线索链接
+        };
+        threads.push(newThread);
+      }
     }
-  }
 
-  // 检测关系类型
-  const lower = (content || '').toLowerCase();
-  if (/真的|确定|如果|会怎样|为什么|何以见得|请证明/i.test(content)) {
-    qa.relation = 'ELENCHUS';
-    qa.node_type = 'E';
-  } else if (/上述|之前|刚才|如前所述|引用|参照|问题[qQ]?\d+|第\d+个?问题/i.test(content)) {
-    qa.relation = 'REF';
-    // 尝试提取引用的Q编号
-    const refMatch = content.match(/[qQ]?(\d+)|第\s*(\d+)\s*个?问题|第\s*(\d+)\s*题/g);
-    if (refMatch) {
-      refMatch.forEach(m => {
-        const num = parseInt(m.replace(/\D/g, ''), 10);
-        if (num > 0) qa.ref_targets.push('Q' + num);
+    const currentThread = threads[threads.length - 1];
+    if (!currentThread) {
+      console.warn('[addQA2DAG] 无可用线程，跳过');
+      return null;
+    }
+    if (!currentThread.links) currentThread.links = [];
+
+    // 全局编号
+    let globalId = '';
+    if (type === 'question' || type === 'goal' || type === 'user') {
+      STATE.global_q_counter++;
+      globalId = 'Q' + STATE.global_q_counter;
+    } else {
+      STATE.global_a_counter++;
+      globalId = 'A' + STATE.global_a_counter;
+    }
+
+    // Phase 1: 建立父子关系（树结构）
+    let parentId = null;
+    if (type === 'answer') {
+      // AI回答 → 父节点是同一个 thread 中最后一个 question
+      const lastQ = [...currentThread.qa_pairs].reverse().find(q => q.type === 'question' || q.type === 'user' || q.type === 'goal');
+      if (lastQ) parentId = lastQ.global_id;
+    } else if (type === 'question' || type === 'user' || type === 'goal') {
+      // 用户消息 → 父节点是同一个 thread 中最后一个 answer
+      const lastA = [...currentThread.qa_pairs].reverse().find(q => q.type === 'answer');
+      if (lastA) parentId = lastA.global_id;
+    }
+    // 如果 meta.fork_from 指定了父节点（分叉），优先使用
+    if (meta.fork_from) parentId = meta.fork_from;
+
+    const qa = {
+      id: (type[0] || 'Q').toUpperCase() + '_' + STATE.qa_counter,
+      global_id: globalId,
+      type: type,
+      content: content,
+      timestamp: new Date().toISOString(),
+      hist_idx: STATE.history.length,
+      relation: 'QA',       // QA / REF / INTEGRATE / ELENCHUS
+      ref_targets: [],      // 引用的目标global_id列表
+      // Phase 1: STN 树结构字段
+      parent_id: parentId,  // 父节点 global_id
+      children_ids: [],     // 子节点 global_id 列表
+      versions: [globalId],// 同一语义节点的不同版本（分叉）
+      node_type: type === 'answer' ? 'A' : 'Q',      // Q / A / S(摘要) / E(诘辩)
+      collapsed: false,     // 子树是否折叠
+    };
+    // 反向链接：把当前节点加入父节点的 children_ids
+    if (parentId) {
+      const parentNode = findSTNNode(parentId);
+      if (parentNode && parentNode.children_ids && !parentNode.children_ids.includes(globalId)) {
+        parentNode.children_ids.push(globalId);
+      }
+    }
+
+    // 检测关系类型
+    const lower = (content || '').toLowerCase();
+    if (/真的|确定|如果|会怎样|为什么|何以见得|请证明/i.test(content)) {
+      qa.relation = 'ELENCHUS';
+      qa.node_type = 'E';
+    } else if (/上述|之前|刚才|如前所述|引用|参照|问题[qQ]?\d+|第\d+个?问题/i.test(content)) {
+      qa.relation = 'REF';
+      // 尝试提取引用的Q编号
+      const refMatch = content.match(/[qQ]?(\d+)|第\s*(\d+)\s*个?问题|第\s*(\d+)\s*题/g);
+      if (refMatch) {
+        refMatch.forEach(m => {
+          const num = parseInt(m.replace(/\D/g, ''), 10);
+          if (num > 0) qa.ref_targets.push('Q' + num);
+        });
+      }
+    } else if (/整合|综合|总结|综上|基于以上|前面三个|A1|A2|A3/i.test(content)) {
+      qa.relation = 'INTEGRATE';
+      qa.node_type = 'S';
+      // 整合前面所有答案
+      threads.forEach(t => {
+        if (t.qa_pairs) {
+          t.qa_pairs.forEach(p => {
+            if (p.type === 'answer' && p.global_id) qa.ref_targets.push(p.global_id);
+          });
+        }
       });
     }
-  } else if (/整合|综合|总结|综上|基于以上|前面三个|A1|A2|A3/i.test(content)) {
-    qa.relation = 'INTEGRATE';
-    qa.node_type = 'S';
-    // 整合前面所有答案
-    threads.forEach(t => {
-      t.qa_pairs.forEach(p => {
-        if (p.type === 'answer' && p.global_id) qa.ref_targets.push(p.global_id);
-      });
-    });
+
+    currentThread.qa_pairs.push(qa);
+
+    // Phase 1: 更新 STN 活跃路径
+    if (stn) {
+      stn.active_node_id = globalId;
+      stn.active_path = getSTNPathToNode(globalId);
+      stn.show_all = false;
+    }
+
+    renderDAG();
+    renderSTNBreadcrumb();
+    // Phase 3: 更新熵值监控
+    if (typeof updateConsoleEntropy === 'function') updateConsoleEntropy();
+    return qa;
+  } catch (err) {
+    console.error('[addQA2DAG] 错误:', err);
+    return null;
   }
-
-  currentThread.qa_pairs.push(qa);
-
-  // Phase 1: 更新 STN 活跃路径
-  stn.active_node_id = globalId;
-  stn.active_path = getSTNPathToNode(globalId);
-  stn.show_all = false;
-
-  renderDAG();
-  renderSTNBreadcrumb();
-  // Phase 3: 更新熵值监控
-  if (typeof updateConsoleEntropy === 'function') updateConsoleEntropy();
-  return qa;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -7322,73 +7335,78 @@ function getLastAnswerThreadIdx() {
 // ════════════════════════════════════════════════════════════════
 function pushMsg(role, content, meta = {}) {
   STATE.history.push({ role, content, _ts: new Date().toISOString(), ...meta });
-  const { threads, stn } = STATE.dag_data;
 
-  if (role === 'user') {
-    const type = meta.is_goal ? 'goal' : 'question';
-    addQA2DAG(type, content);
-  } else {
-    // AI回复：添加到当前线索最后一个问题后面，建立父子关系
-    if (threads.length > 0) {
-      const currentThread = threads[threads.length - 1];
-      if (!currentThread.qa_pairs) currentThread.qa_pairs = [];
-      const lastQ = currentThread.qa_pairs.filter(q => q.type === 'question' || q.type === 'user' || q.type === 'goal').slice(-1)[0];
-      STATE.global_a_counter++;
-      const ansQA = {
-        id: 'A_' + (++STATE.qa_counter),
-        global_id: 'A' + STATE.global_a_counter,
-        type: 'answer',
-        content: content,
-        timestamp: new Date().toISOString(),
-        hist_idx: STATE.history.length - 1,
-        relation: 'QA',
-        ref_targets: [],
-        // Phase 1: STN 树结构字段
-        parent_id: lastQ ? lastQ.global_id : null,
-        children_ids: [],
-        versions: ['A' + STATE.global_a_counter],
-        node_type: 'A',
-        collapsed: false,
-      };
-      // 反向链接
-      if (lastQ && lastQ.children_ids && !lastQ.children_ids.includes(ansQA.global_id)) {
-        lastQ.children_ids.push(ansQA.global_id);
-      }
-      currentThread.qa_pairs.push(ansQA);
+  try {
+    const { threads, stn } = STATE.dag_data;
 
-      // 更新 STN 活跃路径
-      if (stn) {
-        stn.active_node_id = ansQA.global_id;
-        stn.active_path = getSTNPathToNode(ansQA.global_id);
-        stn.show_all = false;
-      }
-      renderDAG();
-      renderSTNBreadcrumb();
+    if (role === 'user') {
+      const type = meta.is_goal ? 'goal' : 'question';
+      addQA2DAG(type, content);
     } else {
-      // 无线程时创建（保留原逻辑）
-      STATE.thread_counter++;
-      const newThread = {
-        id: 'thread_' + STATE.thread_counter,
-        qa_pairs: [],
-        links: [],
-      };
-      threads.push(newThread);
-      STATE.global_a_counter++;
-      newThread.qa_pairs.push({
-        id: 'A_' + (++STATE.qa_counter),
-        global_id: 'A' + STATE.global_a_counter,
-        type: 'answer',
-        content: content,
-        timestamp: new Date().toISOString(),
-        hist_idx: STATE.history.length - 1,
-        relation: 'QA',
-        ref_targets: [],
-        parent_id: null, children_ids: [], versions: ['A' + STATE.global_a_counter], node_type: 'A', collapsed: false,
-      });
-      renderDAG();
+      // AI回复：添加到当前线索最后一个问题后面，建立父子关系
+      if (threads.length > 0) {
+        const currentThread = threads[threads.length - 1];
+        if (!currentThread.qa_pairs) currentThread.qa_pairs = [];
+        const lastQ = currentThread.qa_pairs.filter(q => q.type === 'question' || q.type === 'user' || q.type === 'goal').slice(-1)[0];
+        STATE.global_a_counter++;
+        const ansQA = {
+          id: 'A_' + (++STATE.qa_counter),
+          global_id: 'A' + STATE.global_a_counter,
+          type: 'answer',
+          content: content,
+          timestamp: new Date().toISOString(),
+          hist_idx: STATE.history.length - 1,
+          relation: 'QA',
+          ref_targets: [],
+          // Phase 1: STN 树结构字段
+          parent_id: lastQ ? lastQ.global_id : null,
+          children_ids: [],
+          versions: ['A' + STATE.global_a_counter],
+          node_type: 'A',
+          collapsed: false,
+        };
+        // 反向链接
+        if (lastQ && lastQ.children_ids && !lastQ.children_ids.includes(ansQA.global_id)) {
+          lastQ.children_ids.push(ansQA.global_id);
+        }
+        currentThread.qa_pairs.push(ansQA);
+
+        // 更新 STN 活跃路径
+        if (stn) {
+          stn.active_node_id = ansQA.global_id;
+          stn.active_path = getSTNPathToNode(ansQA.global_id);
+          stn.show_all = false;
+        }
+        renderDAG();
+        renderSTNBreadcrumb();
+      } else {
+        // 无线程时创建（保留原逻辑）
+        STATE.thread_counter++;
+        const newThread = {
+          id: 'thread_' + STATE.thread_counter,
+          qa_pairs: [],
+          links: [],
+        };
+        threads.push(newThread);
+        STATE.global_a_counter++;
+        newThread.qa_pairs.push({
+          id: 'A_' + (++STATE.qa_counter),
+          global_id: 'A' + STATE.global_a_counter,
+          type: 'answer',
+          content: content,
+          timestamp: new Date().toISOString(),
+          hist_idx: STATE.history.length - 1,
+          relation: 'QA',
+          ref_targets: [],
+          parent_id: null, children_ids: [], versions: ['A' + STATE.global_a_counter], node_type: 'A', collapsed: false,
+        });
+        renderDAG();
+      }
+      // Phase 3: 更新熵值监控
+      if (typeof updateConsoleEntropy === 'function') updateConsoleEntropy();
     }
-    // Phase 3: 更新熵值监控
-    if (typeof updateConsoleEntropy === 'function') updateConsoleEntropy();
+  } catch (err) {
+    console.error('[pushMsg] DAG更新失败:', err);
   }
 
   renderHistory();
@@ -7396,9 +7414,17 @@ function pushMsg(role, content, meta = {}) {
 }
 
 function updateQABadge() {
-  const { threads } = STATE.dag_data;
-  const qCount = threads.reduce((sum, t) => sum + t.qa_pairs.filter(q => q.type === 'question' || q.type === 'user').length, 0);
-  document.getElementById('qa-badge').textContent = qCount + ' 对话 · ' + threads.length + ' 线索';
+  try {
+    const threads = (STATE.dag_data && STATE.dag_data.threads) || [];
+    const qCount = threads.reduce((sum, t) => {
+      if (!t || !t.qa_pairs) return sum;
+      return sum + t.qa_pairs.filter(q => q && (q.type === 'question' || q.type === 'user')).length;
+    }, 0);
+    const badge = document.getElementById('qa-badge');
+    if (badge) badge.textContent = qCount + ' 对话 · ' + threads.length + ' 线索';
+  } catch (err) {
+    console.error('[updateQABadge] 错误:', err);
+  }
 }
 
 function renderHistory() {
@@ -7730,17 +7756,22 @@ async function doMainChat(message) {
     return;
   }
   STATE.loading = true;
+  STATE._req_start = Date.now();
   setDot('loading');
   startTimer();
-  
+
   // 按钮loading状态
   const btnSend = document.getElementById('btn-send2');
   if (btnSend) {
     btnSend.classList.add('loading');
     btnSend.innerHTML = '<span class="btn-text">分析中...</span>';
   }
-  
-  pushMsg('user', message);
+
+  try {
+    pushMsg('user', message);
+  } catch (err) {
+    console.error('[doMainChat] pushMsg 失败:', err);
+  }
   // 分叉模式：发送后清除分叉状态
   if (STATE.dag_data._fork_from) {
     STATE.dag_data._fork_from = null;
