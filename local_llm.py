@@ -606,7 +606,53 @@ class LocalLLM:
     def chat(self, message: str, history: list = None) -> str:
         """对话接口"""
         return self.generate(message)
-    
+
+    def chat_with_image(self, content: str, image_base64: str = None,
+                        history: Optional[List[Dict]] = None,
+                        system_prompt: Optional[str] = None,
+                        max_tokens: int = 51200, temperature: float = 0.7) -> str:
+        """多模态对话接口（带fallback）"""
+        if not self.active_backend:
+            return "[错误：无可用LLM后端]"
+
+        # 先尝试活跃后端的 chat_with_image
+        backends_to_try = [self.active_backend] + [
+            b for b in self.backends if b != self.active_backend and b.is_ready()
+        ]
+
+        for backend in backends_to_try:
+            try:
+                if hasattr(backend, 'chat_with_image'):
+                    result = backend.chat_with_image(
+                        content, image_base64, history, system_prompt, max_tokens, temperature
+                    )
+                elif hasattr(backend, 'chat'):
+                    # 降级到标准chat（忽略图片）
+                    prompt = content
+                    if image_base64:
+                        prompt += "\n[注意：当前后端不支持图片输入，已忽略图片]"
+                    result = backend.chat(prompt, history)
+                else:
+                    # 降级到 generate
+                    prompt = content
+                    if system_prompt:
+                        prompt = f"System: {system_prompt}\n\nUser: {prompt}"
+                    if image_base64:
+                        prompt += "\n[注意：当前后端不支持图片输入，已忽略图片]"
+                    result = backend.generate(prompt, max_tokens, temperature)
+
+                # 检查是否成功
+                if not (result.startswith("[") and ("错误" in result or "异常" in result or "未配置" in result)):
+                    if backend != self.active_backend:
+                        self.active_backend = backend
+                        print(f"   ℹ️ 已切换到后端: {backend.name}")
+                    return result
+            except Exception as e:
+                print(f"   ⚠️ {backend.name} 调用失败: {e}")
+                continue
+
+        return "[错误：所有LLM后端均不可用。请检查网络连接或API配置。]"
+
     def status(self) -> Dict:
         """返回所有后端状态"""
         return {

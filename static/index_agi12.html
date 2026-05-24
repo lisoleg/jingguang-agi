@@ -7797,9 +7797,25 @@ async function doMainChat(message) {
 
     hideThinking();
     stopTimer();
-    if (data.error) { 
-      pushMsg('ai', '⚠️ ' + data.error); 
-      return; 
+    if (data.error) {
+      // 友好化 DeepSeek / LLM 错误提示
+      let friendlyError = data.error;
+      const errStr = String(data.error);
+      if (errStr.includes('DeepSeek') || errStr.includes('deepseek')) {
+        if (errStr.includes('500') || errStr.includes('Internal Server')) {
+          friendlyError = '🔌 DeepSeek API 服务端暂时不可用（500 内部错误）\n\n系统已自动尝试切换到备用后端。如果持续失败，可能是：\n1. DeepSeek 官方服务维护中\n2. 网络连接不稳定\n3. API Key 额度已用完\n\n建议：稍后再试，或检查 .env 中的 DEEPSEEK_API_KEY。';
+        } else if (errStr.includes('timeout') || errStr.includes('超时')) {
+          friendlyError = '⏱️ DeepSeek API 请求超时\n\n可能原因：网络延迟高、DeepSeek 服务繁忙、或本地防火墙限制。\n建议：检查网络连接，或稍后重试。';
+        } else if (errStr.includes('未配置') || errStr.includes('API_KEY')) {
+          friendlyError = '🔑 DeepSeek API Key 未配置\n\n请在项目根目录 .env 文件中添加：\nDEEPSEEK_API_KEY=sk-xxxxxxxx\n\n获取地址：https://platform.deepseek.com/';
+        }
+      } else if (errStr.includes('timeout') || errStr.includes('timed out')) {
+        friendlyError = '⏱️ 请求超时：LLM 后端响应时间过长。\n建议：检查网络连接，或稍后重试。';
+      } else if (errStr.includes('所有LLM后端均不可用')) {
+        friendlyError = '🔌 所有 LLM 后端均不可用\n\n当前配置的后端（DeepSeek / OpenRouter / LM Studio / Ollama）都无法连接。\n建议：\n1. 检查网络连接\n2. 确认 .env 中至少配置了一个 API Key\n3. 或启动本地 LM Studio / Ollama 服务';
+      }
+      pushMsg('ai', friendlyError);
+      return;
     }
 
     if (data.entropy) {
@@ -7841,7 +7857,13 @@ async function doMainChat(message) {
     console.error('[API] 请求失败:', e);
     hideThinking();
     stopTimer();
-    pushMsg('ai', '❌ 网络错误: ' + e.message + '\n\n请确保后端服务已启动 (python app.py)');
+    let friendlyMsg = '❌ 网络错误: ' + e.message + '\n\n请确保后端服务已启动 (python app.py)';
+    if (e.message && e.message.includes('500')) {
+      friendlyMsg = '🔌 服务端错误 (HTTP 500)\n\nDeepSeek API 或后端服务出现异常。\n建议：\n1. 刷新页面后重试\n2. 检查后端控制台日志\n3. 确认 DeepSeek API 服务状态';
+    } else if (e.message && (e.message.includes('fetch') || e.message.includes('NetworkError'))) {
+      friendlyMsg = '🔌 无法连接到后端服务\n\n请确保 Flask 服务已启动：\ncd 项目目录 && python app.py\n\n然后刷新页面重试。';
+    }
+    pushMsg('ai', friendlyMsg);
   } finally {
     STATE.loading = false;
     setDot('ok');
