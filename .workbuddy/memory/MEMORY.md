@@ -5,7 +5,18 @@
 - 主服务器: `app.py` (Flask, 端口5001)
 - 前端: `static/index_agi12.html` (三栏布局界面)
 - 脑图: `app_mindmap_v2.py` (端口5003)
-- **总规模**: 183模块 / 9层 / 188定理 / 216专家
+- **总规模**: 184模块 / 9层 / 190定理 / 216专家
+
+## 当前版本：v7.24-draft (LLM Wiki 知识引擎 M184)（🔶开发中）
+- **v7.24-draft**: LLM Wiki 知识引擎 M184 + T189-T190 + P9 MVE ✅
+  - 来源：drpang.ai《RAG 之后：LLM Wiki 正在成为个人知识库的新范式》
+  - M184 LLMWikiEngine: WikiPage/WikiGraph/LLMWikiEngine + ConceptExtractor/PageGenerator/LinkExtractor/IncrementalUpdater
+  - T189 LLM Wiki Knowledge Accumulation: K_Wiki(N) ≥ K_RAG(N)，差距随N扩大 ✅
+  - T190 Wiki Incremental Update Convergence: 页面内容随摄入次数收敛到稳定状态 ✅
+  - P9 MVE: 2/2 ALL PASSED (T189-T190 verified=True, counterexample=None)
+  - API: /api/v724/wiki/{state|ingest|query|page|graph|backlinks|related|verify|mve/p9|theorem/*} (10个路由)
+  - 前端: v724-wiki-panel(📚摄入/🔍查询/🕸图谱/▶P9按钮+状态徽章)
+  - Git: 3e8a693
 
 ## 当前版本：v7.23 (E2E归约+宇宙音律+自举智能 M181-M183)（✅已部署）
 - **v7.23**: E2E归约+宇宙音律+自举智能 M181-M183 + T183-T188 + P8 MVE 6/6 ALL PASSED ✅
