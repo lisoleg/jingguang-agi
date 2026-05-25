@@ -30,6 +30,7 @@ class ExpertConfig:
     emoji: str                   # YAML frontmatter 中的 emoji
     color: str                   # YAML frontmatter 中的 color (hex字符串)
     department: str              # 所属部门目录名，如 "academic"
+    category: str                # 专家类别，如 "general"/"understand"
     system_prompt: str           # 将整个 .md 文件内容转为 system prompt
     file_path: str               # 原始 .md 文件路径
     tags: List[str] = field(default_factory=list)   # 搜索标签（name + description 分词）
@@ -43,6 +44,7 @@ class ExpertConfig:
             "emoji": self.emoji,
             "color": self.color,
             "department": self.department,
+            "category": self.category,
             "tags": self.tags,
             "file_path": self.file_path,
         }
@@ -176,12 +178,14 @@ class ExpertRegistry:
             return None  # 无 frontmatter，跳过
 
         department = md_file.parent.name  # 部门 = 所在子目录名
-        expert_id = md_file.stem         # 文件名（不含扩展名）作为 ID
+        # 优先使用 frontmatter 中的 expert_id，否则用文件名
+        expert_id = fm.get("expert_id", md_file.stem)
 
         name = fm.get("name", md_file.stem)
         description = fm.get("description", "")
         emoji = fm.get("emoji", "🤖")
         color = fm.get("color", "#6366F1")
+        category = fm.get("category", "general")
 
         system_prompt = _extract_system_prompt(text)
 
@@ -195,6 +199,7 @@ class ExpertRegistry:
             emoji=emoji,
             color=color,
             department=department,
+            category=category,
             system_prompt=system_prompt,
             file_path=str(md_file),
             tags=tags,

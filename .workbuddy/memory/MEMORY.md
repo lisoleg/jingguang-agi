@@ -5,12 +5,14 @@
 - 主服务器: `app.py` (Flask, 端口5001)
 - 前端: `static/index_agi12.html` (三栏布局界面)
 - 脑图: `app_mindmap_v2.py` (端口5003)
-- **总规模**: 184模块 / 9层 / 190定理 / 216专家
+- **总规模**: 189模块 / 9层 / 196定理 / 216专家
 
 ## 版本历史（精简）
 
 | 版本 | 内容 | Git |
 |------|------|-----|
+| v7.25b | 幂律·三分损益·类型论 M189 + BFT升级 + M187/M188升级 + T191-T196 | — |
+| v7.25 | RLM M186 + ContextRot M187 + Intentionality M188 + T191-T196 | — |
 | v7.24-draft | LLM Wiki M184 + T189-T190 + P9 MVE + M176/M178对接 | 3e8a693 |
 | v7.23 | E2E归约+宇宙音律+自举智能 M181-M183 + T183-T188 + P8 MVE | f7a04e7 |
 | v7.22 | EqProp+FHN M180 + T180-T182 + P7 MVE | — |
@@ -19,32 +21,31 @@
 | v7.19 | 组织记忆·Φ场·AgentOS M176-M178 + T157-T165 | — |
 | v7.18 | 沙箱+安全护盾 M174-M175 + T151-T156 | — |
 
-## 当前开发状态：v7.24-draft（🔶开发中）
-- M184 LLMWikiEngine + WikiPage/WikiGraph + ConceptExtractor/PageGenerator
-- T189 K_Wiki(N) ≥ K_RAG(N) ✅  T190 增量更新收敛 ✅  P9 MVE 2/2 PASSED
-- API: /api/v724/wiki/{state|ingest|query|page|graph|backlinks|related|verify|mve/p9|theorem/*}
-- **M176 对接完成**：OrgMemoryBridge.sync_ingest() → remember() ✅（2026-05-25）
-- **M178 对接完成**：WikiEventBus.publish_ingest() → MessageBus.send("wiki.ingest") ✅
-- **chat_v2 对接完成**：每次对话后自动摄入 Wiki ✅
-- 前端：v724-wiki-panel 新增 M176/M178 桥接状态徽章
+## 当前开发状态：v7.25b（🔶开发中）
+- **M189 PowerLawEngine** (~1600行): 幂律拟合/对数压缩/三分损益/2/3共识/非结合代数/Curry-Howard/稀疏注意力
+- T191-T196 共6定理, MVE 8/8 ALL PASSED ✅
+- BFT升级: 毕达哥拉斯逗号补偿机制 (T194)
+- M187 升级: 对数压缩预处理 + 幂律稀疏注意力 ψ
+- M188 升级: Curry-Howard意图映射 + 银弹定理T195
+- API: /api/v725b/{powerlaw/*, consensus/bft, sanfen/cycle, curry_howard/map, silver_bullet, rot/sparse_attention, mve, theorem/*}
+- 前端: ⚛️ PowerLaw面板 + 📐 Curry-Howard面板
 
 ## 编号规则
-- 模块: M184(v7.24) | M181-M183(v7.23) | M180(v7.22) | M179(v7.20) | M176-M178(v7.19)
-- 定理: T189-T190(v7.24) | T183-T188(v7.23) | T180-T182(v7.22) | T166-T170(v7.20) | T157-T165(v7.19)
+- 模块: M189(v7.25b) | M186-M188(v7.25) | M184(v7.24) | M181-M183(v7.23) | M180(v7.22)
+- 定理: T191-T196(v7.25b) | T189-T190(v7.24) | T183-T188(v7.23) | T180-T182(v7.22)
 
 ## 核心文件
+- `M189_PowerLawEngine.py`: 幂律·对数·三分损益引擎（v7.25b核心）
+- `M188_IntentionalityEngine.py`: 意向性+Curry-Howard类型论 (v7.25b)
+- `M187_ContextRotDetector.py`: ContextRot+对数压缩+稀疏注意力 (v7.25b)
+- `DIKWPReliabilityLayer.py`: BFT+三分损益同源+逗号补偿 (v7.25b)
 - `CompositeAGI_V2.py`: 主核心（v5.0+）
 - `M184_LLMWikiEngine.py`: LLM Wiki引擎（含OrgMemoryBridge + WikiEventBus）
-- `M183_BootstrapIntelligence.py`: 自举智能（1520行）
-- `M182_CosmicHarmony.py`: 宇宙音律
-- `M181_E2EReduction.py`: E2E归约（EndToEndReductionEngine，非E2EReductionEngine）
-- `M176_OrgMemoryEngine.py`: 组织记忆（OrgMemoryEngine.get_instance()）
-- `M178_TaiyiAgentOS.py`: AgentOS（TaiyiAgentOS.get_instance()，message_bus属性）
-- `expert_registry.py`: 216位AI专家注册表
+- `M186_RLMEngine.py`: 递归语言模型引擎
 
 ## API版本模式
+- `/api/v725b/*`: M189 幂律+三分损益+类型论 | `/api/v725/*`: M186-M188
 - `/api/v724/*`: M184 Wiki | `/api/v723/*`: M181-M183 | `/api/v722/*`: M180
-- `/api/v720/*`: M179 | `/api/v719/*`: M176-M178
 - `/api/chat_v2`: 主对话 | `/api/experts`: 专家系统
 
 ## 服务启动

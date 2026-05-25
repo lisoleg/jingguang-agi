@@ -896,6 +896,8 @@ def chat_v2():
             'v723': _v723_state,
             # v7.24新增：LLM Wiki 知识引擎（M184, T189-T190, P9 MVE）
             'v724': _V724_STATE,
+            # v7.25新增：RLM递归语言模型+ContextRot+意向性（M186-M188, T194-T196）
+            'v725': _V725_STATE,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
         }))
@@ -1153,6 +1155,8 @@ def goal_mode():
             'v723': _v723_state,
             # v7.24新增：LLM Wiki 知识引擎（M184, T189-T190, P9 MVE）
             'v724': _V724_STATE,
+            # v7.25新增：RLM递归语言模型+ContextRot+意向性（M186-M188, T194-T196）
+            'v725': _V725_STATE,
             'version': '12.3',
             'modules_count': 180
         }
@@ -9334,6 +9338,671 @@ def v724_wiki_theorem(theorem_id):
         else:
             return jsonify({'error': f'Unknown theorem: {theorem_id}'}), 404
         return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ============================================================
+# v7.25 — M185 UnderstandEngine API
+# ============================================================
+
+_V725_STATE = {
+    'understand_engine': {
+        'status': 'active',
+        'version': '1.0.0',
+        'modules': ['M185'],
+        'theorems': ['T191', 'T192', 'T193'],
+    },
+    'rlm_engine': {
+        'status': 'active',
+        'version': '1.0.0',
+        'modules': ['M186'],
+        'total_executions': 0,
+    },
+    'context_rot': {
+        'status': 'active',
+        'version': '1.0.0',
+        'modules': ['M187'],
+        'monitoring': False,
+    },
+    'intentionality': {
+        'status': 'active',
+        'version': '1.0.0',
+        'modules': ['M188'],
+        'theorems': ['T194', 'T195', 'T196'],
+    },
+    'nodes_count': 0,
+    'edges_count': 0,
+    'project_name': '',
+}
+
+_V725_LOCK = threading.Lock()
+_V725_ORCHESTRATOR = None  # 延迟初始化
+
+
+def _get_v725_orchestrator():
+    """获取（延迟初始化的）UnderstandOrchestrator 实例，自动注入 M184 WikiEngine"""
+    global _V725_ORCHESTRATOR
+    if _V725_ORCHESTRATOR is None:
+        with _V725_LOCK:
+            if _V725_ORCHESTRATOR is None:
+                try:
+                    from M185_UnderstandEngine import UnderstandOrchestrator
+                    wiki_engine = _get_v724_engine()
+                    org_memory = None
+                    try:
+                        from M176_OrgMemoryEngine import OrgMemoryEngine
+                        org_memory = OrgMemoryEngine.get_instance()
+                    except Exception:
+                        pass
+                    _V725_ORCHESTRATOR = UnderstandOrchestrator(
+                        wiki_engine=wiki_engine,
+                        org_memory=org_memory,
+                    )
+                    print("[v725] M185 UnderstandOrchestrator 已初始化")
+                except Exception as e:
+                    print(f"[v725] 初始化失败: {e}")
+                    _V725_ORCHESTRATOR = None
+    return _V725_ORCHESTRATOR
+
+
+def _run_v725_safe(func, *args, **kwargs):
+    """安全执行 v725 编排器方法"""
+    try:
+        orchestrator = _get_v725_orchestrator()
+        if orchestrator is None:
+            return {'error': 'UnderstandOrchestrator 初始化失败'}
+        return func(orchestrator, *args, **kwargs)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {'error': str(e)}
+
+
+@app.route('/api/v725/understand/scan', methods=['POST'])
+def v725_understand_scan():
+    """扫描项目：POST {path: "."}"""
+    try:
+        body = request.get_json(force=True, silent=True) or {}
+        project_path = str(body.get('path', '.'))
+
+        def _do(orch):
+            result = orch.scan_project(project_path)
+            # 更新全局状态
+            _V725_STATE['nodes_count'] = len(result.nodes)
+            _V725_STATE['edges_count'] = len(result.edges)
+            _V725_STATE['project_name'] = result.project.name if result.project else ''
+            return result.to_dict()
+        result = _run_v725_safe(_do)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725/understand/analyze', methods=['POST'])
+def v725_understand_analyze():
+    """分析文件：POST {file_path: "M184_LLMWikiEngine.py"}"""
+    try:
+        body = request.get_json(force=True, silent=True) or {}
+        file_path = str(body.get('file_path', ''))
+        if not file_path:
+            return jsonify({'error': 'file_path 不能为空'}), 400
+
+        def _do(orch):
+            analysis = orch.analyze_file(file_path)
+            return analysis.to_dict()
+        result = _run_v725_safe(_do)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725/understand/explain', methods=['GET'])
+def v725_understand_explain():
+    """解释节点：GET ?node_id=file:app.py"""
+    try:
+        node_id = str(request.args.get('node_id', ''))
+        if not node_id:
+            return jsonify({'error': 'node_id 不能为空'}), 400
+
+        def _do(orch):
+            return orch.explain_node(node_id)
+        result = _run_v725_safe(_do)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725/understand/diff', methods=['POST'])
+def v725_understand_diff():
+    """差异分析：POST {old_fingerprint: {...}, new_fingerprint: {...}}"""
+    try:
+        from M185_UnderstandEngine import FileFingerprint
+        body = request.get_json(force=True, silent=True) or {}
+        old_fp_data = body.get('old_fingerprint', {})
+        new_fp_data = body.get('new_fingerprint', {})
+
+        if not old_fp_data or not new_fp_data:
+            return jsonify({'error': '需要 old_fingerprint 和 new_fingerprint'}), 400
+
+        old_fp = FileFingerprint(**old_fp_data)
+        new_fp = FileFingerprint(**new_fp_data)
+
+        def _do(orch):
+            return orch.diff_analysis(old_fp, new_fp)
+        result = _run_v725_safe(_do)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725/understand/onboard', methods=['POST'])
+def v725_understand_onboard():
+    """生成学习路径：POST {focus_nodes: ["file:app.py"]}"""
+    try:
+        body = request.get_json(force=True, silent=True) or {}
+        focus_nodes = body.get('focus_nodes', None)
+
+        def _do(orch):
+            tour = orch.generate_tour(focus_nodes)
+            return {
+                'steps': [asdict(t) for t in tour],
+                'total_steps': len(tour),
+            }
+        from dataclasses import asdict
+        result = _run_v725_safe(_do)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725/understand/domain', methods=['POST'])
+def v725_understand_domain():
+    """领域分析：POST {}"""
+    try:
+        def _do(orch):
+            domain_nodes = orch.domain_analysis()
+            return {
+                'domains': [n.to_dict() for n in domain_nodes],
+                'total_domains': len(domain_nodes),
+            }
+        result = _run_v725_safe(_do)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725/understand/knowledge', methods=['POST'])
+def v725_understand_knowledge():
+    """知识分析：POST {wiki_pages: [{page_id, title, content, tags}]}"""
+    try:
+        body = request.get_json(force=True, silent=True) or {}
+        wiki_pages = body.get('wiki_pages', None)
+
+        def _do(orch):
+            knowledge_nodes = orch.knowledge_analysis(wiki_pages)
+            return {
+                'nodes': [n.to_dict() for n in knowledge_nodes],
+                'total_nodes': len(knowledge_nodes),
+            }
+        result = _run_v725_safe(_do)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725/understand/chat', methods=['GET'])
+def v725_understand_chat():
+    """图谱问答：GET ?q=LLMWikiEngine"""
+    try:
+        query = str(request.args.get('q', ''))
+        if not query:
+            return jsonify({'error': 'q 参数不能为空'}), 400
+
+        def _do(orch):
+            return orch.chat(query)
+        result = _run_v725_safe(_do)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725/understand/state', methods=['GET'])
+def v725_understand_state():
+    """获取 v7.25 Understand 引擎状态"""
+    try:
+        orch = _get_v725_orchestrator()
+        state = dict(_V725_STATE)
+        if orch is not None:
+            stats = orch.graph.get_stats()
+            state['nodes_count'] = stats.get('total_nodes', 0)
+            state['edges_count'] = stats.get('total_edges', 0)
+        return jsonify(_to_native(state))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725/understand/theorem/<theorem_id>', methods=['GET'])
+def v725_understand_theorem(theorem_id):
+    """验证定理：T191/T192/T193"""
+    try:
+        from M185_UnderstandEngine import (
+            verify_theorem_T191, verify_theorem_T192, verify_theorem_T193
+        )
+        tid = theorem_id.upper()
+        if tid == 'T191':
+            result = verify_theorem_T191()
+        elif tid == 'T192':
+            result = verify_theorem_T192()
+        elif tid == 'T193':
+            result = verify_theorem_T193()
+        else:
+            return jsonify({'error': f'Unknown theorem: {theorem_id}'}), 404
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ============================================================
+# v7.25-RLM RLM 递归语言模型 (M186)
+# ============================================================
+
+def _get_rlm_engine():
+    """延迟获取 RLMEngine 单例"""
+    try:
+        from M186_RLMEngine import get_instance
+        return get_instance()
+    except Exception as e:
+        print(f"[v725-rlm] 加载失败: {e}")
+        return None
+
+
+@app.route('/api/v725/rlm/state', methods=['GET'])
+def v725_rlm_state():
+    """RLM 引擎状态"""
+    try:
+        engine = _get_rlm_engine()
+        if engine:
+            state = engine.get_state()
+            _V725_STATE['rlm_engine']['total_executions'] = state.get('total_executions', 0)
+        return jsonify(_V725_STATE['rlm_engine'])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725/rlm/execute', methods=['POST'])
+def v725_rlm_execute():
+    """执行 RLM 算子管道: POST {content, operators: [{name, ...params}]}"""
+    try:
+        body = request.get_json(force=True, silent=True) or {}
+        content = str(body.get('content', ''))
+        operators = body.get('operators', [{'name': 'peek'}])
+        metadata = body.get('metadata')
+
+        if not content:
+            return jsonify({'error': 'content is required'}), 400
+
+        engine = _get_rlm_engine()
+        if engine is None:
+            return jsonify({'error': 'RLMEngine 初始化失败'}), 500
+
+        result = engine.execute_pipeline(content, operators=operators, metadata=metadata)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725/rlm/operator/<op_name>', methods=['POST'])
+def v725_rlm_operator(op_name):
+    """执行单个 RLM 算子: POST {content, pattern?, strategy?, depth_limit?}"""
+    try:
+        body = request.get_json(force=True, silent=True) or {}
+        content = str(body.get('content', ''))
+        if not content:
+            return jsonify({'error': 'content is required'}), 400
+
+        engine = _get_rlm_engine()
+        if engine is None:
+            return jsonify({'error': 'RLMEngine 初始化失败'}), 500
+
+        kwargs = {}
+        if 'pattern' in body:
+            kwargs['pattern'] = str(body['pattern'])
+        if 'strategy' in body:
+            kwargs['strategy'] = str(body['strategy'])
+        if 'depth_limit' in body:
+            kwargs['depth_limit'] = int(body['depth_limit'])
+
+        result = engine.execute_operator(op_name, content, **kwargs)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+# ============================================================
+# v7.25-Rot Context Rot 检测器 (M187)
+# ============================================================
+
+def _get_context_rot_detector():
+    """延迟获取 ContextRotDetector 单例"""
+    try:
+        from M187_ContextRotDetector import get_instance
+        return get_instance()
+    except Exception as e:
+        print(f"[v725-rot] 加载失败: {e}")
+        return None
+
+
+@app.route('/api/v725/rot/state', methods=['GET'])
+def v725_rot_state():
+    """Context Rot 检测器状态"""
+    try:
+        detector = _get_context_rot_detector()
+        if detector:
+            state = detector.get_state()
+            _V725_STATE['context_rot']['monitoring'] = state.get('monitoring_active', False)
+        return jsonify(_V725_STATE['context_rot'])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725/rot/compute', methods=['POST'])
+def v725_rot_compute():
+    """计算 Context Rot SNR: POST {dialog_history: [{role, content}]}"""
+    try:
+        body = request.get_json(force=True, silent=True) or {}
+        dialog_history = body.get('dialog_history', [])
+
+        if not dialog_history:
+            return jsonify({'error': 'dialog_history is required'}), 400
+
+        detector = _get_context_rot_detector()
+        if detector is None:
+            return jsonify({'error': 'ContextRotDetector 初始化失败'}), 500
+
+        result = detector.compute_snr(dialog_history)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725/rot/monitor/<action>', methods=['POST'])
+def v725_rot_monitor(action):
+    """后台监控控制: POST /api/v725/rot/monitor/start|stop"""
+    try:
+        detector = _get_context_rot_detector()
+        if detector is None:
+            return jsonify({'error': 'ContextRotDetector 初始化失败'}), 500
+
+        if action == 'start':
+            body = request.get_json(force=True, silent=True) or {}
+            interval = float(body.get('interval', 30.0))
+            detector.start_monitoring(interval=interval)
+            _V725_STATE['context_rot']['monitoring'] = True
+            return jsonify({'status': 'monitoring_started', 'interval': interval})
+        elif action == 'stop':
+            detector.stop_monitoring()
+            _V725_STATE['context_rot']['monitoring'] = False
+            return jsonify({'status': 'monitoring_stopped'})
+        else:
+            return jsonify({'error': f'Unknown action: {action}. Use start/stop'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ============================================================
+# v7.25-Int 意向性引擎 (M188)
+# ============================================================
+
+def _get_intentionality_engine():
+    """延迟获取 IntentionalityEngine 单例"""
+    try:
+        from M188_IntentionalityEngine import get_instance
+        return get_instance()
+    except Exception as e:
+        print(f"[v725-int] 加载失败: {e}")
+        return None
+
+
+@app.route('/api/v725/int/state', methods=['GET'])
+def v725_int_state():
+    """意向性引擎状态"""
+    try:
+        engine = _get_intentionality_engine()
+        if engine:
+            state = engine.get_state()
+            return jsonify(state)
+        return jsonify(_V725_STATE['intentionality'])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725/int/assess', methods=['POST'])
+def v725_int_assess():
+    """评估意向性: POST {utterance, context?, target_object?}"""
+    try:
+        body = request.get_json(force=True, silent=True) or {}
+        utterance = str(body.get('utterance', ''))
+        if not utterance:
+            return jsonify({'error': 'utterance is required'}), 400
+
+        engine = _get_intentionality_engine()
+        if engine is None:
+            return jsonify({'error': 'IntentionalityEngine 初始化失败'}), 500
+
+        result = engine.assess_intentionality(
+            utterance=utterance,
+            context=body.get('context'),
+            target_object=body.get('target_object'),
+        )
+        return jsonify(_to_native(result))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725/int/theorem/<theorem_id>', methods=['GET'])
+def v725_int_theorem(theorem_id):
+    """验证意向性定理 T194/T195/T196"""
+    try:
+        from M188_IntentionalityEngine import (
+            verify_theorem_T194, verify_theorem_T195, verify_theorem_T196
+        )
+        tid = theorem_id.upper()
+        if tid == 'T194':
+            result = verify_theorem_T194()
+        elif tid == 'T195':
+            result = verify_theorem_T195()
+        elif tid == 'T196':
+            result = verify_theorem_T196()
+        else:
+            return jsonify({'error': f'Unknown theorem: {theorem_id}'}), 404
+        return jsonify(_to_native(result))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+# ============================================================
+# v7.25b 幂律·对数·三分损益·类型论面板 (M189 + BFT升级 + M187/M188升级)
+# ============================================================
+
+@app.route('/api/v725b/powerlaw/state', methods=['GET'])
+def v725b_powerlaw_state():
+    """M189 幂律引擎状态"""
+    try:
+        from M189_PowerLawEngine import PowerLawEngine, THEOREMS_M189
+        engine = PowerLawEngine.get_instance()
+        state = engine.get_state()
+        state['theorems'] = {k: v['name'] for k, v in THEOREMS_M189.items()}
+        return jsonify(_to_native(state))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725b/powerlaw/detect', methods=['POST'])
+def v725b_powerlaw_detect():
+    """幂律检测: POST {x_data: [...], y_data: [...]}"""
+    try:
+        from M189_PowerLawEngine import PowerLawEngine
+        from dataclasses import asdict
+        data = request.get_json(force=True) or {}
+        x_data = data.get('x_data', [])
+        y_data = data.get('y_data', [])
+        method = data.get('method', 'mle')
+        engine = PowerLawEngine.get_instance()
+        fit = engine.detect_power_law(x_data, y_data, method=method)
+        return jsonify(_to_native(asdict(fit)))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725b/powerlaw/log_compress', methods=['POST'])
+def v725b_powerlaw_log_compress():
+    """对数压缩: POST {values: [...], base: float}"""
+    try:
+        from M189_PowerLawEngine import PowerLawEngine
+        from dataclasses import asdict
+        data = request.get_json(force=True) or {}
+        values = data.get('values', [])
+        base = data.get('base', 2.718281828459045)
+        engine = PowerLawEngine.get_instance()
+        result = engine.log_compress(values, base=base)
+        return jsonify(_to_native(asdict(result)))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725b/powerlaw/sparse_attention', methods=['POST'])
+def v725b_powerlaw_sparse_attention():
+    """幂律稀疏注意力: POST {importance_scores: [...], psi: float}"""
+    try:
+        from M189_PowerLawEngine import PowerLawEngine
+        from dataclasses import asdict
+        data = request.get_json(force=True) or {}
+        scores = data.get('importance_scores', [])
+        psi = data.get('psi', 1.0)
+        engine = PowerLawEngine.get_instance()
+        config = engine.compute_sparse_attention(scores, psi=psi)
+        return jsonify(_to_native(asdict(config)))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725b/consensus/bft', methods=['POST'])
+def v725b_consensus_bft():
+    """2/3 三分损益同源共识: POST {validators: int, votes_agree: int, round: int}"""
+    try:
+        from M189_PowerLawEngine import PowerLawEngine
+        from dataclasses import asdict
+        data = request.get_json(force=True) or {}
+        validators = data.get('validators', 9)
+        votes = data.get('votes_agree', 6)
+        round_num = data.get('round_number', 0)
+        engine = PowerLawEngine.get_instance()
+        result = engine.bft_consensus(validators, votes, round_number=round_num)
+        return jsonify(_to_native(asdict(result)))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725b/sanfen/cycle', methods=['POST'])
+def v725b_sanfen_cycle():
+    """三分损益生律: POST {fundamental: float, steps: int}"""
+    try:
+        from M189_PowerLawEngine import PowerLawEngine
+        from dataclasses import asdict
+        data = request.get_json(force=True) or {}
+        fundamental = data.get('fundamental', 1.0)
+        steps = data.get('steps', 12)
+        engine = PowerLawEngine.get_instance()
+        cycle = engine.sanfen_sheng_lu(fundamental=fundamental, steps=steps)
+        return jsonify(_to_native(asdict(cycle)))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725b/curry_howard/map', methods=['POST'])
+def v725b_curry_howard_map():
+    """Curry-Howard 意图映射: POST {intent: string}"""
+    try:
+        from M188_IntentionalityEngine import IntentionalityEngine
+        data = request.get_json(force=True) or {}
+        intent = data.get('intent', '')
+        engine = IntentionalityEngine.get_instance()
+        judgment = engine.map_intent_to_type(intent)
+        return jsonify(_to_native(judgment))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725b/silver_bullet', methods=['POST'])
+def v725b_silver_bullet():
+    """银弹比计算: POST {code_size: float, ess_complexity: float, type_constraints: int}"""
+    try:
+        from M188_IntentionalityEngine import IntentionalityEngine
+        data = request.get_json(force=True) or {}
+        code_size = data.get('code_size', 100)
+        ess = data.get('ess_complexity', 50)
+        tc = data.get('type_constraints', 5)
+        engine = IntentionalityEngine.get_instance()
+        result = engine.compute_silver_bullet_ratio(code_size, ess, tc)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725b/rot/sparse_attention', methods=['POST'])
+def v725b_rot_sparse_attention():
+    """M187 幂律稀疏注意力: POST {importance: [...], psi: float}"""
+    try:
+        from M187_ContextRotDetector import ContextRotDetector
+        data = request.get_json(force=True) or {}
+        importance = data.get('importance', [])
+        psi = data.get('psi', None)
+        detector = ContextRotDetector.get_instance()
+        result = detector.compute_sparse_attention(importance, psi=psi)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725b/mve', methods=['GET'])
+def v725b_mve():
+    """M189 MVE 快速验证"""
+    try:
+        from M189_PowerLawEngine import run_mve_tests
+        results = run_mve_tests()
+        return jsonify(_to_native(results))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v725b/theorem/<theorem_id>', methods=['GET'])
+def v725b_theorem(theorem_id):
+    """M189 定理查询: T191-T196"""
+    try:
+        from M189_PowerLawEngine import THEOREMS_M189
+        tid = theorem_id.upper()
+        if tid in THEOREMS_M189:
+            return jsonify(_to_native(THEOREMS_M189[tid]))
+        return jsonify({'error': f'Unknown theorem: {theorem_id}'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

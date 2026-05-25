@@ -117,6 +117,7 @@ class QueryResult:
     pages_used: List[str] = field(default_factory=list)   # 使用的页面 page_id
     confidence: float = 0.0
     processing_time_ms: float = 0.0
+    memory_context_count: int = 0        # M176 反哺记忆片段数
 
 
 @dataclass
@@ -669,32 +670,45 @@ class LLMWikiEngine:
 
     def query(self, question: str,
               mode: QueryMode = QueryMode.WIKI,
-              max_pages: int = 5) -> QueryResult:
+              max_pages: int = 5,
+              use_memory_context: bool = True) -> QueryResult:
         """
         查询接口（兼容 RAG 模式）：
         - mode=RAG: 传统 RAG（检索片段 → 生成答案）【模拟】
         - mode=WIKI: Wiki 模式（读取相关页面 → 综合答案）
         - mode=HYBRID: RAG + Wiki 混合
+        - use_memory_context: 是否从 M176 记忆补充查询上下文（默认 True）
         """
         t0 = time.time()
         result = QueryResult(answer="", mode=mode.value)
 
+        # --- M176 反哺：从组织记忆补充查询上下文 ---
+        memory_context_parts: List[str] = []
+        if use_memory_context and self._org_bridge is not None:
+            memory_context_parts = self._org_bridge.recall_to_context(question, top_k=3)
+
         if mode == QueryMode.RAG:
-            # 模拟 RAG：直接从问题关键词匹配页面内容
+            # 模拟 RAG：v7.25 升级为 RLM 三级融合搜索
             answer_parts = ["[RAG模拟] "]
-            matched = self._keyword_search(question, max_pages)
+            matched = self._rlm_search(question, max_pages)
             for pid in matched:
                 page = self.graph.pages[pid]
                 page.view_count += 1
                 snippet = page.content[:200].replace("\n", " ")
                 answer_parts.append(f"[[{pid}]] {snippet}")
+            # 追加 M176 记忆补充
+            if memory_context_parts:
+                answer_parts.append("\n---\n### 组织记忆补充（M176）")
+                for i, ctx in enumerate(memory_context_parts):
+                    answer_parts.append(f"[记忆{i+1}] {ctx[:200]}")
             result.answer = "\n".join(answer_parts) if answer_parts[1:] else "未找到相关文档片段。"
             result.pages_used = matched
+            result.memory_context_count = len(memory_context_parts)
 
         elif mode == QueryMode.WIKI:
-            # Wiki 模式：读取相关页面，综合答案
-            related_pids = self._keyword_search(question, max_pages)
-            if not related_pids:
+            # Wiki 模式：v7.25 RLM 三级融合搜索
+            related_pids = self._rlm_search(question, max_pages)
+            if not related_pids and not memory_context_parts:
                 result.answer = "知识库中暂无相关页面，请先摄入相关文档。"
             else:
                 answer_parts = [f"# 关于「{question}」的知识综合\n"]
@@ -705,16 +719,28 @@ class LLMWikiEngine:
                     # 取内容前 500 字符作为摘要
                     content_clean = self._strip_markup(page.content[:800])
                     answer_parts.append(content_clean)
+                # 追加 M176 记忆补充
+                if memory_context_parts:
+                    answer_parts.append("\n---\n\n## 组织记忆补充（M176 反哺）\n")
+                    for i, ctx in enumerate(memory_context_parts):
+                        answer_parts.append(f"**[记忆{i+1}]** {ctx[:300]}\n")
                 result.answer = "\n".join(answer_parts)
                 result.pages_used = related_pids
+                result.memory_context_count = len(memory_context_parts)
 
         elif mode == QueryMode.HYBRID:
-            wiki_result = self.query(question, QueryMode.WIKI, max_pages)
-            rag_result = self.query(question, QueryMode.RAG, 2)
+            wiki_result = self.query(question, QueryMode.WIKI, max_pages, use_memory_context=False)
+            rag_result = self.query(question, QueryMode.RAG, 2, use_memory_context=False)
             result.answer = wiki_result.answer + "\n\n---\n\n### RAG 补充片段\n\n" + rag_result.answer
             result.pages_used = list(set(wiki_result.pages_used + rag_result.pages_used))
+            # HYBRID 模式下独立补充记忆上下文
+            if memory_context_parts:
+                result.answer += "\n\n---\n\n### 组织记忆补充（M176 反哺）\n\n"
+                for i, ctx in enumerate(memory_context_parts):
+                    result.answer += f"**[记忆{i+1}]** {ctx[:300]}\n\n"
+                result.memory_context_count = len(memory_context_parts)
 
-        result.confidence = min(1.0, len(result.pages_used) * 0.2)
+        result.confidence = min(1.0, len(result.pages_used) * 0.2 + len(memory_context_parts) * 0.05)
         result.processing_time_ms = round((time.time() - t0) * 1000, 2)
         return result
 
@@ -747,10 +773,311 @@ class LLMWikiEngine:
 
     # ---- 内部方法 ----
 
+    def _peek_search(self, query: str, max_results: int = 5) -> List[Dict[str, Any]]:
+        """
+        高级搜索算子1：结构化查看（RLM peek 模拟）
+
+        对查询结果进行结构化分析，返回：
+        - 页面标题、段落数、字符数、估算 token 数
+        """
+        page_ids = self._keyword_search(query, max_results)
+        results = []
+        for pid in page_ids:
+            page = self.graph.pages.get(pid)
+            if not page:
+                continue
+            content = page.content
+            sections = len(re.findall(r'^#{1,6}\s+', content, re.MULTILINE))
+            chars = len(content)
+            cn = sum(1 for c in content if '\u4e00' <= c <= '\u9fff')
+            en = chars - cn
+            est_tokens = int(cn / 1.5 + en / 4)
+            results.append({
+                "page_id": pid,
+                "title": page.title,
+                "sections": sections,
+                "chars": chars,
+                "est_tokens": est_tokens,
+                "view_count": page.view_count,
+            })
+        return results
+
+    def _grep_search(self, query: str, pattern: str,
+                      use_regex: bool = False,
+                      max_results: int = 5) -> List[Dict[str, Any]]:
+        """
+        高级搜索算子2：关键词/正则过滤（RLM grep 模拟）
+
+        query: 原始查询（用于定位页面）
+        pattern: 要在页面内容中匹配的模式
+        """
+        page_ids = self._keyword_search(query, max_results)
+        results = []
+        flags = 0 if use_regex else re.IGNORECASE
+        try:
+            regex = re.compile(pattern, flags)
+        except re.error:
+            regex = re.compile(re.escape(pattern), flags)
+
+        for pid in page_ids:
+            page = self.graph.pages.get(pid)
+            if not page:
+                continue
+            matches = list(regex.finditer(page.content))
+            if matches:
+                results.append({
+                    "page_id": pid,
+                    "title": page.title,
+                    "match_count": len(matches),
+                    "first_match": matches[0].group()[:100],
+                    "matched_positions": [m.start() for m in matches[:10]],
+                })
+        return results
+
+    def _partition_search(self, query: str,
+                           strategy: str = "structural",
+                           chunk_size: int = 500,
+                           max_results: int = 5) -> List[Dict[str, Any]]:
+        """
+        高级搜索算子3：分块搜索（RLM partition 模拟）
+
+        对查询命中的页面按策略分块：
+        - structural: 按 Markdown 标题分块
+        - semantic:   按句子分块
+        - fixed_size: 按固定字符数分块
+        """
+        page_ids = self._keyword_search(query, max_results)
+        results = []
+        heading_re = re.compile(r'^(#{1,6})\s+(.+)$', re.MULTILINE)
+        sentence_re = re.compile(r'(?<=[。！？.!?])\s+')
+
+        for pid in page_ids:
+            page = self.graph.pages.get(pid)
+            if not page:
+                continue
+            content = page.content
+            chunks = []
+
+            if strategy == "structural":
+                matches = list(heading_re.finditer(content))
+                for i, m in enumerate(matches):
+                    start = m.start()
+                    end = matches[i + 1].start() if i + 1 < len(matches) else len(content)
+                    chunk_content = content[start:end].strip()
+                    if chunk_content:
+                        chunks.append({
+                            "chunk_index": i,
+                            "level": len(m.group(1)),
+                            "title": m.group(2).strip(),
+                            "chars": len(chunk_content),
+                        })
+            elif strategy == "semantic":
+                sentences = [s.strip() for s in sentence_re.split(content) if s.strip()]
+                cur = []
+                cur_len = 0
+                for s in sentences:
+                    cur.append(s)
+                    cur_len += len(s)
+                    if cur_len >= chunk_size:
+                        chunks.append({
+                            "chunk_index": len(chunks),
+                            "sentence_count": len(cur),
+                            "chars": cur_len,
+                        })
+                        cur = []
+                        cur_len = 0
+                if cur:
+                    chunks.append({
+                        "chunk_index": len(chunks),
+                        "sentence_count": len(cur),
+                        "chars": cur_len,
+                    })
+            else:
+                start = 0
+                idx = 0
+                while start < len(content):
+                    end = min(start + chunk_size, len(content))
+                    chunks.append({
+                        "chunk_index": idx,
+                        "chars": end - start,
+                    })
+                    if end >= len(content):
+                        break
+                    start = end - 50
+                    idx += 1
+
+            results.append({
+                "page_id": pid,
+                "title": page.title,
+                "strategy": strategy,
+                "total_chunks": len(chunks),
+                "chunks": chunks[:10],
+            })
+        return results
+
+    # ---- v7.25 升级：RLM 三级高级搜索 ----
+
+    def _get_rlm_engine(self):
+        """延迟导入 M186 RLMEngine（避免循环依赖）"""
+        try:
+            from M186_RLMEngine import RLMEngine
+            return RLMEngine.get_instance()
+        except ImportError:
+            return None
+
+    def _peek_search(self, query: str, max_results: int = 5) -> List[str]:
+        """
+        L1 结构化查看搜索：调用 RLMEngine.peek 查看文档结构，
+        对每个 Wiki 页面执行 peek，然后用查询词匹配节标题，
+        按匹配度排序返回 page_id 列表。
+        """
+        rlm = self._get_rlm_engine()
+        if rlm is None:
+            return self._keyword_search(query, max_results)
+
+        query_words = set(re.findall(r'[\w\u4e00-\u9fff]{2,}', query.lower()))
+        if not query_words:
+            return []
+
+        from M186_RLMEngine import RLMDocument
+        scores: Dict[str, float] = {}
+
+        for pid, page in self.graph.pages.items():
+            score = 0.0
+            try:
+                doc = RLMDocument(content=page.content, metadata={"page_id": pid})
+                peek_result = rlm.execute_operator("peek", doc)
+                # 匹配 peek 出来的节标题
+                for section in peek_result.sections:
+                    title_lower = section.get("title", "").lower()
+                    for word in query_words:
+                        if word in title_lower:
+                            score += 5  # 结构标题匹配权重更高
+            except Exception:
+                # peek 失败时降级到标题关键词匹配
+                for word in query_words:
+                    if word in page.title.lower():
+                        score += 2
+
+            if score > 0:
+                scores[pid] = score
+
+        sorted_pids = sorted(scores, key=lambda p: scores[p], reverse=True)
+        return sorted_pids[:max_results]
+
+    def _grep_search(self, query: str, pattern: str = "",
+                     max_results: int = 5) -> List[str]:
+        """
+        L2 关键词/正则过滤搜索：调用 RLMEngine.grep 在页面中搜索，
+        按匹配数量排序返回 page_id 列表。
+        """
+        rlm = self._get_rlm_engine()
+        if rlm is None:
+            return self._keyword_search(query, max_results)
+
+        search_pattern = pattern or query
+        scores: Dict[str, int] = {}
+
+        for pid, page in self.graph.pages.items():
+            try:
+                from M186_RLMEngine import RLMDocument
+                doc = RLMDocument(content=page.content, metadata={"page_id": pid})
+                grep_result = rlm.execute_operator("grep", doc, pattern=search_pattern)
+                if grep_result.total_matches > 0:
+                    scores[pid] = grep_result.total_matches
+            except Exception:
+                # grep 失败时降级到关键词匹配
+                kw = set(re.findall(r'[\w\u4e00-\u9fff]{2,}', search_pattern.lower()))
+                count = sum(1 for w in kw if w in page.content.lower())
+                if count > 0:
+                    scores[pid] = count
+
+        sorted_pids = sorted(scores, key=lambda p: scores[p], reverse=True)
+        return sorted_pids[:max_results]
+
+    def _partition_search(self, query: str,
+                          strategy: str = "structural",
+                          max_results: int = 5) -> List[str]:
+        """
+        L3 分块搜索：调用 RLMEngine.partition 将页面分块，
+        然后在每块内进行关键词匹配，按匹配块数排序。
+        """
+        rlm = self._get_rlm_engine()
+        if rlm is None:
+            return self._keyword_search(query, max_results)
+
+        query_words = set(re.findall(r'[\w\u4e00-\u9fff]{2,}', query.lower()))
+        if not query_words:
+            return []
+
+        scores: Dict[str, float] = {}
+
+        for pid, page in self.graph.pages.items():
+            try:
+                from M186_RLMEngine import RLMDocument
+                doc = RLMDocument(content=page.content, metadata={"page_id": pid})
+                part_result = rlm.execute_operator("partition", doc, strategy=strategy)
+                # 在每个块内计算匹配度
+                match_count = 0
+                for chunk in part_result.chunks:
+                    chunk_content = chunk.get("content", "").lower()
+                    for word in query_words:
+                        if word in chunk_content:
+                            match_count += 1
+                            break  # 每块最多计一次
+                if match_count > 0:
+                    # 归一化：匹配块数 / 总块数 * 10
+                    total = max(part_result.total_chunks, 1)
+                    scores[pid] = (match_count / total) * 10 + match_count * 2
+            except Exception:
+                # partition 失败时降级
+                for word in query_words:
+                    if word in page.content.lower():
+                        scores[pid] = scores.get(pid, 0) + 1
+
+        sorted_pids = sorted(scores, key=lambda p: scores[p], reverse=True)
+        return sorted_pids[:max_results]
+
+    def _rlm_search(self, query: str, max_results: int = 5) -> List[str]:
+        """
+        v7.25 RLM 三级融合搜索：
+        1. L1 _peek_search — 结构化标题匹配
+        2. L2 _grep_search — 内容关键词/正则过滤
+        3. L3 _partition_search — 分块语义匹配
+        融合排序（加权投票），保留 _keyword_search 作为兜底。
+        """
+        # L1/L2/L3 并行收集候选
+        l1_pids = self._peek_search(query, max_results * 2)
+        l2_pids = self._grep_search(query, max_results=max_results * 2)
+        l3_pids = self._partition_search(query, max_results=max_results * 2)
+
+        # 加权投票
+        vote_scores: Dict[str, float] = {}
+        for pid in l1_pids:
+            rank = l1_pids.index(pid)
+            vote_scores[pid] = vote_scores.get(pid, 0) + (len(l1_pids) - rank) * 3
+        for pid in l2_pids:
+            rank = l2_pids.index(pid)
+            vote_scores[pid] = vote_scores.get(pid, 0) + (len(l2_pids) - rank) * 2
+        for pid in l3_pids:
+            rank = l3_pids.index(pid)
+            vote_scores[pid] = vote_scores.get(pid, 0) + (len(l3_pids) - rank) * 1
+
+        if vote_scores:
+            sorted_pids = sorted(vote_scores, key=lambda p: vote_scores[p], reverse=True)
+            result = sorted_pids[:max_results]
+            # 如果 RLM 搜索有结果，直接返回
+            if result:
+                return result
+
+        # 兜底：使用传统关键词搜索
+        return self._keyword_search(query, max_results)
+
     def _keyword_search(self, query: str, max_results: int = 5) -> List[str]:
         """
-        关键词搜索：在页面 title/content 中匹配查询词。
+        关键词搜索（兜底）：在页面 title/content 中匹配查询词。
         返回匹配的 page_id 列表（按相关度排序）。
+        v7.25: 作为 _rlm_search 的 fallback，不再作为 query() 主搜索。
         """
         query_words = set(re.findall(r'[\w\u4e00-\u9fff]{2,}', query.lower()))
         if not query_words:

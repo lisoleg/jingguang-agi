@@ -443,7 +443,7 @@ class L2ShellInterface:
     L2 壳五项硬化属性：
     1. 一致性(Consistency)   — 调用 M88 类型防火墙
     2. 可回写(Write-back)   — 调用 M176 组织记忆引擎
-    3. 可保持(Preservation)  — 调用 M175 责任锚定
+    3. 可保持(Preservation)  — 调用 M78 HoTT推理引擎
     4. 可寻址(Addressability)— 调用 M176 可寻址记忆
     5. 可锚定(Anchorability) — 调用 M175 内容墙+GC扣罚
     """
@@ -467,6 +467,13 @@ class L2ShellInterface:
             self._m176_available = True
         except ImportError:
             self._m176_available = False
+        # 可保持(Preservation) → M78 HoTT推理引擎（长链归约可验证）
+        try:
+            from M78_HoTTInferenceEngine import HoTTInferenceEngine
+            self._HoTTInferenceEngine = HoTTInferenceEngine
+            self._m78_available = True
+        except ImportError:
+            self._m78_available = False
         try:
             from M175_SafetyShield import SafetyShield
             self._SafetyShield = SafetyShield
@@ -477,8 +484,10 @@ class L2ShellInterface:
     def full_check(self) -> L2ShellReport:
         consistency_ok = self._m88_available
         writeback_ok = self._m176_available
-        preservation_ok = self._m175_available
+        # 可保持(Preservation) = M78 HoTT推理（长链归约可验证）
+        preservation_ok = self._m78_available
         addressability_ok = self._m176_available
+        # 可锚定(Anchorability) = M175 SafetyShield（责任锚定）
         anchorability_ok = self._m175_available
 
         missing = []
@@ -487,7 +496,7 @@ class L2ShellInterface:
         if not writeback_ok:
             missing.append("WriteBack(M176)")
         if not preservation_ok:
-            missing.append("Preservation(M175)")
+            missing.append("Preservation(M78)")
         if not addressability_ok:
             missing.append("Addressability(M176)")
         if not anchorability_ok:

@@ -1647,6 +1647,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 .v77-bar-fill.safety{background:linear-gradient(90deg,#60a5fa,#3b82f6)}
 .v77-bar-val{font-size:8px;color:var(--txt3);min-width:30px;text-align:right}
 .v77-badge{font-size:7px;padding:1px 5px;border-radius:3px;background:rgba(244,114,182,.15);color:#f472b6;display:inline-block}
+/* v7.25 RLM/ROT/INT 面板共用样式 */
+.v725-panel textarea{width:100%;box-sizing:border-box;background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:4px 6px;font-size:11px;resize:vertical;margin-top:4px}
 
 /* ===== v7.5 面板样式（M114-M116 HoTT截面搜索）===== */
 .panel-v75{border-left:2px solid #22d3ee!important;background:linear-gradient(90deg,rgba(34,211,238,.05),transparent)!important}
@@ -4847,6 +4849,143 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <div class="v77-badge" id="v724-m178-bridge" style="color:#9ca3af;font-size:10px;">⚡离线</div>
         </div>
         <div id="v724-wiki-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;"></div>
+      </div>
+
+      <!-- v7.25 Understand Anything 面板 -->
+      <div id="v725-understand-panel" class="panel-section panel-v717" data-hint="Understand Anything M185: 代码知识图谱·21节点35边·Tree-sitter解析·T191-T193">
+        <div class="panel-title">🔍 Understand <span style="font-size:10px;color:var(--txt3)">v7.25 · M185</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v725Analyze()" style="font-size:11px;padding:3px 8px;border:1px solid #3b82f6;background:var(--panel-bg);color:#3b82f6;border-radius:4px;cursor:pointer;font-weight:bold;">📄分析</button>
+          <button onclick="v725State()" style="font-size:11px;padding:3px 8px;border:1px solid #10b981;background:var(--panel-bg);color:#10b981;border-radius:4px;cursor:pointer;">📊状态</button>
+          <button onclick="v725Chat()" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;">💬对话</button>
+          <button onclick="v725Theorem()" style="font-size:11px;padding:3px 8px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;">📐定理</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">T191</div>
+          <div class="v77-badge" id="v725-t191" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;">T192</div>
+          <div class="v77-badge" id="v725-t192" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;">T193</div>
+          <div class="v77-badge" id="v725-t193" style="color:var(--txt3);font-size:11px;">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">节点</div>
+          <div class="v77-badge" id="v725-nodes" style="color:var(--txt3);font-size:11px;">0</div>
+          <div class="v77-label" style="font-size:11px;">边</div>
+          <div class="v77-badge" id="v725-edges" style="color:var(--txt3);font-size:11px;">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">类型</div>
+          <div class="v77-badge" id="v725-types" style="color:#60a5fa;font-size:10px;">21</div>
+          <div class="v77-label" style="font-size:11px;">边类</div>
+          <div class="v77-badge" id="v725-edge-types" style="color:#f59e0b;font-size:10px;">35</div>
+        </div>
+        <div id="v725-understand-detail" style="font-size:11px;color:var(--txt2);max-height:180px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;"></div>
+      </div>
+
+      <!-- v7.25 RLM 递归语言模型面板 -->
+      <div id="v725-rlm-panel" class="panel-section panel-v717" data-hint="RLM Recursive Language Model M186: 递归语言模型·peek/grep/partition/recursion算子·T194">
+        <div class="panel-title">🔄 RLM <span style="font-size:10px;color:var(--txt3)">v7.25 · M186</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v725rlmExecute('peek')" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">peek</button>
+          <button onclick="v725rlmExecute('grep')" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;">grep</button>
+          <button onclick="v725rlmExecute('partition')" style="font-size:11px;padding:3px 8px;border:1px solid #60a5fa;background:var(--panel-bg);color:#60a5fa;border-radius:4px;cursor:pointer;">partition</button>
+          <button onclick="v725rlmExecute('recursion')" style="font-size:11px;padding:3px 8px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;">recursion</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">执行次数</div>
+          <div class="v77-badge" id="v725-rlm-exec" style="color:#34d399;font-size:11px;">0</div>
+          <div class="v77-label" style="font-size:11px;">算子</div>
+          <div class="v77-badge" id="v725-rlm-op" style="color:#60a5fa;font-size:10px;">—</div>
+        </div>
+        <textarea id="v725-rlm-input" rows="3" placeholder="输入内容…" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:4px 6px;font-size:11px;resize:vertical;margin-top:4px;"></textarea>
+        <div id="v725-rlm-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;white-space:pre-wrap;"></div>
+      </div>
+
+      <!-- v7.25 Context Rot 检测器面板 -->
+      <div id="v725-rot-panel" class="panel-section panel-v717" data-hint="Context Rot Detector M187: 上下文腐烂检测·SNR信噪比·HEALTHY/DEGRADED/CRITICAL·T195">
+        <div class="panel-title">📡 Context Rot <span style="font-size:10px;color:var(--txt3)">v7.25 · M187</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v725rotCompute()" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;font-weight:bold;">📊计算SNR</button>
+          <button onclick="v725rotMonitor('start')" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">▶监控</button>
+          <button onclick="v725rotMonitor('stop')" style="font-size:11px;padding:3px 8px;border:1px solid #f87171;background:var(--panel-bg);color:#f87171;border-radius:4px;cursor:pointer;">■停止</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">状态</div>
+          <div class="v77-badge" id="v725-rot-status" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;">SNR</div>
+          <div class="v77-badge" id="v725-rot-snr" style="color:#34d399;font-size:11px;">—</div>
+        </div>
+        <textarea id="v725-rot-input" rows="3" placeholder='对话历史 JSON: [{"role":"user","content":"..."}]' style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:4px 6px;font-size:11px;resize:vertical;margin-top:4px;"></textarea>
+        <div id="v725-rot-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;white-space:pre-wrap;"></div>
+      </div>
+
+      <!-- v7.25 Intentionality 意向性引擎面板 -->
+      <div id="v725-int-panel" class="panel-section panel-v717" data-hint="Intentionality Engine M188: 意向性评估·FULL_INTENTIONALITY/PARTIAL·T196">
+        <div class="panel-title">🎯 Intentionality <span style="font-size:10px;color:var(--txt3)">v7.25 · M188</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v725intAssess()" style="font-size:11px;padding:3px 8px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;font-weight:bold;">🎯评估</button>
+          <button onclick="v725intTheorem('T194')" style="font-size:11px;padding:3px 8px;border:1px solid #60a5fa;background:var(--panel-bg);color:#60a5fa;border-radius:4px;cursor:pointer;">T194</button>
+          <button onclick="v725intTheorem('T195')" style="font-size:11px;padding:3px 8px;border:1px solid #60a5fa;background:var(--panel-bg);color:#60a5fa;border-radius:4px;cursor:pointer;">T195</button>
+          <button onclick="v725intTheorem('T196')" style="font-size:11px;padding:3px 8px;border:1px solid #60a5fa;background:var(--panel-bg);color:#60a5fa;border-radius:4px;cursor:pointer;">T196</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">判定</div>
+          <div class="v77-badge" id="v725-int-verdict" style="color:var(--txt3);font-size:10px;">—</div>
+          <div class="v77-label" style="font-size:11px;">得分</div>
+          <div class="v77-badge" id="v725-int-score" style="color:#a78bfa;font-size:11px;">—</div>
+        </div>
+        <textarea id="v725-int-input" rows="3" placeholder="输入待评估话语…" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:4px 6px;font-size:11px;resize:vertical;margin-top:4px;"></textarea>
+        <div id="v725-int-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;white-space:pre-wrap;"></div>
+      </div>
+
+      <!-- v7.25b 幂律·三分损益·类型论面板 -->
+      <div id="v725b-powerlaw-panel" class="panel-section panel-v717" data-hint="M189 PowerLawEngine: 幂律拟合·对数压缩·三分损益·2/3共识·Curry-Howard·T191-T196">
+        <div class="panel-title">⚛️ PowerLaw <span style="font-size:10px;color:var(--txt3)">v7.25b · M189</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v725bMve()" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;font-weight:bold;">MVE验证</button>
+          <button onclick="v725bSanfen()" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">三分损益</button>
+          <button onclick="v725bConsensus()" style="font-size:11px;padding:3px 8px;border:1px solid #60a5fa;background:var(--panel-bg);color:#60a5fa;border-radius:4px;cursor:pointer;">2/3共识</button>
+          <button onclick="v725bTheorem('T191')" style="font-size:11px;padding:3px 8px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;">T191</button>
+          <button onclick="v725bTheorem('T195')" style="font-size:11px;padding:3px 8px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;">T195</button>
+          <button onclick="v725bTheorem('T196')" style="font-size:11px;padding:3px 8px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;">T196</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">MVE</div>
+          <div class="v77-badge" id="v725b-mve-badge" style="color:var(--txt3);font-size:10px;">—</div>
+          <div class="v77-label" style="font-size:11px;">逗号</div>
+          <div class="v77-badge" id="v725b-comma-badge" style="color:#f59e0b;font-size:10px;">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">共识</div>
+          <div class="v77-badge" id="v725b-consensus-badge" style="color:#60a5fa;font-size:10px;">—</div>
+          <div class="v77-label" style="font-size:11px;">漂移</div>
+          <div class="v77-badge" id="v725b-drift-badge" style="color:var(--txt3);font-size:10px;">—</div>
+        </div>
+        <div id="v725b-detail" style="font-size:11px;color:var(--txt2);max-height:200px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;white-space:pre-wrap;"></div>
+      </div>
+
+      <div id="v725b-curry-panel" class="panel-section panel-v717" data-hint="M188 v7.25b Curry-Howard: 意图→类型签名·银弹定理T195·C_acc→0">
+        <div class="panel-title">📐 Curry-Howard <span style="font-size:10px;color:var(--txt3)">v7.25b · 类型论</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v725bCurryMap()" style="font-size:11px;padding:3px 8px;border:1px solid #f472b6;background:var(--panel-bg);color:#f472b6;border-radius:4px;cursor:pointer;font-weight:bold;">意图→类型</button>
+          <button onclick="v725bSilverBullet()" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">银弹比</button>
+          <button onclick="v725bSparseAttn()" style="font-size:11px;padding:3px 8px;border:1px solid #fbbf24;background:var(--panel-bg);color:#fbbf24;border-radius:4px;cursor:pointer;">稀疏注意力</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">类型</div>
+          <div class="v77-badge" id="v725b-type-badge" style="color:#f472b6;font-size:10px;">—</div>
+          <div class="v77-label" style="font-size:11px;">银弹</div>
+          <div class="v77-badge" id="v725b-sb-badge" style="color:#34d399;font-size:10px;">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">ψ体制</div>
+          <div class="v77-badge" id="v725b-psi-badge" style="color:#fbbf24;font-size:10px;">—</div>
+          <div class="v77-label" style="font-size:11px;">活跃率</div>
+          <div class="v77-badge" id="v725b-active-badge" style="color:var(--txt3);font-size:10px;">—</div>
+        </div>
+        <textarea id="v725b-intent-input" rows="2" placeholder="输入意图描述…" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:4px 6px;font-size:11px;resize:vertical;margin-top:4px;"></textarea>
+        <div id="v725b-curry-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;white-space:pre-wrap;"></div>
       </div>
 
       </div><!-- END dashboard-content -->
@@ -10949,6 +11088,10 @@ function updateV72Panels(data) {
   if (data.v723) updateV723Panels(data);
   // v7.24 LLM Wiki 知识引擎面板更新
   if (data.v724) updateV724Panels(data);
+  // v7.25 RLM/ROT/INT 面板更新
+  if (data.v725_rlm) updateV725RlmPanel(data.v725_rlm);
+  if (data.v725_rot) updateV725RotPanel(data.v725_rot);
+  if (data.v725_int) updateV725IntPanel(data.v725_int);
   // v7.1人机融合层面板更新
   if (data.v71) updateV71Panels(data);
   // M130 感知谱分解面板更新（"感知即流贯的谱分解"论文）
@@ -13241,6 +13384,396 @@ function _v724Badge(id, val, color) {
 
 function _v724SetDetail(msg) {
   const el = document.getElementById('v724-wiki-detail');
+  if (el) { el.style.display = 'block'; el.textContent = msg; el.scrollTop = 0; }
+}
+
+// ==================== v7.25 Understand Anything 面板 ====================
+
+function v725Analyze() {
+  const path = prompt('输入要分析的Python文件路径：', 'M184_LLMWikiEngine.py');
+  if (!path) return;
+  fetch('/api/v725/understand/analyze', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({file_path: path})
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.error) { _v725SetDetail('❌ ' + d.error); return; }
+    let msg = `📄 文件分析：${d.file_path || path}\n`;
+    msg += `  imports: ${d.imports || 0}  functions: ${d.functions || 0}  classes: ${d.classes || 0}\n`;
+    if (d.function_list) {
+      msg += `\n函数列表:\n`;
+      d.function_list.slice(0, 15).forEach(f => { msg += `  ${f.name} (L${f.line_start}-${f.line_end})\n`; });
+      if (d.function_list.length > 15) msg += `  ... 共 ${d.function_list.length} 个函数\n`;
+    }
+    if (d.class_list) {
+      msg += `\n类列表:\n`;
+      d.class_list.slice(0, 10).forEach(c => { msg += `  ${c.name} (L${c.line_start}-${c.line_end}) ${c.methods ? c.methods.length + '方法' : ''}\n`; });
+    }
+    _v725SetDetail(msg);
+  })
+  .catch(e => _v725SetDetail('请求失败：' + e));
+}
+
+function v725State() {
+  fetch('/api/v725/understand/state')
+  .then(r => r.json())
+  .then(d => {
+    let msg = `📊 Understand Engine 状态\n`;
+    msg += JSON.stringify(d, null, 2).slice(0, 600);
+    _v725SetDetail(msg);
+    // 更新徽章
+    if (d.graph_stats) {
+      _v725Badge('v725-nodes', d.graph_stats.total_nodes || '0', '#60a5fa');
+      _v725Badge('v725-edges', d.graph_stats.total_edges || '0', '#f59e0b');
+    }
+  })
+  .catch(e => _v725SetDetail('请求失败：' + e));
+}
+
+function v725Chat() {
+  const query = prompt('输入理解查询：', 'LLMWikiEngine');
+  if (!query) return;
+  fetch('/api/v725/understand/chat?query=' + encodeURIComponent(query))
+  .then(r => r.json())
+  .then(d => {
+    if (d.error) { _v725SetDetail('❌ ' + d.error); return; }
+    let msg = `💬 理解查询：${query}\n\n`;
+    msg += d.answer || '无结果';
+    if (d.related_nodes && d.related_nodes.length > 0) {
+      msg += `\n\n🔗 相关节点: ${d.related_nodes.slice(0, 5).map(n => n.name || n.id).join(', ')}`;
+    }
+    _v725SetDetail(msg);
+  })
+  .catch(e => _v725SetDetail('请求失败：' + e));
+}
+
+function v725Theorem() {
+  const tid = prompt('输入定理编号 (T191/T192/T193)：', 'T191');
+  if (!tid) return;
+  fetch('/api/v725/understand/theorem/' + tid.toUpperCase())
+  .then(r => r.json())
+  .then(d => {
+    if (d.error) { _v725SetDetail('❌ ' + d.error); return; }
+    let msg = `📐 ${d.theorem_id || tid}: ${d.name || ''}\n`;
+    msg += `状态: ${d.passed ? '✅ PASSED' : '❌ FAILED'}\n\n`;
+    msg += `证明概要: ${d.proof_sketch || ''}\n\n`;
+    msg += `结论: ${d.conclusion || ''}\n`;
+    if (d.evidence) msg += `\n证据: ${JSON.stringify(d.evidence, null, 2).slice(0, 300)}`;
+    _v725SetDetail(msg);
+    // 更新定理徽章
+    const badgeId = 'v725-' + tid.toLowerCase();
+    _v725Badge(badgeId, d.passed ? '✅' : '❌', d.passed ? '#34d399' : '#f87171');
+  })
+  .catch(e => _v725SetDetail('请求失败：' + e));
+}
+
+function _v725Badge(id, val, color) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = val; if (color) el.style.color = color; }
+}
+
+function _v725SetDetail(msg) {
+  const el = document.getElementById('v725-understand-detail');
+  if (el) { el.style.display = 'block'; el.textContent = msg; el.scrollTop = 0; }
+}
+
+// ==================== v7.25 RLM 递归语言模型面板 ====================
+
+function v725rlmExecute(opName) {
+  const content = document.getElementById('v725-rlm-input')?.value || '';
+  if (!content.trim()) { _v725rlmSetDetail('请先输入内容'); return; }
+  _v725rlmSetDetail('执行 ' + opName + ' 算子...');
+  _v725rlmBadge('v725-rlm-op', opName, '#60a5fa');
+  fetch('/api/v725/rlm/operator/' + opName, {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({content: content})
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.error) { _v725rlmSetDetail('❌ ' + d.error); return; }
+    let msg = `✅ ${opName} 算子结果\n\n`;
+    msg += JSON.stringify(d, null, 2).slice(0, 600);
+    _v725rlmSetDetail(msg);
+    // 刷新状态
+    fetch('/api/v725/rlm/state').then(r=>r.json()).then(s => {
+      _v725rlmBadge('v725-rlm-exec', s.total_executions || '0', '#34d399');
+    });
+  })
+  .catch(e => _v725rlmSetDetail('请求失败：' + e));
+}
+
+function updateV725RlmPanel(data) {
+  if (!data) return;
+  _v725rlmBadge('v725-rlm-exec', data.total_executions || '0', '#34d399');
+  if (data.last_operator) _v725rlmBadge('v725-rlm-op', data.last_operator, '#60a5fa');
+}
+
+function _v725rlmBadge(id, val, color) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = val; if (color) el.style.color = color; }
+}
+
+function _v725rlmSetDetail(msg) {
+  const el = document.getElementById('v725-rlm-detail');
+  if (el) { el.style.display = 'block'; el.textContent = msg; el.scrollTop = 0; }
+}
+
+// ==================== v7.25 Context Rot 检测器面板 ====================
+
+function v725rotCompute() {
+  let history;
+  try { history = JSON.parse(document.getElementById('v725-rot-input')?.value || '[]'); }
+  catch(e) { _v725rotSetDetail('对话历史 JSON 格式错误'); return; }
+  if (!Array.isArray(history) || history.length === 0) { _v725rotSetDetail('请输入对话历史'); return; }
+  _v725rotSetDetail('计算 SNR...');
+  fetch('/api/v725/rot/compute', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({dialog_history: history})
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.error) { _v725rotSetDetail('❌ ' + d.error); return; }
+    const snr = d.snr ?? d.snr_db ?? '—';
+    const level = d.health_status || d.status || 'UNKNOWN';
+    const color = level === 'HEALTHY' ? '#34d399' : level === 'DEGRADED' ? '#f59e0b' : '#f87171';
+    _v725rotBadge('v725-rot-snr', snr, color);
+    _v725rotBadge('v725-rot-status', level, color);
+    let msg = `📊 SNR 结果\n\n`;
+    msg += `SNR: ${snr}\n状态: ${level}\n`;
+    if (d.context_window) msg += `上下文窗口: ${d.context_window}\n`;
+    if (d.details) msg += `\n${JSON.stringify(d.details, null, 2).slice(0, 400)}`;
+    _v725rotSetDetail(msg);
+  })
+  .catch(e => _v725rotSetDetail('请求失败：' + e));
+}
+
+function v725rotMonitor(action) {
+  fetch('/api/v725/rot/monitor/' + action, {method: 'POST'})
+  .then(r => r.json())
+  .then(d => {
+    if (d.error) { _v725rotSetDetail('❌ ' + d.error); return; }
+    const active = action === 'start';
+    _v725rotBadge('v725-rot-status', active ? '监控中' : '已停止', active ? '#34d399' : '#9ca3af');
+    _v725rotSetDetail(active ? '✅ 监控已启动' : '⏹ 监控已停止');
+  })
+  .catch(e => _v725rotSetDetail('请求失败：' + e));
+}
+
+function updateV725RotPanel(data) {
+  if (!data) return;
+  const active = data.monitoring === true || data.monitoring === 'active';
+  _v725rotBadge('v725-rot-status', active ? '监控中' : '离线', active ? '#34d399' : '#9ca3af');
+  if (data.snr != null) _v725rotBadge('v725-rot-snr', data.snr, '#34d399');
+}
+
+function _v725rotBadge(id, val, color) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = val; if (color) el.style.color = color; }
+}
+
+function _v725rotSetDetail(msg) {
+  const el = document.getElementById('v725-rot-detail');
+  if (el) { el.style.display = 'block'; el.textContent = msg; el.scrollTop = 0; }
+}
+
+// ==================== v7.25 Intentionality 意向性引擎面板 ====================
+
+function v725intAssess() {
+  const utterance = document.getElementById('v725-int-input')?.value || '';
+  if (!utterance.trim()) { _v725intSetDetail('请输入待评估话语'); return; }
+  _v725intSetDetail('评估意向性...');
+  fetch('/api/v725/int/assess', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({utterance: utterance})
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.error) { _v725intSetDetail('❌ ' + d.error); return; }
+    const verdict = d.verdict || d.intentionality_level || '—';
+    const score = d.score ?? d.confidence ?? '—';
+    const color = verdict.includes('FULL') ? '#34d399' : verdict.includes('PARTIAL') ? '#f59e0b' : '#f87171';
+    _v725intBadge('v725-int-verdict', verdict, color);
+    _v725intBadge('v725-int-score', typeof score === 'number' ? score.toFixed(2) : score, '#a78bfa');
+    let msg = `🎯 意向性评估\n\n`;
+    msg += `判定: ${verdict}\n得分: ${score}\n`;
+    if (d.target_object) msg += `目标对象: ${d.target_object}\n`;
+    if (d.factors) msg += `\n因素: ${JSON.stringify(d.factors, null, 2).slice(0, 400)}`;
+    _v725intSetDetail(msg);
+  })
+  .catch(e => _v725intSetDetail('请求失败：' + e));
+}
+
+function v725intTheorem(tid) {
+  _v725intSetDetail('验证 ' + tid + '...');
+  fetch('/api/v725/int/theorem/' + tid.toUpperCase())
+  .then(r => r.json())
+  .then(d => {
+    if (d.error) { _v725intSetDetail('❌ ' + d.error); return; }
+    let msg = `📐 ${d.theorem_id || tid}: ${d.name || ''}\n`;
+    msg += `状态: ${d.passed ? '✅ PASSED' : '❌ FAILED'}\n\n`;
+    msg += `证明概要: ${d.proof_sketch || ''}\n`;
+    if (d.conclusion) msg += `\n结论: ${d.conclusion}`;
+    _v725intSetDetail(msg);
+  })
+  .catch(e => _v725intSetDetail('请求失败：' + e));
+}
+
+function updateV725IntPanel(data) {
+  if (!data) return;
+  if (data.last_verdict) {
+    const color = data.last_verdict.includes('FULL') ? '#34d399' : '#f59e0b';
+    _v725intBadge('v725-int-verdict', data.last_verdict, color);
+  }
+  if (data.last_score != null) _v725intBadge('v725-int-score', data.last_score.toFixed(2), '#a78bfa');
+}
+
+function _v725intBadge(id, val, color) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = val; if (color) el.style.color = color; }
+}
+
+function _v725intSetDetail(msg) {
+  const el = document.getElementById('v725-int-detail');
+  if (el) { el.style.display = 'block'; el.textContent = msg; el.scrollTop = 0; }
+}
+
+// ==================== v7.25b 幂律·三分损益·类型论面板 ====================
+
+function v725bMve() {
+  fetch('/api/v725b/mve').then(r=>r.json()).then(data=>{
+    const summary = data._summary || {};
+    const passed = summary.passed || 0;
+    const total = summary.total || 0;
+    const color = summary.all_pass ? '#34d399' : '#f59e0b';
+    _v725bSetBadge('v725b-mve-badge', `${passed}/${total} ${summary.all_pass?'✅':'⚠️'}`, color);
+    let detail = 'M189 MVE Results:\n';
+    for (const [k,v] of Object.entries(data)) {
+      if (k === '_summary') continue;
+      detail += `  ${k}: ${JSON.stringify(v)}\n`;
+    }
+    detail += `\nSummary: ${passed}/${total} ${summary.all_pass?'ALL PASS':'SOME FAIL'}`;
+    _v725bSetDetail(detail);
+  }).catch(e=>_v725bSetDetail('MVE Error: '+e.message));
+}
+
+function v725bSanfen() {
+  fetch('/api/v725b/sanfen/cycle', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({fundamental:1.0, steps:12})
+  }).then(r=>r.json()).then(data=>{
+    const comma = data.pythagorean_comma || 0;
+    const color = Math.abs(comma - 23.46) < 2 ? '#34d399' : '#f87171';
+    _v725bSetBadge('v725b-comma-badge', `${comma.toFixed(2)}¢ ${data.needs_compensation?'⚠️':'✅'}`, color);
+    let detail = `三分损益周期 (${data.cycle_length}律):\n`;
+    detail += `  毕达哥拉斯逗号: ${comma.toFixed(4)}¢\n`;
+    detail += `  理论值: 23.46¢\n`;
+    detail += `  累积误差: ${data.accumulated_error.toFixed(4)}¢\n`;
+    detail += `  周期状态: ${data.phase_state}\n`;
+    detail += `  需要补偿: ${data.needs_compensation?'是':'否'}\n`;
+    detail += `  律位: [${data.positions.map(p=>p.toFixed(4)).join(', ')}]`;
+    _v725bSetDetail(detail);
+  }).catch(e=>_v725bSetDetail('Sanfen Error: '+e.message));
+}
+
+function v725bConsensus() {
+  fetch('/api/v725b/consensus/bft', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({validators:9, votes_agree:7, round_number:3})
+  }).then(r=>r.json()).then(data=>{
+    const color = data.achieved ? '#34d399' : '#f87171';
+    _v725bSetBadge('v725b-consensus-badge', `${data.votes_agree}/${data.required} ${data.achieved?'✅':'❌'}`, color);
+    _v725bSetBadge('v725b-drift-badge', data.cumulative_drift.toFixed(6), data.cumulative_drift > 0.01 ? '#f59e0b' : 'var(--txt3)');
+    let detail = `2/3 三分损益同源共识 (T192-T193):\n`;
+    detail += `  验证者: ${data.total_validators}\n`;
+    detail += `  所需票数: ${data.required_votes} (ceil(2n/3)+1)\n`;
+    detail += `  同意票: ${data.votes_agree}\n`;
+    detail += `  共识达成: ${data.achieved?'✅':'❌'}\n`;
+    detail += `  毕达哥拉斯逗号误差: ${data.pythagorean_comma_error}\n`;
+    detail += `  补偿量: ${data.compensation_applied}\n`;
+    detail += `  累积漂移: ${data.cumulative_drift}\n`;
+    detail += `  轮次: ${data.round_number}`;
+    _v725bSetDetail(detail);
+  }).catch(e=>_v725bSetDetail('Consensus Error: '+e.message));
+}
+
+function v725bTheorem(tid) {
+  fetch(`/api/v725b/theorem/${tid}`).then(r=>r.json()).then(data=>{
+    let detail = `${tid}: ${data.name}\n\n`;
+    detail += `形式化: ${data.formal}\n\n`;
+    detail += `陈述: ${data.statement}`;
+    _v725bSetDetail(detail);
+  }).catch(e=>_v725bSetDetail('Theorem Error: '+e.message));
+}
+
+function v725bCurryMap() {
+  const intent = document.getElementById('v725b-intent-input').value || '分析数据并返回结果';
+  fetch('/api/v725b/curry_howard/map', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({intent})
+  }).then(r=>r.json()).then(data=>{
+    const color = data.status === 'well_typed' ? '#34d399' : '#f87171';
+    const short = data.type_sig.length > 30 ? data.type_sig.substring(0,30)+'…' : data.type_sig;
+    _v725bSetBadge('v725b-type-badge', short, color);
+    let detail = `Curry-Howard 意图映射 (T195):\n`;
+    detail += `  意图: ${data.intent}\n`;
+    detail += `  类型签名: ${data.type_sig}\n`;
+    detail += `  状态: ${data.status}\n`;
+    detail += `  模块: ${data.module}\n`;
+    detail += `  C_acc: ${data.acc_complexity} | C_ess: ${data.ess_complexity}\n`;
+    detail += `  上下文 Γ: ${JSON.stringify(data.context)}`;
+    _v725bSetDetail(detail, 'v725b-curry-detail');
+  }).catch(e=>_v725bSetDetail('Curry Error: '+e.message, 'v725b-curry-detail'));
+}
+
+function v725bSilverBullet() {
+  fetch('/api/v725b/silver_bullet', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({code_size:200, ess_complexity:80, type_constraints:10})
+  }).then(r=>r.json()).then(data=>{
+    const prob = (data.silver_bullet_probability * 100).toFixed(1);
+    const color = prob > 50 ? '#34d399' : prob > 20 ? '#f59e0b' : 'var(--txt3)';
+    _v725bSetBadge('v725b-sb-badge', `${prob}%`, color);
+    let detail = `银弹存在性定理 (T195):\n`;
+    detail += `  C_acc: ${data.c_acc}\n`;
+    detail += `  C_ess: ${data.c_ess}\n`;
+    detail += `  比率 C_acc/C_ess: ${data.ratio}\n`;
+    detail += `  抑制后 C_acc: ${data.suppressed_c_acc || 'N/A'}\n`;
+    detail += `  银弹概率: ${prob}%\n`;
+    detail += `  类型约束有效性: ${data.type_constraint_effectiveness || 'N/A'}\n\n`;
+    detail += `Brooks(结合代数): C_acc > 0 (无银弹)\n`;
+    detail += `银弹定理(类型论): C_acc → 0 (银弹存在)`;
+    _v725bSetDetail(detail, 'v725b-curry-detail');
+  }).catch(e=>_v725bSetDetail('Silver Bullet Error: '+e.message, 'v725b-curry-detail'));
+}
+
+function v725bSparseAttn() {
+  fetch('/api/v725b/powerlaw/sparse_attention', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({importance_scores:[10,5,2,1,0.5,0.1,0.01], psi:2.0})
+  }).then(r=>r.json()).then(data=>{
+    const color = data.regime === 'power_sparse' ? '#34d399' : data.regime === 'linear_cage' ? '#f87171' : '#f59e0b';
+    _v725bSetBadge('v725b-psi-badge', `ψ=${data.psi}`, '#fbbf24');
+    _v725bSetBadge('v725b-active-badge', `${(data.expected_active_ratio*100).toFixed(0)}%`, color);
+    let detail = `幂律稀疏注意力 (U-Net of Consciousness):\n`;
+    detail += `  意识强度 ψ: ${data.psi}\n`;
+    detail += `  体制: ${data.regime}\n`;
+    detail += `  活跃连接比例: ${(data.expected_active_ratio*100).toFixed(1)}%\n`;
+    detail += `  计算复杂度: ${data.complexity_order}\n\n`;
+    detail += `低ψ → 线性囚笼 (O(N²))\n`;
+    detail += `高ψ → 幂律稀疏 (O(N log N))`;
+    _v725bSetDetail(detail, 'v725b-curry-detail');
+  }).catch(e=>_v725bSetDetail('Sparse Attention Error: '+e.message, 'v725b-curry-detail'));
+}
+
+function _v725bSetBadge(id, val, color) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = val; el.style.color = color || 'var(--txt3)'; }
+}
+
+function _v725bSetDetail(msg, detailId) {
+  const elId = detailId || 'v725b-detail';
+  const el = document.getElementById(elId);
   if (el) { el.style.display = 'block'; el.textContent = msg; el.scrollTop = 0; }
 }
 
