@@ -878,6 +878,8 @@ def chat_v2():
             'v722': _v722_state,
             # v7.23新增：E2E归约+宇宙音律+自举智能（M181-M183, T183-T188, P8 MVE）
             'v723': _v723_state,
+            # v7.24新增：LLM Wiki 知识引擎（M184, T189-T190, P9 MVE）
+            'v724': _V724_STATE,
             # v7.1新增：人机融合层（M96-M105）
             'v71': get_v71_data() or _v71_state,
         }))
@@ -1133,6 +1135,8 @@ def goal_mode():
             'v722': _v722_state,
             # v7.23新增：E2E归约+宇宙音律+自举智能（M181-M183, T183-T188）
             'v723': _v723_state,
+            # v7.24新增：LLM Wiki 知识引擎（M184, T189-T190, P9 MVE）
+            'v724': _V724_STATE,
             'version': '12.3',
             'modules_count': 180
         }
@@ -9084,7 +9088,221 @@ def v723_theorems():
     return jsonify(_to_native(_V723_THEOREMS))
 
 
-# ==================== v7.18 沙箱增强·安全护盾 ====================
+# ============================================================
+# v7.24 LLM Wiki 知识引擎 — M184 + T189/T190 + P9 MVE
+# 来源：drpang.ai《RAG 之后：LLM Wiki 正在成为个人知识库的新范式》
+# ============================================================
+
+_V724_STATE = {
+    'wiki_engine': {
+        'status': 'active',
+        'version': '1.0.0',
+        'modules': ['M184'],
+        'theorems': ['T189', 'T190'],
+        'predictions': [],
+    },
+    'pages_count': 0,
+    'edges_count': 0,
+    'verified_pages': 0,
+}
+
+_V724_LOCK = threading.Lock()
+_V724_ENGINE = None  # 延迟初始化
+
+
+def _get_v724_engine():
+    """获取（延迟初始化的）LLMWikiEngine 实例"""
+    global _V724_ENGINE
+    if _V724_ENGINE is None:
+        with _V724_LOCK:
+            if _V724_ENGINE is None:
+                try:
+                    from M184_LLMWikiEngine import LLMWikiEngine, IngestMode, QueryMode
+                    _V724_ENGINE = LLMWikiEngine()
+                except Exception as e:
+                    print(f"[v724] 初始化失败: {e}")
+                    _V724_ENGINE = None
+    return _V724_ENGINE
+
+
+def _run_v724_safe(func, *args, **kwargs):
+    """安全执行 v724 引擎方法，捕获异常"""
+    try:
+        engine = _get_v724_engine()
+        if engine is None:
+            return {'error': 'LLMWikiEngine 初始化失败', 'verified': False}
+        return func(engine, *args, **kwargs)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {'error': str(e), 'verified': False}
+
+
+@app.route('/api/v724/wiki/state', methods=['GET'])
+def v724_wiki_state():
+    """获取 v7.24 Wiki 引擎状态"""
+    engine = _get_v724_engine()
+    if engine is None:
+        return jsonify({'error': '引擎未初始化', 'status': 'error'})
+    snapshot = engine.get_graph_snapshot()
+    state = dict(_V724_STATE)
+    state['pages_count'] = snapshot.stats.get('total_pages', 0)
+    state['edges_count'] = snapshot.stats.get('total_edges', 0)
+    state['verified_pages'] = snapshot.stats.get('verified_pages', 0)
+    return jsonify(_to_native(state))
+
+
+@app.route('/api/v724/wiki/ingest', methods=['POST'])
+def v724_wiki_ingest():
+    """摄入文档：POST {doc, source, mode}"""
+    try:
+        body = request.get_json(force=True, silent=True) or {}
+        doc = str(body.get('doc', ''))
+        source = str(body.get('source', 'api'))
+        mode_str = str(body.get('mode', 'auto'))
+        from M184_LLMWikiEngine import IngestMode
+        mode_map = {'create_new': IngestMode.CREATE_NEW,
+                     'merge': IngestMode.MERGE,
+                     'auto': IngestMode.AUTO}
+        mode = mode_map.get(mode_str, IngestMode.AUTO)
+        if not doc.strip():
+            return jsonify({'error': 'doc 不能为空'}), 400
+
+        def _do(engine):
+            return engine.ingest(doc, source=source, mode=mode)
+        result = _run_v724_safe(_do)
+        # IngestResult dataclass → dict
+        if hasattr(result, '__dataclass_fields__'):
+            from dataclasses import asdict
+            result = asdict(result)
+        # 同步更新状态
+        if 'error' not in result:
+            snapshot = _get_v724_engine().get_graph_snapshot()
+            _V724_STATE['pages_count'] = snapshot.stats.get('total_pages', 0)
+            _V724_STATE['edges_count'] = snapshot.stats.get('total_edges', 0)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v724/wiki/query', methods=['GET'])
+def v724_wiki_query():
+    """查询：GET ?q=...&mode=wiki|rag|hybrid"""
+    try:
+        q = request.args.get('q', '').strip()
+        mode_str = request.args.get('mode', 'wiki')
+        max_pages = int(request.args.get('max_pages', 5))
+        if not q:
+            return jsonify({'error': 'q 参数不能为空'}), 400
+        from M184_LLMWikiEngine import QueryMode
+        mode_map = {'rag': QueryMode.RAG, 'wiki': QueryMode.WIKI, 'hybrid': QueryMode.HYBRID}
+        mode = mode_map.get(mode_str, QueryMode.WIKI)
+
+        def _do(engine):
+            r = engine.query(q, mode=mode, max_pages=max_pages)
+            # 确保返回 dict（处理 dataclass）
+            if hasattr(r, '__dataclass_fields__'):
+                from dataclasses import asdict
+                r = asdict(r)
+            return r
+        result = _run_v724_safe(_do)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v724/wiki/page/<page_id>', methods=['GET'])
+def v724_wiki_page(page_id):
+    """获取页面详情"""
+    def _do(engine):
+        page = engine.get_page(page_id)
+        if page is None:
+            return {'error': f'Page {page_id} not found'}
+        return page.to_dict()
+    result = _run_v724_safe(_do)
+    return jsonify(_to_native(result))
+
+
+@app.route('/api/v724/wiki/graph', methods=['GET'])
+def v724_wiki_graph():
+    """获取知识图谱拓扑"""
+    def _do(engine):
+        return engine.get_graph_snapshot()
+    result = _run_v724_safe(_do)
+    return jsonify(_to_native(result))
+
+
+@app.route('/api/v724/wiki/backlinks/<page_id>', methods=['GET'])
+def v724_wiki_backlinks(page_id):
+    """获取反向链接"""
+    def _do(engine):
+        return {'page_id': page_id, 'backlinks': engine.get_backlinks(page_id)}
+    result = _run_v724_safe(_do)
+    return jsonify(_to_native(result))
+
+
+@app.route('/api/v724/wiki/related/<page_id>', methods=['GET'])
+def v724_wiki_related(page_id):
+    """获取相关页面（BFS max_hops）"""
+    try:
+        max_hops = int(request.args.get('max_hops', 2))
+        def _do(engine):
+            return {'page_id': page_id, 'related': engine.get_related_pages(page_id, max_hops)}
+        result = _run_v724_safe(_do)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v724/wiki/verify', methods=['POST'])
+def v724_wiki_verify():
+    """验证页面：POST {page_id, status, theorem_id}"""
+    try:
+        body = request.get_json(force=True, silent=True) or {}
+        page_id = str(body.get('page_id', ''))
+        status = str(body.get('status', 'unverified'))
+        theorem_id = str(body.get('theorem_id', ''))
+        if not page_id:
+            return jsonify({'error': 'page_id 不能为空'}), 400
+
+        def _do(engine):
+            return {'success': engine.verify_page(page_id, status, theorem_id)}
+        result = _run_v724_safe(_do)
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v724/wiki/mve/p9', methods=['GET'])
+def v724_wiki_mve_p9():
+    """运行 P9 MVE（T189+T190）"""
+    def _do(engine):
+        from M184_LLMWikiEngine import run_p9_mve
+        return run_p9_mve()
+    result = _run_v724_safe(_do)
+    return jsonify(_to_native(result))
+
+
+@app.route('/api/v724/wiki/theorem/<theorem_id>', methods=['GET'])
+def v724_wiki_theorem(theorem_id):
+    """验证单条定理：T189 或 T190"""
+    try:
+        from M184_LLMWikiEngine import verify_theorem_T189, verify_theorem_T190
+        tid = theorem_id.upper()
+        if tid == 'T189':
+            result = verify_theorem_T189()
+        elif tid == 'T190':
+            result = verify_theorem_T190()
+        else:
+            return jsonify({'error': f'Unknown theorem: {theorem_id}'}), 404
+        return jsonify(_to_native(result))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ============================================================
+# v7.18 沙箱增强·安全护盾
+# ============================================================
 
 _v718_state = {
     'sandbox': {

@@ -4814,6 +4814,35 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         <div id="v723-mve-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;"></div>
       </div>
 
+      <div id="v724-wiki-panel" class="panel-section panel-v717" data-hint="LLM Wiki 知识引擎 M184: RAG→Wiki范式跃迁·T189-T190·P9 MVE">
+        <div class="panel-title">📚 LLM Wiki <span style="font-size:10px;color:var(--txt3)">v7.24 · M184</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v724wikiIngest()" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;font-weight:bold;">📥摄入</button>
+          <button onclick="v724wikiQuery()" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;">🔍查询</button>
+          <button onclick="v724wikiGraph()" style="font-size:11px;padding:3px 8px;border:1px solid #60a5fa;background:var(--panel-bg);color:#60a5fa;border-radius:4px;cursor:pointer;">🕸图谱</button>
+          <button onclick="v724wikiMveP9()" style="font-size:11px;padding:3px 8px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;font-weight:bold;">▶P9</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">T189</div>
+          <div class="v77-badge" id="v724-t189" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;">T190</div>
+          <div class="v77-badge" id="v724-t190" style="color:var(--txt3);font-size:11px;">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">页面数</div>
+          <div class="v77-badge" id="v724-pages" style="color:var(--txt3);font-size:11px;">0</div>
+          <div class="v77-label" style="font-size:11px;">边数</div>
+          <div class="v77-badge" id="v724-edges" style="color:var(--txt3);font-size:11px;">0</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">P9</div>
+          <div class="v77-badge" id="v724-p9" style="color:var(--txt3);font-size:11px;">—</div>
+          <div class="v77-label" style="font-size:11px;">版本</div>
+          <div class="v77-badge" id="v724-ver" style="color:var(--txt3);font-size:10px;">v7.24</div>
+        </div>
+        <div id="v724-wiki-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;"></div>
+      </div>
+
       </div><!-- END dashboard-content -->
 
     </div>
@@ -10912,6 +10941,8 @@ function updateV72Panels(data) {
   if (data.v722) updateV722EqPropPanels(data);
   // v7.23 E2E归约+宇宙音律+自举智能面板更新
   if (data.v723) updateV723Panels(data);
+  // v7.24 LLM Wiki 知识引擎面板更新
+  if (data.v724) updateV724Panels(data);
   // v7.1人机融合层面板更新
   if (data.v71) updateV71Panels(data);
   // M130 感知谱分解面板更新（"感知即流贯的谱分解"论文）
@@ -13074,6 +13105,132 @@ function updateV723Panels(data) {
     const p8 = v723.p8_mve;
     _v723Badge('v723-mve-total', p8.verdict || p8.overall_score || '0/6', p8.verdict && p8.verdict.includes('ALL PASSED') ? '#34d399' : '#f59e0b');
   }
+}
+
+// ==================== v7.24 LLM Wiki 知识引擎 JS ====================
+
+function v724wikiIngest() {
+  const doc = prompt('输入文档内容（或粘贴文本）：', '');
+  if (!doc) return;
+  const source = prompt('来源标识（可选）：', 'manual');
+  _v724SetDetail('摄入中...');
+  fetch('/api/v724/wiki/ingest', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({doc: doc, source: source || 'manual', mode: 'auto'})
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.error) { _v724SetDetail('错误：' + d.error); return; }
+    let msg = '✅ 摄入完成\n';
+    msg += '新建页面：' + (d.pages_created||[]).join(', ') + '\n';
+    msg += '更新页面：' + (d.pages_updated||[]).join(', ') + '\n';
+    msg += '新增链接：' + (d.links_added||0) + '\n';
+    msg += '处理时间：' + (d.processing_time_ms||0) + 'ms';
+    _v724SetDetail(msg);
+    // 刷新状态
+    setTimeout(() => { fetch('/api/v724/wiki/state').then(r=>r.json()).then(s => updateV724Panels({v724:s})) }, 500);
+  })
+  .catch(e => _v724SetDetail('请求失败：' + e));
+}
+
+function v724wikiQuery() {
+  const q = prompt('输入查询问题：', '');
+  if (!q) return;
+  const mode = prompt('查询模式（wiki/rag/hybrid）：', 'wiki');
+  _v724SetDetail('查询中...');
+  fetch('/api/v724/wiki/query?q=' + encodeURIComponent(q) + '&mode=' + encodeURIComponent(mode||'wiki'))
+  .then(r => r.json())
+  .then(d => {
+    if (d.error) { _v724SetDetail('错误：' + d.error); return; }
+    let msg = '✅ 查询结果（模式：' + (d.mode||'wiki') + '）\n\n';
+    msg += (d.answer||'（无结果）') + '\n\n';
+    msg += '使用页面：' + (d.pages_used||[]).join(', ') + '\n';
+    msg += '置信度：' + ((d.confidence||0)*100).toFixed(0) + '%';
+    _v724SetDetail(msg);
+  })
+  .catch(e => _v724SetDetail('请求失败：' + e));
+}
+
+function v724wikiGraph() {
+  _v724SetDetail('加载知识图谱...');
+  fetch('/api/v724/wiki/graph')
+  .then(r => r.json())
+  .then(d => {
+    if (d.error) { _v724SetDetail('错误：' + d.error); return; }
+    const snap = d;
+    let msg = '🕸️ 知识图谱\n\n';
+    msg += '页面数：' + (snap.stats?.total_pages||0) + '\n';
+    msg += '边数：' + (snap.stats?.total_edges||0) + '\n';
+    msg += '已验证：' + (snap.stats?.verified_pages||0) + '\n';
+    msg += '被反驳：' + (snap.stats?.refuted_pages||0) + '\n\n';
+    if (snap.nodes && snap.nodes.length > 0) {
+      msg += '📄 页面列表：\n';
+      snap.nodes.slice(0, 20).forEach(n => {
+        const icon = n.verification_status === 'verified' ? '✅' : n.verification_status === 'refuted' ? '❌' : '⬜';
+        msg += `  ${icon} [[${n.page_id}]] ${n.title}\n`;
+      });
+      if (snap.nodes.length > 20) msg += `  ...共 ${snap.nodes.length} 个页面\n`;
+    }
+    _v724SetDetail(msg);
+  })
+  .catch(e => _v724SetDetail('请求失败：' + e));
+}
+
+function v724wikiMveP9() {
+  _v724SetDetail('运行 P9 MVE（T189+T190）...');
+  fetch('/api/v724/wiki/mve/p9')
+  .then(r => r.json())
+  .then(d => {
+    if (d.error) { _v724SetDetail('错误：' + d.error); return; }
+    const p9 = d.p9_results || d;
+    let msg = '🧪 P9 MVE 结果\n\n';
+    if (Array.isArray(p9)) {
+      p9.forEach(r => {
+        const icon = r.passed ? '✅' : '❌';
+        msg += `${icon} ${r.theorem_id}: passed=${r.passed}\n`;
+        if (r.counterexample) msg += `   反例：${JSON.stringify(r.counterexample).slice(0,200)}\n`;
+      });
+      const allPass = p9.every(r => r.passed);
+      msg += `\n📊 总计：${allPass ? 'ALL PASSED ✅' : '存在失败 ❌'}`;
+    } else {
+      msg += JSON.stringify(p9, null, 2).slice(0, 500);
+    }
+    _v724SetDetail(msg);
+    // 更新徽章
+    if (Array.isArray(p9)) {
+      p9.forEach(r => {
+        const el = document.getElementById('v724-' + r.theorem_id.toLowerCase());
+        if (el) { el.textContent = r.passed ? '✅' : '❌'; el.style.color = r.passed ? '#34d399' : '#f87171'; }
+      });
+      const allEl = document.getElementById('v724-p9');
+      if (allEl) { const allPass = Array.isArray(p9) && p9.every(r => r.passed); allEl.textContent = allPass ? 'ALL ✅' : 'FAIL ❌'; allEl.style.color = allPass ? '#34d399' : '#f87171'; }
+    }
+  })
+  .catch(e => _v724SetDetail('请求失败：' + e));
+}
+
+function updateV724Panels(data) {
+  if (!data || !data.v724) return;
+  const v724 = data.v724;
+  // 页面数/边数
+  _v724Badge('v724-pages', v724.pages_count ?? '0', '#34d399');
+  _v724Badge('v724-edges', v724.edges_count ?? '0', '#60a5fa');
+  // P9 MVE 状态
+  if (v724.p9_mve) {
+    const p9 = v724.p9_mve;
+    _v724Badge('v724-p9', p9.verdict || (p9.all_passed ? 'ALL ✅' : 'FAIL ❌'), p9.all_passed ? '#34d399' : '#f59e0b');
+  }
+}
+
+function _v724Badge(id, val, color) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = val; if (color) el.style.color = color; }
+}
+
+function _v724SetDetail(msg) {
+  const el = document.getElementById('v724-wiki-detail');
+  if (el) { el.style.display = 'block'; el.textContent = msg; el.scrollTop = 0; }
 }
 
 // ==================== v7.1 人机融合层面板更新函数 ====================
