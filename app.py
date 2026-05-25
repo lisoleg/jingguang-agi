@@ -10008,6 +10008,253 @@ def v725b_theorem(theorem_id):
 
 
 # ============================================================
+# v7.26 阿卡西链式数据库 (M190 AkashaChainDB)
+# "信息寓于关联，而非实体"
+# ============================================================
+
+@app.route('/api/v726/akasha/state', methods=['GET'])
+def v726_akasha_state():
+    """M190 阿卡西链式数据库全局状态"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        return jsonify(db.get_state())
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v726/akasha/write', methods=['POST'])
+def v726_akasha_write():
+    """写入三元组: POST {subject, predicate, object, confidence?, source_agent?, metadata?}"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        data = request.get_json(force=True) or {}
+        result = db.write_triple(
+            subject=data.get('subject', ''),
+            predicate=data.get('predicate', ''),
+            object_=data.get('object', ''),
+            confidence=data.get('confidence', 1.0),
+            source_agent=data.get('source_agent', 'system'),
+            metadata=data.get('metadata', {}),
+        )
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v726/akasha/write_batch', methods=['POST'])
+def v726_akasha_write_batch():
+    """批量写入三元组: POST {triples: [{subject, predicate, object, ...}, ...]}"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        data = request.get_json(force=True) or {}
+        triples_data = data.get('triples', [])
+        result = db.write_triples_batch(triples_data)
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v726/akasha/query', methods=['POST'])
+def v726_akasha_query():
+    """查询三元组: POST {subject?, predicate?, object?, mode?, top_k?}"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        data = request.get_json(force=True) or {}
+        result = db.query(
+            subject=data.get('subject'),
+            predicate=data.get('predicate'),
+            object_=data.get('object'),
+            mode=data.get('mode', 'exact'),
+            top_k=data.get('top_k', 20),
+        )
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v726/akasha/entity/<path:entity_name>', methods=['GET'])
+def v726_akasha_entity(entity_name):
+    """实体画像 (T197关系本体论): GET /api/v726/akasha/entity/<name>"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        result = db.get_entity_profile(entity_name)
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v726/akasha/neighborhood', methods=['POST'])
+def v726_akasha_neighborhood():
+    """邻域查询: POST {entity, depth?}"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        data = request.get_json(force=True) or {}
+        result = db.query(
+            subject=data.get('entity', ''),
+            mode='neighborhood',
+        )
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v726/akasha/remember', methods=['POST'])
+def v726_akasha_remember():
+    """组织记忆写入 (M176桥接): POST {agent_id, content, memory_type?, tags?, confidence?}"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        data = request.get_json(force=True) or {}
+        result = db.remember(
+            agent_id=data.get('agent_id', 'system'),
+            content=data.get('content', ''),
+            memory_type=data.get('memory_type', 'experience'),
+            tags=data.get('tags'),
+            confidence=data.get('confidence', 1.0),
+        )
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v726/akasha/recall', methods=['POST'])
+def v726_akasha_recall():
+    """组织记忆检索 (M176桥接): POST {query, top_k?}"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        data = request.get_json(force=True) or {}
+        result = db.recall(
+            query=data.get('query', ''),
+            top_k=data.get('top_k', 10),
+        )
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v726/akasha/flush', methods=['POST'])
+def v726_akasha_flush():
+    """手动刷新待处理记忆到账本"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        result = db.flush_memory()
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v726/akasha/blocks', methods=['GET'])
+def v726_akasha_blocks():
+    """浏览账本区块: GET ?start=0&end=20"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        start = int(request.args.get('start', 0))
+        end = int(request.args.get('end', 20))
+        result = db.get_blocks(start, end)
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v726/akasha/verify', methods=['GET'])
+def v726_akasha_verify():
+    """验证链完整性"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        result = db.verify_chain()
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v726/akasha/beta_reduction', methods=['POST'])
+def v726_akasha_beta_reduction():
+    """金灵球β归约 (批量写入+归约): POST {triples: [...]}"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        data = request.get_json(force=True) or {}
+        triples_data = data.get('triples', [])
+        result = db.write_triples_batch(triples_data)
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v726/akasha/consensus', methods=['GET'])
+def v726_akasha_consensus():
+    """POP共识状态"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        return jsonify(db._consensus.get_state())
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v726/akasha/mve', methods=['GET'])
+def v726_akasha_mve():
+    """M190 MVE 测试"""
+    try:
+        from M190_AkashaChainDB import run_mve
+        result = run_mve()
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v726/akasha/theorem/<theorem_id>', methods=['GET'])
+def v726_akasha_theorem(theorem_id):
+    """M190 定理查询: T197-T200"""
+    try:
+        from M190_AkashaChainDB import THEOREMS_M190
+        tid = theorem_id.upper()
+        if tid in THEOREMS_M190:
+            return jsonify(THEOREMS_M190[tid])
+        return jsonify({'error': f'Unknown theorem: {theorem_id}'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ============================================================
 # v7.18 沙箱增强·安全护盾
 # ============================================================
 

@@ -4988,6 +4988,67 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         <div id="v725b-curry-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;white-space:pre-wrap;"></div>
       </div>
 
+      <!-- v7.26 阿卡西链式数据库 M190 AkashaChainDB -->
+      <div id="v726-akasha-panel" class="panel-section panel-v717" data-hint="M190 AkashaChainDB: 信息寓于关联·FTEL度量·金灵球β归约·POP共识·T197-T200">
+        <div class="panel-title">🔗 AkashaChainDB <span style="font-size:10px;color:var(--txt3)">v7.26 · M190</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v726AkashaState()" style="font-size:11px;padding:3px 8px;border:1px solid #38bdf8;background:var(--panel-bg);color:#38bdf8;border-radius:4px;cursor:pointer;font-weight:bold;">状态</button>
+          <button onclick="v726AkashaMve()" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;">MVE</button>
+          <button onclick="v726AkashaVerify()" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">链验证</button>
+          <button onclick="v726AkashaBlocks()" style="font-size:11px;padding:3px 8px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;">区块</button>
+          <button onclick="v726AkashaConsensus()" style="font-size:11px;padding:3px 8px;border:1px solid #f472b6;background:var(--panel-bg);color:#f472b6;border-radius:4px;cursor:pointer;">共识</button>
+          <button onclick="v726AkashaTheorem('T197')" style="font-size:11px;padding:3px 8px;border:1px solid #fb923c;background:var(--panel-bg);color:#fb923c;border-radius:4px;cursor:pointer;">T197</button>
+          <button onclick="v726AkashaTheorem('T200')" style="font-size:11px;padding:3px 8px;border:1px solid #fb923c;background:var(--panel-bg);color:#fb923c;border-radius:4px;cursor:pointer;">T200</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">三元组</div>
+          <div class="v77-badge" id="v726-triples-badge" style="color:#38bdf8;font-size:10px;">—</div>
+          <div class="v77-label" style="font-size:11px;">实体</div>
+          <div class="v77-badge" id="v726-entities-badge" style="color:#a78bfa;font-size:10px;">—</div>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">区块</div>
+          <div class="v77-badge" id="v726-blocks-badge" style="color:#34d399;font-size:10px;">—</div>
+          <div class="v77-label" style="font-size:11px;">β归约</div>
+          <div class="v77-badge" id="v726-beta-badge" style="color:#f59e0b;font-size:10px;">—</div>
+        </div>
+        <div style="display:flex;gap:4px;margin-top:4px;">
+          <input id="v726-spo-subject" placeholder="主体" style="flex:1;background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:3px 6px;font-size:10px;">
+          <input id="v726-spo-predicate" placeholder="谓词" style="flex:1;background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:3px 6px;font-size:10px;">
+          <input id="v726-spo-object" placeholder="客体" style="flex:1;background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:3px 6px;font-size:10px;">
+          <button onclick="v726AkashaWrite()" style="font-size:10px;padding:3px 6px;border:1px solid #38bdf8;background:var(--panel-bg);color:#38bdf8;border-radius:4px;cursor:pointer;">写入</button>
+          <button onclick="v726AkashaQuery()" style="font-size:10px;padding:3px 6px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;">查询</button>
+        </div>
+        <div id="v726-akasha-detail" style="font-size:11px;color:var(--txt2);max-height:200px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;white-space:pre-wrap;"></div>
+      </div>
+
+      <!-- v7.26 金灵球β归约面板 -->
+      <div id="v726-beta-panel" class="panel-section panel-v717" data-hint="金灵球β归约: 记忆→三元组→去重·传递压缩·互斥消解·FTEL刷新">
+        <div class="panel-title">🔮 β归约 <span style="font-size:10px;color:var(--txt3)">v7.26 · 金灵球</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v726BetaRemember()" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;font-weight:bold;">记忆写入</button>
+          <button onclick="v726BetaRecall()" style="font-size:11px;padding:3px 8px;border:1px solid #38bdf8;background:var(--panel-bg);color:#38bdf8;border-radius:4px;cursor:pointer;">记忆检索</button>
+          <button onclick="v726BetaFlush()" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">刷新账本</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">待处理</div>
+          <div class="v77-badge" id="v726-pending-badge" style="color:#f59e0b;font-size:10px;">—</div>
+          <div class="v77-label" style="font-size:11px;">FTEL</div>
+          <div class="v77-badge" id="v726-ftel-badge" style="color:#38bdf8;font-size:10px;">—</div>
+        </div>
+        <div style="display:flex;gap:4px;margin-top:4px;">
+          <input id="v726-memory-agent" placeholder="Agent ID" style="flex:1;background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:3px 6px;font-size:10px;">
+          <select id="v726-memory-type" style="background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:3px 6px;font-size:10px;">
+            <option value="experience">经验</option>
+            <option value="theorem">定理</option>
+            <option value="failure">失败</option>
+            <option value="procedure">步骤</option>
+          </select>
+        </div>
+        <textarea id="v726-memory-content" rows="2" placeholder="输入记忆内容…" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:4px 6px;font-size:11px;resize:vertical;margin-top:4px;"></textarea>
+        <div id="v726-beta-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;white-space:pre-wrap;"></div>
+      </div>
+
       </div><!-- END dashboard-content -->
 
     </div>
@@ -13774,6 +13835,181 @@ function _v725bSetBadge(id, val, color) {
 function _v725bSetDetail(msg, detailId) {
   const elId = detailId || 'v725b-detail';
   const el = document.getElementById(elId);
+  if (el) { el.style.display = 'block'; el.textContent = msg; el.scrollTop = 0; }
+}
+
+// ==================== v7.26 阿卡西链式数据库 M190 AkashaChainDB ====================
+
+function v726AkashaState() {
+  fetch('/api/v726/akasha/state').then(r=>r.json()).then(data=>{
+    const ri = data.relation_index || {};
+    const ld = data.ledger || {};
+    _v726SetBadge('v726-triples-badge', ri.total_triples || 0, '#38bdf8');
+    _v726SetBadge('v726-entities-badge', ri.total_entities || 0, '#a78bfa');
+    _v726SetBadge('v726-blocks-badge', ld.height || 1, '#34d399');
+    _v726SetBadge('v726-beta-badge', data.beta_reduction_count || 0, '#f59e0b');
+    let detail = `🔗 AkashaChainDB v${data.version}\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `关系索引: ${ri.total_triples} 三元组 / ${ri.total_entities} 实体 / ${ri.total_predicates} 谓词\n`;
+    detail += `账本: ${ld.height} 区块 / ${ld.total_triples} 三元组 / 链${ld.chain_valid?'✅':'❌'}\n`;
+    detail += `β归约次数: ${data.beta_reduction_count}\n`;
+    detail += `写入: ${data.write_count} / 查询: ${data.query_count}\n`;
+    if (ri.top_entities && ri.top_entities.length > 0) {
+      detail += `\nTop实体: ${ri.top_entities.slice(0,5).map(e=>e[0]+'('+e[1]+')').join(', ')}`;
+    }
+    _v726SetDetail(detail, 'v726-akasha-detail');
+  }).catch(e=>_v726SetDetail('State Error: '+e.message, 'v726-akasha-detail'));
+}
+
+function v726AkashaMve() {
+  fetch('/api/v726/akasha/mve').then(r=>r.json()).then(data=>{
+    const icon = data.all_pass ? '✅' : '❌';
+    _v726SetBadge('v726-triples-badge', data.all_pass ? '6/6' : data.summary, data.all_pass ? '#34d399' : '#f87171');
+    let detail = `M190 MVE ${data.summary}\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    for (const [k, v] of Object.entries(data.results || {})) {
+      detail += `${v.pass?'✅':'❌'} ${v.name}\n`;
+    }
+    _v726SetDetail(detail, 'v726-akasha-detail');
+  }).catch(e=>_v726SetDetail('MVE Error: '+e.message, 'v726-akasha-detail'));
+}
+
+function v726AkashaVerify() {
+  fetch('/api/v726/akasha/verify').then(r=>r.json()).then(data=>{
+    const icon = data.valid ? '✅' : '❌';
+    let detail = `链完整性验证 ${icon}\n`;
+    detail += `区块高度: ${data.height}\n`;
+    detail += `有效性: ${data.valid}\n`;
+    if (data.issues && data.issues.length > 0) {
+      detail += `问题:\n${data.issues.join('\n')}`;
+    }
+    _v726SetDetail(detail, 'v726-akasha-detail');
+  }).catch(e=>_v726SetDetail('Verify Error: '+e.message, 'v726-akasha-detail'));
+}
+
+function v726AkashaBlocks() {
+  fetch('/api/v726/akasha/blocks?start=0&end=20').then(r=>r.json()).then(blocks=>{
+    let detail = `📦 区块列表 (${blocks.length} 块)\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    blocks.forEach(b => {
+      detail += `#${b.index} | ${b.triples_count} triples | ${b.status} | ${b.proposer}\n`;
+    });
+    _v726SetDetail(detail, 'v726-akasha-detail');
+  }).catch(e=>_v726SetDetail('Blocks Error: '+e.message, 'v726-akasha-detail'));
+}
+
+function v726AkashaConsensus() {
+  fetch('/api/v726/akasha/consensus').then(r=>r.json()).then(data=>{
+    let detail = `🏛️ POP共识状态\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `阶段: ${data.phase}\n`;
+    detail += `验证者: ${data.validators}\n`;
+    detail += `区块大小: ${data.block_size}\n`;
+    detail += `三分损益计数: ${data.sanfen_counter}\n`;
+    detail += `毕达哥拉斯漂移: ${data.pythagorean_drift}\n`;
+    detail += `共识次数: ${data.consensus_count}\n`;
+    _v726SetDetail(detail, 'v726-akasha-detail');
+  }).catch(e=>_v726SetDetail('Consensus Error: '+e.message, 'v726-akasha-detail'));
+}
+
+function v726AkashaTheorem(tid) {
+  fetch(`/api/v726/akasha/theorem/${tid}`).then(r=>r.json()).then(data=>{
+    let detail = `📜 ${data.id}: ${data.name}\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `陈述: ${data.statement}\n\n`;
+    detail += `证明概要: ${data.proof_sketch}\n`;
+    _v726SetDetail(detail, 'v726-akasha-detail');
+  }).catch(e=>_v726SetDetail('Theorem Error: '+e.message, 'v726-akasha-detail'));
+}
+
+function v726AkashaWrite() {
+  const s = document.getElementById('v726-spo-subject').value.trim();
+  const p = document.getElementById('v726-spo-predicate').value.trim();
+  const o = document.getElementById('v726-spo-object').value.trim();
+  if (!s || !p || !o) { alert('请填写主体、谓词、客体'); return; }
+  fetch('/api/v726/akasha/write', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({subject:s, predicate:p, object:o, confidence:0.9, source_agent:'web_user'})
+  }).then(r=>r.json()).then(data=>{
+    let detail = `✅ 写入成功\n`;
+    detail += `Triple ID: ${data.triple_id}\n`;
+    detail += `FTEL: ${JSON.stringify(data.ftel)}\n`;
+    _v726SetDetail(detail, 'v726-akasha-detail');
+    v726AkashaState();  // 刷新状态
+  }).catch(e=>_v726SetDetail('Write Error: '+e.message, 'v726-akasha-detail'));
+}
+
+function v726AkashaQuery() {
+  const s = document.getElementById('v726-spo-subject').value.trim() || undefined;
+  const p = document.getElementById('v726-spo-predicate').value.trim() || undefined;
+  const o = document.getElementById('v726-spo-object').value.trim() || undefined;
+  fetch('/api/v726/akasha/query', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({subject:s, predicate:p, object:o, mode:'exact', top_k:20})
+  }).then(r=>r.json()).then(data=>{
+    let detail = `🔍 查询结果 (${data.count} 条)\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    (data.results || []).forEach(t => {
+      detail += `${t.subject} —[${t.predicate}]→ ${t.object}  (FTEL:${t.ftel.composite})\n`;
+    });
+    _v726SetDetail(detail, 'v726-akasha-detail');
+  }).catch(e=>_v726SetDetail('Query Error: '+e.message, 'v726-akasha-detail'));
+}
+
+function v726BetaRemember() {
+  const agent = document.getElementById('v726-memory-agent').value.trim() || 'web_user';
+  const mtype = document.getElementById('v726-memory-type').value;
+  const content = document.getElementById('v726-memory-content').value.trim();
+  if (!content) { alert('请输入记忆内容'); return; }
+  fetch('/api/v726/akasha/remember', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({agent_id:agent, content:content, memory_type:mtype, confidence:0.9})
+  }).then(r=>r.json()).then(data=>{
+    _v726SetBadge('v726-pending-badge', data.pending_count || 0, '#f59e0b');
+    let detail = `✅ 记忆已写入\n`;
+    detail += `Triple ID: ${data.triple_id}\n`;
+    detail += `待处理: ${data.pending_count}\n`;
+    detail += `区块已提交: ${data.block_committed}`;
+    _v726SetDetail(detail, 'v726-beta-detail');
+  }).catch(e=>_v726SetDetail('Remember Error: '+e.message, 'v726-beta-detail'));
+}
+
+function v726BetaRecall() {
+  const content = document.getElementById('v726-memory-content').value.trim();
+  const query = content || 'M189';
+  fetch('/api/v726/akasha/recall', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({query:query, top_k:10})
+  }).then(r=>r.json()).then(data=>{
+    let detail = `🔍 记忆检索 (${data.length} 条)\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    data.forEach(r => {
+      const e = r.entry || {};
+      detail += `[${e.ftel?.composite||0}] ${e.subject} → ${e.object}\n`;
+    });
+    _v726SetDetail(detail, 'v726-beta-detail');
+  }).catch(e=>_v726SetDetail('Recall Error: '+e.message, 'v726-beta-detail'));
+}
+
+function v726BetaFlush() {
+  fetch('/api/v726/akasha/flush', {
+    method:'POST', headers:{'Content-Type':'application/json'}
+  }).then(r=>r.json()).then(data=>{
+    let detail = data.status === 'flushed'
+      ? `✅ 已刷新到账本 (Block #${data.block_index}, ${data.triples_count} triples)`
+      : `ℹ️ ${data.status}`;
+    _v726SetDetail(detail, 'v726-beta-detail');
+    v726AkashaState();
+  }).catch(e=>_v726SetDetail('Flush Error: '+e.message, 'v726-beta-detail'));
+}
+
+function _v726SetBadge(id, val, color) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = val; el.style.color = color || 'var(--txt3)'; }
+}
+
+function _v726SetDetail(msg, detailId) {
+  const el = document.getElementById(detailId || 'v726-akasha-detail');
   if (el) { el.style.display = 'block'; el.textContent = msg; el.scrollTop = 0; }
 }
 
