@@ -4840,6 +4840,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <div class="v77-label" style="font-size:11px;">版本</div>
           <div class="v77-badge" id="v724-ver" style="color:var(--txt3);font-size:10px;">v7.24</div>
         </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">记忆</div>
+          <div class="v77-badge" id="v724-m176-bridge" style="color:#9ca3af;font-size:10px;">⚡离线</div>
+          <div class="v77-label" style="font-size:11px;">事件</div>
+          <div class="v77-badge" id="v724-m178-bridge" style="color:#9ca3af;font-size:10px;">⚡离线</div>
+        </div>
         <div id="v724-wiki-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;"></div>
       </div>
 
@@ -13221,6 +13227,11 @@ function updateV724Panels(data) {
     const p9 = v724.p9_mve;
     _v724Badge('v724-p9', p9.verdict || (p9.all_passed ? 'ALL ✅' : 'FAIL ❌'), p9.all_passed ? '#34d399' : '#f59e0b');
   }
+  // M176/M178 桥接状态
+  const m176c = v724.m176_bridge === 'm176' ? '🔗M176' : '⚡离线';
+  const m178c = v724.m178_bridge === 'm178' ? '🔗M178' : '⚡离线';
+  _v724Badge('v724-m176-bridge', m176c, v724.m176_bridge === 'm176' ? '#34d399' : '#9ca3af');
+  _v724Badge('v724-m178-bridge', m178c, v724.m178_bridge === 'm178' ? '#34d399' : '#9ca3af');
 }
 
 function _v724Badge(id, val, color) {

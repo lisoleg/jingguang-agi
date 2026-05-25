@@ -579,6 +579,27 @@ class LLMWikiEngine:
         self._cache_ttl = 120  # 秒
         self._cache_ts: Dict[str, float] = {}
 
+        # --- 桥接层（延迟绑定：初始化后可通过 set_org_memory / set_agent_os 替换）---
+        self._org_bridge: Optional[OrgMemoryBridge] = (
+            OrgMemoryBridge(org_memory) if org_memory is not None else None
+        )
+        # M178 MessageBus 通过 agent_os.message_bus 访问
+        _mb = getattr(agent_os, "message_bus", None) if agent_os is not None else None
+        self._event_bus: Optional[WikiEventBus] = (
+            WikiEventBus(_mb) if _mb is not None else None
+        )
+
+    def set_org_memory(self, org_memory: Any) -> None:
+        """动态绑定 M176 OrgMemoryEngine（服务器运行时调用）"""
+        self.org_memory = org_memory
+        self._org_bridge = OrgMemoryBridge(org_memory) if org_memory is not None else None
+
+    def set_agent_os(self, agent_os: Any) -> None:
+        """动态绑定 M178 TaiyiAgentOS（服务器运行时调用）"""
+        self.agent_os = agent_os
+        _mb = getattr(agent_os, "message_bus", None) if agent_os is not None else None
+        self._event_bus = WikiEventBus(_mb) if _mb is not None else None
+
     # ---- 核心 API ----
 
     def ingest(self, doc: str, source: str = "",
@@ -635,6 +656,15 @@ class LLMWikiEngine:
                         result.links_added += 1
 
         result.processing_time_ms = round((time.time() - t0) * 1000, 2)
+
+        # --- M176 桥接：同步写入 OrgMemoryEngine ---
+        if self._org_bridge is not None and (result.pages_created or result.pages_updated):
+            self._org_bridge.sync_ingest(result, doc, source)
+
+        # --- M178 桥接：发布 wiki.ingest 事件 ---
+        if self._event_bus is not None:
+            self._event_bus.publish_ingest(result, source)
+
         return result
 
     def query(self, question: str,
@@ -954,6 +984,191 @@ def run_p9_mve() -> Dict[str, Any]:
         "processing_time_ms": elapsed,
         "timestamp": time.time(),
     }
+
+
+# ============================================================
+# OrgMemoryBridge — M176 OrgMemoryEngine ↔ M184 桥接层
+# ============================================================
+
+class OrgMemoryBridge:
+    """
+    将 M184 LLMWikiEngine 的摄入事件同步写入 M176 OrgMemoryEngine。
+
+    作用：
+      - ingest 后把新建/更新的 Wiki 页面同步到 OrgMemoryEngine.remember()
+      - query 前先通过 OrgMemoryEngine.recall() 补充检索，反哺 Wiki
+      - 验证页面（THEOREM 类型）标记为 MemoryType.THEOREM
+
+    用法（LLMWikiEngine 内部调用）：
+      bridge = OrgMemoryBridge(org_memory_instance)
+      bridge.sync_ingest(ingest_result, doc, source)
+    """
+
+    WIKI_AGENT_ID = "wiki_engine_m184"
+
+    def __init__(self, org_memory: Any):
+        """
+        org_memory: M176 OrgMemoryEngine 实例。
+        """
+        self.org_memory = org_memory
+
+    def sync_ingest(self, ingest_result: "IngestResult",
+                    doc: str, source: str) -> None:
+        """
+        摄入后同步写入 M176 remember()。
+        - 新创建页面 → MemoryType.EXPERIENCE（待验证知识）
+        - 含 THEOREM 标签的页面 → MemoryType.THEOREM
+        """
+        if self.org_memory is None:
+            return
+        try:
+            from M176_OrgMemoryEngine import MemoryType as MemType
+        except ImportError:
+            return
+
+        doc_preview = doc[:300].replace("\n", " ")
+
+        for pid in ingest_result.pages_created:
+            tags = ["wiki", "page_created", pid]
+            mem_type = MemType.THEOREM if "theorem" in pid.lower() or "T1" in pid else MemType.EXPERIENCE
+            try:
+                self.org_memory.remember(
+                    agent_id=self.WIKI_AGENT_ID,
+                    content=f"[Wiki新建] {pid} | 来源:{source} | 摘要:{doc_preview}",
+                    memory_type=mem_type,
+                    tags=tags,
+                    confidence=0.8,
+                )
+            except Exception:
+                pass
+
+        for pid in ingest_result.pages_updated:
+            tags = ["wiki", "page_updated", pid]
+            try:
+                self.org_memory.remember(
+                    agent_id=self.WIKI_AGENT_ID,
+                    content=f"[Wiki更新] {pid} | 来源:{source} | 摘要:{doc_preview}",
+                    memory_type=MemType.EXPERIENCE,
+                    tags=tags,
+                    confidence=0.7,
+                )
+            except Exception:
+                pass
+
+    def recall_to_context(self, query: str, top_k: int = 3) -> List[str]:
+        """
+        查询前从 M176 recall()，补充上下文。
+        返回内容片段列表。
+        M176 recall 返回 [{'entry': {...}, 'similarity': ...}, ...]
+        """
+        if self.org_memory is None:
+            return []
+        try:
+            entries = self.org_memory.recall(query, top_k=top_k)
+            result = []
+            for e in entries:
+                if isinstance(e, dict):
+                    # {'entry': {...}, 'similarity': float}
+                    entry_obj = e.get("entry", e)
+                    if isinstance(entry_obj, dict):
+                        content = entry_obj.get("content", "")
+                    else:
+                        content = getattr(entry_obj, "content", "")
+                else:
+                    content = getattr(e, "content", str(e))
+                if content:
+                    result.append(content)
+            return result
+        except Exception:
+            return []
+
+
+# ============================================================
+# WikiEventBus — M178 MessageBus ↔ M184 事件驱动桥接
+# ============================================================
+
+class WikiEventBus:
+    """
+    将 M184 的知识事件发布到 M178 TaiyiAgentOS MessageBus。
+
+    事件类型：
+      wiki.ingest   — 文档摄入完成（新建/更新页面列表）
+      wiki.update   — 页面增量更新
+      wiki.verify   — 定理验证完成
+
+    用法（LLMWikiEngine 内部调用）：
+      event_bus = WikiEventBus(message_bus_instance)
+      event_bus.publish_ingest(ingest_result, source)
+    """
+
+    WIKI_AGENT_ID = "wiki_engine_agent_m184"
+
+    def __init__(self, message_bus: Any):
+        """
+        message_bus: M178 MessageBus 实例。
+        """
+        self.bus = message_bus
+        try:
+            self.bus.register_queue(self.WIKI_AGENT_ID)
+        except Exception:
+            pass  # 已注册或不支持
+
+    def publish_ingest(self, ingest_result: "IngestResult", source: str) -> None:
+        """摄入事件：wiki.ingest"""
+        if self.bus is None:
+            return
+        try:
+            self.bus.send(
+                sender_id=self.WIKI_AGENT_ID,
+                receiver_id="*",   # 广播
+                topic="wiki.ingest",
+                payload={
+                    "pages_created": ingest_result.pages_created,
+                    "pages_updated": ingest_result.pages_updated,
+                    "links_added": ingest_result.links_added,
+                    "source": source,
+                    "timestamp": time.time(),
+                }
+            )
+        except Exception:
+            pass
+
+    def publish_verify(self, theorem_id: str, verified: bool,
+                       details: Optional[Dict] = None) -> None:
+        """定理验证事件：wiki.verify"""
+        if self.bus is None:
+            return
+        try:
+            self.bus.send(
+                sender_id=self.WIKI_AGENT_ID,
+                receiver_id="*",
+                topic="wiki.verify",
+                payload={
+                    "theorem_id": theorem_id,
+                    "verified": verified,
+                    "details": details or {},
+                    "timestamp": time.time(),
+                }
+            )
+        except Exception:
+            pass
+
+    def drain_events(self, limit: int = 20) -> List[Dict]:
+        """读取已发布到 wiki_engine_agent 队列的消息（供调试）"""
+        if self.bus is None:
+            return []
+        try:
+            msgs = self.bus.receive(self.WIKI_AGENT_ID, limit=limit)
+            return [
+                {
+                    "msg_id": m.msg_id if hasattr(m, "msg_id") else str(m),
+                    "topic": m.topic if hasattr(m, "topic") else "",
+                    "payload": m.payload if hasattr(m, "payload") else {},
+                }
+                for m in msgs
+            ]
+        except Exception:
+            return []
 
 
 # ============================================================

@@ -819,6 +819,22 @@ def chat_v2():
         # 生成关联追问
         related_questions = _generate_related_questions(message, reply)
 
+        # --- v7.24 对接：对话历史自动摄入 Wiki ---
+        try:
+            wiki_engine = _get_v724_engine()
+            if wiki_engine is not None:
+                wiki_doc = (
+                    f"# 对话记录\n\n"
+                    f"**问**：{message}\n\n"
+                    f"**答**：{reply[:600]}"
+                )
+                wiki_engine.ingest(
+                    wiki_doc,
+                    source=f"chat_v2:{session_id or 'anon'}"
+                )
+        except Exception:
+            pass  # 摄入失败不影响主流程
+
         return jsonify(_to_native({
             'session_id': session_id,
             'input': message,
@@ -9111,7 +9127,7 @@ _V724_ENGINE = None  # 延迟初始化
 
 
 def _get_v724_engine():
-    """获取（延迟初始化的）LLMWikiEngine 实例"""
+    """获取（延迟初始化的）LLMWikiEngine 实例，自动注入 M176/M178"""
     global _V724_ENGINE
     if _V724_ENGINE is None:
         with _V724_LOCK:
@@ -9119,6 +9135,25 @@ def _get_v724_engine():
                 try:
                     from M184_LLMWikiEngine import LLMWikiEngine, IngestMode, QueryMode
                     _V724_ENGINE = LLMWikiEngine()
+
+                    # --- 对接 M176 OrgMemoryEngine ---
+                    try:
+                        from M176_OrgMemoryEngine import OrgMemoryEngine
+                        org_mem = OrgMemoryEngine.get_instance()
+                        _V724_ENGINE.set_org_memory(org_mem)
+                        print("[v724] M176 OrgMemoryEngine 已绑定")
+                    except Exception as e176:
+                        print(f"[v724] M176 绑定跳过: {e176}")
+
+                    # --- 对接 M178 TaiyiAgentOS MessageBus ---
+                    try:
+                        from M178_TaiyiAgentOS import TaiyiAgentOS
+                        agent_os = TaiyiAgentOS.get_instance()
+                        _V724_ENGINE.set_agent_os(agent_os)
+                        print("[v724] M178 TaiyiAgentOS 已绑定")
+                    except Exception as e178:
+                        print(f"[v724] M178 绑定跳过: {e178}")
+
                 except Exception as e:
                     print(f"[v724] 初始化失败: {e}")
                     _V724_ENGINE = None
@@ -9140,7 +9175,7 @@ def _run_v724_safe(func, *args, **kwargs):
 
 @app.route('/api/v724/wiki/state', methods=['GET'])
 def v724_wiki_state():
-    """获取 v7.24 Wiki 引擎状态"""
+    """获取 v7.24 Wiki 引擎状态（含 M176/M178 桥接状态）"""
     engine = _get_v724_engine()
     if engine is None:
         return jsonify({'error': '引擎未初始化', 'status': 'error'})
@@ -9149,6 +9184,9 @@ def v724_wiki_state():
     state['pages_count'] = snapshot.stats.get('total_pages', 0)
     state['edges_count'] = snapshot.stats.get('total_edges', 0)
     state['verified_pages'] = snapshot.stats.get('verified_pages', 0)
+    # 桥接状态
+    state['m176_bridge'] = 'm176' if engine._org_bridge is not None else 'disconnected'
+    state['m178_bridge'] = 'm178' if engine._event_bus is not None else 'disconnected'
     return jsonify(_to_native(state))
 
 
