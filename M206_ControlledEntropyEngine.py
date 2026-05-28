@@ -823,6 +823,7 @@ class ControlledEntropyEngine:
                 'thermodynamics_valid': thermodynamics_valid,
             },
             'overall_passed': all_passed,
+            'verified': all_passed,
             'conclusion': (
                 '[OK] 定理T236验证通过：可控熵增条件保证系统可持续生存'
                 if all_passed

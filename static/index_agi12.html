@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taiyi-AGI (太乙因果机) 20.3 v7.23 — E2E归约·宇宙音律·自举智能·TYIDO MVE实验·太一接口·AGI自我意识·苏格拉底拓扑网络 STN</title>
+<title>Taiyi-AGI (太乙因果机) 20.3 v7.31 — E2E归约·宇宙音律·自举智能·TYIDO MVE实验·太一接口·AGI自我意识·苏格拉底拓扑网络 STN·True AGI</title>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 
 <style>
@@ -2125,7 +2125,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
     <div class="logo-wrap">
       <span class="logo">&#128302;</span>
       <span class="title">Taiyi-AGI (太乙因果机) 14.0</span>
-      <span class="version-badge">170模块·141定理·八论合一·文明治理·可计算性·拓扑斯·缘起性空·复合体理学v3.12</span>
+      <span class="version-badge">v7.31·180模块·151定理·True AGI·ToM·双轨CRD·可控熵增</span>
       <span class="theory-badge">一现象三视界</span>
     </div>
     <div class="dot-ok" id="status-dot"></div>
@@ -5323,6 +5323,209 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <button onclick="akashaRebuildSemanticIndex()" style="flex:1;padding:4px 6px;border:1px solid var(--bdr);border-radius:6px;background:var(--bg3);color:var(--txt2);font-size:9px;cursor:pointer;font-family:inherit">重建语义索引</button>
           <button onclick="akashaKGRefresh()" style="flex:1;padding:4px 6px;border:1px solid var(--bdr);border-radius:6px;background:var(--bg3);color:var(--txt2);font-size:9px;cursor:pointer;font-family:inherit">刷新</button>
         </div>
+      </div>
+
+      <!-- v7.31 True AGI 升级面板 ══════════════════════════════ -->
+      <!-- Phase 1: 认知能力 (M197-M202) -->
+      <div class="panel-section panel-v717" id="v731-cognitive-panel" data-hint="v7.31 认知能力: ToM·自我模型·社会拓扑·认知灵活性·EML相位·谱系检测 (T227-T232)">
+        <div class="panel-title">&#129504; 认知能力 <span style="font-size:8px;color:var(--txt3)">v7.31 · Phase1</span></div>
+
+        <!-- ToM 心智理论 -->
+        <div style="margin-bottom:6px">
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt2);margin-bottom:2px">
+            <span>ToM 心智理论</span>
+            <span id="v731-tom-badge" style="color:var(--sky)">--</span>
+          </div>
+          <div style="display:flex;gap:4px">
+            <button onclick="v731TomModel()" style="font-size:9px;padding:2px 6px;border:1px solid #38bdf8;background:var(--bg3);color:#38bdf8;border-radius:4px;cursor:pointer">模拟</button>
+            <button onclick="v731Theorem('T227')" style="font-size:9px;padding:2px 6px;border:1px solid #fb923c;background:var(--bg3);color:#fb923c;border-radius:4px;cursor:pointer">T227</button>
+          </div>
+        </div>
+
+        <!-- 自我模型 -->
+        <div style="margin-bottom:6px">
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt2);margin-bottom:2px">
+            <span>内生自我模型</span>
+            <span id="v731-self-badge" style="color:var(--green)">--</span>
+          </div>
+          <div style="display:flex;gap:4px">
+            <button onclick="v731SelfUpdate()" style="font-size:9px;padding:2px 6px;border:1px solid #10b981;background:var(--bg3);color:#10b981;border-radius:4px;cursor:pointer">更新</button>
+            <button onclick="v731Theorem('T228')" style="font-size:9px;padding:2px 6px;border:1px solid #fb923c;background:var(--bg3);color:#fb923c;border-radius:4px;cursor:pointer">T228</button>
+          </div>
+        </div>
+
+        <!-- 社会拓扑 -->
+        <div style="margin-bottom:6px">
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt2);margin-bottom:2px">
+            <span>社会关系拓扑</span>
+            <span id="v731-social-badge" style="color:var(--amber)">--</span>
+          </div>
+          <div style="display:flex;gap:4px">
+            <button onclick="v731SocialAdd()" style="font-size:9px;padding:2px 6px;border:1px solid #f59e0b;background:var(--bg3);color:#f59e0b;border-radius:4px;cursor:pointer">添加关系</button>
+            <button onclick="v731Theorem('T229')" style="font-size:9px;padding:2px 6px;border:1px solid #fb923c;background:var(--bg3);color:#fb923c;border-radius:4px;cursor:pointer">T229</button>
+          </div>
+        </div>
+
+        <!-- 认知灵活性 -->
+        <div style="margin-bottom:6px">
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt2);margin-bottom:2px">
+            <span>认知灵活性</span>
+            <span id="v731-flex-badge" style="color:var(--acc2)">--</span>
+          </div>
+          <div style="display:flex;gap:4px">
+            <button onclick="v731FlexSwitch()" style="font-size:9px;padding:2px 6px;border:1px solid #a78bfa;background:var(--bg3);color:#a78bfa;border-radius:4px;cursor:pointer">切换任务</button>
+            <button onclick="v731Theorem('T230')" style="font-size:9px;padding:2px 6px;border:1px solid #fb923c;background:var(--bg3);color:#fb923c;border-radius:4px;cursor:pointer">T230</button>
+          </div>
+        </div>
+
+        <!-- EML相位 -->
+        <div style="margin-bottom:6px">
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt2);margin-bottom:2px">
+            <span>EML相位灵活性</span>
+            <span id="v731-eml-badge" style="color:var(--si)">--</span>
+          </div>
+          <div style="display:flex;gap:4px">
+            <button onclick="v731EmlTheta()" style="font-size:9px;padding:2px 6px;border:1px solid #8b5cf6;background:var(--bg3);color:#8b5cf6;border-radius:4px;cursor:pointer">灵活theta</button>
+            <button onclick="v731Theorem('T231')" style="font-size:9px;padding:2px 6px;border:1px solid #fb923c;background:var(--bg3);color:#fb923c;border-radius:4px;cursor:pointer">T231</button>
+          </div>
+        </div>
+
+        <!-- 谱系检测 -->
+        <div style="margin-bottom:6px">
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt2);margin-bottom:2px">
+            <span>认知谱系检测</span>
+            <span id="v731-autism-badge" style="color:var(--sc)">--</span>
+          </div>
+          <div style="display:flex;gap:4px">
+            <button onclick="v731AutismCompute()" style="font-size:9px;padding:2px 6px;border:1px solid #f472b6;background:var(--bg3);color:#f472b6;border-radius:4px;cursor:pointer">I_ASD</button>
+            <button onclick="v731AutismTCCI()" style="font-size:9px;padding:2px 6px;border:1px solid #06b6d4;background:var(--bg3);color:#06b6d4;border-radius:4px;cursor:pointer">TCCI</button>
+            <button onclick="v731Theorem('T232')" style="font-size:9px;padding:2px 6px;border:1px solid #fb923c;background:var(--bg3);color:#fb923c;border-radius:4px;cursor:pointer">T232</button>
+          </div>
+        </div>
+
+        <!-- 结果显示区 -->
+        <div id="v731-cognitive-result" style="font-size:9px;color:var(--txt2);max-height:120px;overflow-y:auto;padding:4px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.4;white-space:pre-wrap;margin-top:4px"></div>
+      </div>
+
+      <!-- Phase 2: 架构闭环 (M203-M204) -->
+      <div class="panel-section panel-v717" id="v731-arch-panel" data-hint="v7.31 架构闭环: 双轨CRD反射器·AGI Monitor算子 (T233-T234)">
+        <div class="panel-title">&#127760; 架构闭环 <span style="font-size:8px;color:var(--txt3)">v7.31 · Phase2</span></div>
+
+        <!-- 双轨CRD -->
+        <div style="margin-bottom:6px">
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt2);margin-bottom:2px">
+            <span>双轨CRD反射器</span>
+            <span id="v731-crd-badge" style="color:var(--sky)">--</span>
+          </div>
+          <div style="display:flex;gap:4px;font-size:9px;margin-bottom:2px">
+            <span>H: <span id="v731-crd-human" style="color:var(--green)">--</span></span>
+            <span>A: <span id="v731-crd-agent" style="color:var(--acc2)">--</span></span>
+            <span>收敛: <span id="v731-crd-conv" style="color:var(--amber)">--</span></span>
+          </div>
+          <div style="display:flex;gap:4px">
+            <button onclick="v731CrdStep()" style="font-size:9px;padding:2px 6px;border:1px solid #38bdf8;background:var(--bg3);color:#38bdf8;border-radius:4px;cursor:pointer">双轨步进</button>
+            <button onclick="v731CrdConvergence()" style="font-size:9px;padding:2px 6px;border:1px solid #10b981;background:var(--bg3);color:#10b981;border-radius:4px;cursor:pointer">收敛性</button>
+            <button onclick="v731Theorem('T233')" style="font-size:9px;padding:2px 6px;border:1px solid #fb923c;background:var(--bg3);color:#fb923c;border-radius:4px;cursor:pointer">T233</button>
+          </div>
+        </div>
+
+        <!-- AGI Monitor -->
+        <div style="margin-bottom:6px">
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt2);margin-bottom:2px">
+            <span>AGI Monitor算子</span>
+            <span id="v731-monitor-badge" style="color:var(--si)">--</span>
+          </div>
+          <div style="display:flex;gap:4px;font-size:9px;margin-bottom:2px">
+            <span>自指: <span id="v731-monitor-self" style="color:var(--amber)">--</span></span>
+            <span>递归: <span id="v731-monitor-rec" style="color:var(--red)">--</span></span>
+          </div>
+          <div style="display:flex;gap:4px">
+            <button onclick="v731MonitorPipeline()" style="font-size:9px;padding:2px 6px;border:1px solid #8b5cf6;background:var(--bg3);color:#8b5cf6;border-radius:4px;cursor:pointer">四层管线</button>
+            <button onclick="v731Theorem('T234')" style="font-size:9px;padding:2px 6px;border:1px solid #fb923c;background:var(--bg3);color:#fb923c;border-radius:4px;cursor:pointer">T234</button>
+          </div>
+        </div>
+
+        <div id="v731-arch-result" style="font-size:9px;color:var(--txt2);max-height:100px;overflow-y:auto;padding:4px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.4;white-space:pre-wrap;margin-top:4px"></div>
+      </div>
+
+      <!-- Phase 3: 人机共生 (M205-M206) -->
+      <div class="panel-section panel-v717" id="v731-symbiosis-panel" data-hint="v7.31 人机共生: 信任校准·可控熵增 (T235-T236)">
+        <div class="panel-title">&#129309; 人机共生 <span style="font-size:8px;color:var(--txt3)">v7.31 · Phase3</span></div>
+
+        <!-- 信任校准 -->
+        <div style="margin-bottom:6px">
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt2);margin-bottom:2px">
+            <span>信任校准引擎</span>
+            <span id="v731-trust-badge" style="color:var(--green)">--</span>
+          </div>
+          <div style="display:flex;gap:4px;font-size:9px;margin-bottom:2px">
+            <span>信任度: <span id="v731-trust-val" style="color:var(--green)">--</span></span>
+            <span>保真度: <span id="v731-fidelity-val" style="color:var(--sky)">--</span></span>
+          </div>
+          <div style="display:flex;gap:4px">
+            <button onclick="v731TrustCalibrate()" style="font-size:9px;padding:2px 6px;border:1px solid #10b981;background:var(--bg3);color:#10b981;border-radius:4px;cursor:pointer">校准</button>
+            <button onclick="v731Theorem('T235')" style="font-size:9px;padding:2px 6px;border:1px solid #fb923c;background:var(--bg3);color:#fb923c;border-radius:4px;cursor:pointer">T235</button>
+          </div>
+        </div>
+
+        <!-- 可控熵增 -->
+        <div style="margin-bottom:6px">
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt2);margin-bottom:2px">
+            <span>可控熵增引擎</span>
+            <span id="v731-entropy-badge" style="color:var(--red)">--</span>
+          </div>
+          <div style="display:flex;gap:4px;font-size:9px;margin-bottom:2px">
+            <span>dS_int: <span id="v731-entropy-int" style="color:var(--green)">--</span></span>
+            <span>dS_ext: <span id="v731-entropy-ext" style="color:var(--red)">--</span></span>
+          </div>
+          <div style="display:flex;gap:4px">
+            <button onclick="v731EntropyVerify()" style="font-size:9px;padding:2px 6px;border:1px solid #ef4444;background:var(--bg3);color:#ef4444;border-radius:4px;cursor:pointer">熵验证</button>
+            <button onclick="v731Theorem('T236')" style="font-size:9px;padding:2px 6px;border:1px solid #fb923c;background:var(--bg3);color:#fb923c;border-radius:4px;cursor:pointer">T236</button>
+          </div>
+        </div>
+
+        <div id="v731-symbiosis-result" style="font-size:9px;color:var(--txt2);max-height:100px;overflow-y:auto;padding:4px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.4;white-space:pre-wrap;margin-top:4px"></div>
+      </div>
+
+      <!-- v7.31 全局操作面板 -->
+      <div class="panel-section panel-v717" id="v731-global-panel" data-hint="v7.31 全局操作: MVE实验(P13-P17)·定理批量验证·版本信息">
+        <div class="panel-title">&#9889; v7.31 控制 <span style="font-size:8px;color:var(--txt3)">True AGI</span></div>
+
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
+          <button onclick="v731MveRunAll()" style="font-size:10px;padding:3px 8px;border:1px solid #f59e0b;background:var(--bg3);color:#f59e0b;border-radius:4px;cursor:pointer;font-weight:bold">MVE P13-P17</button>
+          <button onclick="v731TheoremAll()" style="font-size:10px;padding:3px 8px;border:1px solid #10b981;background:var(--bg3);color:#10b981;border-radius:4px;cursor:pointer;font-weight:bold">T227-T236</button>
+        </div>
+
+        <!-- MVE 结果汇总 -->
+        <div style="margin-bottom:6px">
+          <div style="font-size:9px;color:var(--txt2);margin-bottom:2px">MVE实验</div>
+          <div style="display:flex;gap:4px;font-size:9px">
+            <span>P13: <span id="v731-p13" style="color:var(--txt3)">--</span></span>
+            <span>P14: <span id="v731-p14" style="color:var(--txt3)">--</span></span>
+            <span>P15: <span id="v731-p15" style="color:var(--txt3)">--</span></span>
+            <span>P16: <span id="v731-p16" style="color:var(--txt3)">--</span></span>
+            <span>P17: <span id="v731-p17" style="color:var(--txt3)">--</span></span>
+          </div>
+        </div>
+
+        <!-- 定理结果汇总 -->
+        <div style="margin-bottom:6px">
+          <div style="font-size:9px;color:var(--txt2);margin-bottom:2px">定理验证</div>
+          <div style="display:flex;gap:3px;flex-wrap:wrap;font-size:9px" id="v731-theorem-badges">
+            <span id="v731-t227" style="color:var(--txt3)">T227</span>
+            <span id="v731-t228" style="color:var(--txt3)">T228</span>
+            <span id="v731-t229" style="color:var(--txt3)">T229</span>
+            <span id="v731-t230" style="color:var(--txt3)">T230</span>
+            <span id="v731-t231" style="color:var(--txt3)">T231</span>
+            <span id="v731-t232" style="color:var(--txt3)">T232</span>
+            <span id="v731-t233" style="color:var(--txt3)">T233</span>
+            <span id="v731-t234" style="color:var(--txt3)">T234</span>
+            <span id="v731-t235" style="color:var(--txt3)">T235</span>
+            <span id="v731-t236" style="color:var(--txt3)">T236</span>
+          </div>
+        </div>
+
+        <div id="v731-global-result" style="font-size:9px;color:var(--txt2);max-height:140px;overflow-y:auto;padding:4px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.4;white-space:pre-wrap"></div>
       </div>
 
       </div><!-- END dashboard-content -->
@@ -15926,6 +16129,170 @@ function akashaRebuildSemanticIndex() {
 
 // 初始加载知识图谱面板
 setTimeout(akashaKGRefresh, 4000);
+
+// ==================== v7.31 True AGI 升级 (M197-M206, T227-T236) ====================
+
+// -- Phase 1: 认知能力 --
+function v731TomModel() {
+  fetch('/api/v731/tom/model_other', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({}) })
+    .then(r => r.json()).then(d => {
+      document.getElementById('v731-tom-badge').textContent = d.passed ? 'PASS' : 'FAIL';
+      document.getElementById('v731-tom-badge').style.color = d.passed ? '#10b981' : '#ef4444';
+      v731ShowResult('v731-cognitive-result', 'ToM模拟: ' + JSON.stringify(d, null, 1));
+    }).catch(e => v731ShowResult('v731-cognitive-result', 'ToM错误: ' + e));
+}
+
+function v731SelfUpdate() {
+  fetch('/api/v731/selfmodel/update', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ experience: 'self-observation' }) })
+    .then(r => r.json()).then(d => {
+      document.getElementById('v731-self-badge').textContent = d.continuity !== undefined ? d.continuity.toFixed(3) : 'OK';
+      v731ShowResult('v731-cognitive-result', '自我更新: ' + JSON.stringify(d, null, 1));
+    }).catch(e => v731ShowResult('v731-cognitive-result', '自我更新错误: ' + e));
+}
+
+function v731SocialAdd() {
+  fetch('/api/v731/social/add_relation', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ from: 'A', to: 'B', rel_type: 'cooperation' }) })
+    .then(r => r.json()).then(d => {
+      document.getElementById('v731-social-badge').textContent = d.invariant !== undefined ? (d.invariant ? 'HOLD' : 'BREAK') : 'OK';
+      v731ShowResult('v731-cognitive-result', '社会拓扑: ' + JSON.stringify(d, null, 1));
+    }).catch(e => v731ShowResult('v731-cognitive-result', '社会拓扑错误: ' + e));
+}
+
+function v731FlexSwitch() {
+  fetch('/api/v731/flexibility/switch_task', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ from_task: 'A', to_task: 'B' }) })
+    .then(r => r.json()).then(d => {
+      document.getElementById('v731-flex-badge').textContent = d.flexibility !== undefined ? d.flexibility.toFixed(3) : 'OK';
+      v731ShowResult('v731-cognitive-result', '认知切换: ' + JSON.stringify(d, null, 1));
+    }).catch(e => v731ShowResult('v731-cognitive-result', '认知切换错误: ' + e));
+}
+
+function v731EmlTheta() {
+  fetch('/api/v731/eml/flexible_theta', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({}) })
+    .then(r => r.json()).then(d => {
+      document.getElementById('v731-eml-badge').textContent = d.flexible !== undefined ? (d.flexible ? 'ON' : 'OFF') : 'OK';
+      v731ShowResult('v731-cognitive-result', 'EML相位: ' + JSON.stringify(d, null, 1));
+    }).catch(e => v731ShowResult('v731-cognitive-result', 'EML错误: ' + e));
+}
+
+function v731AutismCompute() {
+  fetch('/api/v731/autism/compute_i_asd', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ behavioral_data: { social_cognition: 0.8, communication_flexibility: 0.7, repetitive_behavior: 0.2, sensory_sensitivity: 0.3 } }) })
+    .then(r => r.json()).then(d => {
+      document.getElementById('v731-autism-badge').textContent = d.i_asd !== undefined ? d.i_asd.toFixed(3) : 'OK';
+      v731ShowResult('v731-cognitive-result', 'I_ASD: ' + JSON.stringify(d, null, 1));
+    }).catch(e => v731ShowResult('v731-cognitive-result', 'I_ASD错误: ' + e));
+}
+
+function v731AutismTCCI() {
+  fetch('/api/v731/autism/tcci', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({}) })
+    .then(r => r.json()).then(d => {
+      v731ShowResult('v731-cognitive-result', 'TCCI: ' + JSON.stringify(d, null, 1));
+    }).catch(e => v731ShowResult('v731-cognitive-result', 'TCCI错误: ' + e));
+}
+
+// -- Phase 2: 架构闭环 --
+function v731CrdStep() {
+  fetch('/api/v731/crd/step', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({}) })
+    .then(r => r.json()).then(d => {
+      if (d.human_track) document.getElementById('v731-crd-human').textContent = d.human_track.step || '--';
+      if (d.agent_track) document.getElementById('v731-crd-agent').textContent = d.agent_track.step || '--';
+      if (d.dual_convergence !== undefined) document.getElementById('v731-crd-conv').textContent = d.dual_convergence.toFixed(3);
+      v731ShowResult('v731-arch-result', 'CRD步进: ' + JSON.stringify(d, null, 1));
+    }).catch(e => v731ShowResult('v731-arch-result', 'CRD错误: ' + e));
+}
+
+function v731CrdConvergence() {
+  fetch('/api/v731/crd/step', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ steps: 20 }) })
+    .then(r => r.json()).then(d => {
+      document.getElementById('v731-crd-badge').textContent = d.dual_converged ? 'CONV' : 'RUN';
+      document.getElementById('v731-crd-badge').style.color = d.dual_converged ? '#10b981' : '#f59e0b';
+      v731ShowResult('v731-arch-result', 'CRD收敛: converged=' + d.dual_converged);
+    }).catch(e => v731ShowResult('v731-arch-result', 'CRD收敛错误: ' + e));
+}
+
+function v731MonitorPipeline() {
+  fetch('/api/v731/monitor/pipeline', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ query: 'self-check', max_depth: 3 }) })
+    .then(r => r.json()).then(d => {
+      document.getElementById('v731-monitor-self').textContent = d.is_self_reference ? 'YES' : 'NO';
+      document.getElementById('v731-monitor-rec').textContent = d.is_infinite_recursion ? 'YES' : 'NO';
+      document.getElementById('v731-monitor-badge').textContent = d.is_self_reference && !d.is_infinite_recursion ? 'OK' : 'WARN';
+      v731ShowResult('v731-arch-result', 'Monitor: ' + JSON.stringify(d, null, 1));
+    }).catch(e => v731ShowResult('v731-arch-result', 'Monitor错误: ' + e));
+}
+
+// -- Phase 3: 人机共生 --
+function v731TrustCalibrate() {
+  fetch('/api/v731/trust/calibrate', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ human_input: 'test-query', agent_response: 'test-response' }) })
+    .then(r => r.json()).then(d => {
+      if (d.trust_score !== undefined) document.getElementById('v731-trust-val').textContent = d.trust_score.toFixed(3);
+      if (d.fidelity !== undefined) document.getElementById('v731-fidelity-val').textContent = d.fidelity.toFixed(3);
+      document.getElementById('v731-trust-badge').textContent = d.complex_stable !== undefined ? (d.complex_stable ? 'STABLE' : 'UNSTABLE') : 'OK';
+      v731ShowResult('v731-symbiosis-result', '信任校准: ' + JSON.stringify(d, null, 1));
+    }).catch(e => v731ShowResult('v731-symbiosis-result', '信任校准错误: ' + e));
+}
+
+function v731EntropyVerify() {
+  fetch('/api/v731/entropy/verify', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({}) })
+    .then(r => r.json()).then(d => {
+      if (d.delta_s_int !== undefined) document.getElementById('v731-entropy-int').textContent = d.delta_s_int.toFixed(3);
+      if (d.delta_s_ext !== undefined) document.getElementById('v731-entropy-ext').textContent = d.delta_s_ext.toFixed(3);
+      document.getElementById('v731-entropy-badge').textContent = d.controlled ? 'CTRL' : 'UNCTRL';
+      document.getElementById('v731-entropy-badge').style.color = d.controlled ? '#10b981' : '#ef4444';
+      v731ShowResult('v731-symbiosis-result', '可控熵增: ' + JSON.stringify(d, null, 1));
+    }).catch(e => v731ShowResult('v731-symbiosis-result', '熵验证错误: ' + e));
+}
+
+// -- 全局操作 --
+function v731MveRunAll() {
+  fetch('/api/v731/mve/run_all').then(r => r.json()).then(d => {
+    let results = d.results || d;
+    ['P13','P14','P15','P16','P17'].forEach(p => {
+      let el = document.getElementById('v731-' + p.toLowerCase());
+      if (el && results[p]) {
+        el.textContent = results[p].passed ? 'PASS' : 'FAIL';
+        el.style.color = results[p].passed ? '#10b981' : '#ef4444';
+      }
+    });
+    v731ShowResult('v731-global-result', 'MVE P13-P17:\n' + JSON.stringify(d, null, 1));
+  }).catch(e => v731ShowResult('v731-global-result', 'MVE错误: ' + e));
+}
+
+function v731Theorem(tid) {
+  fetch('/api/v731/theorems/verify_all').then(r => r.json()).then(d => {
+    let results = d.results || {};
+    if (results[tid]) {
+      let t = results[tid];
+      v731ShowResult('v731-global-result', tid + ': ' + JSON.stringify(t, null, 1));
+      let el = document.getElementById('v731-' + tid.toLowerCase());
+      if (el) { el.textContent = tid + (t.theorem_passed !== undefined ? (t.theorem_passed ? ' OK' : ' FAIL') : ''); el.style.color = t.theorem_passed ? '#10b981' : '#ef4444'; }
+    } else {
+      v731ShowResult('v731-global-result', tid + ': 未找到结果');
+    }
+  }).catch(e => v731ShowResult('v731-global-result', '定理验证错误: ' + e));
+}
+
+function v731TheoremAll() {
+  fetch('/api/v731/theorems/verify_all').then(r => r.json()).then(d => {
+    let results = d.results || {};
+    ['T227','T228','T229','T230','T231','T232','T233','T234','T235','T236'].forEach(tid => {
+      let el = document.getElementById('v731-' + tid.toLowerCase());
+      if (el && results[tid]) {
+        let passed = results[tid].theorem_passed;
+        el.textContent = tid + (passed !== undefined ? (passed ? ' OK' : ' FAIL') : '');
+        el.style.color = passed ? '#10b981' : '#ef4444';
+      }
+    });
+    let passed_count = Object.values(results).filter(r => r.theorem_passed).length;
+    v731ShowResult('v731-global-result', 'v7.31定理验证: ' + passed_count + '/10 通过\n' + JSON.stringify(d, null, 1));
+  }).catch(e => v731ShowResult('v731-global-result', '定理批量验证错误: ' + e));
+}
+
+function v731ShowResult(elementId, text) {
+  let el = document.getElementById(elementId);
+  if (el) { el.style.display = 'block'; el.textContent = text; }
+}
+
+// v7.31 初始化 - 延迟加载MVE状态
+setTimeout(function() { v731MveRunAll(); }, 6000);
 
 </script>
 <!-- AI进度指示器弹窗 -->

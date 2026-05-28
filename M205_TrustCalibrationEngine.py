@@ -503,6 +503,7 @@ class TrustCalibrationEngine:
                 'limit_behavior': limit_verified,
             },
             'overall_passed': all_passed,
+            'verified': all_passed,
             'conclusion': (
                 '[OK] 定理T235验证通过：Delta_C = eps^2，'
                 '复合体稳定性对偏差是二次敏感的'

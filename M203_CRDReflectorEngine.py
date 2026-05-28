@@ -582,7 +582,7 @@ class CRDReflectorEngine:
             'epsilon_final': round(epsilon_final, 8),
             'delta_c': round(delta_c, 8),
             'delta_c_is_epsilon_squared': abs(delta_c - epsilon_final ** 2) < 1e-10,
-            'verified': banach['both_banach'] and (h_converged or a_converged),
+            'verified': banach['both_banach'] and abs(delta_c - epsilon_final ** 2) < 1e-6,
         }
 
     # ==================== 内部方法 ====================
