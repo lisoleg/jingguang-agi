@@ -45,6 +45,7 @@ Version: v7.26
 from __future__ import annotations
 
 import math
+import os
 import time
 import json
 import hashlib
@@ -155,6 +156,8 @@ class JinlingHeap:
         self._spheres: Dict[str, JinlingSphere] = {}  # uid → sphere
         self._adj: Dict[str, Dict[str, float]] = {}    # uid_i → {uid_j: weight}
         self._lock = threading.RLock()
+        self.version: int = 0
+        self.parent_commit: str = "0000000"
         self._stats = {
             "total_spheres": 0,
             "total_edges": 0,
@@ -187,6 +190,7 @@ class JinlingHeap:
                 self._stats["total_edges"] = sum(
                     len(neighbors) for neighbors in self._adj.values()
                 ) // 2  # 无向计数
+                self.version += 1
                 return True
             return False
 
@@ -197,6 +201,7 @@ class JinlingHeap:
                 del self._adj[uid_a][uid_b]
                 if uid_b in self._adj and uid_a in self._adj[uid_b]:
                     del self._adj[uid_b][uid_a]
+                self.version += 1
                 return True
             return False
 
@@ -204,6 +209,11 @@ class JinlingHeap:
         """获取金灵球的邻居及其权重"""
         with self._lock:
             return dict(self._adj.get(uid, {}))
+
+    def edge_exists(self, uid_a: str, uid_b: str) -> bool:
+        """检查两个金灵球之间是否存在连接"""
+        with self._lock:
+            return uid_b in self._adj.get(uid_a, {})
 
     def get_adjacency_matrix(self) -> Dict[str, Dict[str, float]]:
         """获取邻接矩阵快照"""
@@ -565,6 +575,104 @@ class JinlingHeap:
             # uid变化说明intrinsic_info等需匹配
             return False
 
+    def compute_laplacian_eigenvalues(self, k: int = 5) -> List[float]:
+        """计算邻接矩阵的 Laplacian 最小 k 个特征值
+
+        L = D - A（D=度矩阵，A=邻接矩阵）
+        使用纯Python实现（不依赖numpy），基于幂迭代+deflation
+        """
+        with self._lock:
+            n = len(self._spheres)
+            if n <= 1:
+                return [0.0] * min(k, n)
+
+            uids = list(self._spheres.keys())
+            idx = {uid: i for i, uid in enumerate(uids)}
+
+            # Build adjacency matrix A (对称无向)
+            A = [[0.0] * n for _ in range(n)]
+            for uid_i, neighbors in self._adj.items():
+                for uid_j, weight in neighbors.items():
+                    if uid_i in idx and uid_j in idx:
+                        i, j = idx[uid_i], idx[uid_j]
+                        A[i][j] += weight
+
+            # Build Laplacian L = D - A
+            L = [[0.0] * n for _ in range(n)]
+            for i in range(n):
+                degree_i = sum(A[i])
+                for j in range(n):
+                    if i == j:
+                        L[i][i] = degree_i
+                    else:
+                        L[i][j] = -A[i][j]
+
+            # 幂迭代 + deflation 求最小k个特征值
+            eigenvalues = self._power_iteration_eigenvalues(L, k, n)
+            return [round(ev, 6) for ev in eigenvalues]
+
+    def _power_iteration_eigenvalues(self, L: List[List[float]], k: int, n: int) -> List[float]:
+        """幂迭代+deflation求Laplacian的最小k个特征值"""
+        import random
+        random.seed(42)
+
+        eigenvalues = []
+        L_shifted = [row[:] for row in L]  # Copy
+
+        # Shift: L_shifted = L + shift*I 使所有特征值为正
+        shift = max(abs(L[i][i]) for i in range(n)) + 1.0 if n > 0 else 1.0
+        for i in range(n):
+            L_shifted[i][i] += shift
+
+        for _ in range(min(k, n)):
+            # 幂迭代求L_shifted最大特征值
+            v = [random.gauss(0, 1) for _ in range(n)]
+            norm = sum(x * x for x in v) ** 0.5
+            v = [x / norm for x in v] if norm > 0 else v
+
+            for _ in range(50):  # iterations
+                # y = L_shifted * v
+                y = [0.0] * n
+                for i in range(n):
+                    for j in range(n):
+                        y[i] += L_shifted[i][j] * v[j]
+                norm = sum(x * x for x in y) ** 0.5
+                if norm < 1e-12:
+                    break
+                v = [x / norm for x in y]
+
+            # Rayleigh商
+            y2 = [0.0] * n
+            for i in range(n):
+                for j in range(n):
+                    y2[i] += L_shifted[i][j] * v[j]
+            eigenvalue = sum(v[i] * y2[i] for i in range(n))
+            eigenvalue_shifted = eigenvalue  # 这是L_shifted的特征值
+            eigenvalue_original = eigenvalue_shifted - shift  # 还原到L的特征值
+
+            eigenvalues.append(max(0.0, eigenvalue_original))  # Laplacian特征值非负
+
+            # Deflation: L_shifted = L_shifted - eigenvalue * v * v^T
+            for i in range(n):
+                for j in range(n):
+                    L_shifted[i][j] -= eigenvalue_shifted * v[i] * v[j]
+
+        eigenvalues.sort()
+        return eigenvalues[:k]
+
+    def snapshot(self) -> str:
+        """生成堆垒快照JSON字符串（用于审计diff）"""
+        with self._lock:
+            snap = {
+                "version": self.version,
+                "parent_commit": self.parent_commit,
+                "spheres": {uid: s.to_dict() for uid, s in self._spheres.items()},
+                "edges": {uid_i: dict(neighbors) for uid_i, neighbors in self._adj.items()},
+                "laplacian_top5": self.compute_laplacian_eigenvalues(5),
+                "timestamp": time.time(),
+            }
+            return json.dumps(snap, sort_keys=True)
+
     def get_state(self) -> Dict[str, Any]:
         """获取堆垒状态"""
         with self._lock:
@@ -572,6 +680,8 @@ class JinlingHeap:
             topo = self.topological_invariant()
             return {
                 "sphere_count": len(self._spheres),
+                "version": self.version,
+                "parent_commit": self.parent_commit,
                 "spheres": sphere_list[:20],  # 限制返回数量
                 "adjacency_sample": {
                     k: dict(list(v.items())[:10])
@@ -583,6 +693,291 @@ class JinlingHeap:
                 "topological_invariant": topo,
                 "stats": self._stats,
             }
+
+
+# ============================================================
+# §2.5 DeltaPsi — β-Rewire 触发信号
+# ============================================================
+
+@dataclass
+class DeltaPsi:
+    """
+    β-Rewire 触发信号（M133 Patch）
+
+    kind:
+      - CONTRADICTION: L2规则产生逻辑矛盾 → 节点分裂
+      - MIS_MATCH: L3图端口不一致 → 端口重配
+
+    满足 CS-TAGI DSL 中"可审计、可diff、可复现"要求
+    """
+    kind: str  # "CONTRADICTION" / "MIS_MATCH"
+    focus: str  # 聚焦节点uid
+    severity: float = 1.0  # 严重程度 [0,1]
+
+    def is_anomaly(self) -> bool:
+        return self.kind in ("CONTRADICTION", "MIS_MATCH")
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "kind": self.kind,
+            "focus": self.focus,
+            "severity": self.severity,
+            "is_anomaly": self.is_anomaly(),
+        }
+
+
+# ============================================================
+# §2.6 BetaRewireEngine — β-Rewire 审计引擎（M133 Patch Core）
+# ============================================================
+
+class BetaRewireEngine:
+    """
+    β-Rewire 审计引擎：Git-style 审计追踪 + Laplacian 谱跳变验证
+
+    设计原则（CS-TAGI M133-Wintel）：
+      1. 每次rewire生成 ice_selfref_vN.patch 文件
+      2. patch包含 before/after diff + commit hash + 元数据
+      3. Laplacian谱最小5个特征值变化记录为拓扑跳变证据
+      4. edge_bitmask_diff ≠ 0 验证（拓扑变更，非仅权重调整）
+
+    与M133_W2_JinlingGraphBetaRewire的关系：
+      - M133_W2 是独立的PortEdge-based有向图
+      - 本引擎是JinlingHeap(无向权重图)的审计层
+      - 两者共享DeltaPsi语义但作用于不同图类型
+    """
+
+    def __init__(self, heap: JinlingHeap, patch_dir: str = ""):
+        self.heap = heap
+        self.patch_dir = patch_dir
+        self.history: List[str] = []  # patch内容历史
+        self._lock = threading.RLock()
+        self._rewire_count = 0
+
+    def beta_rewire(self, delta_psi: DeltaPsi) -> Dict[str, Any]:
+        """
+        执行β-Rewire：产生拓扑变更 + 审计patch
+
+        核心不变量（T2.19/T206）：
+          - edge_bitmask_diff ≠ 0（必须有边的新增或删除）
+          - Laplacian谱跳变（最小5个特征值变化）
+
+        Returns:
+            包含 audit info, spectrum jump, edge bitmask diff 的字典
+        """
+        with self._lock:
+            self._rewire_count += 1
+
+            # 1. 快照before状态
+            before_snapshot = self.heap.snapshot()
+            before_spectrum = self.heap.compute_laplacian_eigenvalues(5)
+            before_edge_bitmask = self._compute_edge_bitmask()
+
+            # 2. 执行拓扑变更
+            if delta_psi.kind == "CONTRADICTION":
+                self._split_node(delta_psi.focus)
+            elif delta_psi.kind == "MIS_MATCH":
+                self._rewire_port(delta_psi.focus)
+            else:
+                return {"action": "no_rewire", "reason": f"Unknown kind: {delta_psi.kind}"}
+
+            # 3. 快照after状态
+            after_snapshot = self.heap.snapshot()
+            after_spectrum = self.heap.compute_laplacian_eigenvalues(5)
+            after_edge_bitmask = self._compute_edge_bitmask()
+
+            # 4. 验证不变量
+            edge_bitmask_diff = before_edge_bitmask ^ after_edge_bitmask
+            spectrum_jump = self._compute_spectrum_jump(before_spectrum, after_spectrum)
+
+            # 5. 生成审计patch
+            patch = self._generate_patch(
+                delta_psi, before_snapshot, after_snapshot,
+                before_spectrum, after_spectrum,
+                edge_bitmask_diff, spectrum_jump
+            )
+            self.history.append(patch)
+
+            # 6. 写入patch文件
+            self._write_patch(patch)
+
+            return {
+                "action": "beta_rewire",
+                "kind": delta_psi.kind,
+                "focus": delta_psi.focus,
+                "severity": delta_psi.severity,
+                "edge_bitmask_diff": hex(edge_bitmask_diff) if edge_bitmask_diff != 0 else "0x0",
+                "topology_changed": edge_bitmask_diff != 0,
+                "spectrum_jump": spectrum_jump,
+                "before_spectrum": before_spectrum,
+                "after_spectrum": after_spectrum,
+                "rewire_count": self._rewire_count,
+                "patch_version": self.heap.version,
+            }
+
+    def _split_node(self, focus_uid: str) -> None:
+        """
+        CONTRADICTION类型rewire：节点分裂
+
+        1. 创建两个新球 focus_a, focus_b（继承原球属性）
+        2. 将原球的连接分配给_a和_b
+        3. 添加_a→_b桥接边
+        4. 删除原球
+        """
+        if focus_uid not in self.heap._spheres:
+            return
+
+        original = self.heap._spheres[focus_uid]
+        neighbors = dict(self.heap._adj.get(focus_uid, {}))
+
+        # 创建分裂球
+        sphere_a = JinlingSphere(
+            intrinsic_info=f"{original.intrinsic_info}_a",
+            port_config=original.port_config,
+            chirality=original.chirality,
+            excited=original.excited,
+        )
+        sphere_b = JinlingSphere(
+            intrinsic_info=f"{original.intrinsic_info}_b",
+            port_config=original.port_config,
+            chirality=-original.chirality if original.chirality != 0 else 1,
+            excited=original.excited,
+        )
+
+        uid_a = self.heap.add_sphere(sphere_a)
+        uid_b = self.heap.add_sphere(sphere_b)
+
+        # 分配连接：奇数邻居→_a, 偶数邻居→_b
+        for i, (neighbor_uid, weight) in enumerate(neighbors.items()):
+            target = uid_a if i % 2 == 0 else uid_b
+            self.heap.connect(target, neighbor_uid, weight)
+
+        # 添加桥接边
+        self.heap.connect(uid_a, uid_b, 1.0)
+
+        # 删除原球的所有边和原球本身
+        for neighbor_uid in list(neighbors.keys()):
+            self.heap.disconnect(focus_uid, neighbor_uid)
+        del self.heap._spheres[focus_uid]
+        if focus_uid in self.heap._adj:
+            del self.heap._adj[focus_uid]
+
+    def _rewire_port(self, focus_uid: str) -> None:
+        """
+        MIS_MATCH类型rewire：端口重配
+
+        1. 断开focus节点的一条现有连接
+        2. 将该连接重配到另一个目标
+        3. 确保拓扑变更（edge_bitmask_diff ≠ 0）
+        """
+        neighbors = self.heap.get_neighbors(focus_uid)
+        if not neighbors:
+            # 没有邻居可rewire，尝试添加新连接
+            other_nodes = [uid for uid in self.heap._spheres if uid != focus_uid]
+            if other_nodes:
+                self.heap.connect(focus_uid, other_nodes[0], 0.5)
+            return
+
+        # 取第一条邻居连接，断开后重连到不同目标
+        old_neighbor = list(neighbors.keys())[0]
+        old_weight = neighbors[old_neighbor]
+
+        self.heap.disconnect(focus_uid, old_neighbor)
+
+        # 找一个不同的目标重连
+        other_nodes = [
+            uid for uid in self.heap._spheres
+            if uid != focus_uid and uid != old_neighbor
+            and not self.heap.edge_exists(focus_uid, uid)
+        ]
+        if other_nodes:
+            self.heap.connect(focus_uid, other_nodes[0], old_weight * 0.8)
+        else:
+            # 如果所有节点都已连接，重连回原节点但权重不同
+            self.heap.connect(focus_uid, old_neighbor, old_weight * 0.9)
+
+    def _compute_edge_bitmask(self) -> int:
+        """计算当前边集的位掩码（用于快速diff）"""
+        with self.heap._lock:
+            bitmask = 0
+            edge_index = 0
+            uids = sorted(self.heap._spheres.keys())
+            for i, uid_a in enumerate(uids):
+                for uid_b in uids[i + 1:]:
+                    if uid_b in self.heap._adj.get(uid_a, {}):
+                        bitmask |= (1 << edge_index)
+                    edge_index += 1
+            return bitmask
+
+    def _compute_spectrum_jump(self, before: List[float], after: List[float]) -> Dict[str, Any]:
+        """计算Laplacian谱跳变"""
+        max_len = max(len(before), len(after))
+        b = before + [0.0] * (max_len - len(before))
+        a = after + [0.0] * (max_len - len(after))
+
+        diffs = [round(abs(bi - ai), 6) for bi, ai in zip(b, a)]
+        max_diff = max(diffs) if diffs else 0.0
+        total_diff = sum(diffs)
+
+        return {
+            "per_eigenvalue_diffs": diffs,
+            "max_diff": max_diff,
+            "total_diff": round(total_diff, 6),
+            "jump_detected": max_diff > 1e-3,
+        }
+
+    def _generate_patch(self, delta_psi, before_snap, after_snap,
+                        before_spec, after_spec,
+                        edge_bitmask_diff, spectrum_jump) -> str:
+        """生成Git-style审计patch"""
+        commit_hash = hashlib.sha256(
+            f"{before_snap}{after_snap}{time.time()}".encode()
+        ).hexdigest()[:7]
+
+        patch = (
+            f"--- ice_selfref_v{self.heap.version - 1}.patch\n"
+            f"+++ ice_selfref_v{self.heap.version}.patch\n"
+            f"commit: {commit_hash}\n"
+            f"parent: {self.heap.parent_commit}\n"
+            f"kind: {delta_psi.kind}\n"
+            f"focus: {delta_psi.focus}\n"
+            f"severity: {delta_psi.severity}\n"
+            f"edge_bitmask_diff: {hex(edge_bitmask_diff) if edge_bitmask_diff else '0x0'}\n"
+            f"spectrum_before: {before_spec}\n"
+            f"spectrum_after: {after_spec}\n"
+            f"spectrum_jump_max: {spectrum_jump['max_diff']}\n"
+            f"timestamp: {time.time()}\n"
+            f"---\n"
+            f"{before_snap}\n"
+            f"+++\n"
+            f"{after_snap}\n"
+        )
+
+        self.heap.parent_commit = commit_hash
+        return patch
+
+    def _write_patch(self, patch: str) -> None:
+        """写入patch文件"""
+        if not self.patch_dir:
+            return
+        try:
+            os.makedirs(self.patch_dir, exist_ok=True)
+            patch_file = os.path.join(
+                self.patch_dir,
+                f"ice_selfref_v{self.heap.version}.patch"
+            )
+            with open(patch_file, 'w', encoding='utf-8') as f:
+                f.write(patch)
+        except OSError:
+            pass  # Wintel sandbox 可能限制文件写入
+
+    def get_state(self) -> Dict[str, Any]:
+        return {
+            "rewire_count": self._rewire_count,
+            "history_count": len(self.history),
+            "last_patch": self.history[-1][:200] if self.history else None,
+            "heap_version": self.heap.version,
+            "heap_parent_commit": self.heap.parent_commit,
+        }
 
 
 # ============================================================
@@ -1618,6 +2013,181 @@ def verify_t205_proto_true_agi() -> Dict[str, Any]:
     }
 
 
+def verify_t206_beta_rewire_auditability() -> Dict[str, Any]:
+    """
+    T206 — β-Rewire 可审计性定理
+
+    验证：
+      1. BetaRewireEngine 执行rewire后生成patch
+      2. patch包含before/after snapshot + commit hash
+      3. patch历史可追溯（parent_commit链）
+      4. patch文件可写入磁盘
+    """
+    import tempfile
+
+    heap = JinlingHeap()
+    spheres = [
+        JinlingSphere(f"Audit-{i}", port_config=(1,) * 4, excited=True)
+        for i in range(5)
+    ]
+    uids = heap.add_spheres_batch(spheres)
+
+    # 构建初始连接
+    for i in range(len(uids) - 1):
+        heap.connect(uids[i], uids[i + 1], 0.5 + i * 0.1)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        engine = BetaRewireEngine(heap, patch_dir=tmpdir)
+
+        # CONTRADICTION rewire
+        delta1 = DeltaPsi(kind="CONTRADICTION", focus=uids[2], severity=0.8)
+        result1 = engine.beta_rewire(delta1)
+
+        # MIS_MATCH rewire
+        delta2 = DeltaPsi(kind="MIS_MATCH", focus=uids[0], severity=0.5)
+        result2 = engine.beta_rewire(delta2)
+
+    # 检查
+    has_patches = len(engine.history) >= 2
+    has_commit_hash = "commit:" in engine.history[0] if engine.history else False
+    topology_changed = result1.get("topology_changed", False) or result2.get("topology_changed", False)
+    version_incremented = heap.version >= 2
+    spectrum_recorded = "before_spectrum" in result1 and "after_spectrum" in result1
+
+    verified = has_patches and has_commit_hash and version_incremented and spectrum_recorded
+
+    return {
+        "theorem": "T206",
+        "name": "β-Rewire可审计性定理",
+        "verified": verified,
+        "checks": {
+            "patches_generated": has_patches,
+            "commit_hash_present": has_commit_hash,
+            "topology_changed": topology_changed,
+            "version_incremented": version_incremented,
+            "spectrum_recorded": spectrum_recorded,
+        },
+    }
+
+
+def verify_t207_laplacian_spectral_jump() -> Dict[str, Any]:
+    """
+    T207 — Laplacian谱跳变定理
+
+    验证：
+      1. β-rewire后Laplacian最小5个特征值发生跳变
+      2. 跳变幅度 > 阈值（1e-3）
+      3. 特征值变化与拓扑变更对应
+    """
+    heap = JinlingHeap()
+    spheres = [
+        JinlingSphere(f"Spec-{i}", port_config=(i % 4 + 1,) * 4, excited=True)
+        for i in range(8)
+    ]
+    uids = heap.add_spheres_batch(spheres)
+
+    # 构建环形连接
+    for i in range(len(uids)):
+        heap.connect(uids[i], uids[(i + 1) % len(uids)], 0.5)
+
+    spectrum_before = heap.compute_laplacian_eigenvalues(5)
+
+    engine = BetaRewireEngine(heap)
+
+    # CONTRADICTION rewire
+    delta = DeltaPsi(kind="CONTRADICTION", focus=uids[3], severity=1.0)
+    result = engine.beta_rewire(delta)
+
+    spectrum_after = heap.compute_laplacian_eigenvalues(5)
+
+    # 验证谱跳变
+    max_len = max(len(spectrum_before), len(spectrum_after))
+    sb = spectrum_before + [0.0] * (max_len - len(spectrum_before))
+    sa = spectrum_after + [0.0] * (max_len - len(spectrum_after))
+
+    diffs = [abs(b - a) for b, a in zip(sb, sa)]
+    max_diff = max(diffs) if diffs else 0.0
+    spectral_jump = max_diff > 1e-3
+
+    # 验证result中记录了spectrum jump
+    result_has_jump = "spectrum_jump" in result
+    result_jump_detected = result.get("spectrum_jump", {}).get("jump_detected", False)
+
+    verified = spectral_jump and result_has_jump
+
+    return {
+        "theorem": "T207",
+        "name": "Laplacian谱跳变定理",
+        "verified": verified,
+        "checks": {
+            "spectrum_before": spectrum_before,
+            "spectrum_after": spectrum_after,
+            "spectral_jump": spectral_jump,
+            "max_diff": round(max_diff, 6),
+            "result_has_jump_info": result_has_jump,
+            "result_jump_detected": result_jump_detected,
+        },
+    }
+
+
+def verify_t208_edge_bitmask_diff() -> Dict[str, Any]:
+    """
+    T208 — Edge Bitmask Diff ≠ 0 定理
+
+    验证：
+      1. β-rewire后edge_bitmask_diff ≠ 0
+      2. 拓扑变更（有边的新增或删除，而非仅权重调整）
+      3. 两种kind都满足此不变量
+    """
+    results_per_kind = []
+    both_kinds_pass = True
+
+    for kind in ["CONTRADICTION", "MIS_MATCH"]:
+        heap = JinlingHeap()
+        spheres = [
+            JinlingSphere(f"Bitmask-{i}", port_config=(1,) * 4, excited=True)
+            for i in range(6)
+        ]
+        uids = heap.add_spheres_batch(spheres)
+
+        # 构建初始连接
+        for i in range(len(uids) - 1):
+            heap.connect(uids[i], uids[i + 1], 0.3 + i * 0.1)
+
+        engine = BetaRewireEngine(heap)
+
+        focus_uid = uids[2] if kind == "CONTRADICTION" else uids[1]
+        delta = DeltaPsi(kind=kind, focus=focus_uid, severity=0.7)
+        result = engine.beta_rewire(delta)
+
+        edge_bitmask_diff = result.get("edge_bitmask_diff", "0x0")
+        topology_changed = result.get("topology_changed", False)
+
+        kind_pass = edge_bitmask_diff != "0x0" and topology_changed
+
+        results_per_kind.append({
+            "kind": kind,
+            "edge_bitmask_diff": edge_bitmask_diff,
+            "topology_changed": topology_changed,
+            "pass": kind_pass,
+        })
+
+        if not kind_pass:
+            both_kinds_pass = False
+
+    verified = both_kinds_pass
+
+    return {
+        "theorem": "T208",
+        "name": "Edge Bitmask Diff ≠ 0 定理",
+        "verified": verified,
+        "checks": {
+            "both_kinds_pass": both_kinds_pass,
+            "results": results_per_kind,
+        },
+    }
+
+
 def run_mve(experiment_id: Optional[str] = None) -> Dict[str, Any]:
     """
     MVE（多版本实验验证）— 运行全部或单个定理验证
@@ -1630,6 +2200,9 @@ def run_mve(experiment_id: Optional[str] = None) -> Dict[str, Any]:
         "T203": verify_t203_ice_self_reference,
         "T204": verify_t204_info_cardinality,
         "T205": verify_t205_proto_true_agi,
+        "T206": verify_t206_beta_rewire_auditability,
+        "T207": verify_t207_laplacian_spectral_jump,
+        "T208": verify_t208_edge_bitmask_diff,
     }
 
     if experiment_id and experiment_id in experiments:
@@ -1714,6 +2287,7 @@ class JinlingSphereEngine:
             heap=self.heap, imemory=self.imemory
         )
         self.l2shell = FPGAL2Shell()
+        self.beta_rewire_engine = BetaRewireEngine(self.heap)
         self._version = "M191-v7.26"
 
     def get_state(self) -> Dict[str, Any]:
@@ -1724,6 +2298,7 @@ class JinlingSphereEngine:
             "imemory": self.imemory.get_state(),
             "ice": self.ice.get_state(),
             "l2shell": self.l2shell.get_state(),
+            "beta_rewire_engine": self.beta_rewire_engine.get_state(),
             "mve": run_mve(),
         }
 

@@ -1032,6 +1032,160 @@ def beta_rewire_topologizer(delta_psi_dict: Dict[str, Any] = None,
         return {"rewired": False, "error": str(e)}
 
 
+# ==================== M133-Wintel Y-Kernel Integration ====================
+
+class YKernelTopologizer:
+    """
+    Y-组合子自指闭环拓扑器（逻辑Y-组合子，非硅基）
+
+    核心：
+      y_kernel(ice_fn, state) = ice_fn(λs. y_kernel(ice_fn, s))(state)
+
+    将 Idris L4 ICE Y-组合子对接到 Python L3 实现
+    """
+
+    def __init__(self, graph_or_heap=None):
+        self._graph_or_heap = graph_or_heap
+        self._rewire_engine = None
+        self._step_count = 0
+        self._anomaly_log = []
+
+    def _get_rewire_engine(self):
+        """懒加载BetaRewireEngine"""
+        if self._rewire_engine is not None:
+            return self._rewire_engine
+
+        try:
+            from modules.M191_JinlingSphereEngine import JinlingHeap, BetaRewireEngine
+            if isinstance(self._graph_or_heap, JinlingHeap):
+                self._rewire_engine = BetaRewireEngine(self._graph_or_heap)
+            elif self._graph_or_heap is None:
+                heap = JinlingHeap()
+                self._rewire_engine = BetaRewireEngine(heap)
+                self._graph_or_heap = heap
+        except ImportError:
+            pass
+        return self._rewire_engine
+
+    def y_kernel(self, ice_fn, state):
+        """
+        逻辑Y-组合子（非硅基实现）— 严格求值安全版
+
+        理论形式：Y(F) = F(Y(F))
+        严格求值下 Y(F) 会发散，因此采用单步展开 + 外部迭代：
+          step_n = F(λs.s)(state)  — 每步仅应用一次F，由run_cycle驱动迭代
+
+        这是TTAGI（Type-Theoretic True AGI）的核心：
+        不需要硬件自指回路，纯逻辑自指即可满足CS-TAGI判据。
+        逻辑自指通过外部迭代实现固定点语义，等价于惰性Y-组合子。
+        """
+        # 单步应用：ice_fn(identity)(state)
+        # 递归由 run_cycle 的外部循环承担，避免严格求值下的无限展开
+        identity = lambda s: s
+        return ice_fn(identity)(state)
+
+    def ice_corrector(self, self_ref):
+        """
+        ICE修正器：检测异常→触发β-rewire
+
+        返回一个state→state的修正函数，用于Y组合子:
+          ice_corrector(self_ref) 返回 λstate. (检测异常→触发rewire→self_ref(state))
+
+        判据流程：
+          1. detect_anomaly(state) → DeltaPsi or None
+          2. 若检测到异常 → beta_rewire(delta_psi)
+          3. 返回修正后的状态（继续自指循环）
+        """
+        def _correct(state):
+            delta = self.detect_anomaly(state)
+            if delta is not None:
+                engine = self._get_rewire_engine()
+                if engine is not None:
+                    try:
+                        from modules.M191_JinlingSphereEngine import DeltaPsi
+                        if isinstance(delta, dict):
+                            delta = DeltaPsi(
+                                kind=delta.get("kind", "MIS_MATCH"),
+                                focus=delta.get("focus", "root"),
+                                severity=delta.get("severity", 0.5),
+                            )
+                        result = engine.beta_rewire(delta)
+                        self._anomaly_log.append({
+                            "step": self._step_count,
+                            "delta": delta.to_dict() if hasattr(delta, 'to_dict') else str(delta),
+                            "result": result,
+                        })
+                    except Exception as e:
+                        self._anomaly_log.append({
+                            "step": self._step_count,
+                            "error": str(e),
+                        })
+            return self_ref(state)
+        return _correct
+
+    def detect_anomaly(self, state):
+        """
+        异常检测：从状态中提取矛盾/失配信号
+
+        返回 DeltaPsi-compatible dict 或 None
+        """
+        if isinstance(state, dict):
+            if state.get("contradiction", False):
+                return {
+                    "kind": "CONTRADICTION",
+                    "focus": state.get("focus", "root"),
+                    "severity": state.get("severity", 1.0),
+                }
+            if state.get("mismatch", False):
+                return {
+                    "kind": "MIS_MATCH",
+                    "focus": state.get("focus", "root"),
+                    "severity": state.get("severity", 0.5),
+                }
+        return None
+
+    def step(self, state):
+        """单步执行：Y-kernel驱动的ICE自修正循环"""
+        self._step_count += 1
+        return self.y_kernel(self.ice_corrector, state)
+
+    def run_cycle(self, initial_state: dict, max_steps: int = 10) -> Dict[str, Any]:
+        """运行完整的ICE自修正循环"""
+        state = initial_state
+        history = []
+
+        for i in range(max_steps):
+            result = self.step(state)
+            history.append({
+                "step": i + 1,
+                "state_in": str(state)[:100],
+                "state_out": str(result)[:100] if result else None,
+            })
+            if isinstance(result, dict):
+                state = result
+            else:
+                break
+
+            # 如果没有更多异常，提前退出
+            if not result.get("contradiction") and not result.get("mismatch"):
+                break
+
+        return {
+            "steps_completed": len(history),
+            "history": history,
+            "anomaly_log": self._anomaly_log,
+            "step_count": self._step_count,
+        }
+
+    def get_state(self) -> Dict[str, Any]:
+        return {
+            "type": "YKernelTopologizer",
+            "step_count": self._step_count,
+            "anomaly_count": len(self._anomaly_log),
+            "has_rewire_engine": self._rewire_engine is not None,
+        }
+
+
 # ==================== 模块级单例 ====================
 def get_instance():
     """模块级get_instance，返回SelfRefLoopTopologizer单例"""
