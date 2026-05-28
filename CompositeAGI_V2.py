@@ -63,7 +63,7 @@ except ImportError:
     FractalDimensionAnalyzer = None
     
 try:
-    from MinimumActionPrinciple import MinimumActionPrinciple, BoundaryLayerTheory
+    from modules.MinimumActionPrinciple import MinimumActionPrinciple, BoundaryLayerTheory
 except ImportError:
     print("警告: MinimumActionPrinciple模块未找到")
     MinimumActionPrinciple = None
@@ -304,7 +304,7 @@ except ImportError:
     
 # 新增模块（基于四篇文档：唯识论、无剧场论、流贯相变）
 try:
-    from ManasNoTheater import ManasNoTheaterModule, ManasGenerator, NoTheaterTheory
+    from modules.ManasNoTheater import ManasNoTheaterModule, ManasGenerator, NoTheaterTheory
 except ImportError:
     print("警告: ManasNoTheater模块未找到")
     ManasNoTheaterModule = None

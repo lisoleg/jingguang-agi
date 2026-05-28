@@ -64,6 +64,11 @@ stdout.txt
 # Large docx files
 *.docx
 
+# Temp/reference directories
+_docx_tmp/
+_understand_anything_ref/
+.akasha_wal/
+
 # Wechat article crawler
 wechat-article-claw/
 debug*.txt

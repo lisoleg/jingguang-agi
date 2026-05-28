@@ -24,7 +24,7 @@ from DIKWPKnowledgeLayer import DIKWPKnowledgeLayer, IGCTRAxis
 from DIKWPWisdomLayer import DIKWPWisdomLayer, WisdomScore
 from DIKWPPurposeLayer import DIKWPPurposeLayer, IntentCheckResult
 from DIKWPReliabilityLayer import DIKWPReliabilityLayer, ProofEntry
-from MemoryLedger import MemoryLedger, DIKWPLayer as MemoryLayerEnum
+from modules.MemoryLedger import MemoryLedger, DIKWPLayer as MemoryLayerEnum
 from ElasticCoordinationBus import ElasticCoordinationBus
 
 

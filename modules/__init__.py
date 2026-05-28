@@ -1,37 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-太乙AGI 5.0 新增模块索引
-基于三篇论文的启发设计
+太乙AGI modules 包
 
-模块列表：
+包含所有M系列模块(M56-M206)和辅助模块。
+
+M系列模块通过 from modules.M###_XXX import ... 方式导入，例如：
+    from modules.M189_PowerLawEngine import PowerLawEngine
+    from modules.M190_AkashaChainDB import AkashaChainDB
+
+辅助模块（v5.0）：
 1. ftel_purpose_module - Ftel目的约束模块
-2. holographic_projection_module - 全息投影压缩模块  
+2. holographic_projection_module - 全息投影压缩模块
 3. lean_formalization_module - Lean形式化验证接口
 4. bft_tolerance_module - BFT拜占庭容错执行层
-
-使用示例：
-    from modules import (
-        create_ftel_module,
-        create_holographic_module,
-        create_lean_module,
-        create_bft_module
-    )
-    
-    # Ftel目的约束
-    ftel = create_ftel_module(lambda_weight=0.4)
-    ftel.set_goal("实现安全对齐")
-    
-    # 全息投影压缩
-    holo = create_holographic_module(compression_ratio=0.1)
-    result = holo.compress(high_dim_data)
-    
-    # Lean形式化验证
-    lean_mod = create_lean_module()
-    result = await lean_mod.prove_statement("∀ n : ℕ, n + 0 = n")
-    
-    # BFT容错执行
-    bft = create_bft_module(total_nodes=7, max_byzantine=2)
-    consensus = await bft.distributed_inference(query, inference_func)
 """
 
 from .ftel_purpose_module import FtelPurposeModule, FtelConfig, create_ftel_module
