@@ -5049,6 +5049,147 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         <div id="v726-beta-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;white-space:pre-wrap;"></div>
       </div>
 
+      <!-- v7.27 金灵球堆垒 M191 JinlingSphere -->
+      <div id="v727-jinling-panel" class="panel-section panel-v717" data-hint="M191 JinlingSphere: 不可变原语·金灵堆β归约·信息基·i-记忆谱遗忘·真冰自指·FPGA L2壳·T201-T205">
+        <div class="panel-title">🔮 金灵球 <span style="font-size:10px;color:var(--txt3)">v7.27 · M191</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v727JinlingState()" style="font-size:11px;padding:3px 8px;border:1px solid #38bdf8;background:var(--panel-bg);color:#38bdf8;border-radius:4px;cursor:pointer;font-weight:bold;">状态</button>
+          <button onclick="v727JinlingMve()" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;">MVE</button>
+          <button onclick="v727JinlingTheorem('T201')" style="font-size:11px;padding:3px 8px;border:1px solid #fb923c;background:var(--panel-bg);color:#fb923c;border-radius:4px;cursor:pointer;">T201</button>
+          <button onclick="v727JinlingTheorem('T205')" style="font-size:11px;padding:3px 8px;border:1px solid #fb923c;background:var(--panel-bg);color:#fb923c;border-radius:4px;cursor:pointer;">T205</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">堆</div>
+          <div class="v77-badge" id="v727-heap-badge" style="color:#38bdf8;font-size:10px;">—</div>
+          <div class="v77-label" style="font-size:11px;">AGI级</div>
+          <div class="v77-badge" id="v727-agi-badge" style="color:#a78bfa;font-size:10px;">—</div>
+        </div>
+        <div id="v727-jinling-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;white-space:pre-wrap;"></div>
+      </div>
+
+      <!-- v7.27 延续/思程 M192 TaijiContinuation -->
+      <div id="v727-continuation-panel" class="panel-section panel-v717" data-hint="M192 TaijiContinuation: AGI进程三元组⟨W,S,C⟩·延续快照·APCB·迁移协议·T206-T208">
+        <div class="panel-title">🔄 Continuation <span style="font-size:10px;color:var(--txt3)">v7.27 · M192</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v727ContinuationState()" style="font-size:11px;padding:3px 8px;border:1px solid #38bdf8;background:var(--panel-bg);color:#38bdf8;border-radius:4px;cursor:pointer;font-weight:bold;">状态</button>
+          <button onclick="v727ContinuationSpawn()" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">Spawn</button>
+          <button onclick="v727ContinuationMve()" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;">MVE</button>
+          <button onclick="v727ContinuationTheorem('T206')" style="font-size:11px;padding:3px 8px;border:1px solid #fb923c;background:var(--panel-bg);color:#fb923c;border-radius:4px;cursor:pointer;">T206</button>
+          <button onclick="v727ContinuationTheorem('T208')" style="font-size:11px;padding:3px 8px;border:1px solid #fb923c;background:var(--panel-bg);color:#fb923c;border-radius:4px;cursor:pointer;">T208</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">进程</div>
+          <div class="v77-badge" id="v727-procs-badge" style="color:#38bdf8;font-size:10px;">—</div>
+          <div class="v77-label" style="font-size:11px;">延续</div>
+          <div class="v77-badge" id="v727-conts-badge" style="color:#a78bfa;font-size:10px;">—</div>
+        </div>
+        <div style="display:flex;gap:4px;margin-top:4px;">
+          <input id="v727-spawn-name" placeholder="进程名" style="flex:1;background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:3px 6px;font-size:10px;">
+          <input id="v727-spawn-intent" placeholder="意图" style="flex:1;background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:3px 6px;font-size:10px;">
+        </div>
+        <div id="v727-continuation-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;white-space:pre-wrap;"></div>
+      </div>
+
+      <!-- v7.27 Φ流贯调度 M193 PhiScheduler -->
+      <div id="v727-phi-panel" class="panel-section panel-v717" data-hint="M193 PhiScheduler: Φ余弦相似度·三区调度(stable/transition/unstable)·FlowBreaker·幻觉拦截·T209-T211">
+        <div class="panel-title">Φ Φ-Scheduler <span style="font-size:10px;color:var(--txt3)">v7.27 · M193</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v727PhiState()" style="font-size:11px;padding:3px 8px;border:1px solid #38bdf8;background:var(--panel-bg);color:#38bdf8;border-radius:4px;cursor:pointer;font-weight:bold;">状态</button>
+          <button onclick="v727PhiEvaluate()" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">评估</button>
+          <button onclick="v727PhiTrend()" style="font-size:11px;padding:3px 8px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;">趋势</button>
+          <button onclick="v727PhiMve()" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;">MVE</button>
+          <button onclick="v727PhiTheorem('T209')" style="font-size:11px;padding:3px 8px;border:1px solid #fb923c;background:var(--panel-bg);color:#fb923c;border-radius:4px;cursor:pointer;">T209</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">Φ</div>
+          <div class="v77-badge" id="v727-phi-badge" style="color:#38bdf8;font-size:10px;">—</div>
+          <div class="v77-label" style="font-size:11px;">区</div>
+          <div class="v77-badge" id="v727-zone-badge" style="color:#34d399;font-size:10px;">—</div>
+        </div>
+        <div id="v727-phi-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;white-space:pre-wrap;"></div>
+      </div>
+
+      <!-- v7.27 碳硅GAN M194 CarbonSiliconGAN -->
+      <div id="v727-gan-panel" class="panel-section panel-v717" data-hint="M194 CarbonSiliconGAN: G-Core生成·D-Core判别·Bootstrap精化·碳硅非对称·T212-T214">
+        <div class="panel-title">🤖 C/S-GAN <span style="font-size:10px;color:var(--txt3)">v7.27 · M194</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v727GanState()" style="font-size:11px;padding:3px 8px;border:1px solid #38bdf8;background:var(--panel-bg);color:#38bdf8;border-radius:4px;cursor:pointer;font-weight:bold;">状态</button>
+          <button onclick="v727GanStep()" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">共演</button>
+          <button onclick="v727GanMve()" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;">MVE</button>
+          <button onclick="v727GanTheorem('T212')" style="font-size:11px;padding:3px 8px;border:1px solid #fb923c;background:var(--panel-bg);color:#fb923c;border-radius:4px;cursor:pointer;">T212</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">轮次</div>
+          <div class="v77-badge" id="v727-round-badge" style="color:#38bdf8;font-size:10px;">—</div>
+          <div class="v77-label" style="font-size:11px;">Φ</div>
+          <div class="v77-badge" id="v727-gan-phi-badge" style="color:#34d399;font-size:10px;">—</div>
+        </div>
+        <div style="display:flex;gap:4px;margin-top:4px;">
+          <input id="v727-gan-input" placeholder="输入提示…" style="flex:1;background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:3px 6px;font-size:10px;">
+        </div>
+        <div id="v727-gan-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;white-space:pre-wrap;"></div>
+      </div>
+
+      <!-- v7.27 世界模型 M195 WorldModelSubsystem -->
+      <div id="v727-world-panel" class="panel-section panel-v717" data-hint="M195 WorldModel: ψ潜场·EpisodicIndex·VersionList·Φ门控更新·FlowBreaker·T215-T217">
+        <div class="panel-title">🌍 WorldModel <span style="font-size:10px;color:var(--txt3)">v7.27 · M195</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="v727WorldState()" style="font-size:11px;padding:3px 8px;border:1px solid #38bdf8;background:var(--panel-bg);color:#38bdf8;border-radius:4px;cursor:pointer;font-weight:bold;">状态</button>
+          <button onclick="v727WorldObserve()" style="font-size:11px;padding:3px 8px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">观察</button>
+          <button onclick="v727WorldSnap()" style="font-size:11px;padding:3px 8px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;">快照</button>
+          <button onclick="v727WorldMve()" style="font-size:11px;padding:3px 8px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;">MVE</button>
+          <button onclick="v727WorldTheorem('T215')" style="font-size:11px;padding:3px 8px;border:1px solid #fb923c;background:var(--panel-bg);color:#fb923c;border-radius:4px;cursor:pointer;">T215</button>
+        </div>
+        <div class="v77-row">
+          <div class="v77-label" style="font-size:11px;">版本</div>
+          <div class="v77-badge" id="v727-ver-badge" style="color:#38bdf8;font-size:10px;">—</div>
+          <div class="v77-label" style="font-size:11px;">记忆</div>
+          <div class="v77-badge" id="v727-episodic-badge" style="color:#34d399;font-size:10px;">—</div>
+        </div>
+        <div style="display:flex;gap:4px;margin-top:4px;">
+          <input id="v727-world-input" placeholder="观察/检索文本…" style="flex:1;background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:3px 6px;font-size:10px;">
+          <button onclick="v727WorldRecall()" style="font-size:10px;padding:3px 6px;border:1px solid #f472b6;background:var(--panel-bg);color:#f472b6;border-radius:4px;cursor:pointer;">检索</button>
+        </div>
+        <div id="v727-world-detail" style="font-size:11px;color:var(--txt2);max-height:160px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;white-space:pre-wrap;"></div>
+      </div>
+
+      <!-- v7.28 万物理解引擎 (M196) -->
+      <div id="v728-ua-panel" class="panel-section panel-v717" data-hint="M196 UnderstandAnything: 知识图谱·项目扫描·智能搜索·上下文构建·代码解释·差异分析·入职导览·专家桥接·T218-T221">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+          <span style="font-size:13px;font-weight:bold;color:#06b6d4;">🔍 万物理解引擎</span>
+          <span style="font-size:9px;color:var(--txt2);">M196 v7.28b</span>
+        </div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;">
+          <button onclick="v728UaState()" style="font-size:10px;padding:3px 6px;border:1px solid #06b6d4;background:var(--panel-bg);color:#06b6d4;border-radius:4px;cursor:pointer;font-weight:bold;">状态</button>
+          <button onclick="v728UaScanSelf()" style="font-size:10px;padding:3px 6px;border:1px solid #f59e0b;background:var(--panel-bg);color:#f59e0b;border-radius:4px;cursor:pointer;">扫描自身</button>
+          <button onclick="v728UaProjects()" style="font-size:10px;padding:3px 6px;border:1px solid #34d399;background:var(--panel-bg);color:#34d399;border-radius:4px;cursor:pointer;">项目列表</button>
+          <button onclick="v728UaVerify()" style="font-size:10px;padding:3px 6px;border:1px solid #a78bfa;background:var(--panel-bg);color:#a78bfa;border-radius:4px;cursor:pointer;">T218-T221</button>
+        </div>
+        <div style="display:flex;gap:4px;margin-bottom:6px;">
+          <input id="v728-ua-search-input" placeholder="搜索查询…" style="flex:1;background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:3px 6px;font-size:10px;">
+          <button onclick="v728UaSearch()" style="font-size:10px;padding:3px 6px;border:1px solid #38bdf8;background:var(--panel-bg);color:#38bdf8;border-radius:4px;cursor:pointer;">搜索</button>
+        </div>
+        <div style="display:flex;gap:4px;margin-bottom:6px;">
+          <input id="v728-ua-explain" placeholder="文件路径（如 app.py）…" style="flex:1;background:rgba(0,0,0,0.3);border:1px solid var(--bdr);color:var(--fg);border-radius:4px;padding:3px 6px;font-size:10px;">
+          <button onclick="v728UaExplain()" style="font-size:10px;padding:3px 6px;border:1px solid #f472b6;background:var(--panel-bg);color:#f472b6;border-radius:4px;cursor:pointer;">解释</button>
+        </div>
+        <div style="display:flex;gap:4px;margin-bottom:6px;">
+          <button onclick="v728UaContext()" style="font-size:10px;padding:3px 6px;border:1px solid #fb923c;background:var(--panel-bg);color:#fb923c;border-radius:4px;cursor:pointer;">构建上下文</button>
+          <button onclick="v728UaOnboard()" style="font-size:10px;padding:3px 6px;border:1px solid #818cf8;background:var(--panel-bg);color:#818cf8;border-radius:4px;cursor:pointer;">导览</button>
+          <button onclick="v728UaExperts()" style="font-size:10px;padding:3px 6px;border:1px solid #e879f9;background:var(--panel-bg);color:#e879f9;border-radius:4px;cursor:pointer;">推荐专家</button>
+        </div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;">
+          <button onclick="v728UaExpertContext()" style="font-size:10px;padding:3px 6px;border:1px solid #c084fc;background:var(--panel-bg);color:#c084fc;border-radius:4px;cursor:pointer;">🧠上下文专家</button>
+          <button onclick="v728UaChatExpert()" style="font-size:10px;padding:3px 6px;border:1px solid #fb7185;background:var(--panel-bg);color:#fb7185;border-radius:4px;cursor:pointer;">💬聊天专家</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:4px;">
+          <div style="font-size:9px;color:var(--txt2);">节点: <span id="v728-nodes-badge" style="color:#06b6d4;">—</span></div>
+          <div style="font-size:9px;color:var(--txt2);">边: <span id="v728-edges-badge" style="color:#f59e0b;">—</span></div>
+          <div style="font-size:9px;color:var(--txt2);">层: <span id="v728-layers-badge" style="color:#34d399;">—</span></div>
+        </div>
+        <div id="v728-ua-detail" style="font-size:11px;color:var(--txt2);max-height:200px;overflow-y:auto;margin-top:6px;padding:6px;background:rgba(0,0,0,0.2);border-radius:6px;display:none;line-height:1.5;white-space:pre-wrap;"></div>
+      </div>
+
       </div><!-- END dashboard-content -->
 
     </div>
@@ -14011,6 +14152,498 @@ function _v726SetBadge(id, val, color) {
 function _v726SetDetail(msg, detailId) {
   const el = document.getElementById(detailId || 'v726-akasha-detail');
   if (el) { el.style.display = 'block'; el.textContent = msg; el.scrollTop = 0; }
+}
+
+// ==================== v7.27 太极OS·流锻内核 M191-M195 ====================
+
+function _v727SetBadge(id, val, color) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = val; el.style.color = color || 'var(--txt3)'; }
+}
+
+function _v727SetDetail(msg, detailId) {
+  const el = document.getElementById(detailId);
+  if (el) { el.style.display = 'block'; el.textContent = msg; el.scrollTop = 0; }
+}
+
+// --- M191 JinlingSphere ---
+function v727JinlingState() {
+  fetch('/api/v727/jinling/state').then(r=>r.json()).then(data=>{
+    _v727SetBadge('v727-heap-badge', data.heap_size || data.spheres_count || 0, '#38bdf8');
+    _v727SetBadge('v727-agi-badge', data.agi_level || 'L0', '#a78bfa');
+    let detail = `🔮 JinlingSphereEngine\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `堆大小: ${data.heap_size || data.spheres_count || 0}\n`;
+    detail += `AGI等级: ${data.agi_level || 'L0'}\n`;
+    if (data.total_spheres !== undefined) detail += `金灵球数: ${data.total_spheres}\n`;
+    if (data.ice_ref_count !== undefined) detail += `ICE自指: ${data.ice_ref_count}\n`;
+    if (data.l2_hardened !== undefined) detail += `L2壳硬化: ${data.l2_hardened}\n`;
+    _v727SetDetail(detail, 'v727-jinling-detail');
+  }).catch(e=>_v727SetDetail('State Error: '+e.message, 'v727-jinling-detail'));
+}
+
+function v727JinlingMve() {
+  fetch('/api/v727/jinling/mve').then(r=>r.json()).then(data=>{
+    _v727SetBadge('v727-heap-badge', data.all_pass ? '5/5' : data.summary, data.all_pass ? '#34d399' : '#f87171');
+    let detail = `M191 MVE ${data.summary}\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    for (const [k, v] of Object.entries(data.results || {})) {
+      detail += `${v.pass?'✅':'❌'} ${v.name}\n`;
+    }
+    _v727SetDetail(detail, 'v727-jinling-detail');
+  }).catch(e=>_v727SetDetail('MVE Error: '+e.message, 'v727-jinling-detail'));
+}
+
+function v727JinlingTheorem(tid) {
+  fetch(`/api/v727/jinling/theorem/${tid}`).then(r=>r.json()).then(data=>{
+    let detail = `📜 ${data.id || tid}: ${data.name || ''}\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `陈述: ${data.statement || data.result || ''}\n`;
+    if (data.pass !== undefined) detail += `验证: ${data.pass ? '✅' : '❌'}\n`;
+    if (data.proof_sketch) detail += `证明: ${data.proof_sketch}\n`;
+    _v727SetDetail(detail, 'v727-jinling-detail');
+  }).catch(e=>_v727SetDetail('Theorem Error: '+e.message, 'v727-jinling-detail'));
+}
+
+// --- M192 TaijiContinuation ---
+function v727ContinuationState() {
+  fetch('/api/v727/continuation/state').then(r=>r.json()).then(data=>{
+    _v727SetBadge('v727-procs-badge', data.active_processes || data.total_processes || 0, '#38bdf8');
+    _v727SetBadge('v727-conts-badge', data.total_continuations || 0, '#a78bfa');
+    let detail = `🔄 TaijiContinuation\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `活跃进程: ${data.active_processes || 0}\n`;
+    detail += `延续数: ${data.total_continuations || 0}\n`;
+    if (data.total_spawn !== undefined) detail += `Spawn: ${data.total_spawn}\n`;
+    if (data.total_migrate !== undefined) detail += `Migrate: ${data.total_migrate}\n`;
+    _v727SetDetail(detail, 'v727-continuation-detail');
+  }).catch(e=>_v727SetDetail('State Error: '+e.message, 'v727-continuation-detail'));
+}
+
+function v727ContinuationSpawn() {
+  const name = document.getElementById('v727-spawn-name').value.trim() || 'AGI-Process';
+  const intent = document.getElementById('v727-spawn-intent').value.trim() || '';
+  fetch('/api/v727/continuation/spawn', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({name:name, intent:intent})
+  }).then(r=>r.json()).then(data=>{
+    let detail = `✅ Spawned\n`;
+    detail += `SID: ${data.sid}\n`;
+    detail += `KID: ${data.kid}\n`;
+    detail += `Φ: ${data.phi_current}\n`;
+    detail += `状态: ${data.status}\n`;
+    _v727SetDetail(detail, 'v727-continuation-detail');
+    v727ContinuationState();
+  }).catch(e=>_v727SetDetail('Spawn Error: '+e.message, 'v727-continuation-detail'));
+}
+
+function v727ContinuationMve() {
+  fetch('/api/v727/continuation/mve').then(r=>r.json()).then(data=>{
+    _v727SetBadge('v727-procs-badge', data.all_pass ? '3/3' : data.summary, data.all_pass ? '#34d399' : '#f87171');
+    let detail = `M192 MVE ${data.summary}\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    for (const [k, v] of Object.entries(data.results || {})) {
+      detail += `${v.pass?'✅':'❌'} ${v.name}\n`;
+    }
+    _v727SetDetail(detail, 'v727-continuation-detail');
+  }).catch(e=>_v727SetDetail('MVE Error: '+e.message, 'v727-continuation-detail'));
+}
+
+function v727ContinuationTheorem(tid) {
+  fetch(`/api/v727/continuation/theorem/${tid}`).then(r=>r.json()).then(data=>{
+    let detail = `📜 ${data.id || tid}: ${data.name || ''}\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `陈述: ${data.statement || data.result || ''}\n`;
+    if (data.pass !== undefined) detail += `验证: ${data.pass ? '✅' : '❌'}\n`;
+    _v727SetDetail(detail, 'v727-continuation-detail');
+  }).catch(e=>_v727SetDetail('Theorem Error: '+e.message, 'v727-continuation-detail'));
+}
+
+// --- M193 PhiScheduler ---
+function v727PhiState() {
+  fetch('/api/v727/phi/state').then(r=>r.json()).then(data=>{
+    _v727SetBadge('v727-phi-badge', data.last_phi !== undefined ? data.last_phi.toFixed(3) : '—', '#38bdf8');
+    _v727SetBadge('v727-zone-badge', data.last_zone || '—', data.last_zone === 'stable' ? '#34d399' : data.last_zone === 'transition' ? '#f59e0b' : '#f87171');
+    let detail = `Φ PhiScheduler\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `Φ: ${data.last_phi !== undefined ? data.last_phi.toFixed(4) : '—'}\n`;
+    detail += `区: ${data.last_zone || '—'}\n`;
+    if (data.total_evaluations !== undefined) detail += `评估次数: ${data.total_evaluations}\n`;
+    if (data.hallucination_rate !== undefined) detail += `幻觉拦截率: ${(data.hallucination_rate*100).toFixed(1)}%\n`;
+    if (data.total_suspensions !== undefined) detail += `挂起次数: ${data.total_suspensions}\n`;
+    _v727SetDetail(detail, 'v727-phi-detail');
+  }).catch(e=>_v727SetDetail('State Error: '+e.message, 'v727-phi-detail'));
+}
+
+function v727PhiEvaluate() {
+  fetch('/api/v727/phi/evaluate', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({session_id: 'web-demo'})
+  }).then(r=>r.json()).then(data=>{
+    _v727SetBadge('v727-phi-badge', data.phi !== undefined ? data.phi.toFixed(3) : '—', data.zone === 'stable' ? '#34d399' : data.zone === 'transition' ? '#f59e0b' : '#f87171');
+    _v727SetBadge('v727-zone-badge', data.zone || '—', data.zone === 'stable' ? '#34d399' : data.zone === 'transition' ? '#f59e0b' : '#f87171');
+    let detail = `Φ 评估结果\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `Φ = ${data.phi !== undefined ? data.phi.toFixed(6) : '—'}\n`;
+    detail += `区: ${data.zone || '—'}\n`;
+    detail += `动作: ${data.action || '—'}\n`;
+    if (data.should_suspend !== undefined) detail += `应挂起: ${data.should_suspend ? '⚠️ 是' : '否'}\n`;
+    _v727SetDetail(detail, 'v727-phi-detail');
+  }).catch(e=>_v727SetDetail('Eval Error: '+e.message, 'v727-phi-detail'));
+}
+
+function v727PhiTrend() {
+  fetch('/api/v727/phi/trend').then(r=>r.json()).then(data=>{
+    let detail = `Φ 趋势\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    if (data.values && data.values.length > 0) {
+      data.values.forEach((v, i) => {
+        const bar = '█'.repeat(Math.max(1, Math.round(v * 20)));
+        detail += `${String(i).padStart(3)}: ${v.toFixed(3)} ${bar}\n`;
+      });
+    } else {
+      detail += `(无历史数据)\n`;
+    }
+    _v727SetDetail(detail, 'v727-phi-detail');
+  }).catch(e=>_v727SetDetail('Trend Error: '+e.message, 'v727-phi-detail'));
+}
+
+function v727PhiMve() {
+  fetch('/api/v727/phi/mve').then(r=>r.json()).then(data=>{
+    _v727SetBadge('v727-phi-badge', data.all_pass ? '3/3' : data.summary, data.all_pass ? '#34d399' : '#f87171');
+    let detail = `M193 MVE ${data.summary}\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    for (const [k, v] of Object.entries(data.results || {})) {
+      detail += `${v.pass?'✅':'❌'} ${v.name}\n`;
+    }
+    _v727SetDetail(detail, 'v727-phi-detail');
+  }).catch(e=>_v727SetDetail('MVE Error: '+e.message, 'v727-phi-detail'));
+}
+
+function v727PhiTheorem(tid) {
+  fetch(`/api/v727/phi/theorem/${tid}`).then(r=>r.json()).then(data=>{
+    let detail = `📜 ${data.id || tid}: ${data.name || ''}\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `陈述: ${data.statement || data.result || ''}\n`;
+    if (data.pass !== undefined) detail += `验证: ${data.pass ? '✅' : '❌'}\n`;
+    _v727SetDetail(detail, 'v727-phi-detail');
+  }).catch(e=>_v727SetDetail('Theorem Error: '+e.message, 'v727-phi-detail'));
+}
+
+// --- M194 CarbonSiliconGAN ---
+function v727GanState() {
+  fetch('/api/v727/gan/state').then(r=>r.json()).then(data=>{
+    _v727SetBadge('v727-round-badge', data.total_steps || data.total_rounds || 0, '#38bdf8');
+    _v727SetBadge('v727-gan-phi-badge', data.last_phi !== undefined ? data.last_phi.toFixed(3) : '—', '#34d399');
+    let detail = `🤖 CarbonSiliconGAN\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `总轮次: ${data.total_steps || data.total_rounds || 0}\n`;
+    if (data.last_phi !== undefined) detail += `Φ: ${data.last_phi.toFixed(4)}\n`;
+    if (data.total_accepted !== undefined) detail += `接受: ${data.total_accepted} / 拒绝: ${data.total_rejected || 0}\n`;
+    if (data.bootstrap_count !== undefined) detail += `Bootstrap精化: ${data.bootstrap_count}\n`;
+    _v727SetDetail(detail, 'v727-gan-detail');
+  }).catch(e=>_v727SetDetail('State Error: '+e.message, 'v727-gan-detail'));
+}
+
+function v727GanStep() {
+  const input = document.getElementById('v727-gan-input').value.trim() || 'Hello AGI';
+  fetch('/api/v727/gan/step', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({user_input: input})
+  }).then(r=>r.json()).then(data=>{
+    _v727SetBadge('v727-round-badge', data.attempts || 1, '#38bdf8');
+    _v727SetBadge('v727-gan-phi-badge', data.phi !== undefined ? data.phi.toFixed(3) : '—', data.phi > 0.9 ? '#34d399' : '#f59e0b');
+    let detail = `🤖 GAN共演\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `Φ: ${data.phi !== undefined ? data.phi.toFixed(4) : '—'}\n`;
+    detail += `尝试: ${data.attempts || 1}\n`;
+    detail += `状态: ${data.status || '—'}\n`;
+    if (data.verdict) detail += `判据: ${data.verdict}\n`;
+    if (data.output) detail += `输出: ${data.output.substring(0, 200)}\n`;
+    _v727SetDetail(detail, 'v727-gan-detail');
+    v727GanState();
+  }).catch(e=>_v727SetDetail('Step Error: '+e.message, 'v727-gan-detail'));
+}
+
+function v727GanMve() {
+  fetch('/api/v727/gan/mve').then(r=>r.json()).then(data=>{
+    _v727SetBadge('v727-round-badge', data.all_pass ? '3/3' : data.summary, data.all_pass ? '#34d399' : '#f87171');
+    let detail = `M194 MVE ${data.summary}\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    for (const [k, v] of Object.entries(data.results || {})) {
+      detail += `${v.pass?'✅':'❌'} ${v.name}\n`;
+    }
+    _v727SetDetail(detail, 'v727-gan-detail');
+  }).catch(e=>_v727SetDetail('MVE Error: '+e.message, 'v727-gan-detail'));
+}
+
+function v727GanTheorem(tid) {
+  fetch(`/api/v727/gan/theorem/${tid}`).then(r=>r.json()).then(data=>{
+    let detail = `📜 ${data.id || tid}: ${data.name || ''}\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `陈述: ${data.statement || data.result || ''}\n`;
+    if (data.pass !== undefined) detail += `验证: ${data.pass ? '✅' : '❌'}\n`;
+    _v727SetDetail(detail, 'v727-gan-detail');
+  }).catch(e=>_v727SetDetail('Theorem Error: '+e.message, 'v727-gan-detail'));
+}
+
+// --- M195 WorldModelSubsystem ---
+function v727WorldState() {
+  fetch('/api/v727/world/state').then(r=>r.json()).then(data=>{
+    _v727SetBadge('v727-ver-badge', data.version || 0, '#38bdf8');
+    _v727SetBadge('v727-episodic-badge', data.episodic_size || 0, '#34d399');
+    let detail = `🌍 WorldModelSubsystem\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `版本: ${data.version || 0}\n`;
+    detail += `情景记忆: ${data.episodic_size || 0}\n`;
+    if (data.total_observations !== undefined) detail += `观察次数: ${data.total_observations}\n`;
+    if (data.total_rollbacks !== undefined) detail += `回滚次数: ${data.total_rollbacks}\n`;
+    if (data.total_recalls !== undefined) detail += `检索次数: ${data.total_recalls}\n`;
+    if (data.last_phi !== undefined) detail += `Φ: ${data.last_phi.toFixed(4)}\n`;
+    _v727SetDetail(detail, 'v727-world-detail');
+  }).catch(e=>_v727SetDetail('State Error: '+e.message, 'v727-world-detail'));
+}
+
+function v727WorldObserve() {
+  const text = document.getElementById('v727-world-input').value.trim();
+  if (!text) { alert('请输入观察文本'); return; }
+  fetch('/api/v727/world/observe', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({text: text})
+  }).then(r=>r.json()).then(data=>{
+    _v727SetBadge('v727-ver-badge', data.version || 0, '#38bdf8');
+    _v727SetBadge('v727-episodic-badge', data.episodic_count || 0, '#34d399');
+    let detail = `✅ 观察完成\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `ψ维度: ${data.psi_dim || 384}\n`;
+    detail += `版本: ${data.version}\n`;
+    detail += `情景记忆: ${data.episodic_count}\n`;
+    if (data.psi_preview) detail += `ψ预览: [${data.psi_preview.map(v=>v.toFixed(3)).join(', ')}]\n`;
+    _v727SetDetail(detail, 'v727-world-detail');
+    v727WorldState();
+  }).catch(e=>_v727SetDetail('Observe Error: '+e.message, 'v727-world-detail'));
+}
+
+function v727WorldRecall() {
+  const query = document.getElementById('v727-world-input').value.trim();
+  if (!query) { alert('请输入检索文本'); return; }
+  fetch('/api/v727/world/recall', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({query: query, top_k: 5})
+  }).then(r=>r.json()).then(data=>{
+    let detail = `🔍 检索结果 (${data.count} 条)\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    (data.results || []).forEach(r => {
+      detail += `[${r.score !== undefined ? r.score.toFixed(3) : '?'}] ${r.text ? r.text.substring(0,80) : JSON.stringify(r).substring(0,80)}\n`;
+    });
+    _v727SetDetail(detail, 'v727-world-detail');
+  }).catch(e=>_v727SetDetail('Recall Error: '+e.message, 'v727-world-detail'));
+}
+
+function v727WorldSnap() {
+  fetch('/api/v727/world/snap').then(r=>r.json()).then(data=>{
+    let detail = `📸 世界快照\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `版本: ${data.version || '—'}\n`;
+    detail += `时间戳: ${data.timestamp || '—'}\n`;
+    if (data.merkle_root) detail += `Merkle: ${data.merkle_root.substring(0,16)}…\n`;
+    detail += JSON.stringify(data).substring(0, 300);
+    _v727SetDetail(detail, 'v727-world-detail');
+  }).catch(e=>_v727SetDetail('Snap Error: '+e.message, 'v727-world-detail'));
+}
+
+function v727WorldMve() {
+  fetch('/api/v727/world/mve').then(r=>r.json()).then(data=>{
+    _v727SetBadge('v727-ver-badge', data.all_pass ? '3/3' : data.summary, data.all_pass ? '#34d399' : '#f87171');
+    let detail = `M195 MVE ${data.summary}\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    for (const [k, v] of Object.entries(data.results || {})) {
+      detail += `${v.pass?'✅':'❌'} ${v.name}\n`;
+    }
+    _v727SetDetail(detail, 'v727-world-detail');
+  }).catch(e=>_v727SetDetail('MVE Error: '+e.message, 'v727-world-detail'));
+}
+
+function v727WorldTheorem(tid) {
+  fetch(`/api/v727/world/theorem/${tid}`).then(r=>r.json()).then(data=>{
+    let detail = `📜 ${data.id || tid}: ${data.name || ''}\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `陈述: ${data.statement || data.result || ''}\n`;
+    if (data.pass !== undefined) detail += `验证: ${data.pass ? '✅' : '❌'}\n`;
+    _v727SetDetail(detail, 'v727-world-detail');
+  }).catch(e=>_v727SetDetail('Theorem Error: '+e.message, 'v727-world-detail'));
+}
+
+// ==================== v7.28 万物理解引擎 (M196) ====================
+
+let _v728CurrentProject = '';
+
+function _v728SetDetail(text) {
+  const el = document.getElementById('v728-ua-detail');
+  if (el) { el.textContent = text; el.style.display = 'block'; }
+}
+
+function v728UaState() {
+  fetch('/api/v728/ua/state').then(r=>r.json()).then(data=>{
+    _v728CurrentProject = (data.projects && data.projects[0]) || '';
+    let detail = `🔍 万物理解引擎 M196 v7.28\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `项目数: ${data.projects_count || 0}\n`;
+    detail += `项目: ${(data.projects || []).join(', ') || '—'}\n`;
+    detail += `扫描历史: ${data.scan_history_count || 0}\n`;
+    detail += `定理: ${(data.theorems || []).join(', ')}\n`;
+    detail += `能力: ${(data.capabilities || []).join(', ')}`;
+    _v728SetDetail(detail);
+  }).catch(e=>_v728SetDetail('State Error: '+e.message));
+}
+
+function v728UaScanSelf() {
+  fetch('/api/v728/ua/scan_self', {method:'POST'}).then(r=>r.json()).then(data=>{
+    if (data.error) { _v728SetDetail('Scan Error: '+data.error); return; }
+    _v728CurrentProject = data.project || '';
+    const s = data.stats || {};
+    document.getElementById('v728-nodes-badge').textContent = s.total_nodes || 0;
+    document.getElementById('v728-edges-badge').textContent = s.total_edges || 0;
+    document.getElementById('v728-layers-badge').textContent = s.total_layers || 0;
+    let detail = `📦 扫描完成: ${data.project}\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `节点: ${s.total_nodes || 0}\n`;
+    detail += `边: ${s.total_edges || 0}\n`;
+    detail += `层: ${s.total_layers || 0}\n`;
+    if (s.node_types) {
+      detail += `节点类型:\n`;
+      for (const [k,v] of Object.entries(s.node_types)) detail += `  ${k}: ${v}\n`;
+    }
+    _v728SetDetail(detail);
+  }).catch(e=>_v728SetDetail('Scan Error: '+e.message));
+}
+
+function v728UaProjects() {
+  fetch('/api/v728/ua/projects').then(r=>r.json()).then(data=>{
+    if (!Array.isArray(data)) { _v728SetDetail('Projects Error'); return; }
+    let detail = `📋 已扫描项目 (${data.length})\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    for (const p of data) {
+      detail += `${p.name}: ${p.stats.total_nodes}节点 ${p.stats.total_edges}边\n`;
+    }
+    _v728SetDetail(detail);
+  }).catch(e=>_v728SetDetail('Projects Error: '+e.message));
+}
+
+function v728UaSearch() {
+  const q = document.getElementById('v728-ua-search-input').value.trim();
+  if (!q || !_v728CurrentProject) { _v728SetDetail('请输入搜索词并先扫描项目'); return; }
+  fetch(`/api/v728/ua/search/${encodeURIComponent(_v728CurrentProject)}?q=${encodeURIComponent(q)}`).then(r=>r.json()).then(data=>{
+    if (!Array.isArray(data)) { _v728SetDetail('Search Error'); return; }
+    let detail = `🔎 搜索 "${q}" (${data.length} 结果)\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    for (const r of data.slice(0, 15)) {
+      const n = r.node || {};
+      detail += `[${n.type||'?'}] ${n.name||'?'} (score=${r.score})\n`;
+      if (n.summary) detail += `  ${n.summary.substring(0,80)}\n`;
+    }
+    _v728SetDetail(detail);
+  }).catch(e=>_v728SetDetail('Search Error: '+e.message));
+}
+
+function v728UaExplain() {
+  const path = document.getElementById('v728-ua-explain').value.trim();
+  if (!path || !_v728CurrentProject) { _v728SetDetail('请输入文件路径并先扫描项目'); return; }
+  fetch(`/api/v728/ua/explain/${encodeURIComponent(_v728CurrentProject)}?path=${encodeURIComponent(path)}`).then(r=>r.json()).then(data=>{
+    _v728SetDetail(data.formatted || JSON.stringify(data, null, 2));
+  }).catch(e=>_v728SetDetail('Explain Error: '+e.message));
+}
+
+function v728UaContext() {
+  const q = document.getElementById('v728-ua-search-input').value.trim();
+  if (!q || !_v728CurrentProject) { _v728SetDetail('请输入搜索词并先扫描项目'); return; }
+  fetch(`/api/v728/ua/context/${encodeURIComponent(_v728CurrentProject)}?q=${encodeURIComponent(q)}`).then(r=>r.json()).then(data=>{
+    _v728SetDetail(data.formatted || JSON.stringify(data, null, 2));
+  }).catch(e=>_v728SetDetail('Context Error: '+e.message));
+}
+
+function v728UaOnboard() {
+  if (!_v728CurrentProject) { _v728SetDetail('请先扫描项目'); return; }
+  fetch(`/api/v728/ua/onboard/${encodeURIComponent(_v728CurrentProject)}`).then(r=>r.json()).then(data=>{
+    if (!Array.isArray(data)) { _v728SetDetail('Onboard Error'); return; }
+    let detail = `📚 入职导览 (${data.length} 步)\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    for (const s of data) {
+      detail += `${s.order+1}. ${s.title}\n   ${s.description}\n\n`;
+    }
+    _v728SetDetail(detail);
+  }).catch(e=>_v728SetDetail('Onboard Error: '+e.message));
+}
+
+function v728UaExperts() {
+  if (!_v728CurrentProject) { _v728SetDetail('请先扫描项目'); return; }
+  fetch(`/api/v728/ua/experts/${encodeURIComponent(_v728CurrentProject)}`).then(r=>r.json()).then(data=>{
+    if (!Array.isArray(data)) { _v728SetDetail('Experts Error'); return; }
+    let detail = `🧠 推荐专家 (${data.length})\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    for (const e of data) {
+      detail += `${e.emoji||''} ${e.name||e.id} (${e.department||'?'})\n  ${e.description||''}\n\n`;
+    }
+    _v728SetDetail(detail);
+  }).catch(e=>_v728SetDetail('Experts Error: '+e.message));
+}
+
+function v728UaVerify() {
+  fetch('/api/v728/ua/verify').then(r=>r.json()).then(data=>{
+    let detail = `📜 M196 定理验证\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    if (data.theorems) {
+      for (const [t, passed] of Object.entries(data.theorems)) {
+        detail += `${t}: ${passed ? '✅' : '❌'}\n`;
+      }
+    }
+    detail += `\n总计: ${data.passed||0}/${data.total||0} ${data.all_passed ? '✅ ALL PASSED' : '❌'}`;
+    _v728SetDetail(detail);
+  }).catch(e=>_v728SetDetail('Verify Error: '+e.message));
+}
+
+// ── v728b 增强：UA × 专家系统深度集成 ──────────────
+function v728UaExpertContext() {
+  const q = document.getElementById('v728-ua-search-input')?.value || '';
+  const project = _v728CurrentProject || '';
+  if (!project) { _v728SetDetail('⚠️ 请先扫描项目'); return; }
+  fetch(`/api/v728/ua/expert_context/${project}?q=${encodeURIComponent(q)}&limit=5`).then(r=>r.json()).then(data=>{
+    let detail = `🧠 上下文感知专家推荐\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `项目: ${data.project||project}\n`;
+    detail += `查询: ${data.query||q}\n\n`;
+    if (data.experts && data.experts.length > 0) {
+      data.experts.forEach((e,i)=>{
+        detail += `${i+1}. ${e.emoji||''} ${e.name}\n`;
+        detail += `   部门: ${e.department||''} | ID: ${e.id}\n`;
+        detail += `   ${e.description||''}\n\n`;
+      });
+    } else {
+      detail += '无匹配专家\n';
+    }
+    _v728SetDetail(detail);
+  }).catch(e=>_v728SetDetail('Expert Context Error: '+e.message));
+}
+
+function v728UaChatExpert() {
+  const q = document.getElementById('v728-ua-search-input')?.value || '';
+  if (!q) { _v728SetDetail('⚠️ 请输入查询内容'); return; }
+  const project = _v728CurrentProject || '';
+  fetch(`/api/v728/ua/chat_expert?q=${encodeURIComponent(q)}&project=${encodeURIComponent(project)}&limit=3`).then(r=>r.json()).then(data=>{
+    let detail = `💬 聊天专家推荐\n`;
+    detail += `━━━━━━━━━━━━━━━━━━━━\n`;
+    detail += `查询: ${data.query||q}\n\n`;
+    if (data.experts && data.experts.length > 0) {
+      data.experts.forEach((e,i)=>{
+        detail += `${i+1}. ${e.emoji||''} ${e.name}\n`;
+        detail += `   部门: ${e.department||''} | ID: ${e.id}\n`;
+        detail += `   ${e.description||''}\n\n`;
+      });
+    } else {
+      detail += '无匹配专家，可尝试更具体的关键词\n';
+    }
+    _v728SetDetail(detail);
+  }).catch(e=>_v728SetDetail('Chat Expert Error: '+e.message));
 }
 
 // ==================== v7.1 人机融合层面板更新函数 ====================

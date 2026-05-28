@@ -10255,6 +10255,382 @@ def v726_akasha_theorem(theorem_id):
 
 
 # ============================================================
+# v7.27 太极OS·流锻内核 (M191-M195)
+# ============================================================
+
+# --- M191 JinlingSphere 金灵球堆垒引擎 ---
+
+@app.route('/api/v727/jinling/state', methods=['GET'])
+def v727_jinling_state():
+    try:
+        from M191_JinlingSphereEngine import get_instance
+        engine = get_instance()
+        return jsonify(engine.get_state())
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/jinling/mve', methods=['GET'])
+def v727_jinling_mve():
+    try:
+        from M191_JinlingSphereEngine import run_mve
+        return jsonify(run_mve())
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/jinling/theorem/<theorem_id>', methods=['GET'])
+def v727_jinling_theorem(theorem_id):
+    """M191 定理查询: T201-T205"""
+    try:
+        from M191_JinlingSphereEngine import (
+            verify_t201_a2_no_copy, verify_t202_gradient_descent,
+            verify_t203_ice_self_reference, verify_t204_info_cardinality,
+            verify_t205_proto_true_agi
+        )
+        _MAP = {
+            'T201': verify_t201_a2_no_copy, 'T202': verify_t202_gradient_descent,
+            'T203': verify_t203_ice_self_reference, 'T204': verify_t204_info_cardinality,
+            'T205': verify_t205_proto_true_agi
+        }
+        tid = theorem_id.upper()
+        if tid in _MAP:
+            return jsonify(_MAP[tid]())
+        return jsonify({'error': f'Unknown theorem: {theorem_id}'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- M192 TaijiContinuation 延续/思程 ---
+
+@app.route('/api/v727/continuation/state', methods=['GET'])
+def v727_continuation_state():
+    try:
+        from M192_TaijiContinuation import get_instance
+        mgr = get_instance()
+        return jsonify(mgr.get_state())
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/continuation/spawn', methods=['POST'])
+def v727_continuation_spawn():
+    try:
+        from M192_TaijiContinuation import get_instance
+        mgr = get_instance()
+        body = request.get_json(force=True) if request.data else {}
+        name = body.get('name', 'AGI-Process')
+        intent = body.get('intent', '')
+        goal = body.get('goal', '')
+        pcb = mgr.spawn(name=name, intent=intent, goal=goal)
+        return jsonify({'sid': pcb.sid, 'kid': pcb.kid, 'name': pcb.name,
+                        'phi_current': pcb.phi_current, 'status': 'running'})
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/continuation/suspend', methods=['POST'])
+def v727_continuation_suspend():
+    try:
+        from M192_TaijiContinuation import get_instance
+        mgr = get_instance()
+        body = request.get_json(force=True)
+        sid = body.get('sid', '')
+        cont = mgr.suspend(sid)
+        if cont:
+            return jsonify({'status': 'suspended', 'kid': cont.kid,
+                            'merkle_root': cont.merkle_root, 'sealed': cont.sealed})
+        return jsonify({'error': f'Process {sid} not found'}), 404
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/continuation/resume', methods=['POST'])
+def v727_continuation_resume():
+    try:
+        from M192_TaijiContinuation import get_instance
+        mgr = get_instance()
+        body = request.get_json(force=True)
+        kid = body.get('kid', '')
+        pcb = mgr.resume(kid)
+        if pcb:
+            return jsonify({'sid': pcb.sid, 'kid': pcb.kid, 'name': pcb.name,
+                            'phi_current': pcb.phi_current, 'status': 'running'})
+        return jsonify({'error': f'Continuation {kid} not found'}), 404
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/continuation/migrate', methods=['POST'])
+def v727_continuation_migrate():
+    try:
+        from M192_TaijiContinuation import get_instance
+        mgr = get_instance()
+        body = request.get_json(force=True)
+        sid = body.get('sid', '')
+        target = body.get('target_node', 'node-2')
+        result = mgr.migrate(sid, target)
+        return jsonify(result)
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/continuation/mve', methods=['GET'])
+def v727_continuation_mve():
+    try:
+        from M192_TaijiContinuation import run_mve
+        return jsonify(run_mve())
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/continuation/theorem/<theorem_id>', methods=['GET'])
+def v727_continuation_theorem(theorem_id):
+    """M192 定理查询: T206-T208"""
+    try:
+        from M192_TaijiContinuation import (
+            verify_t206_continuation_integrity, verify_t207_continuation_uniqueness,
+            verify_t208_migration_safety
+        )
+        _MAP = {
+            'T206': verify_t206_continuation_integrity,
+            'T207': verify_t207_continuation_uniqueness,
+            'T208': verify_t208_migration_safety
+        }
+        tid = theorem_id.upper()
+        if tid in _MAP:
+            return jsonify(_MAP[tid]())
+        return jsonify({'error': f'Unknown theorem: {theorem_id}'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- M193 PhiScheduler Φ流贯调度器 ---
+
+@app.route('/api/v727/phi/state', methods=['GET'])
+def v727_phi_state():
+    try:
+        from M193_PhiScheduler import get_instance
+        scheduler = get_instance()
+        return jsonify(scheduler.get_state())
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/phi/evaluate', methods=['POST'])
+def v727_phi_evaluate():
+    try:
+        from M193_PhiScheduler import get_instance
+        scheduler = get_instance()
+        body = request.get_json(force=True)
+        session_id = body.get('session_id', 'default')
+        # Accept psi as list or generate default
+        psi_current = body.get('psi_current', None)
+        if psi_current and isinstance(psi_current, list):
+            result = scheduler.evaluate(session_id, psi_current)
+        else:
+            # Default: use random psi for demo
+            import random
+            psi = [random.gauss(0, 1) for _ in range(384)]
+            result = scheduler.evaluate(session_id, psi)
+        return jsonify(result)
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/phi/trend', methods=['GET'])
+def v727_phi_trend():
+    try:
+        from M193_PhiScheduler import get_instance
+        scheduler = get_instance()
+        sid = request.args.get('sid', None)
+        window = int(request.args.get('window', 20))
+        return jsonify(scheduler.get_phi_trend(sid=sid, window=window))
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/phi/mve', methods=['GET'])
+def v727_phi_mve():
+    try:
+        from M193_PhiScheduler import run_mve
+        return jsonify(run_mve())
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/phi/theorem/<theorem_id>', methods=['GET'])
+def v727_phi_theorem(theorem_id):
+    """M193 定理查询: T209-T211"""
+    try:
+        from M193_PhiScheduler import (
+            verify_t209_hallucination_interception, verify_t210_phi_convergence,
+            verify_t211_phi_perplexity_orthogonality
+        )
+        _MAP = {
+            'T209': verify_t209_hallucination_interception,
+            'T210': verify_t210_phi_convergence,
+            'T211': verify_t211_phi_perplexity_orthogonality
+        }
+        tid = theorem_id.upper()
+        if tid in _MAP:
+            return jsonify(_MAP[tid]())
+        return jsonify({'error': f'Unknown theorem: {theorem_id}'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- M194 CarbonSiliconGAN 碳硅GAN共演引擎 ---
+
+@app.route('/api/v727/gan/state', methods=['GET'])
+def v727_gan_state():
+    try:
+        from M194_CarbonSiliconGAN import get_instance
+        gan = get_instance()
+        return jsonify(gan.get_state())
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/gan/step', methods=['POST'])
+def v727_gan_step():
+    try:
+        from M194_CarbonSiliconGAN import get_instance
+        gan = get_instance()
+        body = request.get_json(force=True)
+        user_input = body.get('user_input', 'Hello AGI')
+        world_context = body.get('world_context', None)
+        criteria = body.get('criteria', None)
+        result = gan.step(user_input, world_context=world_context, criteria=criteria)
+        return jsonify(result)
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/gan/mve', methods=['GET'])
+def v727_gan_mve():
+    try:
+        from M194_CarbonSiliconGAN import run_mve
+        return jsonify(run_mve())
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/gan/theorem/<theorem_id>', methods=['GET'])
+def v727_gan_theorem(theorem_id):
+    """M194 定理查询: T212-T214"""
+    try:
+        from M194_CarbonSiliconGAN import (
+            verify_t212_gan_convergence, verify_t213_gradient_free_bootstrap,
+            verify_t214_carbon_silicon_asymmetry
+        )
+        _MAP = {
+            'T212': verify_t212_gan_convergence,
+            'T213': verify_t213_gradient_free_bootstrap,
+            'T214': verify_t214_carbon_silicon_asymmetry
+        }
+        tid = theorem_id.upper()
+        if tid in _MAP:
+            return jsonify(_MAP[tid]())
+        return jsonify({'error': f'Unknown theorem: {theorem_id}'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- M195 WorldModelSubsystem 世界模型子系统 ---
+
+@app.route('/api/v727/world/state', methods=['GET'])
+def v727_world_state():
+    try:
+        from M195_WorldModelSubsystem import get_instance
+        wms = get_instance()
+        return jsonify(wms.get_state())
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/world/observe', methods=['POST'])
+def v727_world_observe():
+    try:
+        from M195_WorldModelSubsystem import get_instance
+        wms = get_instance()
+        body = request.get_json(force=True)
+        text = body.get('text', '')
+        if not text:
+            return jsonify({'error': 'text field required'}), 400
+        psi = wms.observe(text)
+        return jsonify({'psi_dim': len(psi), 'psi_preview': psi[:10],
+                        'version': wms.version, 'episodic_count': wms.episodic.size()})
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/world/recall', methods=['POST'])
+def v727_world_recall():
+    try:
+        from M195_WorldModelSubsystem import get_instance
+        wms = get_instance()
+        body = request.get_json(force=True)
+        query = body.get('query', '')
+        top_k = body.get('top_k', 5)
+        if not query:
+            return jsonify({'error': 'query field required'}), 400
+        results = wms.recall(query, top_k=top_k)
+        return jsonify({'count': len(results), 'results': results})
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/world/rollback', methods=['POST'])
+def v727_world_rollback():
+    try:
+        from M195_WorldModelSubsystem import get_instance
+        wms = get_instance()
+        body = request.get_json(force=True)
+        version = body.get('version', 0)
+        result = wms.rollback(version)
+        return jsonify(result)
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/world/snap', methods=['GET'])
+def v727_world_snap():
+    try:
+        from M195_WorldModelSubsystem import get_instance
+        wms = get_instance()
+        return jsonify(wms.snap())
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/world/mve', methods=['GET'])
+def v727_world_mve():
+    try:
+        from M195_WorldModelSubsystem import run_mve
+        return jsonify(run_mve())
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v727/world/theorem/<theorem_id>', methods=['GET'])
+def v727_world_theorem(theorem_id):
+    """M195 定理查询: T215-T217"""
+    try:
+        from M195_WorldModelSubsystem import (
+            verify_t215_world_consistency, verify_t216_versioned_rollback,
+            verify_t217_episodic_completeness
+        )
+        _MAP = {
+            'T215': verify_t215_world_consistency,
+            'T216': verify_t216_versioned_rollback,
+            'T217': verify_t217_episodic_completeness
+        }
+        tid = theorem_id.upper()
+        if tid in _MAP:
+            return jsonify(_MAP[tid]())
+        return jsonify({'error': f'Unknown theorem: {theorem_id}'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ============================================================
 # v7.18 沙箱增强·安全护盾
 # ============================================================
 
@@ -12716,6 +13092,289 @@ def list_expert_departments():
         return jsonify({'departments': reg.list_departments()})
     except Exception as e:
         return jsonify({'error': str(e), 'departments': {}}), 500
+
+
+# ==================== v7.28 万物理解引擎 (M196) API ====================
+
+_v728_engine = None
+_v728_lock = threading.Lock()
+
+
+def get_v728_engine():
+    """获取 M196 万物理解引擎单例"""
+    global _v728_engine
+    if _v728_engine is None:
+        with _v728_lock:
+            if _v728_engine is None:
+                try:
+                    from M196_UnderstandAnythingEngine import UnderstandAnythingEngine
+                    _v728_engine = UnderstandAnythingEngine.get_instance()
+                except Exception as e:
+                    print(f"[v728] 万物理解引擎加载失败: {e}")
+                    _v728_engine = None
+    return _v728_engine
+
+
+@app.route('/api/v728/ua/state', methods=['GET'])
+def v728_ua_state():
+    """万物理解引擎状态"""
+    try:
+        engine = get_v728_engine()
+        if not engine:
+            return jsonify({'error': '引擎未加载'}), 503
+        return jsonify(engine.get_state())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v728/ua/scan', methods=['POST'])
+def v728_ua_scan():
+    """扫描项目目录，构建知识图谱"""
+    try:
+        engine = get_v728_engine()
+        if not engine:
+            return jsonify({'error': '引擎未加载'}), 503
+        data = request.get_json(silent=True) or {}
+        project_dir = data.get('project_dir', '')
+        project_name = data.get('project_name', '')
+        if not project_dir:
+            return jsonify({'error': '缺少 project_dir 参数'}), 400
+        result = engine.scan_project(project_dir, project_name)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v728/ua/scan_self', methods=['POST'])
+def v728_ua_scan_self():
+    """扫描太乙AGI自身项目"""
+    try:
+        engine = get_v728_engine()
+        if not engine:
+            return jsonify({'error': '引擎未加载'}), 503
+        result = engine.scan_self()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v728/ua/projects', methods=['GET'])
+def v728_ua_projects():
+    """列出所有已扫描的项目"""
+    try:
+        engine = get_v728_engine()
+        if not engine:
+            return jsonify({'error': '引擎未加载'}), 503
+        return jsonify(engine.list_projects())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v728/ua/graph/<project_name>', methods=['GET'])
+def v728_ua_graph(project_name):
+    """获取知识图谱"""
+    try:
+        engine = get_v728_engine()
+        if not engine:
+            return jsonify({'error': '引擎未加载'}), 503
+        graph = engine.get_graph(project_name)
+        if not graph:
+            return jsonify({'error': f'项目 {project_name} 未找到'}), 404
+        return jsonify(graph)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v728/ua/stats/<project_name>', methods=['GET'])
+def v728_ua_stats(project_name):
+    """获取图谱统计"""
+    try:
+        engine = get_v728_engine()
+        if not engine:
+            return jsonify({'error': '引擎未加载'}), 503
+        stats = engine.get_stats(project_name)
+        if not stats:
+            return jsonify({'error': f'项目 {project_name} 未找到'}), 404
+        return jsonify(stats)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v728/ua/search/<project_name>', methods=['GET'])
+def v728_ua_search(project_name):
+    """在知识图谱中搜索"""
+    try:
+        engine = get_v728_engine()
+        if not engine:
+            return jsonify({'error': '引擎未加载'}), 503
+        query = request.args.get('q', '')
+        limit = int(request.args.get('limit', 15))
+        if not query:
+            return jsonify({'error': '缺少 q 参数'}), 400
+        results = engine.search(project_name, query, limit)
+        return jsonify(results)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v728/ua/context/<project_name>', methods=['GET'])
+def v728_ua_context(project_name):
+    """构建聊天上下文"""
+    try:
+        engine = get_v728_engine()
+        if not engine:
+            return jsonify({'error': '引擎未加载'}), 503
+        query = request.args.get('q', '')
+        max_nodes = int(request.args.get('max_nodes', 15))
+        if not query:
+            return jsonify({'error': '缺少 q 参数'}), 400
+        ctx = engine.build_context(project_name, query, max_nodes)
+        if not ctx:
+            return jsonify({'error': f'项目 {project_name} 未找到'}), 404
+        return jsonify(ctx)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v728/ua/explain/<project_name>', methods=['GET'])
+def v728_ua_explain(project_name):
+    """解释特定文件/函数"""
+    try:
+        engine = get_v728_engine()
+        if not engine:
+            return jsonify({'error': '引擎未加载'}), 503
+        path = request.args.get('path', '')
+        if not path:
+            return jsonify({'error': '缺少 path 参数'}), 400
+        result = engine.explain(project_name, path)
+        if not result:
+            return jsonify({'error': f'项目 {project_name} 未找到'}), 404
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v728/ua/onboard/<project_name>', methods=['GET'])
+def v728_ua_onboard(project_name):
+    """生成入职导览"""
+    try:
+        engine = get_v728_engine()
+        if not engine:
+            return jsonify({'error': '引擎未加载'}), 503
+        result = engine.onboard(project_name)
+        if not result:
+            return jsonify({'error': f'项目 {project_name} 未找到'}), 404
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v728/ua/experts/<project_name>', methods=['GET'])
+def v728_ua_experts(project_name):
+    """推荐领域专家"""
+    try:
+        engine = get_v728_engine()
+        if not engine:
+            return jsonify({'error': '引擎未加载'}), 503
+        limit = int(request.args.get('limit', 5))
+        results = engine.suggest_experts(project_name, limit)
+        return jsonify(results)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v728/ua/verify', methods=['GET'])
+def v728_ua_verify():
+    """验证 M196 四大定理"""
+    try:
+        from M196_UnderstandAnythingEngine import verify_theorems
+        results = verify_theorems()
+        return jsonify({
+            'theorems': results,
+            'all_passed': all(results.values()),
+            'total': len(results),
+            'passed': sum(results.values()),
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v728/ua/history', methods=['GET'])
+def v728_ua_history():
+    """获取扫描历史"""
+    try:
+        engine = get_v728_engine()
+        if not engine:
+            return jsonify({'error': '引擎未加载'}), 503
+        return jsonify(engine.get_scan_history())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ── v728b 增强 API：UA × 专家系统深度集成 ──────────────────────
+
+@app.route('/api/v728/ua/expert_context/<project_name>', methods=['GET'])
+def v728_ua_expert_context(project_name):
+    """上下文感知专家推荐：结合 UA 知识图谱上下文 + 专家系统"""
+    try:
+        engine = get_v728_engine()
+        if not engine:
+            return jsonify({'error': '引擎未加载'}), 503
+        query = request.args.get('q', '')
+        limit = int(request.args.get('limit', 3))
+        experts = engine.suggest_experts_for_context(project_name, query, limit)
+        return jsonify({'project': project_name, 'query': query, 'experts': experts})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v728/ua/chat_expert', methods=['GET'])
+def v728_ua_chat_expert():
+    """为聊天场景推荐专家（基于用户查询关键词匹配）"""
+    try:
+        engine = get_v728_engine()
+        if not engine:
+            return jsonify({'error': '引擎未加载'}), 503
+        query = request.args.get('q', '')
+        project = request.args.get('project', '')
+        limit = int(request.args.get('limit', 1))
+        experts = engine.suggest_expert_for_chat(query, project, limit)
+        return jsonify({'query': query, 'project': project, 'experts': experts})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v728/ua/expert_detail/<expert_id>', methods=['GET'])
+def v728_ua_expert_detail(expert_id):
+    """获取专家详情（含完整 system_prompt）"""
+    try:
+        engine = get_v728_engine()
+        if not engine:
+            return jsonify({'error': '引擎未加载'}), 503
+        detail = engine.get_expert_detail(expert_id)
+        if not detail:
+            return jsonify({'error': f'专家 {expert_id} 未找到'}), 404
+        return jsonify(detail)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v728/ua/expert_enhance', methods=['POST'])
+def v728_ua_expert_enhance():
+    """多专家增强：将专家知识注入到 prompt 中"""
+    try:
+        data = request.get_json(force=True)
+        base_prompt = data.get('base_prompt', '')
+        expert_ids = data.get('expert_ids', [])
+        if not base_prompt or not expert_ids:
+            return jsonify({'error': '需要 base_prompt 和 expert_ids'}), 400
+        engine = get_v728_engine()
+        if not engine:
+            return jsonify({'error': '引擎未加载'}), 503
+        enhanced = engine.build_expert_enhanced_prompt(base_prompt, expert_ids)
+        return jsonify({'enhanced_prompt': enhanced, 'expert_count': len(expert_ids)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 # ==================== 以下为主程序入口 ====================

@@ -1,0 +1,343 @@
+classDiagram
+    direction TB
+
+    class NodeType {
+        <<enumeration>>
+        FILE
+        CLASS
+        FUNCTION
+        INTERFACE
+        MODULE
+        NAMESPACE
+        PACKAGE
+        IMPORT
+        EXPORT
+        VARIABLE
+        CONSTANT
+        CONFIG
+        ENDPOINT
+        SERVICE
+        MODEL
+        ARTICLE
+        CONCEPT
+        TOPIC
+        CLAIM
+        SOURCE
+        SECTION
+    }
+
+    class EdgeType {
+        <<enumeration>>
+        IMPORTS
+        EXPORTS
+        CALLS
+        INHERITS
+        IMPLEMENTS
+        REFERENCES
+        DEPENDS_ON
+        USES
+        DEFINES
+        CONTAINS
+        BELONGS_TO
+        PROVIDES
+        HANDLER_FOR
+        RENDERS
+        SUBSCRIBES_TO
+        PUBLISHES
+        ROUTES_TO
+        MIDDLEWARE_FOR
+        CONNECTS_TO
+        TESTS
+        MOCKS
+        DOCUMENTS
+        DESCRIBES
+        ANNOTATES
+        CONFIGURES
+        ENV_FOR
+        MIGRATES
+        SEEDS
+        OWNS
+        RELATED_TO
+        DERIVES_FROM
+        PRODUCES
+        CONSUMES
+        TRANSFORMS
+    }
+
+    class Complexity {
+        <<enumeration>>
+        LOW
+        MODERATE
+        HIGH
+    }
+
+    class GraphNode {
+        +str id
+        +NodeType type
+        +str name
+        +str path
+        +str~ summary
+        +Complexity complexity
+        +float~ weight
+        +list~ tags
+        +str~ content
+        +dict~ metadata
+        +list~ theorem_ids
+        +list~ module_ids
+        +str~ verification_status
+        +to_wiki_page() WikiPage
+    }
+
+    class GraphEdge {
+        +str id
+        +EdgeType type
+        +str source
+        +str target
+        +str~ label
+        +float~ weight
+        +str~ description
+        +dict~ metadata
+    }
+
+    class Layer {
+        +str id
+        +str name
+        +str description
+        +list~ node_ids
+        +list~ edge_ids
+        +str~ color
+    }
+
+    class TourStep {
+        +str node_id
+        +str title
+        +str description
+        +list~ edge_ids
+        +list~ related_node_ids
+    }
+
+    class KnowledgeGraph {
+        +str version
+        +ProjectMeta project
+        +list~ nodes
+        +list~ edges
+        +list~ layers
+        +list~ tour
+        +list~ issues
+        +validate() KnowledgeGraph
+    }
+
+    class ProjectMeta {
+        +str name
+        +str root_path
+        +str description
+        +list~ languages
+        +list~ frameworks
+    }
+
+    class GraphIssue {
+        +str level
+        +str category
+        +str message
+        +str~ path
+    }
+
+    KnowledgeGraph "1" *-- "1" ProjectMeta
+    KnowledgeGraph "1" *-- "*" GraphNode : nodes
+    KnowledgeGraph "1" *-- "*" GraphEdge : edges
+    KnowledgeGraph "1" *-- "*" Layer : layers
+    KnowledgeGraph "1" *-- "*" TourStep : tour
+    KnowledgeGraph "1" *-- "*" GraphIssue : issues
+    GraphNode --> NodeType : type
+    GraphEdge --> EdgeType : type
+    GraphNode --> Complexity : complexity
+
+    class Validator {
+        +sanitize_graph(KnowledgeGraph) KnowledgeGraph
+        +normalize_graph(KnowledgeGraph) KnowledgeGraph
+        +auto_fix_graph(KnowledgeGraph) KnowledgeGraph
+        +validate_graph(KnowledgeGraph) tuple
+    }
+
+    class AliasRegistry {
+        +dict NODE_TYPE_ALIASES
+        +dict EDGE_TYPE_ALIASES
+        +resolve_node_type(str) NodeType
+        +resolve_edge_type(str) EdgeType
+    }
+
+    Validator --> AliasRegistry : uses
+
+    class FunctionFingerprint {
+        +str name
+        +str signature_hash
+        +str body_hash
+        +list~ parameters
+        +str~ return_type
+        +int start_line
+        +int end_line
+    }
+
+    class ClassFingerprint {
+        +str name
+        +list~ methods
+        +list~ properties
+        +list~ bases
+        +str body_hash
+    }
+
+    class ImportFingerprint {
+        +str module_path
+        +list~ imported_names
+        +str import_type
+    }
+
+    class FileFingerprint {
+        +str path
+        +str content_hash
+        +list~ functions
+        +list~ classes
+        +list~ imports
+        +list~ exports
+        +int line_count
+    }
+
+    class FingerprintStore {
+        +str version
+        +str git_commit_hash
+        +str generated_at
+        +dict~ files
+        +save(path)
+        +load(path)
+    }
+
+    FileFingerprint "1" *-- "*" FunctionFingerprint
+    FileFingerprint "1" *-- "*" ClassFingerprint
+    FileFingerprint "1" *-- "*" ImportFingerprint
+    FingerprintStore "1" *-- "*" FileFingerprint
+
+    class ChangeLevel {
+        <<enumeration>>
+        NONE
+        COSMETIC
+        STRUCTURAL
+    }
+
+    class FingerprintComparator {
+        +compare(FileFingerprint, FileFingerprint) ChangeLevel
+        +analyze_changes(FingerprintStore, FingerprintStore) dict
+    }
+
+    class TreeSitterPlugin {
+        +analyze_file(path) StructuralAnalysis
+        +resolve_imports(path) list
+        +extract_call_graph(path) dict
+    }
+
+    class StructuralAnalysis {
+        +list~ functions
+        +list~ classes
+        +list~ imports
+        +list~ exports
+    }
+
+    TreeSitterPlugin --> StructuralAnalysis : produces
+
+    class BaseExpert {
+        <<abstract>>
+        +str name
+        +str description
+        +run(context) dict
+    }
+
+    class ScannerExpert {
+        +run(context) ScanResult
+    }
+
+    class AnalyzerExpert {
+        +run(context) AnalysisResult
+    }
+
+    class ArchitectExpert {
+        +run(context) ArchitectureResult
+    }
+
+    class TourGuideExpert {
+        +run(context) TourResult
+    }
+
+    class ReviewerExpert {
+        +run(context) ReviewResult
+    }
+
+    class DomainExpert {
+        +run(context) DomainResult
+    }
+
+    class ArticleExpert {
+        +run(context) ArticleResult
+    }
+
+    BaseExpert <|-- ScannerExpert
+    BaseExpert <|-- AnalyzerExpert
+    BaseExpert <|-- ArchitectExpert
+    BaseExpert <|-- TourGuideExpert
+    BaseExpert <|-- ReviewerExpert
+    BaseExpert <|-- DomainExpert
+    BaseExpert <|-- ArticleExpert
+
+    class ExpertRegistry {
+        +dict~ experts
+        +register(expert)
+        +get(name) BaseExpert
+        +list_all() list
+    }
+
+    ExpertRegistry "1" o-- "*" BaseExpert
+
+    class UnderstandEngine {
+        -ExpertRegistry _registry
+        -Validator _validator
+        -FingerprintStore _store
+        -GraphBuilder _builder
+        +scan(root_path) KnowledgeGraph
+        +analyze(graph, focus) KnowledgeGraph
+        +explain(node_id, depth) ExplainResult
+        +diff(path_a, path_b) DiffResult
+        +onboard(graph) OnboardResult
+        +domain(graph, scope) DomainResult
+        +knowledge(query) KnowledgeResult
+        +chat(message, context) ChatResult
+    }
+
+    UnderstandEngine --> ExpertRegistry : uses
+    UnderstandEngine --> Validator : uses
+    UnderstandEngine --> FingerprintStore : uses
+    UnderstandEngine --> GraphBuilder : uses
+
+    class BridgeService {
+        +graph_to_wiki(GraphNode) WikiPage
+        +wiki_to_graph(WikiPage) GraphNode
+        +batch_sync(graph, wiki_pages) SyncResult
+    }
+
+    class WikiPage {
+        +str id
+        +str title
+        +str content
+        +list~ links
+        +list~ backlinks
+        +dict~ meta
+    }
+
+    BridgeService --> GraphNode : converts
+    BridgeService --> WikiPage : converts
+
+    class PipelineOrchestrator {
+        +run_scan(root_path) KnowledgeGraph
+        +run_analysis(graph, focus) KnowledgeGraph
+        +run_review(graph) ReviewResult
+        +run_assembly(batch_results) KnowledgeGraph
+    }
+
+    PipelineOrchestrator --> UnderstandEngine : coordinates

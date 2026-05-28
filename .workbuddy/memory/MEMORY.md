@@ -1,16 +1,18 @@
-# 长期记忆（精简版 2026-05-25）
+# 长期记忆（精简版 2026-05-25-v2）
 
 ## 项目概览
 **净光哥** 太乙AGI：Flask应用，位于 `C:\Users\1\WorkBuddy\2026-05-06-task-1\`
 - 主服务器: `app.py` (Flask, 端口5001)
 - 前端: `static/index_agi12.html` (三栏布局界面)
 - 脑图: `app_mindmap_v2.py` (端口5003)
-- **总规模**: 189模块 / 9层 / 196定理 / 216专家
+- **总规模**: 195模块 / 9层 / 217定理 / 223专家
 
 ## 版本历史（精简）
 
 | 版本 | 内容 | Git |
 |------|------|-----|
+| v7.27 | 太极OS·流锻内核 M191-M195 + T201-T217 | 待提交 |
+| v7.26 | AkashaChainDB M190 + FTEL+β归约+POP共识 + T197-T200 | 7248b42 |
 | v7.25b | 幂律·三分损益·类型论 M189 + BFT升级 + M187/M188升级 + T191-T196 | — |
 | v7.25 | RLM M186 + ContextRot M187 + Intentionality M188 + T191-T196 | — |
 | v7.24-draft | LLM Wiki M184 + T189-T190 + P9 MVE + M176/M178对接 | 3e8a693 |
@@ -21,20 +23,28 @@
 | v7.19 | 组织记忆·Φ场·AgentOS M176-M178 + T157-T165 | — |
 | v7.18 | 沙箱+安全护盾 M174-M175 + T151-T156 | — |
 
-## 当前开发状态：v7.25b（🔶开发中）
-- **M189 PowerLawEngine** (~1600行): 幂律拟合/对数压缩/三分损益/2/3共识/非结合代数/Curry-Howard/稀疏注意力
-- T191-T196 共6定理, MVE 8/8 ALL PASSED ✅
-- BFT升级: 毕达哥拉斯逗号补偿机制 (T194)
-- M187 升级: 对数压缩预处理 + 幂律稀疏注意力 ψ
-- M188 升级: Curry-Howard意图映射 + 银弹定理T195
-- API: /api/v725b/{powerlaw/*, consensus/bft, sanfen/cycle, curry_howard/map, silver_bullet, rot/sparse_attention, mve, theorem/*}
-- 前端: ⚛️ PowerLaw面板 + 📐 Curry-Howard面板
+## 当前开发状态：v7.27（✅完成）
+- **M191 金灵球堆垒引擎** (~800行): 堆垒算子/三才五行映射/金灵球生成/β归约桥接
+- **M192 太极延拓** (~500行): 延拓公理/同伦延拓/Φ场延拓/因果延拓
+- **M193 Φ调度器** (~300行): Φ场预算/资源调度/优先级仲裁/三级调度
+- **M194 碳硅GAN** (~350行): 生成器/判别器/对抗训练/碳硅桥接
+- **M195 世界模型子系统** (~350行): ⟨W,S,C⟩三元组/世界帧/感知模拟/因果推理
+- T201-T217 共17定理, v727 API 14端点, 前端5面板
+- Git commit 待手动执行（沙箱D: drive index.lock限制）
+- **待集成**: agency-agents-zh(223专家), _understand_anything_ref(UA能力)
+- **待实现**: M190 v2/v3增强, M196 UA引擎
 
 ## 编号规则
-- 模块: M189(v7.25b) | M186-M188(v7.25) | M184(v7.24) | M181-M183(v7.23) | M180(v7.22)
-- 定理: T191-T196(v7.25b) | T189-T190(v7.24) | T183-T188(v7.23) | T180-T182(v7.22)
+- 模块: M195(v7.27) | M190(v7.26) | M189(v7.25b) | M186-M188(v7.25) | M184(v7.24) | M181-M183(v7.23) | M180(v7.22)
+- 定理: T201-T217(v7.27) | T197-T200(v7.26) | T191-T196(v7.25b) | T189-T190(v7.24) | T183-T188(v7.23) | T180-T182(v7.22)
 
 ## 核心文件
+- `M195_WorldModelSubsystem.py`: 世界模型子系统 ⟨W,S,C⟩ (v7.27)
+- `M194_CarbonSiliconGAN.py`: 碳硅GAN 对抗训练 (v7.27)
+- `M193_PhiScheduler.py`: Φ场调度器 三级调度 (v7.27)
+- `M192_TaijiContinuation.py`: 太极延拓 同伦延拓 (v7.27)
+- `M191_JinlingSphereEngine.py`: 金灵球堆垒引擎 (v7.27)
+- `M190_AkashaChainDB.py`: 阿卡西链式数据库（v7.26核心，FTEL+β归约+POP共识）
 - `M189_PowerLawEngine.py`: 幂律·对数·三分损益引擎（v7.25b核心）
 - `M188_IntentionalityEngine.py`: 意向性+Curry-Howard类型论 (v7.25b)
 - `M187_ContextRotDetector.py`: ContextRot+对数压缩+稀疏注意力 (v7.25b)
@@ -42,10 +52,12 @@
 - `CompositeAGI_V2.py`: 主核心（v5.0+）
 - `M184_LLMWikiEngine.py`: LLM Wiki引擎（含OrgMemoryBridge + WikiEventBus）
 - `M186_RLMEngine.py`: 递归语言模型引擎
+- `expert_registry.py`: 223位AI专家注册表（解析agency-agents-zh/）
 
 ## API版本模式
-- `/api/v725b/*`: M189 幂律+三分损益+类型论 | `/api/v725/*`: M186-M188
-- `/api/v724/*`: M184 Wiki | `/api/v723/*`: M181-M183 | `/api/v722/*`: M180
+- `/api/v727/*`: M191-M195 | `/api/v726/*`: M190 AkashaChainDB | `/api/v725b/*`: M189 幂律+三分损益+类型论
+- `/api/v725/*`: M186-M188 | `/api/v724/*`: M184 Wiki
+- `/api/v723/*`: M181-M183 | `/api/v722/*`: M180
 - `/api/chat_v2`: 主对话 | `/api/experts`: 专家系统
 
 ## 服务启动
@@ -74,6 +86,9 @@ cd C:\Users\1\WorkBuddy\2026-05-06-task-1 && python app.py
 - STN Phase 1-4 ✅ | v7.20太一接口 ✅ | v7.22 EqProp+FHN ✅
 - v7.23 E2E归约/宇宙音律/自举智能/P8 MVE ✅
 - v7.24 Wiki面板（M176/M178桥接徽章）✅
+- v7.25b PowerLaw+Curry-Howard面板 ✅
+- v7.26 AkashaChainDB+β归约面板 ✅
+- v7.27 金灵球+太极延拓+Φ调度+碳硅GAN+世界模型面板 ✅
 - 专家系统面板 ✅
 
 ## TYIDO MVE 踩坑

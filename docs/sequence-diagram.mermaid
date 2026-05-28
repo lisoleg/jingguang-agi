@@ -1,0 +1,68 @@
+sequenceDiagram
+    actor User
+    participant API as UnderstandRouter
+    participant Engine as UnderstandEngine
+    participant Pipeline as PipelineOrchestrator
+    participant Scanner as ScannerExpert
+    participant Analyzer as AnalyzerExpert
+    participant Architect as ArchitectExpert
+    participant Reviewer as ReviewerExpert
+    participant Builder as GraphBuilder
+    participant Validator as Validator
+    participant Bridge as BridgeService
+    participant Store as FingerprintStore
+
+    User->>API: POST /api/v725/understand/scan {root_path}
+    API->>Engine: scan(root_path)
+    Engine->>Pipeline: run_scan(root_path)
+    
+    rect rgb(240, 248, 255)
+        Note over Pipeline,Scanner: Phase 1: 项目发现
+        Pipeline->>Scanner: run({root_path})
+        Scanner->>Scanner: scan_project.py (确定性脚本)
+        Scanner-->>Pipeline: ScanResult{files, languages, frameworks}
+    end
+
+    rect rgb(255, 248, 240)
+        Note over Pipeline,Analyzer: Phase 2: 文件分析
+        Pipeline->>Analyzer: run({scan_result, files})
+        Analyzer->>Analyzer: extract_structure.py (确定性)
+        Analyzer->>Analyzer: LLM 语义分析
+        Analyzer-->>Pipeline: AnalysisResult{nodes, edges}
+    end
+
+    rect rgb(240, 255, 240)
+        Note over Pipeline,Architect: Phase 3: 架构分析
+        Pipeline->>Architect: run({analysis_result})
+        Architect->>Architect: 计算目录组/节点组/依赖矩阵
+        Architect-->>Pipeline: ArchitectureResult{layers, patterns}
+    end
+
+    Pipeline->>Builder: build(scan, analysis, architecture)
+    Builder-->>Pipeline: KnowledgeGraph{raw}
+
+    rect rgb(255, 255, 230)
+        Note over Pipeline,Validator: Phase 4: 验证管线
+        Pipeline->>Validator: sanitize_graph(graph)
+        Validator-->>Pipeline: sanitized graph
+        Pipeline->>Validator: normalize_graph(graph)
+        Validator-->>Pipeline: normalized graph
+        Pipeline->>Validator: auto_fix_graph(graph)
+        Validator-->>Pipeline: auto-fixed graph
+        Pipeline->>Validator: validate_graph(graph)
+        Validator-->>Pipeline: validated graph + issues
+    end
+
+    rect rgb(248, 240, 255)
+        Note over Pipeline,Reviewer: Phase 5: 评审
+        Pipeline->>Reviewer: run({graph, issues})
+        Reviewer-->>Pipeline: ReviewResult{approved/rejected}
+    end
+
+    Pipeline->>Store: save fingerprints
+    Pipeline->>Bridge: graph_to_wiki(nodes)
+    Bridge-->>Pipeline: WikiPage[]
+
+    Pipeline-->>Engine: KnowledgeGraph{final}
+    Engine-->>API: KnowledgeGraph
+    API-->>User: 200 {graph, issues, review}
