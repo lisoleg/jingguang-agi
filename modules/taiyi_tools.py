@@ -961,7 +961,7 @@ class ToolEngine:
             if not task:
                 return ToolResult(False, None, "任务描述不能为空")
             try:
-                from taiyi_embodiment import get_embodiment
+                from modules.taiyi_embodiment import get_embodiment
                 import asyncio
                 embodiment = get_embodiment()
                 result = asyncio.run(embodiment.execute_desktop_task(task))
@@ -989,7 +989,7 @@ class ToolEngine:
             if not app or not action:
                 return ToolResult(False, None, "应用名和动作不能为空")
             try:
-                from taiyi_embodiment import get_embodiment
+                from modules.taiyi_embodiment import get_embodiment
                 import asyncio
                 embodiment = get_embodiment()
                 result = embodiment.execute_action(app, action, params)
@@ -1015,7 +1015,7 @@ class ToolEngine:
             """UFO² 截图执行器"""
             target = args.get("target", "desktop")
             try:
-                from taiyi_embodiment import MCPServer
+                from modules.taiyi_embodiment import MCPServer
                 msg_id = f"capture_{target}"
                 mcp = MCPServer("capture")
                 result = mcp.handle(type('Message', (), {
@@ -1044,7 +1044,7 @@ class ToolEngine:
             """UFO² UI 树执行器"""
             app = args.get("app", "")
             try:
-                from taiyi_embodiment import MCPServer
+                from modules.taiyi_embodiment import MCPServer
                 mcp = MCPServer("ui_tree")
                 result = mcp.handle(type('Message', (), {
                     'id': 'ui_tree',

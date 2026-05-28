@@ -56,7 +56,7 @@ class UnifiedCompoundAGISystem:
         
         # 1. 天行力引擎（论文13）
         try:
-            from tianxing_engine import TianxingEngine
+            from modules.tianxing_engine import TianxingEngine
             self.modules['tianxing'] = {
                 'engine': TianxingEngine(),
                 'description': '天行力引擎 - 天行作用量计算',
@@ -72,7 +72,7 @@ class UnifiedCompoundAGISystem:
         
         # 2. 相位拓扑自激模型（论文05/06）
         try:
-            from phase_topology_self_activation import PTSField, CathodeYangBirth
+            from modules.phase_topology_self_activation import PTSField, CathodeYangBirth
             # PTSField needs psi (numpy array) and grid_size arguments
             psi_init = np.random.randn(50, 50) + 1j * np.random.randn(50, 50)
             self.modules['pts'] = {
@@ -91,7 +91,7 @@ class UnifiedCompoundAGISystem:
         
         # 3. 八识架构（论文10）
         try:
-            from taiji_agi_v2 import AlayaModule, ManasModule, ConsciousnessModule, IndriyaModule
+            from modules.taiji_agi_v2 import AlayaModule, ManasModule, ConsciousnessModule, IndriyaModule
             self.modules['eight_consciousness'] = {
                 'alaya': AlayaModule(),
                 'manas': ManasModule(),
@@ -126,7 +126,7 @@ class UnifiedCompoundAGISystem:
         
         # 5. AGI/ASI判定系统（论文11）
         try:
-            from agi_evaluator import AGIEvaluator
+            from modules.agi_evaluator import AGIEvaluator
             self.modules['evaluator'] = {
                 'evaluator': AGIEvaluator(),
                 'description': 'AGI/ASI判定系统 - 4个必要条件与评估',
@@ -142,7 +142,7 @@ class UnifiedCompoundAGISystem:
         
         # 6. IGCTR统一场论（论文04）
         try:
-            from igctr_field import IGCTRFieldTheory
+            from modules.igctr_field import IGCTRFieldTheory
             self.modules['igctr'] = {
                 'field': IGCTRFieldTheory(),
                 'description': 'IGCTR统一场论 - 信息-几何-意识三元场',
@@ -158,7 +158,7 @@ class UnifiedCompoundAGISystem:
         
         # 7. 具身与感知（论文10）
         try:
-            from embodiment_perception import EmbodimentPerceptionModule, VisionSensor
+            from modules.embodiment_perception import EmbodimentPerceptionModule, VisionSensor
             self.modules['embodiment'] = {
                 'module': EmbodimentPerceptionModule(),
                 'description': '具身与感知 - 传感器与执行器',
@@ -193,7 +193,7 @@ class UnifiedCompoundAGISystem:
         
         # 9. SEGUE评估器（新增）
         try:
-            from segue_evaluator import SEGUEEvaluator
+            from modules.segue_evaluator import SEGUEEvaluator
             self.modules['segue'] = {
                 'evaluator': SEGUEEvaluator(dimension=2),
                 'description': 'SEGUE评估器 - 广义熵大统一表达式',
@@ -209,7 +209,7 @@ class UnifiedCompoundAGISystem:
         
         # 10. UFO²视觉感知（微软Windows AgentOS）
         try:
-            from ufo2_integration import UFOVisualPerceptionModule
+            from modules.ufo2_integration import UFOVisualPerceptionModule
             self.modules['ufo2'] = {
                 'perception': UFOVisualPerceptionModule(
                     enable_screen_capture=True,
@@ -229,7 +229,7 @@ class UnifiedCompoundAGISystem:
         
         # 11. 工具执行验证机制（新增）
         try:
-            from tool_verification import ToolVerificationEngine
+            from modules.tool_verification import ToolVerificationEngine
             self.modules['tool_verify'] = {
                 'engine': ToolVerificationEngine(verification_level='medium'),
                 'description': '工具执行验证 - 安全检查与审计',

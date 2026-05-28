@@ -36,7 +36,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple, Callable
 
-from TYIDO_SelfConsistency import SelfConsistencyChecker, ConsistencyResult
+from modules.TYIDO_SelfConsistency import SelfConsistencyChecker, ConsistencyResult
 
 
 # ============================================================

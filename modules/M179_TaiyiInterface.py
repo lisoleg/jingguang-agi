@@ -58,14 +58,14 @@ except ImportError:
 
 # 尝试加载TYIDO P4 (可寻址长期记忆)
 try:
-    from TYIDO_AddressableMemory import AddressableMemoryStore
+    from modules.TYIDO_AddressableMemory import AddressableMemoryStore
     _P4_AVAILABLE = True
 except ImportError:
     _P4_AVAILABLE = False
 
 # 尝试加载TYIDO P3 (长程推理)
 try:
-    from TYIDO_LongRangeReasoning import (
+    from modules.TYIDO_LongRangeReasoning import (
         ReasoningChain, ChainLink, ChainManager, DeadlockDetector
     )
     _P3_AVAILABLE = True

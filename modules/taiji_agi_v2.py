@@ -24,7 +24,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 import json
 import time
-from ftel_operator import FtelOperator, MutualInformationStructure
+from modules.ftel_operator import FtelOperator, MutualInformationStructure
 
 
 class AlayaModule:

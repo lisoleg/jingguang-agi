@@ -34,7 +34,7 @@ if _tyido_path not in sys.path:
     sys.path.insert(0, _tyido_path)
 
 try:
-    from TYIDO_LongRangeReasoning import (
+    from modules.TYIDO_LongRangeReasoning import (
         SubGoal, SubGoalDecomposer, StepVerifier,
         PlanBFallback, ResourceBudget, FallbackPlan
     )

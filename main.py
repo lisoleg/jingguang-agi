@@ -19,15 +19,15 @@ import time
 from typing import List, Dict, Any
 
 # 导入AGI核心模块
-from agi_core import create_default_network, ComplexNetwork, LayerType
-from energy_engine import EnergyEngine
-from adaptive_learner import AdaptiveLearner, FeedbackType
-from task_interface import TaskInterface, TaskType
-from utils import AGILogger, print_header, print_separator, format_network_visualization
+from modules.agi_core import create_default_network, ComplexNetwork, LayerType
+from modules.energy_engine import EnergyEngine
+from modules.adaptive_learner import AdaptiveLearner, FeedbackType
+from modules.task_interface import TaskInterface, TaskType
+from modules.utils import AGILogger, print_header, print_separator, format_network_visualization
 
 # 导入新增模块
-from vector_db import VectorDB
-from neural_network import NeuralNetwork, TextClassificationNet
+from modules.vector_db import VectorDB
+from modules.neural_network import NeuralNetwork, TextClassificationNet
 
 
 def demo_network_initialization(logger):

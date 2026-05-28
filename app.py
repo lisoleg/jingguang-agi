@@ -342,7 +342,7 @@ def get_medium_symbiosis():
         with _medium_symbiosis_lock:
             if _medium_symbiosis is None:
                 try:
-                    from agi_medium_symbiosis import AGIMediumSymbiosis
+                    from modules.agi_medium_symbiosis import AGIMediumSymbiosis
                     _medium_symbiosis = AGIMediumSymbiosis()
                     print("✅ 介质共生模块已加载（介质共振+九卦+四象）")
                 except Exception as e:
@@ -359,7 +359,7 @@ def get_agi_system():
             if not _agi_ready:
                 try:
                     print("🔮 正在初始化Taiyi-AGI 4.0 系统（23个模块）...")
-                    from CompositeAGI_V2 import CompositeAGI_V2 as TaiyiAGI_V2
+                    from modules.CompositeAGI_V2 import CompositeAGI_V2 as TaiyiAGI_V2
                     _agi_system = TaiyiAGI_V2()
                     _agi_ready = True
                     print("✅ Taiyi-AGI 4.0 系统就绪（23模块已加载）")
@@ -369,7 +369,7 @@ def get_agi_system():
                     # 降级：尝试加载旧系统
                     try:
                         print("⚠️ 降级：尝试加载 UnifiedTaiyiSystem...")
-                        from unified_taichi_demo import UnifiedTaiyiSystem
+                        from modules.unified_taichi_demo import UnifiedTaiyiSystem
                         _agi_system = UnifiedTaiyiSystem("WebAGI")
                         _agi_ready = True
                         print("✅ 降级成功：UnifiedTaiyiSystem 已加载")
@@ -458,7 +458,7 @@ def _generate_related_questions(user_message: str, ai_reply: str) -> list:
     """
     # ── 方案1：LLM生成（带超时） ──
     try:
-        from taiyi_llm_enhancer import get_enhancer
+        from modules.taiyi_llm_enhancer import get_enhancer
         enhancer = get_enhancer()
         if enhancer and hasattr(enhancer, 'llm') and enhancer.llm.active_backend:
             import threading
@@ -680,7 +680,7 @@ def _format_reply(result: dict, original_question: str) -> str:
     直接使用 unified_taichi_demo.py 中 UnifiedTaiyiSystem 的 _format_reply 方法。
     """
     try:
-        from unified_taichi_demo import UnifiedTaiyiSystem
+        from modules.unified_taichi_demo import UnifiedTaiyiSystem
         # 创建一个临时系统对象来使用其 _format_reply 方法
         system = UnifiedTaiyiSystem("temp")
         return system._format_reply(result, original_question)
@@ -729,7 +729,7 @@ def get_compound_agi_system():
             if not _compound_agi_ready:
                 try:
                     print("🔮 正在初始化Taiyi-AGI统一系统...")
-                    from unified_compound_agi_system import UnifiedCompoundAGISystem
+                    from modules.unified_compound_agi_system import UnifiedCompoundAGISystem
                     _compound_agi_system = UnifiedCompoundAGISystem("CompoundAGI_Web_v1.0")
                     _compound_agi_ready = True
                     print("✅ Taiyi-AGI系统就绪")
@@ -2455,7 +2455,7 @@ def _chat_stream_generator(data):
     def run_generation():
         """在线程中运行生成，完成后把结果放入 result_container"""
         try:
-            from taiyi_llm_enhancer import get_enhancer, ReasoningMode
+            from modules.taiyi_llm_enhancer import get_enhancer, ReasoningMode
             enhancer = get_enhancer()
 
             message = data.get('message', '').strip()
@@ -3014,7 +3014,7 @@ def get_expert_registry() -> 'ExpertRegistry':
         with _expert_registry_lock:
             if _expert_registry is None:
                 try:
-                    from expert_registry import get_registry
+                    from modules.expert_registry import get_registry
                     _expert_registry = get_registry()
                 except Exception as e:
                     print(f"⚠️ 专家注册表加载失败: {e}")

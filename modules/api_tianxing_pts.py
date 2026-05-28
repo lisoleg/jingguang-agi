@@ -44,7 +44,7 @@ def evaluate_tianxing():
         grid_size = data.get('grid_size', 50)
         
         # 导入天行力系统
-        from tianxing_force import TianxingForceSystem
+        from modules.tianxing_force import TianxingForceSystem
         
         # 创建天行力系统
         tianxing = TianxingForceSystem(grid_size=grid_size)
@@ -102,7 +102,7 @@ def simulate_tianxing():
         dt = data.get('dt', 0.01)
         
         # 导入PTS模型
-        from tianxing_force import TianxingForceSystem
+        from modules.tianxing_force import TianxingForceSystem
         
         # 创建天行力系统
         tianxing = TianxingForceSystem(grid_size=len(initial_psi))
@@ -160,7 +160,7 @@ def evaluate_pts():
         grid_size = data.get('grid_size', 50)
         
         # 导入PTS模型
-        from phase_topology_self_activation import PTSField
+        from modules.phase_topology_self_activation import PTSField
         
         # 创建PTS场
         pts_field = PTSField(psi=psi, grid_size=grid_size)
@@ -217,7 +217,7 @@ def simulate_pts():
         coupling = data.get('coupling', 1.0)
         
         # 导入PTS模型
-        from phase_topology_self_activation import PTSField
+        from modules.phase_topology_self_activation import PTSField
         
         # 创建PTS场
         pts_field = PTSField(psi=initial_psi, grid_size=len(initial_psi))

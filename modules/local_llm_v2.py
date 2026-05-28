@@ -13,7 +13,7 @@ from typing import Optional, Dict, Any
 
 # 添加缓存支持
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from cache_manager import cached, cache_manager
+from modules.cache_manager import cached, cache_manager
 
 # 添加D盘Python路径（用于ctransformers）
 sys.path.insert(0, "D:/Apps/Python")

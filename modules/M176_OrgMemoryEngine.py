@@ -32,7 +32,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 # TYIDO P4: 可寻址长期记忆
 try:
-    from TYIDO_AddressableMemory import (
+    from modules.TYIDO_AddressableMemory import (
         AddressableMemoryStore, MemoryIndex, ForgetPolicy, MemoryMergeEngine
     )
     _P4_AVAILABLE = True

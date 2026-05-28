@@ -99,7 +99,7 @@ def format_dict(data: Dict, indent: int = 2, max_depth: int = 3, current_depth: 
 
 def format_complex_state(unit) -> str:
     """格式化复合体状态为可读字符串"""
-    from agi_core import ComplexUnit
+    from modules.agi_core import ComplexUnit
     
     if not isinstance(unit, ComplexUnit):
         return str(unit)
@@ -124,7 +124,7 @@ def _make_bar(value: float, length: int, fill_char: str, empty_char: str) -> str
 
 def format_network_visualization(network) -> str:
     """生成网络结构的可视化文本"""
-    from agi_core import ComplexNetwork, LayerType
+    from modules.agi_core import ComplexNetwork, LayerType
     
     if not isinstance(network, ComplexNetwork):
         return str(network)

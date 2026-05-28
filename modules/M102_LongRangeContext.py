@@ -17,7 +17,7 @@ import hashlib
 from dataclasses import dataclass, field
 from typing import Dict, Any, List, Optional
 
-from TYIDO_SelfConsistency import SelfConsistencyChecker, ConsistencyResult
+from modules.TYIDO_SelfConsistency import SelfConsistencyChecker, ConsistencyResult
 
 
 @dataclass

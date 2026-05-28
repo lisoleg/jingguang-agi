@@ -39,8 +39,8 @@ try:
 except ImportError:
     HAS_JIEBA = False
 
-from agi_core import LayerType
-from neural_network import NeuralNetwork
+from modules.agi_core import LayerType
+from modules.neural_network import NeuralNetwork
 
 
 class TaskType(Enum):

@@ -127,7 +127,7 @@ class TaskParser:
         """分解任务"""
         if llm_backend is None:
             try:
-                from local_llm import get_llm
+                from modules.local_llm import get_llm
                 llm_backend = get_llm()
             except Exception:
                 return cls._fallback_decompose(query)
@@ -307,7 +307,7 @@ class HierarchicalPlanner:
         """延迟加载LLM"""
         if not self._llm_initialized:
             try:
-                from local_llm import get_llm
+                from modules.local_llm import get_llm
                 self.llm = get_llm()
                 self._llm_initialized = True
             except Exception:

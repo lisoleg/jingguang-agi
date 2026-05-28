@@ -40,7 +40,7 @@ from modules.M171_UFMLambdaUniverse import (
     BetaReducer, YCombinator, AmbOperator,
     NoCloneTheorem, UFMStdLib, UFMLambdaUniverse
 )
-from TYIDO_SelfConsistency import SelfConsistencyChecker, ConsistencyResult
+from modules.TYIDO_SelfConsistency import SelfConsistencyChecker, ConsistencyResult
 
 
 # ============================================================

@@ -21,7 +21,7 @@ import random
 import time
 
 # 导入SEGUE评估器
-from segue_evaluator import SEGUEEvaluator
+from modules.segue_evaluator import SEGUEEvaluator
 
 
 @dataclass
@@ -104,7 +104,7 @@ class AGITrainer:
         
         简化：将输出视为密度矩阵的特征值
         """
-        from segue_evaluator import QuantumState
+        from modules.segue_evaluator import QuantumState
         
         # 将输出转换为密度矩阵（简化）
         n = len(outputs)
@@ -124,7 +124,7 @@ class AGITrainer:
         
         简化：将输出视为概率分布
         """
-        from segue_evaluator import ClassicalState
+        from modules.segue_evaluator import ClassicalState
         
         # 将输出转换为概率分布（softmax）
         exp_outputs = np.exp(outputs - np.max(outputs))  # 数值稳定性
@@ -257,7 +257,7 @@ def test_agi_trainer():
     
     # 1. 创建模型（使用NeuralNetwork）
     try:
-        from neural_network import NeuralNetwork
+        from modules.neural_network import NeuralNetwork
         
         # 创建神经网络：输入3维，隐藏层5维，输出2维
         model = NeuralNetwork(

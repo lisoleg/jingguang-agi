@@ -35,7 +35,7 @@ print("=" * 60)
 print("\n🔍 步骤1: 检查LLM后端...")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from local_llm import get_llm, LocalLLM, OpenRouterBackend, OllamaBackend
+from modules.local_llm import get_llm, LocalLLM, OpenRouterBackend, OllamaBackend
 
 llm = get_llm()
 status = llm.status()

@@ -16,8 +16,8 @@ import json
 import hashlib
 
 from crd_engine import CRDEngine, CRDResult, ConsciousnessLevel, NLAAuditResult
-from tianxing_engine import TianxingEngine, EvolutionResult, Horizon, TianxingParameters
-from local_llm import get_llm
+from modules.tianxing_engine import TianxingEngine, EvolutionResult, Horizon, TianxingParameters
+from modules.local_llm import get_llm
 
 
 @dataclass

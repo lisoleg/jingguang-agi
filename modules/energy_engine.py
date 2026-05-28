@@ -18,7 +18,7 @@ from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
 import time
 
-from agi_core import ComplexUnit, ComplexNetwork, LayerType
+from modules.agi_core import ComplexUnit, ComplexNetwork, LayerType
 
 
 @dataclass

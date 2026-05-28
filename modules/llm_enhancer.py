@@ -10,7 +10,7 @@ LLM增强的回复生成器 - 多后端支持
 
 # 兼容层：导入新模块
 try:
-    from taiyi_llm_enhancer import TaiyiLLMEnhancer, get_enhancer, TaiyiResponse
+    from modules.taiyi_llm_enhancer import TaiyiLLMEnhancer, get_enhancer, TaiyiResponse
     _HAS_NEW_MODULE = True
 except ImportError:
     _HAS_NEW_MODULE = False
@@ -40,7 +40,7 @@ def generate_with_llm(question: str, context: dict = None) -> str:
         return response.content
     else:
         # 降级：使用旧版local_llm
-        from local_llm import get_llm
+        from modules.local_llm import get_llm
         llm = get_llm()
         if not llm.is_ready():
             return None
@@ -59,7 +59,7 @@ def get_llm_status() -> dict:
         enhancer = get_enhancer()
         return enhancer.get_statistics()
     else:
-        from local_llm import get_llm
+        from modules.local_llm import get_llm
         llm = get_llm()
         return llm.status()
 
@@ -81,7 +81,7 @@ if __name__ == "__main__":
             print(f"\n测试回复:\n{response[:200]}")
     else:
         print("\n⚠️ 新模块不可用，使用旧版")
-        from local_llm import get_llm
+        from modules.local_llm import get_llm
         llm = get_llm()
         print(f"活跃后端: {llm.status()['active']}")
 

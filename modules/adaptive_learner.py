@@ -20,7 +20,7 @@ adaptive_learner.py - 自适应学习模块（增强版：真正自学习循环�
 from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
-from agi_core import LayerType, ComplexUnit, ComplexNetwork
+from modules.agi_core import LayerType, ComplexUnit, ComplexNetwork
 import time
 import json
 import math

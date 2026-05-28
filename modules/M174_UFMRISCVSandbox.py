@@ -29,7 +29,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 # TYIDO P5 责任可锚定
 try:
-    from TYIDO_AnchorableResponsibility import (
+    from modules.TYIDO_AnchorableResponsibility import (
         ResponsibilityChain, ActionGatekeeper, CircuitBreakerPolicy, AuditTrail,
         init_p5_components, RiskLevel, ActionDecision,
     )

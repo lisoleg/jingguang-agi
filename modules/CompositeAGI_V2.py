@@ -51,13 +51,13 @@ from datetime import datetime
 
 # 导入所有技术启发模块
 try:
-    from TopologicalDefect import TopologicalDefectAnalyzer, DefectType
+    from modules.TopologicalDefect import TopologicalDefectAnalyzer, DefectType
 except ImportError:
     print("警告: TopologicalDefect模块未找到")
     TopologicalDefectAnalyzer = None
     
 try:
-    from FractalDimensionAnalyzer import FractalDimensionAnalyzer
+    from modules.FractalDimensionAnalyzer import FractalDimensionAnalyzer
 except ImportError:
     print("警告: FractalDimensionAnalyzer模块未找到")
     FractalDimensionAnalyzer = None
@@ -69,31 +69,31 @@ except ImportError:
     MinimumActionPrinciple = None
     
 try:
-    from PhaseFieldKnowledgeRepresentation import PhaseFieldKnowledgeRepresentation, SupplyDemandPhaseLock
+    from modules.PhaseFieldKnowledgeRepresentation import PhaseFieldKnowledgeRepresentation, SupplyDemandPhaseLock
 except ImportError:
     print("警告: PhaseFieldKnowledgeRepresentation模块未找到")
     PhaseFieldKnowledgeRepresentation = None
     
 try:
-    from FtelOperator import FtelOperator, SocialSyndromeAnalyzer
+    from modules.FtelOperator import FtelOperator, SocialSyndromeAnalyzer
 except ImportError:
     print("警告: FtelOperator模块未找到")
     FtelOperator = None
     
 try:
-    from QuantumFieldComputation import QuantumFieldComputation, LimitOrder, MarketOrder
+    from modules.QuantumFieldComputation import QuantumFieldComputation, LimitOrder, MarketOrder
 except ImportError:
     print("警告: QuantumFieldComputation模块未找到")
     QuantumFieldComputation = None
     
 try:
-    from FiveElementsNetwork import FiveElementsNetwork, InnovationModule, ConsumptionModule
+    from modules.FiveElementsNetwork import FiveElementsNetwork, InnovationModule, ConsumptionModule
 except ImportError:
     print("警告: FiveElementsNetwork模块未找到")
     FiveElementsNetwork = None
     
 try:
-    from IGCTR_UnifiedField_Simplified import IGCTR_UnifiedField
+    from modules.IGCTR_UnifiedField_Simplified import IGCTR_UnifiedField
 except ImportError:
     print("警告: IGCTR_UnifiedField模块未找到")
     IGCTR_UnifiedField = None
@@ -106,53 +106,53 @@ except ImportError:
     ThreeHorizonsInterpretation = None
     
 try:
-    from AlephAlephUnification import AlephAlephUnification, AlephTilde
+    from modules.AlephAlephUnification import AlephAlephUnification, AlephTilde
 except ImportError:
     print("警告: AlephAlephUnification模块未找到")
     AlephAlephUnification = None
     
 try:
-    from AntiMonotonicityInformation import AntiMonotonicityInformation, PrimeLikeStructureDetector
+    from modules.AntiMonotonicityInformation import AntiMonotonicityInformation, PrimeLikeStructureDetector
 except ImportError:
     print("警告: AntiMonotonicityInformation模块未找到")
     AntiMonotonicityInformation = None
 
 try:
-    from UniverseFivePreferences import UniverseFivePreferences
+    from modules.UniverseFivePreferences import UniverseFivePreferences
 except ImportError:
     print("警告: UniverseFivePreferences模块未找到")
     UniverseFivePreferences = None
 
 try:
-    from WorldModelTriadicResonance import WorldModelTriadicResonance
+    from modules.WorldModelTriadicResonance import WorldModelTriadicResonance
 except ImportError:
     print("警告: WorldModelTriadicResonance模块未找到")
     WorldModelTriadicResonance = None
 
 # 新增模块（基于5篇IGCTR文档）
 try:
-    from CausalConvergenceEvaluator import CausalConvergenceEvaluator, ConsistencyLevel as CC_Level
+    from modules.CausalConvergenceEvaluator import CausalConvergenceEvaluator, ConsistencyLevel as CC_Level
 except ImportError:
     print("警告: CausalConvergenceEvaluator模块未找到")
     CausalConvergenceEvaluator = None
     CC_Level = None
 
 try:
-    from CognitivePressureMonitor import CognitivePressureMonitor, ConsistencyLevel as CPM_Level
+    from modules.CognitivePressureMonitor import CognitivePressureMonitor, ConsistencyLevel as CPM_Level
 except ImportError:
     print("警告: CognitivePressureMonitor模块未找到")
     CognitivePressureMonitor = None
     CPM_Level = None
 
 try:
-    from ConsciousnessEmergenceDetector import ConsciousnessEmergenceDetector, GeometryType
+    from modules.ConsciousnessEmergenceDetector import ConsciousnessEmergenceDetector, GeometryType
 except ImportError:
     print("警告: ConsciousnessEmergenceDetector模块未找到")
     ConsciousnessEmergenceDetector = None
     GeometryType = None
 
 try:
-    from FediverseProtocolAdapter import FediverseProtocolAdapter, ProtocolType as FP_ProtocolType
+    from modules.FediverseProtocolAdapter import FediverseProtocolAdapter, ProtocolType as FP_ProtocolType
 except ImportError:
     print("警告: FediverseProtocolAdapter模块未找到")
     FediverseProtocolAdapter = None
@@ -160,41 +160,41 @@ except ImportError:
 
 # 新增模块（基于7G/AgentWeb + 联邦宇宙文档）
 try:
-    from FPGAReconfigurableManager import FPGAReconfigurableManager
+    from modules.FPGAReconfigurableManager import FPGAReconfigurableManager
 except ImportError:
     print("警告: FPGAReconfigurableManager模块未找到")
     FPGAReconfigurableManager = None
 
 try:
-    from AgentWebSynergyEvaluator import AgentWebSynergyEvaluator, ResonanceState as AWS_ResonanceState
+    from modules.AgentWebSynergyEvaluator import AgentWebSynergyEvaluator, ResonanceState as AWS_ResonanceState
 except ImportError:
     print("警告: AgentWebSynergyEvaluator模块未找到")
     AgentWebSynergyEvaluator = None
     AWS_ResonanceState = None
 
 try:
-    from EvolvableInfrastructureMonitor import EvolvableInfrastructureMonitor, EvolutionState
+    from modules.EvolvableInfrastructureMonitor import EvolvableInfrastructureMonitor, EvolutionState
 except ImportError:
     print("警告: EvolvableInfrastructureMonitor模块未找到")
     EvolvableInfrastructureMonitor = None
     EvolutionState = None
 
 try:
-    from TokenLifecycleManager import TokenLifecycleManager, TokenType as TLM_TokenType
+    from modules.TokenLifecycleManager import TokenLifecycleManager, TokenType as TLM_TokenType
 except ImportError:
     print("警告: TokenLifecycleManager模块未找到")
     TokenLifecycleManager = None
     TLM_TokenType = None
 
 try:
-    from WaveParticleDualityTransformer import WaveParticleDualityTransformer, KernelType
+    from modules.WaveParticleDualityTransformer import WaveParticleDualityTransformer, KernelType
 except ImportError:
     print("警告: WaveParticleDualityTransformer模块未找到")
     WaveParticleDualityTransformer = None
     KernelType = None
 
 try:
-    from AvatarFusionEvaluator import AvatarFusionEvaluator, AvatarState
+    from modules.AvatarFusionEvaluator import AvatarFusionEvaluator, AvatarState
 except ImportError:
     print("警告: AvatarFusionEvaluator模块未找到")
     AvatarFusionEvaluator = None
@@ -202,20 +202,20 @@ except ImportError:
 
 # 新增模块（基于情感与边界层论文）
 try:
-    from DigitalNeocortex import DigitalNeocortex, DigitalNeocortexAGI12
+    from modules.DigitalNeocortex import DigitalNeocortex, DigitalNeocortexAGI12
 except ImportError:
     print("警告: DigitalNeocortex模块未找到")
     DigitalNeocortex = None
     DigitalNeocortexAGI12 = None
 
 try:
-    from TemporalDatabase import TemporalDatabaseOntology
+    from modules.TemporalDatabase import TemporalDatabaseOntology
 except ImportError:
     print("警告: TemporalDatabase模块未找到")
     TemporalDatabaseOntology = None
 
 try:
-    from DSPEmotionLayer import DSPEmotionLayer, DSPEmotionOutput, EmotionType
+    from modules.DSPEmotionLayer import DSPEmotionLayer, DSPEmotionOutput, EmotionType
 except ImportError:
     print("警告: DSPEmotionLayer模块未找到")
     DSPEmotionLayer = None
@@ -223,14 +223,14 @@ except ImportError:
     EmotionType = None
 
 try:
-    from IntelligentBoundaryLayer import IntelligentBoundaryLayer, FlowState
+    from modules.IntelligentBoundaryLayer import IntelligentBoundaryLayer, FlowState
 except ImportError:
     print("警告: IntelligentBoundaryLayer模块未找到")
     IntelligentBoundaryLayer = None
     FlowState = None
 
 try:
-    from ThreeViewDetector import ThreeViewDetector, ThreeViewsState
+    from modules.ThreeViewDetector import ThreeViewDetector, ThreeViewsState
 except ImportError:
     print("警告: ThreeViewDetector模块未找到")
     ThreeViewDetector = None
@@ -238,7 +238,7 @@ except ImportError:
 
 # 新增模块（基于全息离散治理论文）
 try:
-    from HolographicDiscreteGovernance import HolographicDiscreteGovernance, FiveLayers, GovernanceMode
+    from modules.HolographicDiscreteGovernance import HolographicDiscreteGovernance, FiveLayers, GovernanceMode
 except ImportError:
     print("警告: HolographicDiscreteGovernance模块未找到")
     HolographicDiscreteGovernance = None
@@ -247,28 +247,28 @@ except ImportError:
 
 # 新增模块30-33（基于4篇新论文）
 try:
-    from FractalHolismField import FractalHolismField, HolonScale
+    from modules.FractalHolismField import FractalHolismField, HolonScale
 except ImportError:
     print("警告: FractalHolismField模块未找到")
     FractalHolismField = None
     HolonScale = None
 
 try:
-    from CTMPhaseSynchronizer import CTMPhaseSynchronizer, WorldFrameTick
+    from modules.CTMPhaseSynchronizer import CTMPhaseSynchronizer, WorldFrameTick
 except ImportError:
     print("警告: CTMPhaseSynchronizer模块未找到")
     CTMPhaseSynchronizer = None
     WorldFrameTick = None
 
 try:
-    from ZeroTrustGovernance import ZeroTrustGovernance, TrustLevel
+    from modules.ZeroTrustGovernance import ZeroTrustGovernance, TrustLevel
 except ImportError:
     print("警告: ZeroTrustGovernance模块未找到")
     ZeroTrustGovernance = None
     TrustLevel = None
 
 try:
-    from RainbowBodyCompute import RainbowBodyCompute, DataState
+    from modules.RainbowBodyCompute import RainbowBodyCompute, DataState
 except ImportError:
     print("警告: RainbowBodyCompute模块未找到")
     RainbowBodyCompute = None
@@ -276,27 +276,27 @@ except ImportError:
 
 # 新增模块39-42（基于流贯文艺创作论 + 刘原理不动点证明）
 try:
-    from FlowPenetrationCreator import FlowPenetrationCreator
+    from modules.FlowPenetrationCreator import FlowPenetrationCreator
 except ImportError:
     print("警告: FlowPenetrationCreator模块未找到")
     FlowPenetrationCreator = None
 
 try:
-    from SelfReferenceMonitor import SelfReferenceMonitor, ConsistencyStatus
+    from modules.SelfReferenceMonitor import SelfReferenceMonitor, ConsistencyStatus
 except ImportError:
     print("警告: SelfReferenceMonitor模块未找到")
     SelfReferenceMonitor = None
     ConsistencyStatus = None
 
 try:
-    from GeniusModeCoupler import GeniusModeCoupler, GeniusLevel
+    from modules.GeniusModeCoupler import GeniusModeCoupler, GeniusLevel
 except ImportError:
     print("警告: GeniusModeCoupler模块未找到")
     GeniusModeCoupler = None
     GeniusLevel = None
 
 try:
-    from EntropyReductionEvaluator import EntropyReductionEvaluator, CreationStatus
+    from modules.EntropyReductionEvaluator import EntropyReductionEvaluator, CreationStatus
 except ImportError:
     print("警告: EntropyReductionEvaluator模块未找到")
     EntropyReductionEvaluator = None
@@ -312,7 +312,7 @@ except ImportError:
     NoTheaterTheory = None
     
 try:
-    from LiuGuanPhaseTransition import LiuGuanGovernance, LiuGuanCalculator, PhaseTransitionDetector
+    from modules.LiuGuanPhaseTransition import LiuGuanGovernance, LiuGuanCalculator, PhaseTransitionDetector
 except ImportError:
     print("警告: LiuGuanPhaseTransition模块未找到")
     LiuGuanGovernance = None
@@ -320,7 +320,7 @@ except ImportError:
     PhaseTransitionDetector = None
     
 try:
-    from YogacaraEightConsciousness import EightConsciousnessModel, ConsciousnessType
+    from modules.YogacaraEightConsciousness import EightConsciousnessModel, ConsciousnessType
 except ImportError:
     print("警告: YogacaraEightConsciousness模块未找到")
     EightConsciousnessModel = None
@@ -1843,7 +1843,7 @@ class CompositeAGI_V2:
             return {}
         
         # 导入ConsciousnessType枚举
-        from YogacaraEightConsciousness import ConsciousnessType
+        from modules.YogacaraEightConsciousness import ConsciousnessType
         
         # 1. 存储种子（模拟）
         import numpy as np

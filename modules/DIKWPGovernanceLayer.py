@@ -18,14 +18,14 @@ from typing import Optional, Dict, List, Any
 from dataclasses import dataclass, field
 
 # 导入所有DIKWP模块
-from DIKWPDataLayer import DIKWPDataLayer, DIKWPLayer as DataLayerEnum
-from DIKWPInfoLayer import DIKWPInfoLayer, InfoNode
-from DIKWPKnowledgeLayer import DIKWPKnowledgeLayer, IGCTRAxis
-from DIKWPWisdomLayer import DIKWPWisdomLayer, WisdomScore
-from DIKWPPurposeLayer import DIKWPPurposeLayer, IntentCheckResult
-from DIKWPReliabilityLayer import DIKWPReliabilityLayer, ProofEntry
+from modules.DIKWPDataLayer import DIKWPDataLayer, DIKWPLayer as DataLayerEnum
+from modules.DIKWPInfoLayer import DIKWPInfoLayer, InfoNode
+from modules.DIKWPKnowledgeLayer import DIKWPKnowledgeLayer, IGCTRAxis
+from modules.DIKWPWisdomLayer import DIKWPWisdomLayer, WisdomScore
+from modules.DIKWPPurposeLayer import DIKWPPurposeLayer, IntentCheckResult
+from modules.DIKWPReliabilityLayer import DIKWPReliabilityLayer, ProofEntry
 from modules.MemoryLedger import MemoryLedger, DIKWPLayer as MemoryLayerEnum
-from ElasticCoordinationBus import ElasticCoordinationBus
+from modules.ElasticCoordinationBus import ElasticCoordinationBus
 
 
 @dataclass

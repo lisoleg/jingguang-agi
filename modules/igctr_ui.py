@@ -36,7 +36,7 @@ except ImportError as e:
     IGCTR_IMPORT_ERROR = str(e)
 
 try:
-    from CompositeAGI_V2 import CompositeAGI_V2
+    from modules.CompositeAGI_V2 import CompositeAGI_V2
     COMPOSITE_AGI_AVAILABLE = True
 except ImportError as e:
     COMPOSITE_AGI_AVAILABLE = False

@@ -32,7 +32,7 @@ import pickle
 import os
 
 # 导入核心组件
-from agi_core import (
+from modules.agi_core import (
     NIL, NilValue, SExpression,
     HTCENode, HTCEHyperedge, HTCE,
     EFTETField, EFTET,
@@ -43,7 +43,7 @@ from pan_flow import (
     Relation, RelationSet,
     PanSystemFlow, LiuPrinciple
 )
-from multi_agent import (
+from modules.multi_agent import (
     Agent, GödelAgent, HypergraphAgent,
     SingularityScheduler, AgentWeb,
     Message, MessageType

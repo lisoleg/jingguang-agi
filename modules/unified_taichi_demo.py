@@ -20,7 +20,7 @@
 - 动态太极渲染
 """
 
-from compound_physics_agi import (
+from modules.compound_physics_agi import (
     CompoundPhysicsAGI,
     ThreeHorizonAnalyzer,
     TaiyiOracle,
@@ -29,7 +29,7 @@ from compound_physics_agi import (
     DiscreteFrameHopper
 )
 
-from taiji_agi import (
+from modules.taiji_agi import (
     TaijiAGI,
     SpiBit,
     SpiBitRegister,

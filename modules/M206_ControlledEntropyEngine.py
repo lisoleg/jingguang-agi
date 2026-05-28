@@ -218,7 +218,7 @@ class ControlledEntropyEngine:
         """懒加载CausalConvergenceEvaluator"""
         if self._causal_evaluator is None:
             try:
-                from CausalConvergenceEvaluator import CausalConvergenceEvaluator
+                from modules.CausalConvergenceEvaluator import CausalConvergenceEvaluator
                 self._causal_evaluator = CausalConvergenceEvaluator()
             except ImportError:
                 self._causal_evaluator = None
@@ -415,7 +415,7 @@ class ControlledEntropyEngine:
         evaluator = self._get_causal_evaluator()
         if evaluator is not None:
             try:
-                from CausalConvergenceEvaluator import CausalEvent
+                from modules.CausalConvergenceEvaluator import CausalEvent
                 # 构造测试事件
                 test_events = [
                     CausalEvent(

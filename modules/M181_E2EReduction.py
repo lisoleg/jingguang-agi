@@ -205,7 +205,7 @@ class L2ShellDiagnostician:
     def _check_consistency(self) -> bool:
         """检查 M88 TypeCheckFirewall — 一致性"""
         try:
-            from CompositeAGI_V2 import TypeCheckFirewall
+            from modules.CompositeAGI_V2 import TypeCheckFirewall
             return True
         except (ImportError, AttributeError):
             pass
@@ -237,7 +237,7 @@ class L2ShellDiagnostician:
     def _check_preservation(self) -> bool:
         """检查 M78 — 可保持（长链归约验证）"""
         try:
-            from CompositeAGI_V2 import HoTTReasoningEngine
+            from modules.CompositeAGI_V2 import HoTTReasoningEngine
             return True
         except (ImportError, AttributeError):
             pass

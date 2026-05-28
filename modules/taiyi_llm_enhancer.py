@@ -22,11 +22,11 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 # 导入本地模块
-from local_llm import LocalLLM, get_llm
-from taiyi_memory import TaiyiMemory, get_memory
-from taiyi_rag import TaiyiRAG, get_rag
-from taiyi_tools import get_tool_engine  # 导入工具引擎
-from taiyi_manas import get_manas  # 新增：导入第七识审计器
+from modules.local_llm import LocalLLM, get_llm
+from modules.taiyi_memory import TaiyiMemory, get_memory
+from modules.taiyi_rag import TaiyiRAG, get_rag
+from modules.taiyi_tools import get_tool_engine  # 导入工具引擎
+from modules.taiyi_manas import get_manas  # 新增：导入第七识审计器
 
 
 # 系统提示词（已优化长度，原版超2000字导致推理慢）
@@ -732,7 +732,7 @@ class TaiyiLLMEnhancer:
         expert_prompt = None
         if expert_id:
             try:
-                from expert_registry import get_registry
+                from modules.expert_registry import get_registry
                 reg = get_registry()
                 expert_prompt = reg.get_system_prompt(expert_id)
                 if expert_prompt:
@@ -858,7 +858,7 @@ class TaiyiLLMEnhancer:
         # Phase 4: 自动保存关键结论
         try:
             if self.enhanced_memory is None:
-                from taiyi_memory import get_enhanced_memory
+                from modules.taiyi_memory import get_enhanced_memory
                 self.enhanced_memory = get_enhanced_memory()
             
             # 评估重要性

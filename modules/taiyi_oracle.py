@@ -30,16 +30,27 @@ from typing import List, Dict, Any, Optional, Callable
 
 # 导入各模块
 try:
-    from ftel_operator import FtelOperator, FtelConfig, ActionFunctional
+    from modules.ftel_operator import FtelOperator, FtelConfig, ActionFunctional
+except ImportError:
+    FtelOperator = None
+    FtelConfig = None
+    ActionFunctional = None
+
+try:
     from holo_pupation import (
         HoloState, PupationEngine, 
         HoloPupationArchitecture, HoloStateConfig
     )
-    from lm_studio_backend import LMStudioBackend
-except ImportError as e:
-    print(f"⚠️ 导入模块失败: {e}")
-    print("   请确保 ftel_operator.py, holo_pupation.py, lm_studio_backend.py 在同一目录")
-    sys.exit(1)
+except ImportError:
+    HoloState = None
+    PupationEngine = None
+    HoloPupationArchitecture = None
+    HoloStateConfig = None
+
+try:
+    from modules.lm_studio_backend import LMStudioBackend
+except ImportError:
+    LMStudioBackend = None
 
 
 class IntentEncoder:

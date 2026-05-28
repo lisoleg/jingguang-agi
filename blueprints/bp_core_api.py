@@ -47,7 +47,7 @@ def chat():
 
         # 使用新的增强器
         try:
-            from taiyi_llm_enhancer import get_enhancer, ReasoningMode
+            from modules.taiyi_llm_enhancer import get_enhancer, ReasoningMode
             
             enhancer = get_enhancer()
             
@@ -103,7 +103,7 @@ def chat():
         
         # 尝试使用LLM增强回复
         try:
-            from llm_enhancer import enhance_reply_with_llm
+            from modules.llm_enhancer import enhance_reply_with_llm
             
             context = {
                 'consciousness_level': result['consciousness'].get('level', 3),
@@ -180,7 +180,7 @@ def chat_v2():
         # 尝试用 LLM 增强回复（不影响脑图数据）
         reply = chat_result.get('reply', '')
         try:
-            from taiyi_llm_enhancer import get_enhancer, ReasoningMode
+            from modules.taiyi_llm_enhancer import get_enhancer, ReasoningMode
             enhancer = get_enhancer()
             llm_response = enhancer.generate(
                 question=message,
@@ -733,7 +733,7 @@ def chat_with_image():
 
         # 使用增强器处理
         try:
-            from taiyi_llm_enhancer import get_enhancer, ReasoningMode
+            from modules.taiyi_llm_enhancer import get_enhancer, ReasoningMode
             
             enhancer = get_enhancer()
             reasoning_mode = ReasoningMode.TAIYI if use_taiyi else ReasoningMode.COT
@@ -901,7 +901,7 @@ def reset():
 def tools_list():
     """列出所有可用工具（前五识接口）"""
     try:
-        from taiyi_tools import get_tool_engine
+        from modules.taiyi_tools import get_tool_engine
         engine = shared_state.get_tool_engine()
         tools = engine.get_tool_definitions()
         return jsonify({
@@ -918,7 +918,7 @@ def tools_list():
 def tools_execute():
     """执行单个工具"""
     try:
-        from taiyi_tools import get_tool_engine
+        from modules.taiyi_tools import get_tool_engine
         engine = shared_state.get_tool_engine()
         
         data = request.get_json()
@@ -947,7 +947,7 @@ def tools_execute():
 def tools_batch():
     """批量执行工具"""
     try:
-        from taiyi_tools import get_tool_engine
+        from modules.taiyi_tools import get_tool_engine
         engine = shared_state.get_tool_engine()
         
         data = request.get_json()
@@ -983,7 +983,7 @@ def tools_batch():
 def tools_audit():
     """获取工具执行审计日志"""
     try:
-        from taiyi_tools import get_tool_engine
+        from modules.taiyi_tools import get_tool_engine
         engine = shared_state.get_tool_engine()
         
         limit = int(request.args.get('limit', 100))
@@ -1003,7 +1003,7 @@ def tools_audit():
 def manas_audit():
     """第七识审计 - 审计输出是否符合Ftel目的"""
     try:
-        from taiyi_manas import get_manas
+        from modules.taiyi_manas import get_manas
         manas = get_manas()
         
         data = request.get_json()
@@ -1033,7 +1033,7 @@ def manas_audit():
 def manas_distinguish():
     """第七识审计 - 自我/非我区分"""
     try:
-        from taiyi_manas import get_manas
+        from modules.taiyi_manas import get_manas
         manas = get_manas()
         
         data = request.get_json()
@@ -1061,7 +1061,7 @@ def manas_distinguish():
 def manas_stats():
     """获取第七识审计统计"""
     try:
-        from taiyi_manas import get_manas
+        from modules.taiyi_manas import get_manas
         manas = get_manas()
         
         stats = manas.get_risk_statistics()
@@ -1081,7 +1081,7 @@ def manas_stats():
 def csc_report():
     """C/SC操作化层 - 获取完整报告"""
     try:
-        from taiyi_csc import get_csc
+        from modules.taiyi_csc import get_csc
         csc = get_csc()
         
         report = csc.get_full_report()
@@ -1096,7 +1096,7 @@ def csc_report():
 def csc_metacognition():
     """C/SC操作化层 - 元认知检查"""
     try:
-        from taiyi_csc import get_csc
+        from modules.taiyi_csc import get_csc
         csc = get_csc()
         
         data = request.get_json()
@@ -1167,7 +1167,7 @@ def cognition_test():
 def csc_purpose_audit():
     """C/SC操作化层 - 目的审计"""
     try:
-        from taiyi_csc import get_csc
+        from modules.taiyi_csc import get_csc
         csc = get_csc()
         
         data = request.get_json()
@@ -1189,7 +1189,7 @@ def csc_purpose_audit():
 def ftel_bind():
     """Ftel目的算子 - 绑定意图"""
     try:
-        from ftel_operator import FtelOperator
+        from modules.ftel_operator import FtelOperator
         data = request.get_json()
         goal = data.get('goal', '')
         
@@ -1221,7 +1221,7 @@ def ftel_bind():
 def benchmark_list():
     """泛化审计测试集 - 列出所有测试用例"""
     try:
-        from taiyi_benchmark import get_benchmark, TestCategory, TestDifficulty
+        from modules.taiyi_benchmark import get_benchmark, TestCategory, TestDifficulty
         benchmark = get_benchmark()
         
         tests = benchmark.get_test_suite()
@@ -1254,8 +1254,8 @@ def benchmark_list():
 def benchmark_run():
     """泛化审计测试集 - 运行测试"""
     try:
-        from taiyi_benchmark import get_benchmark, TestCategory
-        from taiyi_llm_enhancer import get_enhancer
+        from modules.taiyi_benchmark import get_benchmark, TestCategory
+        from modules.taiyi_llm_enhancer import get_enhancer
         
         data = request.get_json() or {}
         categories = data.get('categories', None)
@@ -1272,7 +1272,7 @@ def benchmark_run():
         # 定义执行器
         def executor(question, enable_tool=False):
             enhancer = get_enhancer()
-            from taiyi_llm_enhancer import ReasoningMode
+            from modules.taiyi_llm_enhancer import ReasoningMode
             response = enhancer.generate(
                 question=question,
                 use_taiyi_format=False,
@@ -1321,7 +1321,7 @@ def benchmark_run():
 def entropy_update():
     """低熵适应机制 - 更新熵状态"""
     try:
-        from taiyi_entropy import get_adapter
+        from modules.taiyi_entropy import get_adapter
         adapter = get_adapter()
         
         data = request.get_json()
@@ -1365,7 +1365,7 @@ def entropy_update():
 def entropy_state():
     """低熵适应机制 - 获取当前状态"""
     try:
-        from taiyi_entropy import get_adapter
+        from modules.taiyi_entropy import get_adapter
         adapter = get_adapter()
         
         state = adapter.get_state()
@@ -1380,7 +1380,7 @@ def entropy_state():
 def entropy_description_length():
     """低熵适应机制 - 计算描述长度"""
     try:
-        from taiyi_entropy import get_adapter
+        from modules.taiyi_entropy import get_adapter
         adapter = get_adapter()
         
         data = request.get_json()
@@ -1406,7 +1406,7 @@ def entropy_description_length():
 def rag_status():
     """RAG知识库状态"""
     try:
-        from taiyi_rag import get_rag
+        from modules.taiyi_rag import get_rag
         rag = get_rag()
         return jsonify(rag.status())
     except Exception as e:
@@ -1419,7 +1419,7 @@ def rag_status():
 def rag_search():
     """RAG知识检索"""
     try:
-        from taiyi_rag import get_rag
+        from modules.taiyi_rag import get_rag
         rag = get_rag()
         query = request.args.get('q', '')
         top_k = int(request.args.get('top_k', 3))
@@ -1452,7 +1452,7 @@ def rag_search():
 def rag_add():
     """添加文档到知识库"""
     try:
-        from taiyi_rag import get_rag
+        from modules.taiyi_rag import get_rag
         rag = get_rag()
         data = request.get_json()
         
@@ -1476,7 +1476,7 @@ def rag_add():
 def memory_status():
     """记忆系统状态"""
     try:
-        from taiyi_memory import get_memory
+        from modules.taiyi_memory import get_memory
         memory = get_memory()
         return jsonify(memory.status())
     except Exception as e:
@@ -1489,7 +1489,7 @@ def memory_status():
 def memory_save_conclusion():
     """保存关键结论"""
     try:
-        from taiyi_memory import get_memory
+        from modules.taiyi_memory import get_memory
         memory = get_memory()
         data = request.get_json()
         
@@ -1514,7 +1514,7 @@ def memory_save_conclusion():
 def enhancer_status():
     """LLM增强器状态"""
     try:
-        from taiyi_llm_enhancer import get_enhancer
+        from modules.taiyi_llm_enhancer import get_enhancer
         enhancer = get_enhancer()
         return jsonify(enhancer.get_statistics())
     except Exception as e:
@@ -1527,7 +1527,7 @@ def enhancer_status():
 def llm_status():
     """LLM后端状态 - 返回当前活跃的LLM后端信息"""
     try:
-        from local_llm import get_llm
+        from modules.local_llm import get_llm
         llm = get_llm()
         backends = []
         for b in llm.backends:
@@ -1551,7 +1551,7 @@ def llm_status():
 def ufo2_status():
     """UFO² 具身执行层状态"""
     try:
-        from taiyi_embodiment import get_embodiment
+        from modules.taiyi_embodiment import get_embodiment
         embodiment = get_embodiment()
         status = embodiment.get_status()
         deps = embodiment.get_dependencies_status()
@@ -1570,7 +1570,7 @@ def ufo2_status():
 def ufo2_execute():
     """UFO² 执行桌面任务"""
     try:
-        from taiyi_embodiment import get_embodiment
+        from modules.taiyi_embodiment import get_embodiment
         import asyncio
         
         data = request.get_json()
@@ -1598,7 +1598,7 @@ def ufo2_execute():
 def ufo2_app_control():
     """UFO² 应用控制"""
     try:
-        from taiyi_embodiment import get_embodiment
+        from modules.taiyi_embodiment import get_embodiment
         import asyncio
         
         data = request.get_json()
@@ -1623,7 +1623,7 @@ def ufo2_app_control():
 def ufo2_capture():
     """UFO² 截图"""
     try:
-        from taiyi_embodiment import MCPServer
+        from modules.taiyi_embodiment import MCPServer
         
         target = request.args.get('target', 'desktop')
         
@@ -1646,7 +1646,7 @@ def ufo2_capture():
 def ufo2_ui_tree():
     """UFO² UI 树"""
     try:
-        from taiyi_embodiment import MCPServer
+        from modules.taiyi_embodiment import MCPServer
         
         app = request.args.get('app', '')
         
@@ -1668,7 +1668,7 @@ def ufo2_ui_tree():
 def ufo2_tools():
     """UFO² 工具列表"""
     try:
-        from taiyi_embodiment import get_embodiment
+        from modules.taiyi_embodiment import get_embodiment
         embodiment = get_embodiment()
         tools = embodiment.get_tool_definitions()
         return jsonify({

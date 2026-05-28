@@ -19,7 +19,7 @@ def main():
     
     # 1. 导入Taiyi Oracle
     try:
-        from taiyi_oracle import TaiyiOracle
+        from modules.taiyi_oracle import TaiyiOracle
         print("\n✅ Taiyi Oracle模块加载成功")
     except ImportError as e:
         print(f"\n❌ 导入Taiyi Oracle失败: {e}")

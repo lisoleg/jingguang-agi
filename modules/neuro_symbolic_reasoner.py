@@ -185,7 +185,7 @@ class NeuralReasoner:
     def _ensure_llm(self):
         if not self._llm_initialized:
             try:
-                from local_llm import get_llm
+                from modules.local_llm import get_llm
                 self.llm = get_llm()
                 self._llm_initialized = True
             except Exception as e:

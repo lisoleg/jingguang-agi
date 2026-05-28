@@ -1083,7 +1083,7 @@ class ExpertBridge:
         """延迟加载 expert_registry"""
         if self._registry is None:
             try:
-                from expert_registry import get_registry
+                from modules.expert_registry import get_registry
                 self._registry = get_registry()
             except Exception:
                 pass

@@ -137,7 +137,7 @@ Action: Final Answer(56088)
         """延迟加载LLM后端"""
         if not self._llm_initialized:
             try:
-                from local_llm import get_llm
+                from modules.local_llm import get_llm
                 self.llm = get_llm()
                 self._llm_initialized = True
             except Exception as e:
@@ -147,7 +147,7 @@ Action: Final Answer(56088)
         """延迟加载工具注册表"""
         if self.tool_registry is None:
             try:
-                from taiyi_tools import get_tool_engine
+                from modules.taiyi_tools import get_tool_engine
                 self.tool_engine = get_tool_engine()
                 self.tool_registry = self.tool_engine.registry
             except ImportError:

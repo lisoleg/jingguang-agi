@@ -24,8 +24,8 @@ import time
 import json
 
 # 导入现有模块（假设这些模块已存在）
-# from compound_physics_agi import ThreeHorizonAnalyzer, IntuitionEngine, TaiyiOracle
-# from system2_reasoning import System2Reasoning
+# from modules.compound_physics_agi import ThreeHorizonAnalyzer, IntuitionEngine, TaiyiOracle
+# from modules.system2_reasoning import System2Reasoning
 
 
 class SystemType(Enum):

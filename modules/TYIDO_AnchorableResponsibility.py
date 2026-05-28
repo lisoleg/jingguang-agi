@@ -16,13 +16,13 @@ from enum import IntEnum
 
 # ── 依赖 P1/P2 ────────────────────────────────────────────────────────────────
 try:
-    from TYIDO_SelfConsistency import SelfConsistencyChecker, ConsistencyResult
+    from modules.TYIDO_SelfConsistency import SelfConsistencyChecker, ConsistencyResult
     P1_OK = True
 except ImportError:
     P1_OK = False
 
 try:
-    from TYIDO_ContinuousLearning import StateSnapshot, RollbackManager
+    from modules.TYIDO_ContinuousLearning import StateSnapshot, RollbackManager
     P2_OK = True
 except ImportError:
     P2_OK = False

@@ -20,10 +20,10 @@ from enum import Enum
 import json
 import time
 
-from TemporalDatabase import TemporalDatabaseOntology, TemporalState
-from DSPEmotionLayer import DSPEmotionLayer, DSPEmotionOutput, EmotionType
-from IntelligentBoundaryLayer import IntelligentBoundaryLayer, BoundaryLayerState, FlowState
-from ThreeViewDetector import ThreeViewDetector, ThreeViewsState
+from modules.TemporalDatabase import TemporalDatabaseOntology, TemporalState
+from modules.DSPEmotionLayer import DSPEmotionLayer, DSPEmotionOutput, EmotionType
+from modules.IntelligentBoundaryLayer import IntelligentBoundaryLayer, BoundaryLayerState, FlowState
+from modules.ThreeViewDetector import ThreeViewDetector, ThreeViewsState
 
 
 class NeocortexMode(Enum):

@@ -21,9 +21,9 @@ from dataclasses import dataclass, field
 import json
 
 # 导入三大模块
-from agi_medium_resonance import MediumResonanceModule, MediumResponse
-from agi_nine_hexagrams import NineHexagramsModule, Hexagram, NINE_HEXAGRAMS
-from agi_four_modes import FourModesRecognition, CoherentMode, FOUR_MODES
+from modules.agi_medium_resonance import MediumResonanceModule, MediumResponse
+from modules.agi_nine_hexagrams import NineHexagramsModule, Hexagram, NINE_HEXAGRAMS
+from modules.agi_four_modes import FourModesRecognition, CoherentMode, FOUR_MODES
 
 
 @dataclass

@@ -15,7 +15,7 @@ import math
 import copy
 import numpy as np
 from typing import List, Tuple, Optional, Dict, Any
-from TYIDO_ContinuousLearning import (
+from modules.TYIDO_ContinuousLearning import (
     RollbackManager, ForgettingGuard, LearningRecord, StateSnapshot
 )
 

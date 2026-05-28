@@ -697,7 +697,7 @@ class PTSBasedAGIEvaluator:
         
         # 导入天行力模块
         try:
-            from tianxing_force import TianxingForceSystem, PTSModel
+            from modules.tianxing_force import TianxingForceSystem, PTSModel
             self.TianxingForceSystem = TianxingForceSystem
             self.PTSModel = PTSModel
             self.tianxing_available = True
