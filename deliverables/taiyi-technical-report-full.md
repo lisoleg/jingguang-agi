@@ -2,7 +2,7 @@
 
 > **Taiyi-AGI: Design and Implementation of a Theorem-Driven Artificial General Intelligence System**
 >
-> 版本: v7.31 | 报告日期: 2026-05-28 | 项目路径: `D:/WorkBuddy/2026-05-06-task-1/`
+> 版本: v7.31 | 报告日期: 2026-05-28 | 项目路径: `https://github.com/lisoleg/jingguang-agi`
 
 ---
 

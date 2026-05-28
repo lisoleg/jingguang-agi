@@ -96,6 +96,10 @@ cd C:\Users\1\WorkBuddy\2026-05-06-task-1 && python app.py
 - P1 J(R) 计算：deterministic pipeline必须返回固定canonical_hash
 - EqPropTrainer死锁：`threading.Lock()`不可重入，移除内部方法中的`with self._lock`
 
+## M133+M191 β-Rewire 踩坑
+- **Y-combinator Python严格求值**: `y_kernel(ice_fn, state) = ice_fn(λs.y_kernel(ice_fn,s))(state)` 会RecursionError，因为_correct末尾调self_ref(state)触发无限展开。修复：y_kernel改为单步应用`ice_fn(identity)(state)`，递归由run_cycle外部迭代承担
+- **Laplacian纯Python实现**: 不依赖numpy，用幂迭代+deflation+shift-invert，k=5特征值足够做谱跳变检测
+
 ## TY/IDO 审计基础设施
 - `TYIDO_SelfConsistency.py`: P1 | `TYIDO_ContinuousLearning.py`: P2
 - `TYIDO_LongRangeReasoning.py`: P3 | `TYIDO_AddressableMemory.py`: P4 | `TYIDO_AnchorableResponsibility.py`: P5
