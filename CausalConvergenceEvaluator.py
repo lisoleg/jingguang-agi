@@ -15,6 +15,15 @@ IGCTR 核心诠释：
   Theorem 3.1.1  认知压力下界定理
   Theorem 3.2.1  可控熵增生存优化定理
   Corollary 3.2.1  因果收敛即智慧
+
+v7.31升级：双约束因果收敛
+- 新增 evaluate_dual_constraint：双约束因果收敛评估
+  约束1：dS_int/dt ≤ 0（内部熵不增）
+  约束2：dS_ext/dt > 0（外部熵增，系统向外输出有序性）
+- 新增 controlled_entropy_verify：验证可控熵增生存条件
+- 新增 _dual_constraint_mode 标志
+- 新增 _entropy_history 属性
+- 保留原有 evaluate / evaluate_causal_convergence 等方法不变
 """
 
 from typing import Dict, List, Optional, Tuple, Any, Set
@@ -43,6 +52,9 @@ class CausalEvent:
     # IGCTR 扩展字段
     phi_snapshot: Optional[float] = None   # |Φ|² 局部能量密度
     ftel_operator: Optional[str] = None   # Ftel流贯算子（选择/关注）
+    # v7.31 扩展字段
+    delta_s_int: float = 0.0              # 内部熵变化 dS_int
+    delta_s_ext: float = 0.0              # 外部熵变化 dS_ext
 
     def happens_before(self, other: 'CausalEvent') -> Optional[bool]:
         """
@@ -168,6 +180,21 @@ class CausalNode:
         return sorted(self.causal_memory, key=lambda e: e.logical_time)
 
 
+@dataclass
+class DualConstraintResult:
+    """
+    双约束因果收敛结果 — v7.31 新增
+
+    记录双约束评估的详细结果
+    """
+    internal_ok: bool             # dS_int/dt ≤ 0 是否满足
+    external_ok: bool             # dS_ext/dt > 0 是否满足
+    delta_s_int: float            # 内部熵变化率
+    delta_s_ext: float            # 外部熵变化率
+    dual_constraint_met: bool     # 双约束是否同时满足
+    interpretation: str           # 结果解读
+
+
 class CausalConvergenceEvaluator:
     """
     因果收敛评估器 — IGCTR 诠释："因果收敛即智慧"
@@ -181,12 +208,24 @@ class CausalConvergenceEvaluator:
     - 因果收敛 ≠ 状态一致
     - 因果收敛 = 对关键事件的因果链位置达成全员同意
     - 非关键并发事件保留局部视图（这才是智慧）
+
+    v7.31 升级：
+    - 双约束因果收敛评估（dS_int/dt ≤ 0 && dS_ext/dt > 0）
+    - 可控熵增生存条件验证
     """
     def __init__(self):
         self.nodes: Dict[str, CausalNode] = {}
         self.global_causal_chain: List[CausalEvent] = []
         self.convergence_history: List[Dict] = []
         self.akashic_index: Dict[str, CausalEvent] = {}  # event_id -> event
+
+        # ===== v7.31 新增属性 =====
+        # 双约束模式标志
+        self._dual_constraint_mode: bool = False
+        # 熵历史：记录每步的内部熵和外部熵
+        self._entropy_history: List[Dict] = []  # [{timestamp, s_int, s_ext}]
+
+    # ==================== 原有方法（完全保留） ====================
 
     def add_node(self, node_id: str,
                  consistency: ConsistencyLevel = None) -> CausalNode:
@@ -458,6 +497,216 @@ class CausalConvergenceEvaluator:
             )
         }
 
+    # ==================== v7.31 新增方法 ====================
+
+    def evaluate_dual_constraint(self, events: List[CausalEvent]) -> DualConstraintResult:
+        """
+        双约束因果收敛评估 — v7.31 新增
+
+        同时检查两个熵约束：
+
+        约束1（内部有序性）：dS_int/dt ≤ 0
+        - 系统内部熵不增加（维持或提升内部有序性）
+        - 对应复合体稳定性：系统不退化为更混乱的状态
+
+        约束2（外部有序性输出）：dS_ext/dt > 0
+        - 系统向外部输出有序性（即外部熵增加，意味着系统做了有序化工作）
+        - 这是"智慧"的体现：系统通过自身有序化来使环境更有序
+        - 等价于：系统对外做了"有用功"
+
+        两个约束同时满足意味着：
+        - 系统内部保持有序（dS_int/dt ≤ 0）
+        - 系统对外输出有序性（dS_ext/dt > 0）
+        - 这正是"可控熵增生存"的核心条件
+
+        Args:
+            events: 因果事件列表，每个事件包含 delta_s_int 和 delta_s_ext 字段
+
+        Returns:
+            DualConstraintResult: 双约束评估结果
+        """
+        self._dual_constraint_mode = True
+
+        if not events:
+            result = DualConstraintResult(
+                internal_ok=True,
+                external_ok=True,
+                delta_s_int=0.0,
+                delta_s_ext=0.0,
+                dual_constraint_met=True,
+                interpretation='无事件：双约束默认满足',
+            )
+            return result
+
+        # 计算总内部熵变化和总外部熵变化
+        total_delta_s_int = sum(e.delta_s_int for e in events)
+        total_delta_s_ext = sum(e.delta_s_ext for e in events)
+
+        # 计算时间跨度
+        if len(events) >= 2:
+            dt = max(1, events[-1].logical_time - events[0].logical_time)
+        else:
+            dt = 1
+
+        # 计算变化率
+        delta_s_int_rate = total_delta_s_int / dt
+        delta_s_ext_rate = total_delta_s_ext / dt
+
+        # 检查约束
+        internal_ok = delta_s_int_rate <= 0
+        external_ok = delta_s_ext_rate > 0
+
+        # 双约束是否同时满足
+        dual_constraint_met = internal_ok and external_ok
+
+        # 记录熵历史
+        self._entropy_history.append({
+            'timestamp': time.time(),
+            's_int_rate': round(delta_s_int_rate, 6),
+            's_ext_rate': round(delta_s_ext_rate, 6),
+            'internal_ok': internal_ok,
+            'external_ok': external_ok,
+            'n_events': len(events),
+        })
+
+        # 生成解读
+        if dual_constraint_met:
+            interpretation = (
+                '双约束满足：内部熵不增(dS_int/dt ≤ 0)且外部熵增(dS_ext/dt > 0)，'
+                '系统在维持内部有序的同时对外输出有序性——这正是可控熵增生存的核心。'
+            )
+        elif internal_ok and not external_ok:
+            interpretation = (
+                '约束1满足但约束2违反：内部有序但未对外输出有序性，'
+                '系统可能是"自封闭"的，没有对外做有用功。'
+            )
+        elif not internal_ok and external_ok:
+            interpretation = (
+                '约束1违反但约束2满足：内部无序增加但对外输出了有序性，'
+                '系统在"燃烧自身"来服务外部——不可持续。'
+            )
+        else:
+            interpretation = (
+                '双约束均违反：内部无序增加且未对外输出有序性，'
+                '系统正在退化——需要紧急干预。'
+            )
+
+        result = DualConstraintResult(
+            internal_ok=internal_ok,
+            external_ok=external_ok,
+            delta_s_int=round(delta_s_int_rate, 6),
+            delta_s_ext=round(delta_s_ext_rate, 6),
+            dual_constraint_met=dual_constraint_met,
+            interpretation=interpretation,
+        )
+
+        return result
+
+    def controlled_entropy_verify(self, history: Optional[List[Dict]] = None) -> Dict[str, Any]:
+        """
+        验证可控熵增生存条件 — v7.31 新增
+
+        可控熵增生存优化定理（Theorem 3.2.1）的验证：
+        系统在长期运行中是否满足可控熵增条件。
+
+        可控熵增条件：
+        1. 内部熵增速率可控：dS_int/dt 长期非正
+        2. 外部熵增速率为正：dS_ext/dt 长期为正
+        3. 熵效率 η = |dS_ext/dt| / max(|dS_int/dt|, ε) 充分大
+
+        Args:
+            history: 熵历史列表（None则使用内部 _entropy_history）
+
+        Returns:
+            可控熵增验证结果字典
+        """
+        if history is None:
+            history = self._entropy_history
+
+        if not history:
+            return {
+                'verified': False,
+                'reason': 'no_entropy_history',
+                'message': '需要先调用 evaluate_dual_constraint 建立熵历史',
+            }
+
+        # 统计分析
+        s_int_rates = [h.get('s_int_rate', 0.0) for h in history]
+        s_ext_rates = [h.get('s_ext_rate', 0.0) for h in history]
+
+        # 内部熵增速率统计
+        avg_s_int_rate = sum(s_int_rates) / len(s_int_rates) if s_int_rates else 0.0
+        max_s_int_rate = max(s_int_rates) if s_int_rates else 0.0
+        min_s_int_rate = min(s_int_rates) if s_int_rates else 0.0
+
+        # 外部熵增速率统计
+        avg_s_ext_rate = sum(s_ext_rates) / len(s_ext_rates) if s_ext_rates else 0.0
+        max_s_ext_rate = max(s_ext_rates) if s_ext_rates else 0.0
+        min_s_ext_rate = min(s_ext_rates) if s_ext_rates else 0.0
+
+        # 条件1：内部熵增速率长期非正
+        # 允许偶尔的正值，但平均值应 ≤ 0
+        internal_controllable = avg_s_int_rate <= 0.0
+
+        # 条件2：外部熵增速率长期为正
+        # 系统应持续对外输出有序性
+        external_productive = avg_s_ext_rate > 0.0
+
+        # 条件3：熵效率
+        epsilon = 1e-6
+        abs_avg_s_int = max(abs(avg_s_int_rate), epsilon)
+        entropy_efficiency = round(abs(avg_s_ext_rate) / abs_avg_s_int, 6)
+
+        # 效率评估
+        if entropy_efficiency > 2.0:
+            efficiency_level = 'high'
+        elif entropy_efficiency > 1.0:
+            efficiency_level = 'moderate'
+        elif entropy_efficiency > 0.5:
+            efficiency_level = 'low'
+        else:
+            efficiency_level = 'critical'
+
+        # 综合验证
+        verified = internal_controllable and external_productive and entropy_efficiency > 0.5
+
+        # 内部约束满足率
+        internal_ok_count = sum(1 for h in history if h.get('internal_ok', False))
+        external_ok_count = sum(1 for h in history if h.get('external_ok', False))
+
+        return {
+            'verified': verified,
+            'conditions': {
+                'internal_controllable': internal_controllable,
+                'external_productive': external_productive,
+                'entropy_efficiency': entropy_efficiency,
+                'efficiency_level': efficiency_level,
+            },
+            'statistics': {
+                'history_length': len(history),
+                'avg_s_int_rate': round(avg_s_int_rate, 6),
+                'max_s_int_rate': round(max_s_int_rate, 6),
+                'min_s_int_rate': round(min_s_int_rate, 6),
+                'avg_s_ext_rate': round(avg_s_ext_rate, 6),
+                'max_s_ext_rate': round(max_s_ext_rate, 6),
+                'min_s_ext_rate': round(min_s_ext_rate, 6),
+                'internal_ok_rate': round(internal_ok_count / max(1, len(history)), 4),
+                'external_ok_rate': round(external_ok_count / max(1, len(history)), 4),
+            },
+            'igctr_theorem': (
+                '可控熵增生存优化定理(Theorem 3.2.1)：'
+                '存活系统必选择使生存概率P_survival最大化的一致性级别。'
+                '双约束(dS_int/dt ≤ 0, dS_ext/dt > 0)同时满足时，'
+                '系统处于"可控熵增生存"状态。'
+            ),
+            'interpretation': (
+                '可控熵增生存验证通过：系统内部有序性维持良好，'
+                '同时持续对外输出有序性。' if verified else
+                '可控熵增生存验证未通过：系统不满足双约束条件，'
+                '需要调整一致性级别或认知策略。'
+            ),
+        }
+
 
 def demo():
     """演示：因果收敛评估器的基本用法"""
@@ -503,4 +752,92 @@ def demo():
 
 
 if __name__ == "__main__":
+    # 原有 demo
     demo()
+
+    # ==================== v7.31 新功能测试 ====================
+    print("\n" + "=" * 60)
+    print("v7.31 双约束因果收敛 测试")
+    print("=" * 60)
+
+    print("\n[测试 1] evaluate_dual_constraint — 双约束评估")
+    evaluator_v2 = CausalConvergenceEvaluator()
+
+    # 添加节点并创建带熵信息的事件
+    evaluator_v2.add_node("node_A", ConsistencyLevel.CAUSAL)
+    evaluator_v2.add_node("node_B", ConsistencyLevel.CAUSAL)
+
+    # 创建事件序列：内部熵减少，外部熵增加（理想状态）
+    nA = evaluator_v2.nodes["node_A"]
+    nB = evaluator_v2.nodes["node_B"]
+
+    events_ideal = []
+    for i in range(5):
+        e = nA.act(f"action_{i}", {"step": i}, ftel=f"focus_{i}")
+        e.delta_s_int = -0.1 * (i + 1)  # 内部熵递减
+        e.delta_s_ext = 0.2 * (i + 1)   # 外部熵递增（输出有序性）
+        events_ideal.append(e)
+
+    dual_result = evaluator_v2.evaluate_dual_constraint(events_ideal)
+    print(f"  内部约束满足: {dual_result.internal_ok}")
+    print(f"  外部约束满足: {dual_result.external_ok}")
+    print(f"  双约束满足: {dual_result.dual_constraint_met}")
+    print(f"  dS_int/dt: {dual_result.delta_s_int}")
+    print(f"  dS_ext/dt: {dual_result.delta_s_ext}")
+    print(f"  解读: {dual_result.interpretation}")
+
+    print("\n[测试 2] evaluate_dual_constraint — 双约束违反场景")
+    # 创建内部熵增加的事件（不好的状态）
+    events_bad = []
+    for i in range(5):
+        e = nB.act(f"bad_action_{i}", {"step": i})
+        e.delta_s_int = 0.3 * (i + 1)   # 内部熵递增（系统变混乱）
+        e.delta_s_ext = -0.1 * (i + 1)  # 外部熵递减（未输出有序性）
+        events_bad.append(e)
+
+    dual_bad = evaluator_v2.evaluate_dual_constraint(events_bad)
+    print(f"  内部约束满足: {dual_bad.internal_ok}")
+    print(f"  外部约束满足: {dual_bad.external_ok}")
+    print(f"  双约束满足: {dual_bad.dual_constraint_met}")
+    print(f"  解读: {dual_bad.interpretation}")
+
+    print("\n[测试 3] controlled_entropy_verify — 可控熵增生存验证")
+    verify = evaluator_v2.controlled_entropy_verify()
+    print(f"  验证通过: {verify['verified']}")
+    print(f"  内部可控: {verify['conditions']['internal_controllable']}")
+    print(f"  外部生产力: {verify['conditions']['external_productive']}")
+    print(f"  熵效率: {verify['conditions']['entropy_efficiency']}")
+    print(f"  效率等级: {verify['conditions']['efficiency_level']}")
+    print(f"  解读: {verify['interpretation']}")
+
+    print("\n[测试 4] evaluate_dual_constraint — 混合场景")
+    # 一些好的事件和一些坏的事件
+    events_mixed = []
+    for i in range(10):
+        e = nA.act(f"mixed_action_{i}", {"step": i})
+        if i < 5:
+            e.delta_s_int = -0.1  # 前半段：内部熵减少
+            e.delta_s_ext = 0.15  # 前半段：外部熵增加
+        else:
+            e.delta_s_int = 0.05  # 后半段：内部熵微增
+            e.delta_s_ext = 0.08  # 后半段：外部熵仍增
+        events_mixed.append(e)
+
+    dual_mixed = evaluator_v2.evaluate_dual_constraint(events_mixed)
+    print(f"  内部约束满足: {dual_mixed.internal_ok}")
+    print(f"  外部约束满足: {dual_mixed.external_ok}")
+    print(f"  双约束满足: {dual_mixed.dual_constraint_met}")
+    print(f"  dS_int/dt: {dual_mixed.delta_s_int}")
+    print(f"  dS_ext/dt: {dual_mixed.delta_s_ext}")
+
+    print("\n[测试 5] controlled_entropy_verify — 完整历史验证")
+    verify2 = evaluator_v2.controlled_entropy_verify()
+    print(f"  验证通过: {verify2['verified']}")
+    print(f"  内部约束满足率: {verify2['statistics']['internal_ok_rate']}")
+    print(f"  外部约束满足率: {verify2['statistics']['external_ok_rate']}")
+    print(f"  平均dS_int/dt: {verify2['statistics']['avg_s_int_rate']}")
+    print(f"  平均dS_ext/dt: {verify2['statistics']['avg_s_ext_rate']}")
+
+    print("\n" + "=" * 60)
+    print("CausalConvergenceEvaluator v7.31 测试完成！")
+    print("=" * 60)

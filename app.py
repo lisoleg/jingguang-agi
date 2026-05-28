@@ -8522,7 +8522,7 @@ def v722_eqprop_state():
         state['integration'] = report.to_dict()
         state['l2_shell'] = l2.to_dict()
         state['module'] = 'M180_EqPropFHN'
-        state['version'] = 'v7.22'
+        state['version'] = 'v7.31'
         return jsonify(_to_native(state))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -13697,7 +13697,280 @@ if __name__ == '__main__':
     print("   - /api/enhancer/status (增强器统计)")
     print("=" * 60)
 
-    # 预热 AGI 系统
+# ============================================================
+# v7.31 True AGI 升级 — M197-M206 + P13-P17 MVE
+# ============================================================
+
+# --- M197 ToMEngine 心理理论引擎 ---
+@app.route('/api/v731/tom/model_other', methods=['POST'])
+def api_v731_tom_model_other():
+    """e_ToM: 模拟他人心智"""
+    try:
+        from M197_ToMEngine import ToMEngine
+        engine = ToMEngine()
+        data = request.get_json(force=True) or {}
+        result = engine.model_other(
+            target_id=data.get('target_id', ''),
+            context=data.get('context', {}),
+        )
+        return jsonify({'result': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- M198 SelfModelCore 自我模型核心 ---
+@app.route('/api/v731/selfmodel/update', methods=['POST'])
+def api_v731_selfmodel_update():
+    """内生自我连续性更新"""
+    try:
+        from M198_SelfModelCore import SelfModelCore
+        engine = SelfModelCore()
+        data = request.get_json(force=True) or {}
+        result = engine.update_self(data.get('self_data', {}))
+        return jsonify({'result': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- M199 SocialRelTopology 社会关系拓扑 ---
+@app.route('/api/v731/social/add_relation', methods=['POST'])
+def api_v731_social_add_relation():
+    """社会关系拓扑不变性"""
+    try:
+        from M199_SocialRelTopology import SocialRelTopology
+        engine = SocialRelTopology()
+        data = request.get_json(force=True) or {}
+        result = engine.add_relation(
+            source=data.get('source', ''),
+            target=data.get('target', ''),
+            relation_type=data.get('relation_type', ''),
+        )
+        return jsonify({'result': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- M200 CognitiveFlexibilityEngine 认知灵活性引擎 ---
+@app.route('/api/v731/flexibility/switch_task', methods=['POST'])
+def api_v731_flexibility_switch():
+    """认知灵活性任务切换"""
+    try:
+        from M200_CognitiveFlexibilityEngine import CognitiveFlexibilityEngine
+        engine = CognitiveFlexibilityEngine()
+        data = request.get_json(force=True) or {}
+        result = engine.switch_task(
+            from_task=data.get('from_task', ''),
+            to_task=data.get('to_task', ''),
+        )
+        return jsonify({'result': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- M201 EMLOperatorCore EML相位灵活性 ---
+@app.route('/api/v731/eml/flexible_theta', methods=['POST'])
+def api_v731_eml_flexible_theta():
+    """EML相位灵活性设置"""
+    try:
+        from M201_EMLOperatorCore import EMLOperatorCore
+        engine = EMLOperatorCore()
+        data = request.get_json(force=True) or {}
+        result = engine.set_flexible_theta(data.get('theta', 0.5))
+        return jsonify({'result': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- M202 AutismSpectrumDetector 认知谱系检测器 ---
+@app.route('/api/v731/autism/compute_i_asd', methods=['POST'])
+def api_v731_autism_i_asd():
+    """I_ASD指数计算"""
+    try:
+        from M202_AutismSpectrumDetector import AutismSpectrumDetector
+        detector = AutismSpectrumDetector()
+        data = request.get_json(force=True) or {}
+        result = detector.compute_i_asd(data.get('behavioral_data'))
+        return jsonify({'result': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v731/autism/tcci', methods=['POST'])
+def api_v731_autism_tcci():
+    """TCCI-华山评估"""
+    try:
+        from M202_AutismSpectrumDetector import AutismSpectrumDetector
+        detector = AutismSpectrumDetector()
+        data = request.get_json(force=True) or {}
+        result = detector.tcci_evaluation(data.get('cognitive_data'))
+        return jsonify({'result': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- M203 CRDReflectorEngine 双轨CRD反射引擎 ---
+@app.route('/api/v731/crd/step', methods=['POST'])
+def api_v731_crd_step():
+    """双轨CRD推进"""
+    try:
+        from M203_CRDReflectorEngine import CRDReflectorEngine
+        engine = CRDReflectorEngine()
+        data = request.get_json(force=True) or {}
+        h_result = engine.step_human_track(
+            human_action=data.get('human_action', ''),
+            env_event=data.get('env_event', ''),
+        )
+        a_result = engine.step_agent_track(
+            agent_action=data.get('agent_action', ''),
+            env_event=data.get('env_event', ''),
+        )
+        convergence = engine.compute_dual_convergence()
+        return jsonify({'human_track': h_result, 'agent_track': a_result, 'convergence': convergence})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- M204 AGIMonitorOperator AGI监控算子 ---
+@app.route('/api/v731/monitor/pipeline', methods=['POST'])
+def api_v731_monitor_pipeline():
+    """AGI Monitor四层管道"""
+    try:
+        from M204_AGIMonitorOperator import AGIMonitorOperator
+        engine = AGIMonitorOperator()
+        data = request.get_json(force=True) or {}
+        s = engine.sensorium_process(data.get('raw_input', ''))
+        m = engine.monitor_check(s)
+        r = engine.reflector_self_reference(data.get('query', ''), max_depth=data.get('max_depth', 5))
+        out = engine.renderer_output(r)
+        return jsonify({'sensorium': s, 'monitor': m, 'reflector': r, 'renderer': out})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- M205 TrustCalibrationEngine 信任校准引擎 ---
+@app.route('/api/v731/trust/calibrate', methods=['POST'])
+def api_v731_trust_calibrate():
+    """信任校准"""
+    try:
+        from M205_TrustCalibrationEngine import TrustCalibrationEngine
+        engine = TrustCalibrationEngine()
+        data = request.get_json(force=True) or {}
+        result = engine.calibrate_trust(
+            human_input=data.get('human_input', ''),
+            agent_response=data.get('agent_response', ''),
+        )
+        return jsonify({'result': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- M206 ControlledEntropyEngine 可控熵增引擎 ---
+@app.route('/api/v731/entropy/verify', methods=['POST'])
+def api_v731_entropy_verify():
+    """可控熵增验证"""
+    try:
+        from M206_ControlledEntropyEngine import ControlledEntropyEngine
+        engine = ControlledEntropyEngine()
+        result = engine.verify_controlled_entropy()
+        return jsonify({'result': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- v7.31 MVE Experiments (P13-P17) ---
+@app.route('/api/v731/mve/run_all', methods=['GET'])
+def api_v731_mve_run_all():
+    """执行全部5个v7.31 MVE实验"""
+    try:
+        from TYIDO_MVE_v731_Experiments import run_all_mve_v731
+        result = run_all_mve_v731()
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v731/mve/<experiment_id>', methods=['GET'])
+def api_v731_mve_single(experiment_id):
+    """执行单个v7.31 MVE实验"""
+    try:
+        from TYIDO_MVE_v731_Experiments import (
+            run_p13_tcci, run_p14_iasd_spectrum,
+            run_p15_rlhf_topology_fidelity, run_p16_dual_track_crd,
+            run_p17_controlled_entropy,
+        )
+        runners = {
+            'P13': run_p13_tcci,
+            'P14': run_p14_iasd_spectrum,
+            'P15': run_p15_rlhf_topology_fidelity,
+            'P16': run_p16_dual_track_crd,
+            'P17': run_p17_controlled_entropy,
+        }
+        runner = runners.get(experiment_id.upper())
+        if not runner:
+            return jsonify({'error': f'Unknown experiment: {experiment_id}'}), 404
+        result = runner()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- v7.31 Theorem Verification ---
+@app.route('/api/v731/theorems/verify_all', methods=['GET'])
+def api_v731_theorems_verify_all():
+    """验证全部v7.31新增定理 (T227-T236)"""
+    try:
+        results = {}
+        from M197_ToMEngine import ToMEngine
+        from M198_SelfModelCore import SelfModelCore
+        from M199_SocialRelTopology import SocialRelTopology
+        from M200_CognitiveFlexibilityEngine import CognitiveFlexibilityEngine
+        from M201_EMLOperatorCore import EMLOperatorCore
+        from M202_AutismSpectrumDetector import AutismSpectrumDetector
+        from M203_CRDReflectorEngine import CRDReflectorEngine
+        from M204_AGIMonitorOperator import AGIMonitorOperator
+        from M205_TrustCalibrationEngine import TrustCalibrationEngine
+        from M206_ControlledEntropyEngine import ControlledEntropyEngine
+
+        try:
+            r = ToMEngine().verify_theorem_t227()
+            results['T227'] = r
+        except: results['T227'] = {'error': 'verification failed'}
+        try:
+            r = SelfModelCore().verify_theorem_t228()
+            results['T228'] = r
+        except: results['T228'] = {'error': 'verification failed'}
+        try:
+            r = SocialRelTopology().verify_theorem_t229()
+            results['T229'] = r
+        except: results['T229'] = {'error': 'verification failed'}
+        try:
+            r = CognitiveFlexibilityEngine().verify_theorem_t230()
+            results['T230'] = r
+        except: results['T230'] = {'error': 'verification failed'}
+        try:
+            r = EMLOperatorCore().verify_theorem_t231()
+            results['T231'] = r
+        except: results['T231'] = {'error': 'verification failed'}
+        try:
+            r = AutismSpectrumDetector().verify_theorem_t232()
+            results['T232'] = r
+        except: results['T232'] = {'error': 'verification failed'}
+        try:
+            r = CRDReflectorEngine().verify_theorem_t233()
+            results['T233'] = r
+        except: results['T233'] = {'error': 'verification failed'}
+        try:
+            r = AGIMonitorOperator().verify_theorem_t234()
+            results['T234'] = r
+        except: results['T234'] = {'error': 'verification failed'}
+        try:
+            r = TrustCalibrationEngine().verify_theorem_t235()
+            results['T235'] = r
+        except: results['T235'] = {'error': 'verification failed'}
+        try:
+            r = ControlledEntropyEngine().verify_theorem_t236()
+            results['T236'] = r
+        except: results['T236'] = {'error': 'verification failed'}
+
+        return jsonify({
+            'version': 'v7.31',
+            'total_theorems': 10,
+            'results': results,
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
     try:
         get_agi_system()
     except Exception as e:

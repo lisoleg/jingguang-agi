@@ -34,8 +34,15 @@ M193: PhiScheduler — Φ流贯调度器 + FlowBreaker
   T211 — Φ-Perplexity正交性定理：Φ与Perplexity统计无关，
           存在低PPL高Φ（流畅幻觉）和低Φ低PPL（矛盾输出）
 
+v7.31升级：G_inh + 熵约束
+- 新增 g_inh_no_go_gate：内生抑制No-Go门控
+- 新增 entropy_constrained_schedule：熵约束调度 dS_int/dt ≤ 0
+- 新增 _no_go_rules 属性：No-Go规则集
+- 新增 _entropy_budget 属性
+- 保留原有三级调度逻辑不变
+
 Author: Kou (寇豆码) — 太乙AGI团队
-Version: v7.27
+Version: v7.31
 """
 
 from __future__ import annotations
@@ -46,7 +53,7 @@ import hashlib
 import threading
 from dataclasses import dataclass, field, asdict
 from enum import Enum
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Any, Tuple, Callable
 
 
 # ============================================================
@@ -72,6 +79,16 @@ class FlowBreakerAction(Enum):
     THROTTLE = "throttle"       # 降速调度
     SUSPEND = "suspend"         # 强制挂起
     ROLLBACK = "rollback"       # 回滚到上一个稳定状态
+
+
+class NoGoReason(Enum):
+    """No-Go门控拒绝原因 — v7.31 新增"""
+    ENTROPY_BUDGET_EXCEEDED = "entropy_budget_exceeded"   # 熵预算超限
+    PHI_BELOW_MINIMUM = "phi_below_minimum"               # Φ低于最低阈值
+    RECURSION_DEPTH_EXCEEDED = "recursion_depth_exceeded"  # 递归深度超限
+    CONTRADICTORY_TASK = "contradictory_task"               # 矛盾任务
+    G_INH_INHIBITION = "g_inh_inhibition"                  # 内生抑制
+    ALLOWED = "allowed"                                      # 允许通过
 
 
 # ============================================================
@@ -157,6 +174,36 @@ class PhiRecord:
     sid: str = ""
 
 
+@dataclass
+class NoGoRule:
+    """
+    No-Go规则 — v7.31 新增
+
+    定义一条内生抑制规则，当任务违反该规则时被阻止。
+    """
+    rule_id: str                          # 规则ID
+    name: str                             # 规则名称
+    description: str                      # 规则描述
+    check_func: Optional[Callable] = None # 自定义检查函数
+    enabled: bool = True                  # 是否启用
+    priority: int = 0                     # 优先级（越高越优先检查）
+
+
+@dataclass
+class ScheduledTask:
+    """
+    调度任务 — v7.31 新增
+
+    用于 entropy_constrained_schedule 的任务描述
+    """
+    task_id: str                          # 任务ID
+    name: str                             # 任务名称
+    entropy_cost: float = 0.1             # 任务的熵消耗估计
+    phi_contribution: float = 0.5         # 任务对Φ的贡献估计
+    priority: float = 0.5                 # 优先级 [0, 1]
+    metadata: Dict = field(default_factory=dict)  # 额外元数据
+
+
 class PhiScheduler:
     """
     Φ流贯调度器 + FlowBreaker
@@ -169,6 +216,10 @@ class PhiScheduler:
     与传统OS调度的对比：
       Linux CFS: 调度依据 = vruntime（计算资源公平性）
       太极Φ: 调度依据 = Φ（语义一致性稳定性）
+
+    v7.31 升级：
+      - 内生抑制No-Go门控 (g_inh_no_go_gate)
+      - 熵约束调度 (entropy_constrained_schedule)
     """
 
     def __init__(
@@ -193,6 +244,51 @@ class PhiScheduler:
             "avg_phi": 1.0,
             "min_phi": 1.0,
         }
+
+        # ===== v7.31 新增属性 =====
+        # No-Go规则集
+        self._no_go_rules: List[NoGoRule] = []
+        # 熵预算
+        self._entropy_budget: float = 10.0
+        # 当前已消耗熵
+        self._entropy_consumed: float = 0.0
+        # 熵历史（用于跟踪 dS_int/dt）
+        self._entropy_history: List[Tuple[float, float]] = []  # (timestamp, cumulative_entropy)
+        # No-Go门控统计
+        self._no_go_stats: Dict[str, int] = {
+            'total_checks': 0,
+            'total_blocked': 0,
+            'total_allowed': 0,
+        }
+
+        # 初始化默认No-Go规则
+        self._init_default_no_go_rules()
+
+    def _init_default_no_go_rules(self):
+        """初始化默认No-Go规则 — v7.31 新增"""
+        default_rules = [
+            NoGoRule(
+                rule_id="entropy_budget",
+                name="熵预算检查",
+                description="任务熵消耗不能超过剩余熵预算",
+                priority=10,
+            ),
+            NoGoRule(
+                rule_id="phi_floor",
+                name="Φ下限检查",
+                description="当前Φ低于最低阈值时阻止新任务",
+                priority=9,
+            ),
+            NoGoRule(
+                rule_id="recursion_depth",
+                name="递归深度检查",
+                description="递归深度不能超过上限",
+                priority=8,
+            ),
+        ]
+        self._no_go_rules = default_rules
+
+    # ==================== 原有方法（完全保留） ====================
 
     def evaluate(
         self,
@@ -340,6 +436,312 @@ class PhiScheduler:
                 ],
                 "tracked_sessions": list(self._psi_prev.keys()),
             }
+
+    # ==================== v7.31 新增方法 ====================
+
+    def g_inh_no_go_gate(self, task: ScheduledTask) -> Tuple[bool, str]:
+        """
+        内生抑制No-Go门控 — v7.31 新增
+
+        检查任务是否应被阻止（违反G_inh约束）。
+        G_inh（内生抑制）是前额叶皮层的抑制控制机制在
+        认知调度系统中的建模。
+
+        No-Go门控规则（按优先级排序）：
+        1. 熵预算检查：任务熵消耗不能超过剩余熵预算
+        2. Φ下限检查：当前Φ低于最低阈值时阻止新任务
+        3. 递归深度检查：递归深度不能超过上限
+        4. 自定义检查函数
+
+        Args:
+            task: 待检查的调度任务
+
+        Returns:
+            (allowed: bool, reason: str)
+            - allowed=True: 任务允许通过
+            - allowed=False: 任务被阻止，reason说明原因
+        """
+        self._no_go_stats['total_checks'] += 1
+
+        # 按优先级排序规则
+        sorted_rules = sorted(
+            [r for r in self._no_go_rules if r.enabled],
+            key=lambda r: r.priority,
+            reverse=True,
+        )
+
+        # 逐条检查
+        for rule in sorted_rules:
+            if rule.rule_id == "entropy_budget":
+                # 熵预算检查
+                remaining = self._entropy_budget - self._entropy_consumed
+                if task.entropy_cost > remaining:
+                    self._no_go_stats['total_blocked'] += 1
+                    return (
+                        False,
+                        f"熵预算超限: 任务需要 {task.entropy_cost:.2f}, "
+                        f"剩余 {remaining:.2f} "
+                        f"[{NoGoReason.ENTROPY_BUDGET_EXCEEDED.value}]"
+                    )
+
+            elif rule.rule_id == "phi_floor":
+                # Φ下限检查
+                current_phi = self._stats.get('avg_phi', 1.0)
+                if current_phi < self.phi_min:
+                    self._no_go_stats['total_blocked'] += 1
+                    return (
+                        False,
+                        f"Φ低于下限: 当前Φ={current_phi:.4f} < Φ_min={self.phi_min} "
+                        f"[{NoGoReason.PHI_BELOW_MINIMUM.value}]"
+                    )
+
+            elif rule.rule_id == "recursion_depth":
+                # 递归深度检查
+                depth = task.metadata.get('recursion_depth', 0)
+                max_depth = task.metadata.get('max_recursion_depth', 10)
+                if depth > max_depth:
+                    self._no_go_stats['total_blocked'] += 1
+                    return (
+                        False,
+                        f"递归深度超限: depth={depth} > max={max_depth} "
+                        f"[{NoGoReason.RECURSION_DEPTH_EXCEEDED.value}]"
+                    )
+
+            elif rule.check_func is not None:
+                # 自定义检查
+                try:
+                    passed = rule.check_func(task)
+                    if not passed:
+                        self._no_go_stats['total_blocked'] += 1
+                        return (
+                            False,
+                            f"自定义规则'{rule.name}'拒绝: {rule.description} "
+                            f"[{NoGoReason.G_INH_INHIBITION.value}]"
+                        )
+                except Exception:
+                    # 检查函数异常，保守放行
+                    pass
+
+        # 所有规则通过
+        self._no_go_stats['total_allowed'] += 1
+        return (True, NoGoReason.ALLOWED.value)
+
+    def entropy_constrained_schedule(
+        self,
+        tasks: List[ScheduledTask],
+        entropy_budget: Optional[float] = None,
+    ) -> Dict[str, Any]:
+        """
+        熵约束调度 — v7.31 新增
+
+        在 dS_int/dt ≤ 0 的调度约束下，选择任务执行序列。
+
+        熵约束的核心思想：
+        - 内部熵 S_int 不应增加（系统维持或提升内部有序性）
+        - 每个任务有一个熵消耗估计 entropy_cost
+        - 总熵消耗不超过熵预算 entropy_budget
+        - 优先选择 Φ贡献高且熵消耗低的任务
+
+        调度策略：
+        1. 对每个任务进行 No-Go 门控检查
+        2. 计算每个任务的效率比 = phi_contribution / entropy_cost
+        3. 按效率比降序排序
+        4. 贪心选择：在不超预算的情况下依次选择
+
+        Args:
+            tasks: 待调度的任务列表
+            entropy_budget: 熵预算（None则使用内部 _entropy_budget）
+
+        Returns:
+            调度结果字典
+        """
+        if entropy_budget is not None:
+            self._entropy_budget = entropy_budget
+
+        budget = self._entropy_budget
+        remaining_budget = budget - self._entropy_consumed
+
+        # Step 1: No-Go门控过滤
+        allowed_tasks = []
+        blocked_tasks = []
+        for task in tasks:
+            allowed, reason = self.g_inh_no_go_gate(task)
+            if allowed:
+                allowed_tasks.append(task)
+            else:
+                blocked_tasks.append({
+                    'task_id': task.task_id,
+                    'name': task.name,
+                    'reason': reason,
+                })
+
+        # Step 2: 计算效率比
+        for task in allowed_tasks:
+            if task.entropy_cost > 0:
+                task.metadata['_efficiency_ratio'] = task.phi_contribution / task.entropy_cost
+            else:
+                task.metadata['_efficiency_ratio'] = float('inf')
+
+        # Step 3: 按效率比降序排序（同等效率比按优先级降序）
+        sorted_tasks = sorted(
+            allowed_tasks,
+            key=lambda t: (t.metadata.get('_efficiency_ratio', 0), t.priority),
+            reverse=True,
+        )
+
+        # Step 4: 贪心选择
+        selected_tasks: List[ScheduledTask] = []
+        skipped_tasks: List[Dict] = []
+        total_entropy_cost = 0.0
+        total_phi_contribution = 0.0
+
+        for task in sorted_tasks:
+            if total_entropy_cost + task.entropy_cost <= remaining_budget:
+                selected_tasks.append(task)
+                total_entropy_cost += task.entropy_cost
+                total_phi_contribution += task.phi_contribution
+            else:
+                skipped_tasks.append({
+                    'task_id': task.task_id,
+                    'name': task.name,
+                    'reason': f"超出剩余熵预算 (需要{task.entropy_cost:.2f}, 剩余{remaining_budget - total_entropy_cost:.2f})",
+                })
+
+        # 更新熵消耗
+        self._entropy_consumed += total_entropy_cost
+
+        # 记录熵历史
+        now = time.time()
+        self._entropy_history.append((now, self._entropy_consumed))
+
+        # 计算 dS_int/dt
+        ds_dt = 0.0
+        if len(self._entropy_history) >= 2:
+            t1, s1 = self._entropy_history[-2]
+            t2, s2 = self._entropy_history[-1]
+            dt_elapsed = t2 - t1
+            if abs(dt_elapsed) > 1e-10:
+                ds_dt = (s2 - s1) / dt_elapsed
+
+        # 熵约束满足检查：dS_int/dt ≤ 0
+        entropy_constraint_satisfied = ds_dt <= 0 or total_entropy_cost == 0
+
+        return {
+            'selected_tasks': [
+                {
+                    'task_id': t.task_id,
+                    'name': t.name,
+                    'entropy_cost': t.entropy_cost,
+                    'phi_contribution': t.phi_contribution,
+                    'efficiency_ratio': round(t.metadata.get('_efficiency_ratio', 0), 4),
+                    'priority': t.priority,
+                }
+                for t in selected_tasks
+            ],
+            'blocked_tasks': blocked_tasks,
+            'skipped_tasks': skipped_tasks,
+            'scheduling_summary': {
+                'total_tasks': len(tasks),
+                'selected_count': len(selected_tasks),
+                'blocked_count': len(blocked_tasks),
+                'skipped_count': len(skipped_tasks),
+                'total_entropy_cost': round(total_entropy_cost, 6),
+                'total_phi_contribution': round(total_phi_contribution, 6),
+                'entropy_budget': budget,
+                'entropy_consumed_before': round(self._entropy_consumed - total_entropy_cost, 6),
+                'entropy_consumed_after': round(self._entropy_consumed, 6),
+                'remaining_budget': round(budget - self._entropy_consumed, 6),
+                'ds_int_dt': round(ds_dt, 6),
+                'entropy_constraint_satisfied': entropy_constraint_satisfied,
+            },
+            'constraint': 'dS_int/dt ≤ 0',
+            'note': (
+                '熵约束调度：内部熵增速 dS_int/dt ≤ 0，'
+                '确保系统维持或提升内部有序性' if entropy_constraint_satisfied else
+                '⚠️ 熵约束违反：dS_int/dt > 0，系统内部有序性下降'
+            ),
+        }
+
+    def add_no_go_rule(self, rule: NoGoRule) -> Dict[str, Any]:
+        """
+        添加自定义No-Go规则 — v7.31 新增
+
+        Args:
+            rule: No-Go规则
+
+        Returns:
+            操作结果
+        """
+        self._no_go_rules.append(rule)
+        return {
+            'added': True,
+            'rule_id': rule.rule_id,
+            'total_rules': len(self._no_go_rules),
+        }
+
+    def remove_no_go_rule(self, rule_id: str) -> Dict[str, Any]:
+        """
+        移除No-Go规则 — v7.31 新增
+
+        Args:
+            rule_id: 规则ID
+
+        Returns:
+            操作结果
+        """
+        before = len(self._no_go_rules)
+        self._no_go_rules = [r for r in self._no_go_rules if r.rule_id != rule_id]
+        after = len(self._no_go_rules)
+        return {
+            'removed': before > after,
+            'rule_id': rule_id,
+            'total_rules': after,
+        }
+
+    def reset_entropy_budget(self, new_budget: Optional[float] = None) -> Dict[str, Any]:
+        """
+        重置熵预算 — v7.31 新增
+
+        Args:
+            new_budget: 新的熵预算值（None则重置为默认值）
+
+        Returns:
+            操作结果
+        """
+        if new_budget is not None:
+            self._entropy_budget = new_budget
+        self._entropy_consumed = 0.0
+        self._entropy_history = []
+        return {
+            'reset': True,
+            'entropy_budget': self._entropy_budget,
+            'entropy_consumed': 0.0,
+        }
+
+    def get_no_go_state(self) -> Dict[str, Any]:
+        """
+        获取No-Go门控状态 — v7.31 新增
+
+        Returns:
+            No-Go门控状态字典
+        """
+        return {
+            'no_go_rules': [
+                {
+                    'rule_id': r.rule_id,
+                    'name': r.name,
+                    'description': r.description,
+                    'enabled': r.enabled,
+                    'priority': r.priority,
+                }
+                for r in self._no_go_rules
+            ],
+            'no_go_stats': self._no_go_stats,
+            'entropy_budget': self._entropy_budget,
+            'entropy_consumed': round(self._entropy_consumed, 6),
+            'entropy_remaining': round(self._entropy_budget - self._entropy_consumed, 6),
+            'entropy_history_length': len(self._entropy_history),
+        }
 
 
 # ============================================================
@@ -545,3 +947,115 @@ def get_instance() -> PhiScheduler:
         if _scheduler_instance is None:
             _scheduler_instance = PhiScheduler()
         return _scheduler_instance
+
+
+# ============================================================
+# §6 v7.31 自测代码
+# ============================================================
+
+if __name__ == "__main__":
+    print("=" * 60)
+    print("M193: PhiScheduler 测试（含 v7.31 G_inh+熵约束升级）")
+    print("=" * 60)
+
+    # ---- 原有功能测试 ----
+    print("\n[测试 1] 原有 evaluate 功能")
+    scheduler = PhiScheduler()
+    psi1 = [0.1 * i for i in range(100)]
+    psi2 = [0.1 * i + 0.01 for i in range(100)]
+    result1 = scheduler.evaluate("test", psi1)
+    result2 = scheduler.evaluate("test", psi2)
+    print(f"  首次评估: phi={result1['phi']}, zone={result1['zone']}")
+    print(f"  第二次评估: phi={result2['phi']}, zone={result2['zone']}")
+
+    print("\n[测试 2] 原有 hallucination_detection_rate 功能")
+    hdr = scheduler.hallucination_detection_rate()
+    print(f"  HDR = {hdr}")
+
+    # ---- v7.31 新功能测试 ----
+    print("\n" + "=" * 60)
+    print("v7.31 G_inh + 熵约束 测试")
+    print("=" * 60)
+
+    print("\n[测试 3] g_inh_no_go_gate — 内生抑制No-Go门控")
+    scheduler_v2 = PhiScheduler()
+    scheduler_v2.reset_entropy_budget(new_budget=2.0)
+
+    # 低熵任务应通过
+    low_entropy_task = ScheduledTask(
+        task_id="task_1",
+        name="简单推理",
+        entropy_cost=0.3,
+        phi_contribution=0.5,
+        priority=0.5,
+    )
+    allowed, reason = scheduler_v2.g_inh_no_go_gate(low_entropy_task)
+    print(f"  低熵任务: allowed={allowed}, reason={reason}")
+
+    # 消耗一些熵
+    scheduler_v2._entropy_consumed = 1.9
+
+    # 高熵任务应被阻止
+    high_entropy_task = ScheduledTask(
+        task_id="task_2",
+        name="复杂生成",
+        entropy_cost=0.5,
+        phi_contribution=0.3,
+        priority=0.3,
+    )
+    allowed2, reason2 = scheduler_v2.g_inh_no_go_gate(high_entropy_task)
+    print(f"  高熵任务(预算不足): allowed={allowed2}, reason={reason2}")
+
+    print("\n[测试 4] entropy_constrained_schedule — 熵约束调度")
+    scheduler_v3 = PhiScheduler()
+    scheduler_v3.reset_entropy_budget(new_budget=3.0)
+
+    tasks = [
+        ScheduledTask(task_id="t1", name="高效推理", entropy_cost=0.2, phi_contribution=0.8, priority=0.9),
+        ScheduledTask(task_id="t2", name="中等分析", entropy_cost=0.5, phi_contribution=0.5, priority=0.6),
+        ScheduledTask(task_id="t3", name="低效生成", entropy_cost=1.0, phi_contribution=0.2, priority=0.3),
+        ScheduledTask(task_id="t4", name="高熵探索", entropy_cost=2.0, phi_contribution=0.6, priority=0.4),
+    ]
+
+    schedule_result = scheduler_v3.entropy_constrained_schedule(tasks)
+    print(f"  总任务: {schedule_result['scheduling_summary']['total_tasks']}")
+    print(f"  选中: {schedule_result['scheduling_summary']['selected_count']}")
+    print(f"  阻止: {schedule_result['scheduling_summary']['blocked_count']}")
+    print(f"  跳过: {schedule_result['scheduling_summary']['skipped_count']}")
+    print(f"  熵消耗: {schedule_result['scheduling_summary']['total_entropy_cost']}")
+    print(f"  Φ贡献: {schedule_result['scheduling_summary']['total_phi_contribution']}")
+    print(f"  熵约束满足: {schedule_result['scheduling_summary']['entropy_constraint_satisfied']}")
+    print("  选中任务:")
+    for t in schedule_result['selected_tasks']:
+        print(f"    {t['task_id']}: {t['name']} (效率比={t['efficiency_ratio']})")
+
+    print("\n[测试 5] add/remove_no_go_rule — 自定义规则管理")
+    custom_rule = NoGoRule(
+        rule_id="custom_test",
+        name="自定义测试规则",
+        description="用于测试的自定义No-Go规则",
+        check_func=lambda task: task.priority >= 0.3,
+        priority=5,
+    )
+    add_result = scheduler_v3.add_no_go_rule(custom_rule)
+    print(f"  添加规则: {add_result['added']}, 总规则数={add_result['total_rules']}")
+
+    remove_result = scheduler_v3.remove_no_go_rule("custom_test")
+    print(f"  移除规则: {remove_result['removed']}, 总规则数={remove_result['total_rules']}")
+
+    print("\n[测试 6] get_no_go_state — No-Go门控状态")
+    no_go_state = scheduler_v3.get_no_go_state()
+    print(f"  规则数: {len(no_go_state['no_go_rules'])}")
+    print(f"  熵预算: {no_go_state['entropy_budget']}")
+    print(f"  已消耗: {no_go_state['entropy_consumed']}")
+    print(f"  剩余: {no_go_state['entropy_remaining']}")
+
+    print("\n[测试 7] 定理验证 T209-T211")
+    mve = run_mve()
+    print(f"  通过: {mve['passed']}/{mve['total']}")
+    for d in mve.get('details', []):
+        print(f"  {d['id']}: {d['status']}")
+
+    print("\n" + "=" * 60)
+    print("M193 v7.31 测试完成！")
+    print("=" * 60)

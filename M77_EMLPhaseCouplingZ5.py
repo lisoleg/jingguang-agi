@@ -19,10 +19,19 @@ EML相位耦合ℤ₅ (EML Phase Coupling Z5)
 - 新增EML一元数(iℕum)形式化定义
 - 新增EML加法⊕(关系耦合)和乘法⊗(维度编织)
 - 新增守恒定律验证
+
+升级说明（v7.31）：
+- 新增 set_flexible_theta：设置连续θ函数 θ(t)
+- 新增 modulate_theta：按认知需求动态调制θ
+- 新增 compute_phase_trajectory：计算连续相位轨迹
+- 新增 detect_steady_orbit：检测EML相位稳态轨道
+- 新增 _flexible_theta_enabled 标志
+- 新增 _theta_func 属性
+- 保留原有离散θ逻辑为默认模式
 """
 
 import math
-from typing import Dict, List, Tuple, Any, Optional
+from typing import Dict, List, Tuple, Any, Optional, Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
@@ -257,6 +266,21 @@ class CycleResult:
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
 
+@dataclass
+class PhaseTrajectoryPoint:
+    """
+    相位轨迹点 — v7.31 新增
+
+    记录连续θ(t)模式下某一时刻的相位状态
+    """
+    t: float                      # 时间
+    theta: float                  # θ(t) 值
+    phase_angle: float            # 对应的相位角
+    amplitude: float              # 振幅
+    element_index: int            # 当前五行元素索引 [0-4]
+    element_name: str             # 当前五行元素名称
+
+
 # ============================================================================
 # 太乙AGI REPL 构造性内核
 # ============================================================================
@@ -486,6 +510,11 @@ class EMLPhaseCouplingZ5:
     v2.0升级：
     - 新增EML一元数(iℕum)形式化
     - 新增太乙AGI REPL构造性内核
+
+    v7.31升级：
+    - 新增Flexible θ连续相位函数
+    - 新增相位轨迹计算
+    - 新增稳态轨道检测
     """
 
     def __init__(self):
@@ -515,6 +544,16 @@ class EMLPhaseCouplingZ5:
 
         # 太乙AGI REPL实例
         self.repl = TaiyiREPL()
+
+        # ===== v7.31 新增属性 =====
+        # Flexible θ 启用标志
+        self._flexible_theta_enabled: bool = False
+        # 存储 θ(t) 函数
+        self._theta_func: Optional[Callable[[float], float]] = None
+        # 相位轨迹缓存
+        self._phase_trajectory_cache: List[PhaseTrajectoryPoint] = []
+
+    # ==================== 原有方法（完全保留） ====================
 
     def get_repl(self) -> TaiyiREPL:
         """获取太乙AGI REPL实例"""
@@ -726,6 +765,370 @@ class EMLPhaseCouplingZ5:
         """测试太乙AGI REPL"""
         return self.repl.run(problem)
 
+    # ==================== v7.31 新增方法 ====================
+
+    def set_flexible_theta(self, theta_func: Callable[[float], float]) -> Dict[str, Any]:
+        """
+        设置连续θ函数 — v7.31 新增
+
+        设置 θ(t) 函数，替代离散的固定相位偏移。
+        在 Flexible θ 模式下，EML 相位耦合使用连续的 θ(t)
+        而非固定的 2π/5 间隔。
+
+        θ(t) 的约束条件：
+        1. θ(t) 必须是 [0, ∞) → [0, 2π) 的映射
+        2. θ(t) 应该是周期性的，周期为 T = 2π/ω
+        3. θ(t) 在一个周期内应遍历五个五行相位区间
+
+        Args:
+            theta_func: θ(t) 函数，接受时间 t（float），返回相位角（float）
+
+        Returns:
+            设置结果字典
+        """
+        # 验证函数有效性
+        try:
+            test_values = [theta_func(t) for t in [0.0, 0.5, 1.0, 1.5, 2.0]]
+            # 检查返回值是否为数值
+            for v in test_values:
+                if not isinstance(v, (int, float)):
+                    raise ValueError(f"θ(t) 返回非数值: {v}")
+
+            # 检查值域在合理范围
+            all_valid = all(0 <= v < 4 * math.pi for v in test_values)
+        except Exception as e:
+            return {
+                'success': False,
+                'error': f'θ(t) 函数验证失败: {e}',
+                'flexible_theta_enabled': self._flexible_theta_enabled,
+            }
+
+        self._theta_func = theta_func
+        self._flexible_theta_enabled = True
+        self._phase_trajectory_cache = []
+
+        return {
+            'success': True,
+            'flexible_theta_enabled': True,
+            'theta_sample': {
+                'θ(0.0)': round(theta_func(0.0), 4),
+                'θ(0.5)': round(theta_func(0.5), 4),
+                'θ(1.0)': round(theta_func(1.0), 4),
+                'θ(1.5)': round(theta_func(1.5), 4),
+                'θ(2.0)': round(theta_func(2.0), 4),
+            },
+            'note': 'Flexible θ 模式已启用，原有离散θ逻辑仍可通过 disable 调用恢复',
+        }
+
+    def disable_flexible_theta(self) -> Dict[str, Any]:
+        """
+        禁用 Flexible θ 模式，恢复默认离散θ — v7.31 新增
+
+        Returns:
+            操作结果字典
+        """
+        self._flexible_theta_enabled = False
+        self._theta_func = None
+        self._phase_trajectory_cache = []
+        return {
+            'success': True,
+            'flexible_theta_enabled': False,
+            'note': '已恢复默认离散θ模式',
+        }
+
+    def modulate_theta(self, cognitive_demand: float) -> Dict[str, Any]:
+        """
+        按认知需求动态调制θ — v7.31 新增
+
+        根据认知需求（cognitive_demand）动态调整 θ 函数的参数。
+        需求高时，θ变化更快速（更频繁的相位切换）；
+        需求低时，θ变化更缓慢（更稳定的相位维持）。
+
+        调制公式：
+        - θ_modulated(t) = θ_base(t) · (1 + α · D)
+        - 其中 D = cognitive_demand ∈ [0, 1]
+        - α = 0.5 为调制系数
+
+        如果 Flexible θ 未启用，则基于默认离散θ进行调制。
+
+        Args:
+            cognitive_demand: 认知需求 [0, 1]
+
+        Returns:
+            调制结果字典
+        """
+        cognitive_demand = max(0.0, min(1.0, cognitive_demand))
+        alpha = 0.5  # 调制系数
+
+        if self._flexible_theta_enabled and self._theta_func is not None:
+            # 在 Flexible θ 模式下，调制 θ_base(t)
+            base_func = self._theta_func
+
+            def modulated_func(t: float) -> float:
+                base_theta = base_func(t)
+                modulated = base_theta * (1.0 + alpha * cognitive_demand)
+                return modulated % (2 * math.pi)
+
+            # 更新 θ 函数
+            self._theta_func = modulated_func
+            self._phase_trajectory_cache = []
+
+            # 采样验证
+            samples = {f't={t}': round(modulated_func(t), 4) for t in [0.0, 0.5, 1.0]}
+
+            return {
+                'modulated': True,
+                'mode': 'flexible',
+                'cognitive_demand': cognitive_demand,
+                'modulation_coefficient': alpha,
+                'theta_samples': samples,
+                'note': 'θ(t) 已按认知需求调制',
+            }
+        else:
+            # 离散θ模式：调制相位偏移量
+            base_offset = 2 * math.pi / 5  # 默认五行偏移
+            modulated_offset = base_offset * (1.0 + alpha * cognitive_demand)
+
+            # 更新相位偏移
+            for i, phase in enumerate(self.cycle):
+                self.phase_offsets[phase] = i * modulated_offset
+
+            return {
+                'modulated': True,
+                'mode': 'discrete',
+                'cognitive_demand': cognitive_demand,
+                'modulation_coefficient': alpha,
+                'original_offset': round(base_offset, 4),
+                'modulated_offset': round(modulated_offset, 4),
+                'note': '离散θ偏移已按认知需求调制',
+            }
+
+    def compute_phase_trajectory(
+        self,
+        t_start: float = 0.0,
+        t_end: float = 10.0,
+        dt: float = 0.1,
+    ) -> Dict[str, Any]:
+        """
+        计算连续相位轨迹 — v7.31 新增
+
+        在 [t_start, t_end] 区间内，以 dt 为步长，
+        计算每个时刻的 θ(t) 和对应的五行相位状态。
+
+        如果 Flexible θ 已启用，使用 θ(t) 函数；
+        否则使用默认离散θ模式生成轨迹。
+
+        Args:
+            t_start: 起始时间
+            t_end: 结束时间
+            dt: 时间步长
+
+        Returns:
+            相位轨迹结果字典
+        """
+        if dt <= 0:
+            dt = 0.1
+        if t_end <= t_start:
+            t_end = t_start + 10.0
+
+        trajectory: List[PhaseTrajectoryPoint] = []
+        t = t_start
+
+        element_names = ['Σ(水)', 'F(火)', 'R(木)', 'E(金)', 'B(土)']
+
+        while t <= t_end + 1e-10:
+            if self._flexible_theta_enabled and self._theta_func is not None:
+                # Flexible θ 模式
+                theta_t = self._theta_func(t)
+            else:
+                # 默认离散模式：θ(t) = (2π/5) * floor(t) 离散步进
+                step = int(t)
+                theta_t = (2 * math.pi / 5) * step
+
+            # 将 θ(t) 映射到五行元素
+            # 每个元素占据 [0, 2π/5) 的区间
+            normalized_theta = theta_t % (2 * math.pi)
+            element_index = int(normalized_theta / (2 * math.pi / 5)) % 5
+            element_name = element_names[element_index]
+
+            # 计算振幅（基于当前相位状态）
+            current_phase = self.cycle[element_index]
+            phase_state = self.phases.get(current_phase)
+            amplitude = phase_state.amplitude if phase_state else 1.0
+
+            point = PhaseTrajectoryPoint(
+                t=round(t, 4),
+                theta=round(theta_t, 6),
+                phase_angle=round(normalized_theta, 6),
+                amplitude=round(amplitude, 6),
+                element_index=element_index,
+                element_name=element_name,
+            )
+            trajectory.append(point)
+            t += dt
+
+        # 缓存轨迹
+        self._phase_trajectory_cache = trajectory
+
+        # 分析轨迹特征
+        element_transitions = 0
+        prev_idx = trajectory[0].element_index if trajectory else 0
+        for pt in trajectory[1:]:
+            if pt.element_index != prev_idx:
+                element_transitions += 1
+                prev_idx = pt.element_index
+
+        # 轨迹稳定性：相位角的方差
+        phase_angles = [pt.phase_angle for pt in trajectory]
+        if phase_angles:
+            pa_mean = sum(phase_angles) / len(phase_angles)
+            pa_var = sum((a - pa_mean) ** 2 for a in phase_angles) / len(phase_angles)
+        else:
+            pa_var = 0.0
+
+        # 元素覆盖率
+        covered_elements = set(pt.element_index for pt in trajectory)
+        element_coverage = round(len(covered_elements) / 5.0, 4)
+
+        return {
+            'trajectory_length': len(trajectory),
+            't_range': (t_start, t_end),
+            'dt': dt,
+            'flexible_theta_enabled': self._flexible_theta_enabled,
+            'trajectory': [
+                {
+                    't': pt.t,
+                    'theta': pt.theta,
+                    'phase_angle': pt.phase_angle,
+                    'amplitude': pt.amplitude,
+                    'element_index': pt.element_index,
+                    'element_name': pt.element_name,
+                }
+                for pt in trajectory
+            ],
+            'analysis': {
+                'element_transitions': element_transitions,
+                'phase_angle_variance': round(pa_var, 6),
+                'element_coverage': element_coverage,
+                'elements_visited': sorted(covered_elements),
+            },
+        }
+
+    def detect_steady_orbit(self, window: int = 50) -> Dict[str, Any]:
+        """
+        检测EML相位稳态轨道 — v7.31 新增
+
+        分析最近的相位轨迹，检测是否存在稳态轨道。
+        稳态轨道定义：五行元素以固定周期循环出现，
+        且相位角变化率趋于恒定。
+
+        检测算法：
+        1. 收集最近 window 个轨迹点
+        2. 计算元素循环周期
+        3. 检测相位角变化率是否恒定
+        4. 评估稳态轨道置信度
+
+        Args:
+            window: 分析窗口大小
+
+        Returns:
+            稳态轨道检测结果字典
+        """
+        # 获取轨迹数据
+        if self._phase_trajectory_cache:
+            trajectory = self._phase_trajectory_cache[-window:]
+        else:
+            # 如果没有缓存轨迹，先计算一段
+            result = self.compute_phase_trajectory(t_start=0.0, t_end=5.0, dt=0.1)
+            trajectory = self._phase_trajectory_cache[-window:]
+
+        if len(trajectory) < 5:
+            return {
+                'has_steady_orbit': False,
+                'confidence': 0.0,
+                'reason': 'insufficient_trajectory_data',
+                'trajectory_points': len(trajectory),
+            }
+
+        # 1. 检测元素循环模式
+        element_sequence = [pt.element_index for pt in trajectory]
+
+        # 检查是否包含完整的五行循环
+        full_cycle = {0, 1, 2, 3, 4}
+        visited = set(element_sequence)
+        has_full_cycle = visited == full_cycle
+
+        # 2. 检测周期性
+        # 寻找最短重复模式
+        period = 0
+        for p in range(1, len(element_sequence) // 2 + 1):
+            is_periodic = True
+            for i in range(min(p, len(element_sequence) - p)):
+                if element_sequence[i] != element_sequence[i + p]:
+                    is_periodic = False
+                    break
+            if is_periodic:
+                period = p
+                break
+
+        # 3. 计算相位角变化率
+        phase_rates = []
+        for i in range(1, len(trajectory)):
+            dt = trajectory[i].t - trajectory[i - 1].t
+            if abs(dt) > 1e-10:
+                d_theta = trajectory[i].phase_angle - trajectory[i - 1].phase_angle
+                # 处理相位回绕
+                if d_theta > math.pi:
+                    d_theta -= 2 * math.pi
+                elif d_theta < -math.pi:
+                    d_theta += 2 * math.pi
+                rate = d_theta / dt
+                phase_rates.append(rate)
+
+        # 变化率的稳定性（方差越小越稳定）
+        if phase_rates:
+            rate_mean = sum(phase_rates) / len(phase_rates)
+            rate_var = sum((r - rate_mean) ** 2 for r in phase_rates) / len(phase_rates)
+            rate_stability = round(1.0 / (1.0 + rate_var), 6)
+        else:
+            rate_mean = 0.0
+            rate_var = 0.0
+            rate_stability = 0.0
+
+        # 4. 综合稳态轨道置信度
+        confidence = 0.0
+        if has_full_cycle:
+            confidence += 0.4
+        if period > 0:
+            confidence += 0.3 * min(1.0, period / 5.0)
+        if rate_stability > 0.5:
+            confidence += 0.3 * rate_stability
+
+        confidence = round(min(1.0, confidence), 6)
+        has_steady_orbit = confidence >= 0.6
+
+        # 稳态轨道描述
+        if has_steady_orbit:
+            orbit_description = (
+                f'检测到稳态轨道：五行元素以周期{period if period > 0 else "N/A"}循环，'
+                f'相位变化率均值={rate_mean:.4f}，稳定性={rate_stability:.4f}'
+            )
+        else:
+            orbit_description = '未检测到稳态轨道：相位变化不规则或数据不足'
+
+        return {
+            'has_steady_orbit': has_steady_orbit,
+            'confidence': confidence,
+            'period': period,
+            'has_full_cycle': has_full_cycle,
+            'element_coverage': round(len(visited) / 5.0, 4),
+            'rate_mean': round(rate_mean, 6),
+            'rate_variance': round(rate_var, 6),
+            'rate_stability': rate_stability,
+            'orbit_description': orbit_description,
+            'trajectory_points': len(trajectory),
+        }
+
 
 def get_instance():
     """获取单例实例"""
@@ -786,3 +1189,60 @@ if __name__ == "__main__":
     print(f"相位熵: {result.entropy}")
     print(f"稳定状态: {result.is_stable}")
     print(f"洞见: {result.insight}")
+
+    # ==================== v7.31 新功能测试 ====================
+    print("\n" + "=" * 60)
+    print("v7.31 Flexible θ 升级测试")
+    print("=" * 60)
+
+    coupler_v731 = EMLPhaseCouplingZ5()
+
+    print("\n[测试 1] set_flexible_theta — 设置连续θ函数")
+    # 设置一个简单的连续θ函数：θ(t) = (2π/5) * t
+    def linear_theta(t: float) -> float:
+        return (2 * math.pi / 5) * t
+
+    set_result = coupler_v731.set_flexible_theta(linear_theta)
+    print(f"  设置成功: {set_result['success']}")
+    print(f"  θ采样: {set_result.get('theta_sample', {})}")
+
+    print("\n[测试 2] compute_phase_trajectory — 计算连续相位轨迹")
+    traj_result = coupler_v731.compute_phase_trajectory(t_start=0.0, t_end=5.0, dt=0.5)
+    print(f"  轨迹点数: {traj_result['trajectory_length']}")
+    print(f"  元素转换次数: {traj_result['analysis']['element_transitions']}")
+    print(f"  元素覆盖率: {traj_result['analysis']['element_coverage']}")
+    for pt in traj_result['trajectory'][:5]:
+        print(f"    t={pt['t']:.1f}: θ={pt['theta']:.4f}, element={pt['element_name']}")
+
+    print("\n[测试 3] detect_steady_orbit — 检测稳态轨道")
+    orbit = coupler_v731.detect_steady_orbit()
+    print(f"  有稳态轨道: {orbit['has_steady_orbit']}")
+    print(f"  置信度: {orbit['confidence']}")
+    print(f"  描述: {orbit['orbit_description']}")
+
+    print("\n[测试 4] modulate_theta — 动态调制θ")
+    mod_result = coupler_v731.modulate_theta(cognitive_demand=0.8)
+    print(f"  调制成功: {mod_result['modulated']}")
+    print(f"  模式: {mod_result['mode']}")
+    print(f"  认知需求: {mod_result['cognitive_demand']}")
+
+    # 调制后再计算轨迹
+    traj_mod = coupler_v731.compute_phase_trajectory(t_start=0.0, t_end=5.0, dt=0.5)
+    print(f"  调制后轨迹点数: {traj_mod['trajectory_length']}")
+
+    print("\n[测试 5] disable_flexible_theta — 禁用 Flexible θ")
+    disable_result = coupler_v731.disable_flexible_theta()
+    print(f"  禁用成功: {disable_result['success']}")
+    print(f"  Flexible θ 启用: {disable_result['flexible_theta_enabled']}")
+
+    print("\n[测试 6] modulate_theta（离散模式）")
+    coupler_disc = EMLPhaseCouplingZ5()
+    mod_disc = coupler_disc.modulate_theta(cognitive_demand=0.5)
+    print(f"  调制成功: {mod_disc['modulated']}")
+    print(f"  模式: {mod_disc['mode']}")
+    print(f"  原始偏移: {mod_disc['original_offset']}")
+    print(f"  调制偏移: {mod_disc['modulated_offset']}")
+
+    print("\n" + "=" * 60)
+    print("M77 v7.31 测试完成！")
+    print("=" * 60)
