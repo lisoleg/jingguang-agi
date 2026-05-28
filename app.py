@@ -3158,6 +3158,7 @@ if __name__ == '__main__':
     print("   - /api/memory/status (记忆系统状态)")
     print("   - /api/enhancer/status (增强器统计)")
     print("=" * 60)
+    app.run(host='0.0.0.0', port=5000, debug=True)
 
 # ============================================================
 # v7.31 True AGI 升级 — M197-M206 + P13-P17 MVE

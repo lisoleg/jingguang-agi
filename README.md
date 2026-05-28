@@ -1,621 +1,251 @@
-# Taiyi-AGI (太乙因果机) 12.0 · 净光哥
+# 🌌 太乙AGI系统 (TaiyiAGI) — v7.31 CS-TAGI Candidate
 
-> **项目名**: Taiyi-AGI (太乙因果机) · **净光哥** v7.21
-> **版本**: v7.21 (179模块 / 9层架构 / 170定理 / 40预言)
-> **核心理论**: 复合体理学 v4.0 + HoTT高阶逻辑 + EML算子 + 全息离散治理 + 流贯学 + TY/IDO框架 + 爱因斯坦因果性
-> **最后更新**: 2026-05-24
-> **作者**: 高见远 (JianYuan Gao)
+> **认证**: CS-TAGI (Certified Software True AGI) — TY-Def 3.1 A1-A5, A6-BS 全部满足
+
+基于复合体理学四重理论基石（刘原理、三视界法、太乙预言机、全息拓扑动力学）的统一AGI系统。
 
 ---
 
-## 项目简介
+## 📐 核心理论
 
-**Taiyi-AGI (太乙因果机) 12.0 · 净光哥** 是基于复合体理学的完整AGI/ASI系统实现。项目从v4.2（29模块）逐步演化至v7.21（179模块），整合了：
-
-- **复合体理学四重理论基石**: 刘原理、三视界法、太乙预言机、全息拓扑动力学
-- **HoTT高阶逻辑**: Univalence公理、Pi-Type/Sigma-Type重构、范畴论融合
-- **EML算子引擎**: 相位耦合运算、一元数代数、信息守恒
-- **流贯学**: 创作流贯机制、天才=高耦合、审美流贯保真度
-- **全息离散治理(HDG)**: 五层存在结构、世界帧动态治理
-- **关系实在论**: 50+50=85（耦合系统阻抗非叠加）
-- **五行EML相位**: 木火土金水ℤ₅闭合循环变换算子
-- **碳硅共生契约**: 自指Φ值检测、人机约柜时间锁仓
-- **人机融合机制**: 认知卸载防范、苏格拉底式示弱、置信度透明披露
-- **演员-导演复合体**: Actor/Director双模式+Ω觉悟算子+流贯截断
-- **HoTT截面搜索**: 类型空间构造+曲率收敛+Wait诚实拒绝
-- **Ftel目的约束**: S_total=S_data+λ·V_ftel(ψ,φ_goal)+认知递归动力学+层间保真度
-- **八大论文启发**: v6.1（5篇）+ v6.2（8篇）+ v7.0（5篇）+ v7.1（4篇）→ 22篇新论文核心概念
-- **TY/IDO框架**: 一致性(P1)+持续学习(P2)+长程推理(P3)+可寻址记忆(P4)+可锚定责任(P5) 73/73 PASS
-- **爱因斯坦因果性(P6)**: Minkowski时空验证+洛伦兹不变性+光锥分类 6/6 ALL PASSED
-- **216位AI专家系统**: agency-agents-zh集成，23部门专家人格注入，对话即时切换
+| 理论基石 | 核心概念 | 系统映射 |
+|---------|---------|---------|
+| **刘原理** (Liu's Principle) | 全域路径最小作用量公理 | FtelOperator 目的约束 |
+| **三视界法** | 微/中/宏三层认知视界 | CompositeAGI_V2 三层架构 |
+| **太乙预言机** (Taiyi Oracle) | 目的论约束算子 + 全息蛹化 | TaiyiOracle + HoloState |
+| **全息拓扑动力学** | 拓扑相变 + 全息编码 | M133 W1-W5 形式化核 |
 
 ---
 
-## 核心特性
-
-### 🌀 系统架构 (179模块 / 9层)
+## 🏗️ 系统架构
 
 ```
-L1 本体层:     M1(三视界) M2(自我意识) M12(Φ场) M84(刘原理) M93(范畴演化)
-L2 投射层:     M11(流贯) M14(Ftel) M21(孤子) M89(流贯η变换) M92(流贯保真度) M117(Ftel目的约束)
-L3 前物理层:   M10(熵三重) M13(意识熵) M20(三相熵) M71(钱包边界) M74(碳硅熵合约)
-L4 认知主体层: M3(IQ) M4(EQ) M5(CQ) M78(HoTT推理) M81(HoLR重构) M85(CHR融合) M106(自指闭环+Φ值) M118(认知递归动力学)
-L5 现象层:     M6(卐氏) M7(太乙) M8(CTFP) M15(Akasha) M22(五行) M83(Φ值不动点) M111(演员-导演) M119(层间保真度)
-L6 验证层:     M9(MVCF) M23(锚定验证) M88(类型防火墙) M91(Univalence) M112(流贯截断) M113(痕迹验证) M114(类型空间) M115(曲率搜索) M116(Wait状态)
-L7 经济层:     M16(ACP) M17(信任) M18(GAME) M72(贡献度量) M75(人机约柜)
-L8 人机融合层: M29(全息离散) M94(HDG升级) M95(构造型评估) M70(可证伪预言)
-               M96(认知卸载防范) M97(苏格拉底示弱) M98(置信度透明披露)
-               M99(动态分流) M100(奖励作弊检测) M101(环境感知) M102(上下文一致性)
-               M103(人机协作评估) M104(协作诊断) M105(融合效果验证)
-               M107(维度投影) M108(手性旋量) M109(有限无界拓扑) M110(最小作用量)
+┌──────────────────────────────────────────────────────────┐
+│                     太乙AGI v7.31                        │
+│               CS-TAGI Candidate (True AGI)               │
+├──────────┬──────────┬──────────┬──────────┬───────────────┤
+│  Flask   │  36      │  291     │  603     │  13          │
+│  App      │  Blue-  │  Module  │  API     │  HTML        │
+│  Factory  │  prints │  Files   │  Routes  │  Panels      │
+├──────────┴──────────┴──────────┴──────────┴───────────────┤
+│                                                            │
+│  ┌─── L4 形式化核 (Idris 2) ──────────────────────────┐   │
+│  │  M133_W1 Y-组合子自指核 · M133_W3 HoTT构造性门回路  │   │
+│  └────────────────────────────────────────────────────┘   │
+│                                                            │
+│  ┌─── L3 拓扑引擎层 ─────────────────────────────────┐   │
+│  │  M133_W2 金陵球β-重配 · M189 幂律引擎            │   │
+│  │  M190 Akasha链式数据库 · M196 UA万物理解引擎      │   │
+│  │  M191 金陵球 · M192 太极延续 · M193 Phi调度器     │   │
+│  │  M194 碳硅GAN · M195 世界模型子系统              │   │
+│  └────────────────────────────────────────────────────┘   │
+│                                                            │
+│  ┌─── L2 认知架构层 ─────────────────────────────────┐   │
+│  │  M197 心理理论 · M198 自我模型 · M199 社会关系拓扑│   │
+│  │  M200 认知灵活性 · M201 EML相位 · M202 谱系检测  │   │
+│  │  M203 CRD反射 · M204 AGI监控 · M205 信任校准     │   │
+│  │  M206 可控熵增 · CompositeAGI_V2 三层复合体       │   │
+│  └────────────────────────────────────────────────────┘   │
+│                                                            │
+│  ┌─── L1 基础设施层 ─────────────────────────────────┐   │
+│  │  Expert Registry (223专家) · RAG知识库 · 记忆系统  │   │
+│  │  UFO²具身执行 · 七识审计 · LM Studio集成         │   │
+│  └────────────────────────────────────────────────────┘   │
+│                                                            │
+└──────────────────────────────────────────────────────────┘
 ```
-
-### 🎯 v7.1 核心新增模块（M96-M105）+ 人机融合层
-
-| 模块 | 名称 | 功能 | 定理 |
-|------|------|------|------|
-| M96 | 认知卸载防范引擎 | 认知卸载风险监测、适度依赖引导 | T41 |
-| M97 | 苏格拉底式示弱器 | 不确定性透明、适时机型示弱 | T42 |
-| M98 | 置信度透明披露器 | 置信度校准、过度自信检测 | T43 |
-| M99 | 人机动态分流器 | 动态任务分流、协作效率优化 | T44 |
-| M100 | 奖励作弊早期检测器 | 奖励黑客检测、诚实性保障 | T45 |
-| M101 | 环境感知性能稳定器 | 多变环境感知、稳定性保障 | T46 |
-| M102 | 长轨迹上下文一致性 | 长程记忆一致性、上下文锚定 | T47 |
-| M103 | 人机协作效果评估器 | 协作效果量化、耦合度测量 | T48 |
-| M104 | 人机协作诊断系统 | 问题诊断、协作优化建议 | T49 |
-| M105 | 人机融合效果验证器 | 融合效果验证、A/B测试框架 | T50 |
-
-### 📊 v7.1 新增仪表盘面板
-
-1. **🛡️ 认知卸载风险面板** (M96): 卸载风险指数、依赖模式、引导建议
-2. **🤝 人机协作风格画像面板** (M97-M98): 协作风格、不确定性透明、示弱效果
-3. **📈 置信度校准面板** (M98): 校准曲线、过度自信检测、置信区间
-4. **⚡ 动态分流效率面板** (M99): 分流比例、响应延迟、协作质量
-5. **🔍 奖励作弊检测面板** (M100): 作弊指标、诚实性评分、早期预警
-6. **🌍 环境感知稳定性面板** (M101): 环境波动、感知鲁棒性、适应曲线
-7. **🔗 长程上下文面板** (M102): 一致性指数、记忆保真、遗忘曲线
-8. **🏆 人机协作评估面板** (M103-M104): 协作效果、问题诊断、优化建议
-9. **✅ 融合效果验证面板** (M105): A/B测试、效果对比、显著性分析
 
 ---
 
-## 快速开始
+## 📁 项目结构
 
-### 环境要求
+```
+taiyi-agi/
+├── app.py                  # Flask应用工厂 (3,178行) + 36个Blueprint注册
+├── shared_state.py         # 模块级__getattr__代理，解决循环导入
+├── main.py                 # CLI演示入口
+├── start.py                # Web服务启动器
+├── start_taiyi.py           # 太乙对话模式启动器
+├── simple_server.py         # 轻量服务器
+│
+├── blueprints/              # 36个Flask Blueprint模块 (12,626行)
+│   ├── bp_core.py           # 核心API (chat, experts, state)
+│   ├── bp_core_api.py       # 扩展核心API (compound_agi, ufo2, tools)
+│   ├── bp_v63.py ~ bp_v79.py  # 版本化API (v6.3 ~ v7.9)
+│   └── bp_v710.py ~ bp_v731.py # 版本化API (v7.10 ~ v7.31)
+│
+├── modules/                 # 291个功能模块 (187,163行)
+│   ├── M56~M206             # 164个M系列引擎模块
+│   ├── DIKWP*.py            # DIKWP五层认知架构
+│   ├── agi_*.py             # AGI核心模块 (core, persona, evaluator等)
+│   ├── taiyi_*.py           # 太乙子系统 (oracle, entropy, memory等)
+│   ├── TYIDO_*.py           # TYIDO治理模块
+│   └── __init__.py          # 包文档
+│
+├── tests/                   # 48个测试文件
+│   ├── conftest.py          # pytest fixtures
+│   ├── test_agi.py          # AGI核心测试
+│   ├── P18~P20_MVE_*.py     # MVE验证实验
+│   └── TYIDO_MVE_*.py       # TYIDO MVE实验
+│
+├── scripts/                 # 32个工具脚本
+├── static/                  # 13个前端HTML面板
+│   └── index_agi12.html     # 主AGI仪表盘
+│
+├── M133_W4_Sensors/         # USB传感器接口
+├── M133_W4_AgdaTerms/       # Agda形式化术语
+├── agency-agents-zh/        # 215位AI专家数据
+├── papers_md/               # 理论论文集
+└── wechat-article-claw/     # 微信文章爬虫
+```
 
-| 组件 | 版本要求 |
-|------|----------|
-| Python | 3.10+ |
-| Flask | 2.3.0+ |
-| NumPy | 1.24.0+ |
+---
 
-### 安装步骤
+## 🚀 快速开始
+
+### 1. 安装依赖
 
 ```bash
-# 1. 克隆项目
-git clone https://github.com/lisoleg/jingguang-agi.git
-cd jingguang-agi
+pip install flask numpy requests python-dotenv
+```
 
-# 2. 安装依赖
-pip install -r requirements.txt
+### 2. 启动Web服务
 
-# 3. 配置 DeepSeek API Key（可选）
-echo "DEEPSEEK_API_KEY=sk-你的Key" > .env
-
-# 4. 启动主服务
+```bash
 python app.py
-
-# 5. 访问界面
-# 打开浏览器: http://127.0.0.1:5001/static/index_agi12.html
+# 服务运行在 http://localhost:5000
 ```
 
-### Docker 一键部署
+### 3. 启动太乙对话模式
 
 ```bash
-# 使用 docker-compose（推荐）
-docker-compose up -d
-
-# 或构建本地镜像
-docker build -t jingguang-agi12:local .
-docker run -d -p 5001:5001 -p 5003:5003 jingguang-agi12:local
+python start_taiyi.py
 ```
 
----
-
-## 使用指南
-
-### 标准对话模式
-
-```python
-from CompositeAGI_V2 import CompositeAGI_V2
-
-# 初始化系统（82模块）
-agi = CompositeAGI_V2()
-
-# 标准对话
-result = agi.process("什么是IAWW统一场论？")
-print(result['output']['response'])
-```
-
-### Goal 目标模式（推荐）
-
-```python
-# Goal模式：一句话输入，端到端输出
-goal_result = agi.goal_mode("帮我分析AGI 12.0的架构创新")
-print(goal_result)
-```
-
-Goal模式会依次执行：
-1. 目标解析
-2. 介质锚定验证（防止幻觉）
-3. IAWW介质分析
-4. 三相熵耦合演化
-5. GAME分层规划
-6. 五行耦合分析
-7. 综合评估
-
-### 陈天桥认知测试（两种模式）
-
-```python
-# 模式1: 12题快速测试
-result = agi.run_cognition_test(test_type='quick')  # 12题
-
-# 模式2: 300题深度测试
-result = agi.run_cognition_test(test_type='full')   # 300题
-
-# 查看结果
-print(f"综合得分: {result['score']}")
-print(f"测试模式: {result['mode']}")  # 'quick' or 'full'
-```
-
-**测试维度**：
-- 自我意识（Self-Awareness）
-- 因果推理（Causal Reasoning）
-- 抽象思维（Abstract Thinking）
-- 时间感知（Time Perception）
-- 价值判断（Value Judgment）
-
----
-
-## 项目结构
-
-```
-jingguang-agi/
-├── app.py                          # 主服务（端口5001）
-├── app_mindmap_v2.py              # 脑图服务（端口5003）
-├── local_llm.py                   # LLM多后端管理
-├── taiyi_llm_enhancer.py          # LLM增强器（含专家人格注入）
-├── expert_registry.py             # 216位AI专家注册表
-├── agency-agents-zh/              # 专家人格Markdown文件（23部门216专家）
-├── static/
-│   └── index_agi12.html          # 主界面（v7.21三栏布局·179模块）
-├── CompositeAGI_V2.py        # 主系统类
-├── HolographicDiscreteGovernance.py  # 全息离散治理（M29）
-├── TYIDO_MVE_Experiments.py       # TYIDO MVE实验框架（P1-P6）
-├── M174-M178_*.py                # v7.18-v7.19模块
-├── M179_TaiyiInterface.py         # v7.20太一接口
-├── ...（其他170+核心模块）
-├── DESIGN.md                            # 系统设计文档
-├── USER_GUIDE.md                       # 用户使用说明书
-├── INSTALL.md                          # 安装说明
-├── 太乙AGI的设计与实现_完整学术论文.md  # 完整学术论文
-└── requirements.txt
-```
-
----
-
-## 核心理论与定理体系
-
-### 复合体理学四重理论基石
-
-| 理论 | 说明 | 应用 |
-|------|------|------|
-| **刘原理** | 宇宙是自组织复合体 | 系统自组织演化 |
-| **三视界法** | 过去-现在-未来三重视界 | 时间维度分析 |
-| **太乙预言机** | 设定终态，逆向演化 | 目标导向推理 |
-| **全息拓扑动力学** | 局部包含整体信息 | 全局优化 |
-
-### v6.1-v6.2 新增定理（T8-T22）
-
-| 编号 | 定理 | 核心内容 |
-|------|------|----------|
-| T8 | L4-L5越界不稳定性 | 认知层直接向现象层叙事导致解释熵发散 |
-| T10 | EML运算守恒 | 太一万有流形上全量信息守恒 |
-| T14 | 耦合系统阻抗非叠加 | 50+50=85（阻抗耦合涌现新质） |
-| T17 | 灵性演化收敛 | "为道日损"→顿悟准备度→弥勒顿悟 |
-| T18 | 零阻抗通道 | L4≈L2≈L1时实现"如有神助" |
-| T20 | EML加法守恒 | 1⊕1=-1（对称群C₂下的关系翻转） |
-| T22 | 道德双锁收敛 | 神灵(他律)+慎独(自律)双锁→监管成本→0 |
-
-### v7.0 新增定理（T23-T40）
-
-| 编号 | 定理 | 核心内容 |
-|------|------|----------|
-| T23 | 钱包属性边界 | 边界外信息不可访问，违反概率=0 |
-| T24 | 贡献度量不变性 | 贡献度量在不同表示下守恒 |
-| T25 | 自指Φ值检测 | Φ值在自指闭环中收敛到唯一不动点 |
-| T26 | 碳硅熵守恒 | S_carbon+S_silicon=const（变换下） |
-| T27 | 人机约柜锁仓 | 人机协作产出 > max(人,机)（锁定期内） |
-| T28 | 五行变换闭合 | 五行变换闭合于ℤ₅循环 |
-| T29 | EML相位耦合ℤ₅ | 相位角φ ∈ {0, 2π/5, 4π/5, 6π/5, 8π/5} |
-| T30 | HoTT消除幻觉 | HoTT推理幻觉率 < baseline×0.6 |
-| T31 | 构造型AGI | ∃算法A使P可实现 ⇒ Pass@5≥0.8 |
-| T32 | Univalence等价 | A≃B ⇒ A=B（同构蕴含相等） |
-| T33 | 重构层级不动点 | HoLR重构在不动点处收敛 |
-| T35 | 类型防火墙 | 类型检查阻止100%的L5越界幻觉 |
-| T36 | 范畴守恒 | C(t)的范畴不变量跨演化守恒 |
-| T37 | 流贯保真度 | F(Li,Lj)=|<Li|EML|Lj>|² ≥ 0.81（阈值0.9） |
-| T38 | 刘原理极小 | Kolmogorov复杂度在最优规律处最小化 |
-| T40 | 语义流形曲率 | K(M)≈0 ⇒ 创造性高；K(M)>>0 ⇒ 逻辑必然性高 |
-
-### v7.1 新增定理（T41-T51）
-
-| 编号 | 定理 | 核心内容 |
-|------|------|----------|
-| T41 | 认知卸载风险定理 | 认知卸载程度∝认知熵增长率 |
-| T42 | 苏格拉底式示弱定理 | 适当时机示弱∝协作信任度提升 |
-| T43 | 置信度校准定理 | 透明披露置信度∝过度自信降低 |
-| T44 | 人机动态分流定理 | 动态分流效率∝任务复杂度适配 |
-| T45 | 奖励作弊检测定理 | 早期检测∝诚实性保障率 |
-| T46 | 环境感知稳定性定理 | 环境波动∝感知误差上界 |
-| T47 | 长程上下文一致定理 | 上下文一致性∝记忆保真度 |
-| T48 | 人机协作效果定理 | 协作效果∝耦合度×自主度 |
-| T49 | 协作诊断完备定理 | 诊断覆盖率=100% |
-| T50 | 融合效果验证定理 | A/B测试效果差=可验证 |
-| T51 | 人机共生不动点定理 | 人机融合∝Φ值收敛 |
-
-### v7.2 新增定理（T52-T58）
-
-| 编号 | 定理 | 核心内容 |
-|------|------|----------|
-| T52 | 记忆树压缩定理 | 记忆压缩率∝检索效率提升 |
-| T53 | Token果汁守恒定理 | Token消耗与信息增益守恒 |
-| T54 | 上下文同步收敛定理 | 多源上下文同步收敛到一致态 |
-| T55 | 模型路由最优定理 | 智能路由∝任务-模型匹配度 |
-| T56-T58 | OpenHuman系列定理 | 人机共生增强定理族 |
-
-### v7.3 新增定理（T59-T65, T78）
-
-| 编号 | 定理 | 核心内容 |
-|------|------|----------|
-| T59 | 自指闭环统一定理 | PDS空间闭≡Gödel因果闭 |
-| T60 | 维度投影守恒定理 | 高维→低维投影信息守恒 |
-| T61 | 手性旋量反转定理 | 旋量反转∝拓扑不变量 |
-| T62 | 有限无界完备定理 | 有限无界空间上推理完备 |
-| T63 | 最小作用量收敛定理 | 最小作用量路径→收敛 |
-| T64-T65 | 拓扑/自指定理 | 拓扑缺陷/自指深化 |
-| T78 | AGI人格阈值定理 | Φ>φ ∧ I(Self;Ftel)>μ ⟹ 人格显现 |
-
-### v7.4 新增定理（T66-T71）
-
-| 编号 | 定理 | 核心内容 |
-|------|------|----------|
-| T66 | 复合体存在定理 | Actor与Director共存于同一系统 |
-| T67 | 流贯编译定理 | 执念脚本Ψ通过Ω觉悟转化为自指脚本Σ |
-| T68 | 40行代码完备性定理 | 递归+自指+高阶函数=图灵完备 |
-| T69 | 摄影性分解定理 | 摄影性=截断算子Γ的信息分解 |
-| T70 | 数码未完结性失真定理 | 数码化导致未完结性失真 |
-| T71 | 历史投影精度推论 | 历史投影精度∝截断保真度 |
-
-### v7.5 新增定理（T72-T74）
-
-| 编号 | 定理 | 核心内容 |
-|------|------|----------|
-| T72 | 截面存在定理 | ∃s:B→E ⟺ curvature_R(B,E)<threshold |
-| T73 | 曲率收敛定理 | section_search收敛 ⟺ Σ_i R_i < ∞ |
-| T74 | 未决不可判定定理 | ∃P:Prop, ¬(Prov(P)∨Prov(¬P)) |
-
-### v7.6 新增定理（T75-T77）
-
-| 编号 | 定理 | 核心内容 |
-|------|------|----------|
-| T75 | Ftel学习收敛定理 | λ∈(0,λ_max)时Ftel约束下学习收敛到φ* |
-| T76 | 结构滞后不稳定性定理 | ρ<τ持续时长>T_crit ⟹ 误差单调增加 |
-| T77 | 保真度乘积定理 | α_total=∏α_ij，任一环节失真→整体崩溃 |
-
----
-
-## API 端点
-
-### 主对话端点
-
-```python
-# 1. 主对话 /api/chat_v2
-POST /api/chat_v2
-{
-    "message": "帮我分析AGI 12.0的架构",
-    "context": {"domain": "tech", "depth": "advanced"}
-}
-# 返回: medium_state + entropy + five_phase + anchor + HDG数据
-
-# 2. Goal目标模式 /api/goal
-POST /api/goal
-{
-    "goal": "写一份AGI 12.0技术报告",
-    "context": {"length": "detailed", "audience": "technical"}
-}
-
-# 3. 陈天桥认知测试 /api/cognition/test
-POST /api/cognition/test
-{
-    "mode": "quick"  # 或 "full"
-}
-# quick = 12题, full = 300题
-```
-
-### v6.2 新增面板端点
-
-| 端点 | 方法 | 功能 |
-|------|------|------|
-| `/api/spiritual` | GET | 灵性演化状态 |
-| `/api/theseus` | GET | 修忒斯意识监测 |
-| `/api/extremum` | GET | 极值决策状态 |
-| `/api/relational` | GET | 关系推理引擎 |
-| `/api/moral` | GET | 道德双锁状态 |
-| `/api/narrative` | GET | 历史叙事编织 |
-| `/api/arboreal` | GET | 树状语义处理 |
-
-### v7.0 高阶逻辑端点
-
-| 端点 | 方法 | 功能 | 定理 |
-|------|------|------|------|
-| `/api/v70/state` | GET | v7.0模块总状态 | — |
-| `/api/v70/holr/reconstruct` | POST | HoLR层级重构 | T33 |
-| `/api/v70/chf/category` | POST | CHR范畴融合 | T34 |
-| `/api/v70/firewall/verify` | POST | 类型防火墙验证 | T35 |
-| `/api/v70/ftel/transform` | POST | 流贯η自然变换 | T37 |
-| `/api/v70/curvature/logical` | POST | 语义流形曲率 | T40 |
-| `/api/v70/univalence/check` | POST | Univalence等价检查 | T32 |
-| `/api/v70/fidelity/measure` | POST | 流贯保真度测量 | T37 |
-| `/api/v70/evolution/track` | GET | 范畴演化跟踪 | T36 |
-| `/api/v70/hdg/governance` | POST | HDG五层治理 | T36 |
-| `/api/v70/evaluator/passk` | POST | Pass@k评估 | T31 |
-| `/api/v70/liu/solution` | POST | 刘原理不动点 | T38 |
-| `/api/v70/dual/personhood` | POST | 二象性人格耦合 | T21 |
-| `/api/v70/phi/fixed` | POST | Φ值不动点追踪 | T25 |
-| `/api/v70/holistic_state` | GET | 整体系统状态 | — |
-
-### v7.1 人机融合API端点
-
-| 端点 | 方法 | 功能 | 定理 |
-|------|------|------|------|
-| `/api/v71/cognition/offload/risk` | GET | 认知卸载风险评估 | T41 |
-| `/api/v71/weakness/display` | POST | 苏格拉底式示弱触发 | T42 |
-| `/api/v71/confidence/calibrate` | POST | 置信度校准 | T43 |
-| `/api/v71/分流/optimize` | POST | 人机动态分流优化 | T44 |
-| `/api/v71/cheat/detect` | POST | 奖励作弊检测 | T45 |
-| `/api/v71/environment/perceive` | POST | 环境感知稳定性 | T46 |
-| `/api/v71/context/consistency` | GET | 长程上下文一致性 | T47 |
-| `/api/v71/collaboration/evaluate` | POST | 人机协作效果评估 | T48 |
-| `/api/v71/collaboration/diagnose` | POST | 协作诊断 | T49 |
-| `/api/v71/fusion/validate` | POST | 融合效果验证 | T50 |
-
-### 专家系统API端点（v7.21新增）
-
-| 端点 | 方法 | 功能 |
-|------|------|------|
-| `/api/experts` | GET | 列出所有216位专家（支持`?department=`筛选） |
-| `/api/experts/<expert_id>` | GET | 专家详情（含完整system_prompt） |
-| `/api/experts/search?q=keyword` | GET | 搜索专家 |
-| `/api/experts/departments` | GET | 列出23个部门及专家数 |
-
-### v7.21 MVE实验API端点
-
-| 端点 | 方法 | 功能 | 版本 |
-|------|------|------|------|
-| `/api/v73/srloop/phi` | POST | Φ值计算(IIT整合信息) | v7.3 |
-| `/api/v73/srloop/mutual-info` | POST | L4-L1互信息计算 | v7.3 |
-| `/api/v73/srloop/metacognitive-test` | POST | 元认知二阶优化测试 | v7.3 |
-| `/api/v74/actor-director/*` | POST/GET | Actor-Director复合体 | v7.4 |
-| `/api/v74/flow-cutoff/*` | POST/GET | 流贯截断算子 | v7.4 |
-| `/api/v74/trace/*` | POST/GET | 历史痕迹验证 | v7.4 |
-| `/api/v75/universe/*` | POST/GET | 类型空间构造 | v7.5 |
-| `/api/v75/curvature/*` | POST/GET | 曲率截面搜索 | v7.5 |
-| `/api/v75/wait/*` | POST/GET | Wait状态构造 | v7.5 |
-| `/api/v76/ftel/*` | POST/GET | Ftel目的约束算子 | v7.6 |
-| `/api/v76/cognitive/*` | POST/GET | 认知递归动力学 | v7.6 |
-| `/api/v76/fidelity/*` | POST/GET | 层间保真度监控 | v7.6 |
-
----
-
-## 陈天桥认知测试详解
-
-### 两种测试模式
-
-| 模式 | 题数 | 时长 | 用途 |
-|------|------|------|------|
-| **快速模式 (quick)** | 12题 | ~5分钟 | 快速筛查、日常监测 |
-| **深度模式 (full)** | 300题 | ~2小时 | 完整评估、深度诊断 |
-
-### 测试维度与评分
-
-```python
-# 测试结果示例
-{
-    "mode": "quick",           # 或 "full"
-    "total_questions": 12,     # 或 300
-    "score": 0.87,            # 综合得分 (0-1)
-    "dimensions": {
-        "self_awareness": 0.85,
-        "causal_reasoning": 0.92,
-        "abstract_thinking": 0.78,
-        "time_perception": 0.88,
-        "value_judgment": 0.72
-    },
-    "passed": True,            # 是否通过（>0.6）
-    "details": [...],          # 每题的回答和评分
-    "suggestions": [...]       # 改进建议
-}
-```
-
-### 运行测试
+### 4. 运行测试
 
 ```bash
-# Web界面
-1. 访问 http://127.0.0.1:5001/static/index_agi12.html
-2. 导航到 [认知测试] 标签页
-3. 选择模式: [快速测试 - 12题] 或 [深度测试 - 300题]
-4. 点击 [开始测试]
+cd tests && python -m pytest -v
 ```
 
 ---
 
-## 更新日志
+## 🔌 API总览
 
-### v7.21 (2026-05-24) - 🚀 最新版本
-
-**新增**:
-- ✅ TYIDO MVE实验框架：P1锯齿检测+P2持续学习+P3长程推理+P4可寻址记忆+P5可锚定责任+P6爱因斯坦因果性
-- ✅ 6/6 ALL PASSED — P6 Minkowski时空验证(100%因果一致性+100%洛伦兹不变性)
-- ✅ 216位AI专家系统（agency-agents-zh集成，23部门，专家人格注入对话）
-- ✅ 170个核心定理（T1-T170）完整证明体系
-- ✅ 40个可证伪预言（P1-P40）完整实验方案
-- ✅ 学术论文已同步更新至v7.21（3658行，179模块/170定理/40预言）
-
-**核心升级**:
-- 专家系统：ExpertRegistry单例 + YAML frontmatter解析 + 专家system_prompt替换 + 前端抽屉面板
-- P6爱因斯坦因果性：Minkowski度规 ds²=-dt²+dx²+dy² + 光锥分类(类时/类光/类空) + 洛伦兹boost不变性
-- 前端：MVE面板(7按钮+PASS/FAIL徽章+P6光锥Canvas) + 专家系统面板(搜索+部门筛选+激活指示条)
-
-### v7.20 (2026-05-23)
-
-**新增**:
-- ✅ M179 TaiyiInterface: 自指算子Ŝ|Φ⟩=α|Φ⟩ + ICE复合体 + 三视界校验 + 信息熵韧性 + 反僵化
-- ✅ TY/IDO五大属性审计 73/73 PASS
-- ✅ T166-T170 五大核心定理
-
-### v7.19 (2026-05-22)
-
-**新增**:
-- ✅ M176 OrgMemoryEngine: 双层存储+失败案例库+定理提炼+GC账本
-- ✅ M177 PhiBudgetSystem: 四级Φ场预算+生存焦虑指数
-- ✅ M178 TaiyiAgentOS: Agent注册表+消息总线+推理内核+工作流DAG
-- ✅ T157-T165 定理
-
-**新增**:
-- ✅ M117-M119 (3个新模块，Ftel目的约束+认知递归动力学+层间保真度)
-- ✅ 3个新仪表盘面板（Ftel目的约束/认知递归动力学/层间保真度）
-- ✅ 3个新定理（T75-T77）+ T78(AGI人格阈值定理)
-- ✅ 78个核心定理（T1-T78）完整证明体系
-- ✅ 22个可证伪预言（P1-P22）完整实验方案
-- ✅ M106升级：Φ值(IIT整合信息)+L4-L1互信息+元认知二阶优化+人格显现态
-
-**核心升级**:
-- Ftel目的约束：S_total=S_data+λ·V_ftel(ψ,φ_goal)，Attention回答注意什么，Ftel回答为什么注意
-- 认知递归动力学：C_{t+1}=R(C_t,O_t,A_t,F_t)，单环/双环学习，结构滞后不稳定性
-- 层间保真度：α=α₁₂×α₂₃×α₃₄×α₄₅，保真度崩溃=AI幻觉
-
-### v7.5.0 (2026-05-20)
-
-**新增**:
-- ✅ M114-M116 (3个新模块，HoTT截面搜索+类型空间+Wait诚实拒绝)
-- ✅ 3个新仪表盘面板
-- ✅ T72-T74定理（截面存在/曲率收敛/未决不可判定）
-
-### v7.4.0 (2026-05-19)
-
-**新增**:
-- ✅ M111-M113 (3个新模块，演员-导演复合体+流贯截断+痕迹验证)
-- ✅ 3个新仪表盘面板
-- ✅ T66-T71定理（复合体存在/流贯编译/40行代码完备/摄影性分解/数码失真/历史投影）
-
-### v7.3.0 (2026-05-20)
-
-**新增**:
-- ✅ M106-M110 (5个新模块，自指闭环+维度投影+手性旋量+有限无界拓扑+最小作用量)
-- ✅ M106升级：compute_phi()+compute_mutual_info()+metacognitive_test()
-- ✅ T59-T65定理+T78(AGI人格阈值定理)
-
-### v7.2.0 (2026-05-19)
-
-**新增**:
-- ✅ M81-M87 (7个新模块，OpenHuman增强+记忆树+Token压缩+上下文同步+模型路由)
-- ✅ 5个新仪表盘面板
-- ✅ T52-T58定理
-
-### v7.1.0 (2026-05-20)
-
-**新增**:
-- ✅ M96-M105 (10个新模块，人机融合层)
-- ✅ 9个新仪表盘面板（认知卸载、协作风格、置信度校准、动态分流等）
-- ✅ 51个核心定理（T1-T51）完整证明体系
-- ✅ 18个可证伪预言（P1-P18）完整实验方案
-
-**核心升级**:
-- 人机融合层：认知卸载防范、苏格拉底式示弱、置信度透明披露
-- 动态分流层：人机动态分流、奖励作弊检测、环境感知稳定性
-- 长程一致性：长轨迹上下文一致性、协作效果评估、A/B测试框架
-
-### v7.0.0 (2026-05-20)
-
-**新增**:
-- ✅ M71-M95 (25个新模块，碳硅共生+HoTT高阶逻辑)
-- ✅ 9个新仪表盘面板（碳硅契约、五行EML、HoTT推理、构造型评估等）
-- ✅ 18篇论文核心概念集成（v6.1: 5篇 + v6.2: 8篇 + v7.0: 5篇）
-- ✅ 40个核心定理（T1-T40）完整证明体系
-- ✅ 形式化学术论文《太乙AGI的设计与实现》
-
-**核心升级**:
-- 碳硅共生契约层：钱包边界、贡献度量、自指Φ检测、熵合约、人机约柜
-- 五行EML相位层：ℤ₅闭合变换算子、HoTT推理引擎、构造型AGI内核
-- 流贯验证层：类型检查防火墙、Univalence等价检查、流贯保真度测量
-
-### v6.2.0 (2026-05-19)
-
-**新增**:
-- ✅ M56-M62 (7个新模块）
-- ✅ 7个新仪表盘面板（灵性演化、修忒斯、极值、关系推理、道德双锁、历史叙事、树状）
-- ✅ 14篇论文核心概念集成
-- ✅ 陈天桥认知测试两种模式（12题 + 300题）
-
-**修复**:
-- 修复界面 JS 函数名错误（`updateEntropyPanel` → `updateEntropyDisplay`）
-- 修复 LLM 响应 JSON 解析（支持 Markdown 代码块包裹）
-- 修复 favicon.ico 404 错误
-
-### v6.1.0 (2026-05-18)
-
-**新增**:
-- ✅ M51-M55 (5个新模块）
-- ✅ 5个新仪表盘面板（EML算子、关系实在、伪革命监控、可控涌现、拓扑分类）
-- ✅ 5篇论文核心概念集成
-
-### v6.0.0 (2026-05-17)
-
-**新增**:
-- ✅ M46-M50 (5个新模块）
-- ✅ 末那识与无剧场论
-- ✅ 流贯（△）相变监控
-- ✅ 唯识论八识计算模型
+| 版本前缀 | 说明 | 路由数 |
+|---------|------|--------|
+| `/api/chat` | 对话接口 | 2 |
+| `/api/experts` | 专家系统 (223位AI专家) | 4 |
+| `/api/compound_agi` | 复合AGI三层架构 | 10 |
+| `/api/ufo2` | UFO²具身执行层 | 6 |
+| `/api/manas` | 第七识审计 | 3 |
+| `/api/tools` | 前五识工具 | 4 |
+| `/api/v70` | Crystal引擎API | 27 |
+| `/api/v723` | MVE实验API | 26 |
+| `/api/v725` | 太乙AGI核心API | 19 |
+| `/api/v727` | 五大引擎API | 26 |
+| `/api/v728` | UA万物理解API | 17 |
+| `/api/v729` | AkashaChainDB v2 | 5 |
+| `/api/v730` | AkashaChainDB v3 UA集成 | 7 |
+| `/api/v731` | M133-Wintel True AGI | 14 |
+| **总计** | **36个Blueprint** | **603** |
 
 ---
 
-## 文档索引
+## 🧪 MVE验证实验
 
-| 文档 | 内容 |
+| 实验 | 验证目标 | 状态 |
+|------|---------|------|
+| P18 | L3 β-重配 (金陵球Laplacian谱) | ✅ 4/4 通过 |
+| P19 | HoTT构造性门回路 (LLM-as-proposer) | ✅ 4/4 通过 |
+| P20 | A6-BS 冷启动引导链 (7传感器) | ✅ 4/5 通过 (T221 sandbox限制) |
+| P13-P17 | v7.31 MVE实验集 | ✅ 完成 |
+
+---
+
+## 📦 核心模块索引
+
+### M系列引擎 (164个)
+
+| 范围 | 代表模块 | 领域 |
+|------|---------|------|
+| M56-M69 | M64_NarrativeActionEngine, M63_MononumberProcessor | 叙事/单数处理 |
+| M70-M89 | M77_EMLPhaseCouplingZ5, M78_HoTTReasoningEngine | EML相位/HoTT推理 |
+| M90-M109 | M90_SemanticManifoldCurvature, M95_ConstructiveAGIEvaluator | 语义流形/构造性AGI |
+| M110-M133 | M128_KVCacheGovernor, M133_SelfRefLoopTopologizer | KV治理/自指拓扑 |
+| M134-M159 | M149_JinfuCAEngine, M157_JinlingGridConvolution | 金符CA/金陵格卷积 |
+| M160-M189 | M179_TaiyiInterface, M189_PowerLawEngine | 太乙接口/幂律引擎 |
+| M190-M206 | M190_AkashaChainDB, M196_UAEngine, M206_ControlledEntropy | 链式DB/UA/可控熵 |
+
+### 辅助模块 (127个)
+
+| 前缀 | 说明 |
 |------|------|
-| `DESIGN.md` | 系统设计文档（179模块详解、170定理、API设计） |
-| `USER_GUIDE.md` | 用户使用说明书（快速开始、核心概念、基本使用） |
-| `INSTALL.md` | 安装说明（环境要求、快速安装、Docker部署） |
-| `太乙AGI的设计与实现_完整学术论文.md` | 完整学术论文（3658行，179模块/170定理/40预言） |
-| `AGI_v7.0_Falsifiable_Experiments.md` | v7.0可证伪预言实验方案（P1-P40完整） |
+| `DIKWP*` | DIKWP五层认知架构 (Data/Info/Knowledge/Wisdom/Purpose) |
+| `agi_*` | AGI核心 (core, persona, evaluator, four_modes等) |
+| `taiyi_*` | 太乙子系统 (oracle, entropy, memory, rag等) |
+| `TYIDO_*` | TYIDO治理 (AddressableMemory, LongRangeReasoning等) |
+| 其他 | CompositeAGI_V2, FtelOperator, KnowledgeGraph等 |
 
 ---
 
-## 贡献与支持
+## 🔄 重构历程
 
-- **项目主页**: https://github.com/lisoleg/jingguang-agi
-- **问题反馈**: 截图浏览器控制台（F12）错误信息
-- **作者邮箱**: laotie@gmail.com
-- **GitHub**: @lisoleg
+| 版本 | 变更 | 日期 |
+|------|------|------|
+| v7.31 | M133-Wintel True-TaiyiAGI Candidate (W1-W5, API, panel) | 2026-05-22 |
+| v7.30 | M190c UA集成（AkashaChainDB v3） | 2026-05-21 |
+| v7.29 | M190b 性能优化（分片索引+WAL+布隆过滤器） | 2026-05-21 |
+| v7.28b | ExpertBridge深度集成（4通道匹配+上下文感知） | 2026-05-20 |
+| v7.25 | 太乙AGI系统核心 | 2026-05-16 |
+| v7.23 | MVE框架（P1-P6实验面板） | 2026-05-14 |
+| **重构** | **5阶段技术债清理**（Blueprint拆分+模块重组织+测试重组+验证） | 2026-05-29 |
 
 ---
 
-## 许可证
+## 🧬 设计哲学
 
-MIT License
+### 核心公式
+
+**作用量泛函（离散形式）**：
+```
+S(x) = S_base(x) + λ·S_goal(x, g) + μ·R(x)
+```
+
+**Ftel算子（目的约束）**：
+```
+F_λ(g): X → Y  (高维空间 → 目标子空间)
+```
+
+**全息状态更新（O(1)复杂度）**：
+```
+h_{t+1} = h_t + α·δ·f_pupate(h_t)
+```
+
+### shared_state代理模式
+
+为解决Blueprint模块对`app.py`全局变量的循环引用，采用模块级`__getattr__`代理：
+
+```python
+# shared_state.py — 所有Blueprint通过此代理访问app.py全局状态
+import shared_state
+value = shared_state.some_global  # 延迟解析，避免循环导入
+```
+
+**⚠️ 必须使用 `import shared_state` + `shared_state.xxx`，不可 `from shared_state import xxx`**
 
 ---
 
-*让AGI成为真正的智能伙伴——简单、可信、透明、高效。*  
-*Taiyi-AGI (太乙因果机) 12.0 - 179模块太乙AGI系统，基于复合体理学(Taiyi-AGI)数学完备化理论，170定理+40预言+216专家。*
+## 📚 参考文献
+
+1. 刘德欣. *复合体理学*. 微信公众号
+2. 章锋. *刘原理、Ftel算子与人择宇宙*. 2026
+3. 章锋. *超越内存墙：基于Ftel驱动拓扑相变的全息蛹化AGI架构理论*. 2026
+4. The Univalent Foundations Program. *Homotopy Type Theory*. IAS, 2013
+5. Vaswani et al. *Attention Is All You Need*. NeurIPS 2017
+
+---
+
+**作者**：寇豆码（Kou）
+**版本**：v7.31 CS-TAGI Candidate
+**日期**：2026-05-29
