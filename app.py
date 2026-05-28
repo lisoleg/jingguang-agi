@@ -10255,6 +10255,288 @@ def v726_akasha_theorem(theorem_id):
 
 
 # ============================================================
+# v7.29 M190b AkashaChainDB v2 性能优化
+# 分片索引·WAL持久化·布隆过滤器·查询缓存
+# ============================================================
+
+@app.route('/api/v729/akasha/perf_stats', methods=['GET'])
+def api_v729_akasha_perf_stats():
+    """性能统计 — 分片状态、WAL状态、布隆过滤器状态、缓存命中率"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        state = db.get_state()
+        return jsonify({
+            'version': state.get('version'),
+            'sharded_index': state.get('relation_index', {}),
+            'wal': state.get('wal', {}),
+            'bloom': state.get('bloom', {}),
+            'cache': state.get('cache', {}),
+            'write_count': state.get('write_count', 0),
+            'query_count': state.get('query_count', 0),
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v729/akasha/wal/checkpoint', methods=['POST'])
+def api_v729_akasha_wal_checkpoint():
+    """手动触发WAL checkpoint"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        result = db._wal.checkpoint(reason="manual_api")
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v729/akasha/wal/recover', methods=['POST'])
+def api_v729_akasha_wal_recover():
+    """WAL恢复"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        result = db._wal.recover(db._relation_index)
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v729/akasha/cache/clear', methods=['POST'])
+def api_v729_akasha_cache_clear():
+    """清空查询缓存"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        cleared = db._cache.invalidate_all()
+        return jsonify({'status': 'cleared', 'entries_cleared': cleared})
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v729/akasha/bloom/rebuild', methods=['POST'])
+def api_v729_akasha_bloom_rebuild():
+    """重建布隆过滤器"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        # 收集所有三元组用于重建
+        all_triples = db._relation_index.query_pattern()
+        result = db._bloom.rebuild(all_triples)
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+# ---- v730: M190c AkashaChainDB v3 UA集成 ----
+
+@app.route('/api/v730/akasha/ua/convert', methods=['POST'])
+def api_v730_akasha_ua_convert():
+    """UA↔Akasha 双向转换"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        data = request.get_json(force=True) or {}
+        direction = data.get("direction", "ua_to_akasha")
+
+        if direction == "ua_to_akasha":
+            node_type = data.get("node_type", "")
+            node_data = data.get("node_data", {})
+            edge_type = data.get("edge_type", "")
+            edge_data = data.get("edge_data", {})
+            triples = db._ua_bridge.ua_to_akasha(
+                node_type=node_type,
+                node_data=node_data,
+                edge_type=edge_type,
+                edge_data=edge_data,
+            )
+            return jsonify({
+                "direction": "ua_to_akasha",
+                "triples_count": len(triples),
+                "triples": [t.to_dict() for t in triples],
+            })
+        elif direction == "akasha_to_ua":
+            from M190_AkashaChainDB import AkashaTriple
+            triples_data = data.get("triples", [])
+            triples = []
+            for td in triples_data:
+                triple = AkashaTriple(
+                    subject=td.get("subject", ""),
+                    predicate=td.get("predicate", ""),
+                    object=td.get("object", ""),
+                    confidence=td.get("confidence", 1.0),
+                    source_agent=td.get("source_agent", "system"),
+                )
+                triples.append(triple)
+            ua_result = db._ua_bridge.akasha_to_ua(triples)
+            return jsonify({
+                "direction": "akasha_to_ua",
+                "nodes_count": len(ua_result.get("nodes", [])),
+                "edges_count": len(ua_result.get("edges", [])),
+                "result": ua_result,
+            })
+        else:
+            return jsonify({"error": f"Unknown direction: {direction}"}), 400
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v730/akasha/semantic/search', methods=['POST'])
+def api_v730_akasha_semantic_search():
+    """语义查询"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        data = request.get_json(force=True) or {}
+        query = data.get("query", "")
+        top_k = data.get("top_k", 10)
+        threshold = data.get("threshold", 0.3)
+
+        results = db._semantic_query.semantic_search(
+            query=query, top_k=top_k, threshold=threshold
+        )
+        return jsonify({
+            "query": query,
+            "results_count": len(results),
+            "results": results,
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v730/akasha/semantic/rebuild_index', methods=['POST'])
+def api_v730_akasha_semantic_rebuild_index():
+    """重建语义索引"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        db._semantic_query.build_index()
+        stats = db._semantic_query.get_stats()
+        return jsonify({
+            "status": "rebuilt",
+            "stats": stats,
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v730/akasha/expert/register', methods=['POST'])
+def api_v730_akasha_expert_register():
+    """注册专家"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        data = request.get_json(force=True) or {}
+        expert_id = data.get("expert_id", "")
+        domain = data.get("domain", "")
+        authority = data.get("authority", 0.5)
+        specialties = data.get("specialties", [])
+
+        result = db._expert_bridge.register_expert(
+            expert_id=expert_id,
+            domain=domain,
+            authority=authority,
+            specialties=specialties,
+        )
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v730/akasha/expert/query', methods=['POST'])
+def api_v730_akasha_expert_query():
+    """查询专家知识"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        data = request.get_json(force=True) or {}
+        expert_id = data.get("expert_id", "")
+        domain = data.get("domain", "")
+
+        if expert_id:
+            results = db._expert_bridge.query_by_expert(expert_id)
+        elif domain:
+            results = db._expert_bridge.query_by_domain(domain)
+        else:
+            return jsonify({"error": "Must provide expert_id or domain"}), 400
+
+        return jsonify({
+            "results_count": len(results),
+            "results": results,
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v730/akasha/timetravel/query', methods=['POST'])
+def api_v730_akasha_timetravel_query():
+    """时间旅行查询"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        data = request.get_json(force=True) or {}
+        entity = data.get("entity", "")
+        timestamp = data.get("timestamp", None)
+        start_time = data.get("start_time", None)
+        end_time = data.get("end_time", None)
+
+        if timestamp is not None:
+            result = db._time_travel.query_at_time(entity, float(timestamp))
+        elif start_time is not None and end_time is not None:
+            result = db._time_travel.query_range(entity, float(start_time), float(end_time))
+        else:
+            return jsonify({"error": "Must provide timestamp or (start_time, end_time)"}), 400
+
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/v730/akasha/timetravel/timeline', methods=['POST'])
+def api_v730_akasha_timetravel_timeline():
+    """获取实体时间线"""
+    try:
+        from M190_AkashaChainDB import AkashaChainDB
+        db = AkashaChainDB.get_instance()
+        data = request.get_json(force=True) or {}
+        entity = data.get("entity", "")
+
+        timeline = db._time_travel.get_entity_timeline(entity)
+        return jsonify({
+            "entity": entity,
+            "timeline_count": len(timeline),
+            "timeline": timeline,
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+# ============================================================
 # v7.27 太极OS·流锻内核 (M191-M195)
 # ============================================================
 
