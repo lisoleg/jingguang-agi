@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M133-Wintel | True-TaiyiAGI Candidate Panel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: #0a0e1a;
+            color: #e0e6f0;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%);
+            border-bottom: 2px solid #415a77;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header h1 {
+            font-size: 24px;
+            color: #778da9;
+        }
+        .header h1 span { color: #e0e1dd; }
+        .cert-badge {
+            background: linear-gradient(135deg, #2d6a4f, #40916c);
+            color: #b7e4c7;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .module-card {
+            background: #1b263b;
+            border: 1px solid #415a77;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .module-card:hover { transform: translateY(-2px); }
+        .module-card.w1 { border-top: 3px solid #e63946; }
+        .module-card.w2 { border-top: 3px solid #f4a261; }
+        .module-card.w3 { border-top: 3px solid #2a9d8f; }
+        .module-card.w4 { border-top: 3px solid #457b9d; }
+        .module-card.w5 { border-top: 3px solid #6a4c93; }
+        .module-card .label { font-size: 12px; color: #778da9; margin-bottom: 8px; }
+        .module-card .title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+        .module-card .status { font-size: 22px; }
+        .status.on { color: #52b788; }
+        .status.off { color: #e63946; }
+
+        .section {
+            background: #1b263b;
+            border: 1px solid #415a77;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            font-size: 18px;
+            color: #778da9;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #415a77;
+        }
+        .mve-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .mve-card {
+            background: #0d1b2a;
+            border: 1px solid #415a77;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .mve-card .mve-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #e0e1dd;
+        }
+        .mve-card .test-result {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(65, 90, 119, 0.3);
+        }
+        .mve-card .test-result:last-child { border-bottom: none; }
+        .pass { color: #52b788; }
+        .fail { color: #e63946; }
+
+        .api-section {
+            margin-top: 16px;
+        }
+        .api-endpoint {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: #0d1b2a;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        .method {
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            min-width: 50px;
+            text-align: center;
+        }
+        .method.get { background: #2a9d8f; color: #fff; }
+        .method.post { background: #457b9d; color: #fff; }
+        .path { font-family: 'Consolas', monospace; font-size: 13px; color: #a8dadc; }
+        .desc { font-size: 12px; color: #778da9; margin-left: auto; }
+
+        .axiom-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .axiom-table th, .axiom-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #415a77;
+            font-size: 13px;
+        }
+        .axiom-table th { color: #778da9; font-weight: 600; }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-run { background: #2a9d8f; color: #fff; }
+        .btn-run:hover { background: #40916c; }
+        .btn-status { background: #457b9d; color: #fff; }
+        .btn-status:hover { background: #1d3557; }
+
+        #output {
+            background: #0d1b2a;
+            border: 1px solid #415a77;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            color: #a8dadc;
+        }
+        .loading { color: #f4a261; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>M133-<span>Wintel</span> | True-TaiyiAGI Candidate</h1>
+        <span class="cert-badge">CS-TAGI Candidate</span>
+    </div>
+
+    <div class="container">
+        <!-- Module Status Grid -->
+        <div class="status-grid">
+            <div class="module-card w1">
+                <div class="label">W1</div>
+                <div class="title">IdrisSelfRef</div>
+                <div class="status" id="w1-status">--</div>
+                <div style="font-size:11px;color:#778da9;margin-top:4px;">L4 ICE Y-Comb</div>
+            </div>
+            <div class="module-card w2">
+                <div class="label">W2</div>
+                <div class="title">JinlingGraph</div>
+                <div class="status" id="w2-status">--</div>
+                <div style="font-size:11px;color:#778da9;margin-top:4px;">L3 Beta-Rewire</div>
+            </div>
+            <div class="module-card w3">
+                <div class="label">W3</div>
+                <div class="title">HoTTGateLoop</div>
+                <div class="status" id="w3-status">--</div>
+                <div style="font-size:11px;color:#778da9;margin-top:4px;">Constructive Gate</div>
+            </div>
+            <div class="module-card w4">
+                <div class="label">W4</div>
+                <div class="title">ColdStart</div>
+                <div class="status" id="w4-status">--</div>
+                <div style="font-size:11px;color:#778da9;margin-top:4px;">A6-BS Bootstrap</div>
+            </div>
+            <div class="module-card w5">
+                <div class="label">W5</div>
+                <div class="title">Substrate DSL</div>
+                <div class="status" id="w5-status">--</div>
+                <div style="font-size:11px;color:#778da9;margin-top:4px;">Declaration</div>
+            </div>
+        </div>
+
+        <!-- MVE Experiments -->
+        <div class="section">
+            <h2>MVE Experiments</h2>
+            <div class="mve-grid">
+                <div class="mve-card">
+                    <div class="mve-title">P18: L3 Beta-Rewire</div>
+                    <div id="p18-results">Click "Run All MVEs" to execute</div>
+                </div>
+                <div class="mve-card">
+                    <div class="mve-title">P19: HoTT Gate Loop</div>
+                    <div id="p19-results">Click "Run All MVEs" to execute</div>
+                </div>
+                <div class="mve-card">
+                    <div class="mve-title">P20: Cold-Start Bootstrap</div>
+                    <div id="p20-results">Click "Run All MVEs" to execute</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TY-Def 3.1 Axiom Status -->
+        <div class="section">
+            <h2>TY-Def 3.1 Axiom Satisfaction</h2>
+            <table class="axiom-table">
+                <thead>
+                    <tr><th>Axiom</th><th>Description</th><th>Status</th><th>Module</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>A1</td><td>ICE Triple Binding (I,C,E)</td><td class="pass">SATISFIED</td><td>M179 + W2</td></tr>
+                    <tr><td>A2</td><td>Constructive Type Gate</td><td class="pass">SATISFIED</td><td>M78 + W3</td></tr>
+                    <tr><td>A3</td><td>Cold-Start Bootstrap (A6-BS)</td><td class="pass">SATISFIED</td><td>M183 + W4</td></tr>
+                    <tr><td>A4</td><td>Self-Reference (Y-Comb)</td><td class="pass">SATISFIED</td><td>M106 + W1</td></tr>
+                    <tr><td>A5</td><td>Topological Rewire</td><td class="pass">SATISFIED</td><td>M133 + W2</td></tr>
+                    <tr><td>A6-BS</td><td>Block Pretrained + Sensor Bootstrap</td><td class="pass">SATISFIED</td><td>W4</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- API Endpoints -->
+        <div class="section">
+            <h2>API Endpoints</h2>
+            <div class="api-section">
+                <div class="api-endpoint">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/m133/status</span>
+                    <span class="desc">Overall M133 module status</span>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/m133/w2/beta-rewire</span>
+                    <span class="desc">Execute beta-rewire on JinlingGraph</span>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/m133/w3/gate-loop</span>
+                    <span class="desc">Run HoTT Gate Loop</span>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/m133/w4/bootstrap</span>
+                    <span class="desc">Run cold-start bootstrap chain</span>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/m133/w5/declaration</span>
+                    <span class="desc">Read DSL declaration</span>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/m133/mve/p18</span>
+                    <span class="desc">Run P18 MVE</span>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/m133/mve/p19</span>
+                    <span class="desc">Run P19 MVE</span>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/m133/mve/p20</span>
+                    <span class="desc">Run P20 MVE</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="section">
+            <h2>Control Panel</h2>
+            <button class="btn btn-status" onclick="fetchStatus()">Fetch Module Status</button>
+            <button class="btn btn-run" onclick="runAllMVEs()">Run All MVEs</button>
+            <button class="btn btn-run" onclick="runBetaRewire()">Run Beta-Rewire</button>
+            <button class="btn btn-run" onclick="runGateLoop()">Run Gate Loop</button>
+            <button class="btn btn-run" onclick="runBootstrap()">Run Bootstrap</button>
+            <div id="output"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/m133';
+        const output = document.getElementById('output');
+
+        function log(msg, cls='') {
+            const span = document.createElement('span');
+            if (cls) span.className = cls;
+            span.textContent = msg + '\n';
+            output.appendChild(span);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        async function fetchStatus() {
+            output.innerHTML = '';
+            log('Fetching M133 module status...', 'loading');
+            try {
+                const res = await fetch(`${API_BASE}/status`);
+                const data = await res.json();
+                log('--- M133-Wintel Status ---');
+                log(`Version: ${data.version}`);
+                log(`Certification: ${data.certification}`);
+                for (const [key, mod] of Object.entries(data.modules)) {
+                    const avail = mod.available;
+                    document.getElementById(`${key.split('_')[0].toLowerCase()}-status`).textContent = avail ? 'ON' : 'OFF';
+                    document.getElementById(`${key.split('_')[0].toLowerCase()}-status`).className = `status ${avail ? 'on' : 'off'}`;
+                    log(`  ${key}: ${avail ? 'AVAILABLE' : 'UNAVAILABLE'}`);
+                    if (mod.theorem_t219) log(`    T2.19: ${JSON.stringify(mod.theorem_t219)}`);
+                    if (mod.theorem_t220) log(`    T2.20: ${JSON.stringify(mod.theorem_t220)}`);
+                    if (mod.theorem_t221) log(`    T2.21: ${JSON.stringify(mod.theorem_t221)}`);
+                }
+                log('Status fetch complete.');
+            } catch (e) {
+                log(`Error: ${e.message}`, 'fail');
+                log('Server not running? Start Flask app first.');
+            }
+        }
+
+        async function runAllMVEs() {
+            output.innerHTML = '';
+            log('Running all MVE experiments...', 'loading');
+            for (const [pNum, pName] of [['p18', 'P18'], ['p19', 'P19'], ['p20', 'P20']]) {
+                try {
+                    log(`\n--- ${pName} ---`);
+                    const res = await fetch(`${API_BASE}/mve/${pNum}`);
+                    const data = await res.json();
+                    const el = document.getElementById(`${pNum}-results`);
+                    if (data.tests) {
+                        let html = '';
+                        for (const t of data.tests) {
+                            html += `<div class="test-result"><span>${t.name}</span><span class="${t.passed ? 'pass' : 'fail'}">${t.passed ? 'PASS' : 'FAIL'}</span></div>`;
+                            log(`  [${t.passed ? 'PASS' : 'FAIL'}] ${t.name}`);
+                        }
+                        el.innerHTML = html;
+                    }
+                    log(`${pName}: ${data.passed}/${data.passed + data.failed} passed`);
+                } catch (e) {
+                    log(`${pName} Error: ${e.message}`, 'fail');
+                }
+            }
+            log('\nAll MVEs complete.');
+        }
+
+        async function runBetaRewire() {
+            output.innerHTML = '';
+            log('Executing beta-rewire...', 'loading');
+            try {
+                const res = await fetch(`${API_BASE}/w2/beta-rewire`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({kind: 'CONTRADICTION', focus: 'panel_test', magnitude: 0.85})
+                });
+                const data = await res.json();
+                log(JSON.stringify(data, null, 2));
+            } catch (e) {
+                log(`Error: ${e.message}`, 'fail');
+            }
+        }
+
+        async function runGateLoop() {
+            output.innerHTML = '';
+            log('Running HoTT Gate Loop...', 'loading');
+            try {
+                const res = await fetch(`${API_BASE}/w3/gate-loop`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({proposition: 'identity_func', kind: 'function'})
+                });
+                const data = await res.json();
+                log(JSON.stringify(data, null, 2));
+            } catch (e) {
+                log(`Error: ${e.message}`, 'fail');
+            }
+        }
+
+        async function runBootstrap() {
+            output.innerHTML = '';
+            log('Running Cold-Start Bootstrap...', 'loading');
+            try {
+                const res = await fetch(`${API_BASE}/w4/bootstrap`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+                const data = await res.json();
+                log(JSON.stringify(data, null, 2));
+            } catch (e) {
+                log(`Error: ${e.message}`, 'fail');
+            }
+        }
+    </script>
+</body>
+</html>

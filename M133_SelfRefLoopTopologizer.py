@@ -984,6 +984,54 @@ def _self_test() -> Dict[str, Any]:
     return results
 
 
+# ==================== M133-W2 Integration ====================
+def beta_rewire_topologizer(delta_psi_dict: Dict[str, Any] = None,
+                             ice_patch_dict: Dict[str, Any] = None) -> Dict[str, Any]:
+    """M133-W2 Integration: Execute beta-rewire on JinlingGraph.
+
+    This replaces the TODO/placeholder with a real beta-rewire
+    using M133_W2_JinlingGraphBetaRewire.
+
+    Args:
+        delta_psi_dict: DeltaPsi parameters {kind, focus, magnitude}
+        ice_patch_dict: ICEPatch parameters {target, action, data}
+
+    Returns:
+        Dict with rewire result including Laplacian spectrum jump.
+    """
+    try:
+        from M133_W2_JinlingGraphBetaRewire import (
+            JinlingGraph, DeltaPsi, ICEPatch,
+        )
+        g = JinlingGraph()
+        # Add existing topology nodes
+        if _instance := SelfRefLoopTopologizer.get_instance():
+            if _instance._current_loop_state:
+                g.add_node(f"loop_{_instance._current_loop_state.loop_type}")
+                g.add_node(f"kappa_{_instance._current_loop_state.penalty_kappa:.4f}")
+
+        dp = DeltaPsi(
+            kind=delta_psi_dict.get("kind", "MIS_MATCH") if delta_psi_dict else "MIS_MATCH",
+            focus=delta_psi_dict.get("focus", "") if delta_psi_dict else "",
+            magnitude=delta_psi_dict.get("magnitude", 0.5) if delta_psi_dict else 0.5,
+        )
+        ip = ICEPatch(
+            target=ice_patch_dict.get("target", "L3_GRAPH") if ice_patch_dict else "L3_GRAPH",
+            action=ice_patch_dict.get("action", "rewire") if ice_patch_dict else "rewire",
+            data=ice_patch_dict.get("data", {}) if ice_patch_dict else {},
+        )
+        g.beta_rewire(dp, ip)
+        return {
+            "rewired": True,
+            "version": g.version,
+            "laplacian_history": g.laplacian_history[-3:],
+        }
+    except ImportError:
+        return {"rewired": False, "error": "M133_W2 not available"}
+    except Exception as e:
+        return {"rewired": False, "error": str(e)}
+
+
 # ==================== 模块级单例 ====================
 def get_instance():
     """模块级get_instance，返回SelfRefLoopTopologizer单例"""

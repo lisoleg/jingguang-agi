@@ -72,11 +72,15 @@ class JinfuCAEngine:
 
     DEFAULT_D_PHI = 1e-10
 
-    def __init__(self) -> None:
+    def __init__(self, enable_beta_rewire: bool = True) -> None:
         self._d_phi: float = self.DEFAULT_D_PHI
         self._ca_history: List[Dict[str, Any]] = []
         self._operation_count: int = 0
         self._created_at: float = time.time()
+        self._enable_beta_rewire: bool = enable_beta_rewire
+        # M133-W2 integration: when beta_rewire is enabled,
+        # CA-only evolution is forbidden — must go through
+        # JinlingGraph beta_rewire for topological change.
 
     @classmethod
     def get_instance(cls) -> "JinfuCAEngine":

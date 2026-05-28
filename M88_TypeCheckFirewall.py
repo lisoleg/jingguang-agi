@@ -335,6 +335,40 @@ class TypeCheckFirewall:
         """获取审计日志"""
         return self.firewall_rules.copy()
 
+    def check_or_raise(self, term: Term, goal_type: TypeSignature) -> Term:
+        """M133-W3 integration: Type-check and return term, or raise UninhabitedError.
+
+        This is the 'constructive gate' behavior required by TY-Def 3.1 A4:
+        if no term inhabits the goal type, do NOT fallback sample —
+        raise an exception that triggers beta-rewire.
+
+        Args:
+            term: The candidate term to check.
+            goal_type: The required type signature.
+
+        Returns:
+            The term if type-check passes.
+
+        Raises:
+            UninhabitedError: If type-check fails (no inhabitant found).
+        """
+        result = self.verify(term, goal_type)
+        if result.status == TypeCheckStatus.VALID:
+            return term
+        # Import UninhabitedError from M133_W3
+        try:
+            from M133_W3_HoTTLeanGate import UninhabitedError
+            raise UninhabitedError(
+                f"No term inhabits type '{goal_type}' — "
+                f"term '{term.term_name}' has type '{term.term_type}' "
+                f"(status: {result.status.value})"
+            )
+        except ImportError:
+            raise TypeError(
+                f"Type check failed for {term.term_name} : {goal_type} "
+                f"(M133_W3 UninhabitedError not available)"
+            )
+
 
 # 单例访问
 def get_firewall() -> TypeCheckFirewall:

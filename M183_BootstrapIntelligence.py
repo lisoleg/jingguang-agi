@@ -46,6 +46,13 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
+# M133-W4: Cold-Start Bootstrap
+try:
+    from M133_W4_ColdStartBootstrap import ColdStartBootstrap as M133ColdStartBootstrap
+    _M133_W4_AVAILABLE = True
+except ImportError:
+    _M133_W4_AVAILABLE = False
+
 
 # ============================================================
 # 枚举
@@ -1161,6 +1168,56 @@ class BootstrapIntelligenceEngine:
 
         return self.state
 
+    def cold_start_bootstrap(self) -> Dict[str, Any]:
+        """M133-W4 integration: Run real cold-start bootstrap chain.
+
+        Delegates to M133_W4_ColdStartBootstrap which:
+        1. Blocks pretrained math/physics embeddings
+        2. Reads from USB sensors (simulated)
+        3. Bootstraps: Nat -> Rat -> Real -> Group -> Mechanics -> Deontic -> Cosmo
+        4. Each step emits .agda proof term
+
+        Falls back to internal bootstrap_cycle if M133_W4 unavailable.
+
+        Returns:
+            Dict with bootstrap results.
+        """
+        if not _M133_W4_AVAILABLE:
+            # Fallback: use internal bootstrap
+            self._cold_start()
+            state = self.bootstrap_cycle(n_interactions=20)
+            return {
+                "source": "M183_internal_fallback",
+                "phase": state.phase.value,
+                "natural_numbers": state.natural_numbers_discovered,
+                "ratios": state.ratios_discovered,
+                "laws": state.laws_induced,
+                "m133_w4_available": False,
+            }
+
+        try:
+            import tempfile
+            with tempfile.TemporaryDirectory() as tmpdir:
+                csb = M133ColdStartBootstrap(output_dir=tmpdir)
+                csb.block_pretrained()
+                result = csb.run_full_bootstrap()
+                return {
+                    "source": "M133_W4_ColdStartBootstrap",
+                    "m133_w4_available": True,
+                    "bootstrap_result": result,
+                }
+        except Exception as e:
+            # Fallback on error
+            self._cold_start()
+            state = self.bootstrap_cycle(n_interactions=20)
+            return {
+                "source": "M183_internal_fallback_on_error",
+                "phase": state.phase.value,
+                "natural_numbers": state.natural_numbers_discovered,
+                "error": str(e),
+                "m133_w4_available": True,
+            }
+
     def einstein_test_extreme(self) -> Dict[str, Any]:
         """
         极致爱因斯坦测试
@@ -1244,6 +1301,14 @@ class BootstrapIntelligenceEngine:
 
     def _cold_start(self) -> None:
         """冷启动：清除所有预装知识"""
+        # M133-W4 integration: Block pretrained embeddings for genuine cold-start
+        if _M133_W4_AVAILABLE:
+            try:
+                csb = M133ColdStartBootstrap(output_dir="/tmp/m133_w4_agda")
+                csb.block_pretrained()
+            except Exception:
+                pass
+
         self.oscillator.reset()
         self.phi_detector.reset()
         self.hott_inductor.reset()

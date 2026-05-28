@@ -71,6 +71,19 @@ try:
 except ImportError:
     _M88_AVAILABLE = False
 
+# ===== M133-W3: HoTT Lean Gate Loop =====
+try:
+    from M133_W3_HoTTLeanGate import (
+        agi_loop as m133_agi_loop,
+        UninhabitedError as M133UninhabitedError,
+        TypeSignature as M133TypeSig,
+        CandidateTerm as M133CandidateTerm,
+        SimpleTypeChecker as M133SimpleTypeChecker,
+    )
+    _M133_W3_AVAILABLE = True
+except ImportError:
+    _M133_W3_AVAILABLE = False
+
 
 class TypeKind(Enum):
     """类型种类"""
@@ -1062,6 +1075,91 @@ class HoTTReasoningEngine:
         self.helix_natural_transforms = []  # Helix自然变换列表
         self.helix_coherence = 0.0        # Helix相干度
         self.helix_chirality = 0.0        # Helix手性参数
+
+    def hott_gate_loop(self, proposition: str) -> Dict[str, Any]:
+        """M133-W3 integration: HoTT Gate Loop with constructive type-theoretic gate.
+
+        Key principle: LLM is candidate proposer ONLY (never judge).
+        Lean/Agda type-check is the final arbiter.
+        Failed type-check triggers beta-rewire.
+        UninhabitedError if max rewires exhausted.
+
+        Args:
+            proposition: The proposition to find a constructive witness for.
+
+        Returns:
+            Dict with gate loop result.
+        """
+        if not _M133_W3_AVAILABLE:
+            return {"gate_loop": "unavailable", "error": "M133_W3 not available"}
+
+        try:
+            # Convert M78 proposition to M133 type signature
+            goal_type = self.proposition_as_type(proposition)
+            m133_sig = M133TypeSig(
+                name=goal_type.name,
+                params={"kind": goal_type.kind.value},
+                constraints=[goal_type.description] if goal_type.description else []
+            )
+
+            # LLM as proposer only: use M78's prove() as the propose function
+            def propose_fn(target_sig: M133TypeSig, attempt: int) -> list:
+                """LLM proposes candidate terms. M78's prove() acts as proposer."""
+                goal = self.proposition_as_type(proposition)
+                result = self.prove(goal, max_depth=6)
+                candidates = []
+                if result.proof_term is not None:
+                    candidates.append(M133CandidateTerm(
+                        term_id=f"m78_propose_{attempt}",
+                        expression=result.proof_term.name,
+                        source="m78_endogenous",
+                        confidence=0.8
+                    ))
+                # Add heuristic candidates
+                for rule_name, rule_func in self.rules.items():
+                    try:
+                        term = rule_func([], goal)
+                        if term:
+                            candidates.append(M133CandidateTerm(
+                                term_id=f"m78_rule_{rule_name}_{attempt}",
+                                expression=term.name,
+                                source="heuristic",
+                                confidence=0.5
+                            ))
+                    except Exception:
+                        pass
+                return candidates
+
+            # Type-check as final arbiter
+            checker = M133SimpleTypeChecker()
+
+            def type_check_fn(candidate: M133CandidateTerm, target: M133TypeSig) -> object:
+                """Type-check using M133's SimpleTypeChecker."""
+                result = checker.check(candidate, target)
+                return result
+
+            # Execute agi_loop: LLM proposes, type-check judges
+            try:
+                final_term, loop_info = m133_agi_loop(
+                    task_type=m133_sig,
+                    llm_propose_fn=propose_fn,
+                    type_check_fn=type_check_fn,
+                    jinling_graph=None,  # Can be connected to M133_W2 later
+                )
+                return {
+                    "gate_loop": "success",
+                    "final_term": final_term.to_dict(),
+                    "loop_info": loop_info,
+                    "proposition": proposition,
+                }
+            except M133UninhabitedError as e:
+                return {
+                    "gate_loop": "uninhabited",
+                    "error": str(e),
+                    "proposition": proposition,
+                }
+        except Exception as e:
+            return {"gate_loop": "error", "error": str(e), "proposition": proposition}
 
     def _init_builtin_types(self):
         """初始化内置类型"""

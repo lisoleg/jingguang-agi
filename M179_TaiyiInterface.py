@@ -49,6 +49,13 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
+# M133-W2: JinlingGraph β-重配 API
+try:
+    from M133_W2_JinlingGraphBetaRewire import JinlingGraph, DeltaPsi, ICEPatch
+    _M133_W2_AVAILABLE = True
+except ImportError:
+    _M133_W2_AVAILABLE = False
+
 # 尝试加载TYIDO P4 (可寻址长期记忆)
 try:
     from TYIDO_AddressableMemory import AddressableMemoryStore
@@ -1294,6 +1301,63 @@ class TaiyiInterface:
                     cls._instance = cls(phi_dim=phi_dim)
         return cls._instance
 
+    def step_ice_self_ref(self) -> Dict[str, Any]:
+        """M133-W1/W2 integration: Execute one ICE self-reference step.
+
+        Connects TaiyiInterface's ICE triple (I,C,E) to M133_W2's JinlingGraph
+        for topology-aware self-reference. If anomaly detected (unification < 0.5),
+        triggers beta-rewire on the JinlingGraph.
+
+        Returns:
+            Dict with step results including rewire status.
+        """
+        if not _M133_W2_AVAILABLE:
+            return {"step": "ice_self_ref", "rewired": False, "error": "M133_W2 not available"}
+
+        try:
+            jinling = JinlingGraph()
+
+            # Build graph from current ICE components
+            i_vec, c_vec, e_vec = self.ice_composite.get_components()
+            from M133_W2_JinlingGraphBetaRewire import PortEdge
+
+            # Add ICE nodes to graph (add_node takes only name)
+            jinling.add_node("ICE_I")
+            jinling.add_node("ICE_C")
+            jinling.add_node("ICE_E")
+            jinling.add_node("ICE_Phi")
+
+            # Add edges representing ICE triple binding (add_edge takes PortEdge)
+            jinling.add_edge(PortEdge(src="ICE_I", dst="ICE_Phi", port_src=0, port_dst=0, tag="ice_i_phi"))
+            jinling.add_edge(PortEdge(src="ICE_C", dst="ICE_Phi", port_src=0, port_dst=0, tag="ice_c_phi"))
+            jinling.add_edge(PortEdge(src="ICE_E", dst="ICE_Phi", port_src=0, port_dst=0, tag="ice_e_phi"))
+
+            # Check coherence as proxy for unification score
+            coherence = self.ice_composite.self_coherence()
+
+            if coherence < 0.5:
+                # Anomaly detected: MIS_MATCH between ICE components
+                delta = DeltaPsi(kind="MIS_MATCH", focus="ice_triple", magnitude=1.0 - coherence)
+                patch = ICEPatch(target="L3_GRAPH", action="rewire_ice_triple")
+                result = jinling.beta_rewire(delta, patch)
+                return {
+                    "step": "ice_self_ref",
+                    "rewired": True,
+                    "coherence_before": coherence,
+                    "beta_rewire_result": result,
+                    "graph_version": jinling.version,
+                }
+            else:
+                return {
+                    "step": "ice_self_ref",
+                    "rewired": False,
+                    "coherence": coherence,
+                    "graph_nodes": jinling.node_count(),
+                    "graph_edges": jinling.edge_count(),
+                }
+        except Exception as e:
+            return {"step": "ice_self_ref", "rewired": False, "error": str(e)}
+
     def self_reflect(self, external_input: Optional[List[float]] = None) -> Dict[str, Any]:
         """
         执行一轮完整的自我反思
@@ -1325,6 +1389,9 @@ class TaiyiInterface:
 
             # Step 3: 应用自指算子
             sr_result = self.self_ref_op.apply(phi)
+
+            # M133-W1/W2: ICE self-reference step
+            ice_self_ref_result = self.step_ice_self_ref()
 
             # Step 4: 三视界校验
             horizon_report = self.horizon_checker.check(
@@ -1390,6 +1457,7 @@ class TaiyiInterface:
                     "consciousness_level": self.ice_composite.consciousness_level(),
                     "coherence": self.ice_composite.self_coherence()
                 },
+                "ice_self_ref": ice_self_ref_result,
                 "fractal_identity": self._fractal_identity_summary()
             }
 

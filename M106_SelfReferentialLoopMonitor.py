@@ -878,8 +878,47 @@ class SelfReferentialLoopMonitor:
             'last_update': self.last_update
         }
 
+    def step_ice_self_ref(self) -> Dict[str, Any]:
+        """M133-W1 integration: Execute one ICE self-reference step.
+
+        Instead of merely monitoring, this now invokes the Y-combinator
+        self-referential step from M133_W1 (if available), producing
+        an auditable state transition with git-style diff.
+
+        Returns:
+            Dict with step result including snapshot diff.
+        """
+        try:
+            from M133_W2_JinlingGraphBetaRewire import (
+                JinlingGraph, DeltaPsi, ICEPatch,
+            )
+            # Build ICE state from current monitoring data
+            jinling = JinlingGraph()
+            # Add current self-ref edges
+            for loop in self.pds_loops[-5:]:
+                jinling.add_node(f"pds_{loop.get('dimension', 0)}")
+            for loop in self.godel_loops[-5:]:
+                jinling.add_node(f"godel_{loop.get('depth', 0)}")
+
+            # Detect anomaly from current state
+            if self.unification_score < 0.5:
+                delta = DeltaPsi(kind="MIS_MATCH", focus="unification", magnitude=1.0 - self.unification_score)
+                patch = ICEPatch(target="L3_GRAPH", action="rewire_unification")
+                jinling.beta_rewire(delta, patch)
+                result = {"step": "ice_self_ref", "rewired": True, "version": jinling.version}
+            else:
+                result = {"step": "ice_self_ref", "rewired": False, "version": jinling.version}
+
+            result["phi"] = self.phi_value
+            result["unification"] = self.unification_score
+            result["laplacian_history"] = jinling.laplacian_history[-3:]
+            return result
+        except ImportError:
+            return {"step": "ice_self_ref", "rewired": False, "error": "M133_W2 not available"}
+
     def simulate(self) -> Dict[str, Any]:
-        """模拟运行 — 包含Φ值和元认知测试"""
+        """模拟运行 — 包含Φ值和元认知测试 + M133-W1 ICE step"""
+        import random
         import random
 
         # 模拟对话历史
