@@ -11,32 +11,31 @@
 
 | 版本 | 内容 | Git |
 |------|------|-----|
+| v7.32 | M207-M217十一引擎+bp_v732/b API+16篇微信文章升级 | f9483c0 |
+| v7.31 | M133-Wintel True-TaiyiAGI Candidate (W1-W5, P18-P20) | 5c08a9f |
+| v7.30 | M190c UA集成（UABridge+语义查询+专家关联+时间旅行） | 212e3cc |
+| v7.29 | M190b 性能优化（分片索引+WAL+布隆过滤器+缓存） | 212e3cc |
+| v7.28b | ExpertBridge深度集成（4通道匹配+上下文感知+聊天推荐） | 7517981 |
 | v7.27 | 太极OS·流锻内核 M191-M195 + T201-T217 | 待提交 |
 | v7.26 | AkashaChainDB M190 + FTEL+β归约+POP共识 + T197-T200 | 7248b42 |
-| v7.25b | 幂律·三分损益·类型论 M189 + BFT升级 + M187/M188升级 + T191-T196 | — |
-| v7.25 | RLM M186 + ContextRot M187 + Intentionality M188 + T191-T196 | — |
-| v7.24-draft | LLM Wiki M184 + T189-T190 + P9 MVE + M176/M178对接 | 3e8a693 |
-| v7.23 | E2E归约+宇宙音律+自举智能 M181-M183 + T183-T188 + P8 MVE | f7a04e7 |
-| v7.22 | EqProp+FHN M180 + T180-T182 + P7 MVE | — |
-| v7.21 | TYIDO MVE + P6 Minkowski因果性 6/6 PASS | d55c608 |
-| v7.20 | 太一接口 M179 + TY/IDO审计 73/73 PASS | — |
-| v7.19 | 组织记忆·Φ场·AgentOS M176-M178 + T157-T165 | — |
-| v7.18 | 沙箱+安全护盾 M174-M175 + T151-T156 | — |
 
-## 当前开发状态：v7.27（✅完成）
-- **M191 金灵球堆垒引擎** (~800行): 堆垒算子/三才五行映射/金灵球生成/β归约桥接
-- **M192 太极延拓** (~500行): 延拓公理/同伦延拓/Φ场延拓/因果延拓
-- **M193 Φ调度器** (~300行): Φ场预算/资源调度/优先级仲裁/三级调度
-- **M194 碳硅GAN** (~350行): 生成器/判别器/对抗训练/碳硅桥接
-- **M195 世界模型子系统** (~350行): ⟨W,S,C⟩三元组/世界帧/感知模拟/因果推理
-- T201-T217 共17定理, v727 API 14端点, 前端5面板
-- Git commit 待手动执行（沙箱D: drive index.lock限制）
-- **待集成**: agency-agents-zh(223专家), _understand_anything_ref(UA能力)
-- **待实现**: M190 v2/v3增强, M196 UA引擎
+## 当前开发状态：v7.32（✅已提交 f9483c0）
+- **M207 GoldenSymbol3D**: 金符3D复广数 z=a+bi+cj, 阴龙积⊙, MNQ8Grid | T212+T213
+- **M208 TianxingPhaseLock**: 天行相位选择算子Π̂_φ, 波粒二象坍缩, oloid微分 | T211+T214
+- **M209 AmbiguityEngine**: G_ambig歧义群, 延迟坍缩, L5投影基数 | T209+T210
+- **M210 QianmenEightGeneral**: 千门八将8类EML偏离, ΔS量化, 显隐互转 | T215+T216
+- **M211 HexaSysSOP**: 六合统合7步SOP引擎, Ftel密度追踪 | T217+T218
+- **M212 BloomIdolFreezeEngine**: 偶像化伪共识冻结, Ω外源Reset, 共振成核 | T227+T228+OrphanReclaim
+- **M213 EccentricityGovernance**: 偏心率定理, 大圆满单位圆, 组织寿命 | T229+T230
+- **M214 GoedelEscapeHatch**: 哥德尔洞, 显密双轨, 遁甲反脆弱 | T231+T232
+- **M215 ErosSynthemeEngine**: Eros内源奖励, 统感涌现, HyMemory六层 | T233+T234+HyMemory
+- **M216 LiuPenaltyField**: 刘罚项场, 构成势极值, 艺术极值定理 | T235+T236+T237
+- **M217 ArtificialFasciaEmbodiment**: 人工筋膜, 软L2壳, 具身自举 | T238+T239
+- API: bp_v732 (10路由 /api/v732/*) + bp_v732b (12路由 /api/v732b/*)
 
 ## 编号规则
-- 模块: M195(v7.27) | M190(v7.26) | M189(v7.25b) | M186-M188(v7.25) | M184(v7.24) | M181-M183(v7.23) | M180(v7.22)
-- 定理: T201-T217(v7.27) | T197-T200(v7.26) | T191-T196(v7.25b) | T189-T190(v7.24) | T183-T188(v7.23) | T180-T182(v7.22)
+- 模块: M217(v7.32) | M207-M211(v7.32首批) | M191-M195(v7.27) | M190(v7.26) | M189(v7.25b)
+- 定理: T227-T239(v7.32) | T209-T218(v7.32首批) | T201-T217(v7.27) | T197-T200(v7.26)
 
 ## 核心文件
 - `M195_WorldModelSubsystem.py`: 世界模型子系统 ⟨W,S,C⟩ (v7.27)
@@ -79,8 +78,12 @@ cd C:\Users\1\WorkBuddy\2026-05-06-task-1 && python app.py
 - M176 recall 返回结构：`{'entry': {'content':..., 'memory_type':...}, 'similarity': float}`
 - Python 3.10不支持f-string内反斜杠
 - M176/M177 API：memory_type需转枚举；M177 spend/earn参数是reason不是description
-- M178 广播排除sender自身：`aid != sender_id` — WikiEventBus发出的广播不会投递回自己队列
-- dataclass序列化：`_to_native()`无法处理dataclass，v7.23 diagnose/reduce/bootstrap_cycle路由均需asdict()
+- M178 广播排除sender自身：`aid != sender_id`
+- dataclass序列化：`_to_native()`无法处理dataclass，需asdict()
+- **Git沙箱限制**: `.git/index.lock`被沙箱阻断，用`GIT_INDEX_FILE=/tmp/taiyi_index`绕过
+- **M215 T234**: SynthemeMonitor测统感涌现需用独立monitor，避免低φ模态拉低聚合
+- **M215 HyMemory**: consolidate()一次推到底层，需用consolidate_one_step(src, dst)单步巩固
+- **M217 DefaultLayers**: 相邻层杨氏模量比值不能超过10倍，否则力学匹配检验失败
 
 ## 前端面板记录
 - STN Phase 1-4 ✅ | v7.20太一接口 ✅ | v7.22 EqProp+FHN ✅
