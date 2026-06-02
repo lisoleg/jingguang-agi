@@ -1,16 +1,18 @@
-# 长期记忆（精简版 2026-05-25-v2）
+# 长期记忆（精简版 2026-05-30-v3）
 
 ## 项目概览
-**净光哥** 太乙AGI：Flask应用，位于 `C:\Users\1\WorkBuddy\2026-05-06-task-1\`
-- 主服务器: `app.py` (Flask, 端口5001)
-- 前端: `static/index_agi12.html` (三栏布局界面)
+**净光哥** 太乙AGI：Flask应用，位于 `D:\WorkBuddy\2026-05-06-task-1\`
+- 主服务器: `app.py` (Flask, 端口5000)
+- 前端: `static/index_agi12.html` (三栏布局界面, 17510行)
 - 脑图: `app_mindmap_v2.py` (端口5003)
-- **总规模**: 195模块 / 9层 / 217定理 / 223专家
+- **总规模**: 225+模块 / 9层 / 270+定理 / 223专家
 
 ## 版本历史（精简）
 
 | 版本 | 内容 | Git |
 |------|------|-----|
+| v7.33b | M226 PCT端口兼容性(T2.40) + M155 IDO信息力(T2.41) + 12新API路由 + 前端面板 | 6b5865a |
+| v7.33 | M223 GoldenSymbol3D + M224 SOPGenerator + M225 ICELeanLoop + 28路由 + UI面板 | 3f6fc82 |
 | v7.32 | M207-M217十一引擎+bp_v732/b API+16篇微信文章升级 | f9483c0 |
 | v7.31 | M133-Wintel True-TaiyiAGI Candidate (W1-W5, P18-P20) | 5c08a9f |
 | v7.30 | M190c UA集成（UABridge+语义查询+专家关联+时间旅行） | 212e3cc |
@@ -19,7 +21,13 @@
 | v7.27 | 太极OS·流锻内核 M191-M195 + T201-T217 | 待提交 |
 | v7.26 | AkashaChainDB M190 + FTEL+β归约+POP共识 + T197-T200 | 7248b42 |
 
-## 当前开发状态：v7.32（✅已提交 f9483c0）
+## 当前开发状态：v7.33b
+- **M226 PCTChecker**: PCT端口兼容性四条件(方向互补/手性相容/相位可锁/阶守恒), T2.40 8/8
+- **M155 FtelOptimizer v7.33b**: IDO信息力(Shannon熵+信息力梯度+mod微调+时间箭头), T2.41 6/6
+- **bp_v733_tmk.py**: 40路由 (v7.33 28 + v7.33b 12)
+- **M223 GoldenSymbol3D**: 金符学3D复广数z=a+bi+cj, 阴龙积⊙, MNQ8Grid仿真, T232-T234
+- **M224 SOPGeneratorEngine**: SOP六体系自动生成器, 4预设+自动分类, T235-T236
+- **M225 ICELeanLoop**: ICE自指闭环(ℐ→ℂ→ℰ), Lean4导出, HAP协议5步, T237-T239
 - **M207 GoldenSymbol3D**: 金符3D复广数 z=a+bi+cj, 阴龙积⊙, MNQ8Grid | T212+T213
 - **M208 TianxingPhaseLock**: 天行相位选择算子Π̂_φ, 波粒二象坍缩, oloid微分 | T211+T214
 - **M209 AmbiguityEngine**: G_ambig歧义群, 延迟坍缩, L5投影基数 | T209+T210
@@ -31,7 +39,10 @@
 - **M215 ErosSynthemeEngine**: Eros内源奖励, 统感涌现, HyMemory六层 | T233+T234+HyMemory
 - **M216 LiuPenaltyField**: 刘罚项场, 构成势极值, 艺术极值定理 | T235+T236+T237
 - **M217 ArtificialFasciaEmbodiment**: 人工筋膜, 软L2壳, 具身自举 | T238+T239
-- API: bp_v732 (10路由 /api/v732/*) + bp_v732b (12路由 /api/v732b/*)
+- API: bp_v732 (10路由 /api/v732/*) + bp_v732b (13路由 /api/v732b/*)
+  - 新增3条 beta_rewire: POST/execute, GET/spectrum, GET/audit (T206/T207/T208)
+- T206-T208 MVE: tests/T206_T207_T208_MVE_BetaRewire.py, 10/10 PASS
+- 待Git: bp_v732b.py+test file待commit（沙箱拒绝.git/objects写入）
 
 ## 编号规则
 - 模块: M217(v7.32) | M207-M211(v7.32首批) | M191-M195(v7.27) | M190(v7.26) | M189(v7.25b)

@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Blueprint: v733b (40 routes)
+Blueprint: v733c (52 routes)
 M223-M225 — 金符学3D复广数 + MNQ8能流引擎 + SOP六体系自动生成器 + ICE自指闭环+Lean4对接+HAP协议
 M226 — PCT端口兼容性定理引擎 (T2.40)
 M155 IDO — Ftel信息力增强 + 时间箭头 (T2.41)
+M227 — EML指数-对数混合函数引擎 (T2.42)
+M228 — Liu机制变分原理引擎 (T2.43)
 URL prefix: /api/v733
-Version: v7.33b TMK (太一万有理论六合统合 + TMK端口兼容性)
+Version: v7.33c TMK (太一万有理论六合统合 + TMK端口兼容性 + EML + Liu机制)
 """
 
 import math
@@ -1147,31 +1149,751 @@ def api_v733_m155_theorems():
 
 
 # ══════════════════════════════════════════════════
+# M227 EML — 指数-对数混合函数引擎 (T2.42)
+# ══════════════════════════════════════════════════
+
+@bp.route('/eml/compute', methods=['POST'])
+def api_v733_eml_compute():
+    """
+    EML核心函数 z = exp(x) - log(y)
+
+    POST body:
+      x: float   指数参数
+      y: float   对数参数 (must > 0)
+    """
+    try:
+        from modules.M227_EMLEngine import get_instance
+        data = request.get_json(force=True) or {}
+        x = float(data.get('x', 0.0))
+        y = float(data.get('y', 1.0))
+
+        engine = get_instance()
+        result = engine.eml(x, y)
+        return jsonify({'x': x, 'y': y, 'eml_result': result, 'formula': 'exp(x) - log(y)'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/eml/add', methods=['POST'])
+def api_v733_eml_add():
+    """
+    EML加法近似 eml_add(a, b) ≈ a + b
+
+    POST body:
+      a: float
+      b: float
+    """
+    try:
+        from modules.M227_EMLEngine import get_instance
+        data = request.get_json(force=True) or {}
+        a = float(data.get('a', 0.0))
+        b = float(data.get('b', 0.0))
+
+        engine = get_instance()
+        eml_result = engine.eml_add(a, b)
+        classic = a + b
+        error = abs(eml_result - classic)
+        return jsonify({
+            'a': a, 'b': b,
+            'eml_add': eml_result,
+            'classic_add': classic,
+            'absolute_error': error,
+            'relative_error': error / max(abs(classic), 1e-15)
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/eml/mul', methods=['POST'])
+def api_v733_eml_mul():
+    """
+    EML乘法 eml_mul(a, b) = exp(ln a + ln b) = a·b
+
+    POST body:
+      a: float   (must > 0)
+      b: float   (must > 0)
+    """
+    try:
+        from modules.M227_EMLEngine import get_instance
+        data = request.get_json(force=True) or {}
+        a = float(data.get('a', 1.0))
+        b = float(data.get('b', 1.0))
+
+        engine = get_instance()
+        eml_result = engine.eml_mul(a, b)
+        classic = a * b
+        error = abs(eml_result - classic)
+        return jsonify({
+            'a': a, 'b': b,
+            'eml_mul': eml_result,
+            'classic_mul': classic,
+            'absolute_error': error,
+            'relative_error': error / max(abs(classic), 1e-15)
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/eml/polar_multiply', methods=['POST'])
+def api_v733_eml_polar_multiply():
+    """
+    EML极坐标数乘法 (m⊗e^{iθ})
+
+    POST body:
+      a: {m, theta}   第一个极坐标数
+      b: {m, theta}   第二个极坐标数
+    """
+    try:
+        from modules.M227_EMLEngine import get_instance, EMLNumber
+        data = request.get_json(force=True) or {}
+        a_data = data.get('a', {'m': 1.0, 'theta': 0.0})
+        b_data = data.get('b', {'m': 1.0, 'theta': 0.0})
+
+        engine = get_instance()
+        a = EMLNumber(m=float(a_data.get('m', 1.0)), theta=float(a_data.get('theta', 0.0)))
+        b = EMLNumber(m=float(b_data.get('m', 1.0)), theta=float(b_data.get('theta', 0.0)))
+        result = engine.eml_multiply(a, b)
+
+        return jsonify({
+            'a': {'m': a.m, 'theta': a.theta},
+            'b': {'m': b.m, 'theta': b.theta},
+            'product': {'m': result.m, 'theta': result.theta}
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/eml/polar_add', methods=['POST'])
+def api_v733_eml_polar_add():
+    """
+    EML极坐标数加法 (转笛卡尔→加→转回)
+
+    POST body:
+      a: {m, theta}   第一个极坐标数
+      b: {m, theta}   第二个极坐标数
+    """
+    try:
+        from modules.M227_EMLEngine import get_instance, EMLNumber
+        data = request.get_json(force=True) or {}
+        a_data = data.get('a', {'m': 1.0, 'theta': 0.0})
+        b_data = data.get('b', {'m': 1.0, 'theta': 0.0})
+
+        engine = get_instance()
+        a = EMLNumber(m=float(a_data.get('m', 1.0)), theta=float(a_data.get('theta', 0.0)))
+        b = EMLNumber(m=float(b_data.get('m', 1.0)), theta=float(b_data.get('theta', 0.0)))
+        result = engine.eml_add_polar(a, b)
+
+        return jsonify({
+            'a': {'m': a.m, 'theta': a.theta},
+            'b': {'m': b.m, 'theta': b.theta},
+            'sum': {'m': result.m, 'theta': result.theta}
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/eml/comparison', methods=['POST'])
+def api_v733_eml_comparison():
+    """
+    经典运算 vs EML运算对比
+
+    POST body:
+      x: float
+      y: float
+    """
+    try:
+        from modules.M227_EMLEngine import get_instance
+        data = request.get_json(force=True) or {}
+        x = float(data.get('x', 1.0))
+        y = float(data.get('y', 2.0))
+
+        engine = get_instance()
+        comparison = engine.eml_comparison(x, y)
+        return jsonify({'x': x, 'y': y, 'comparison': comparison})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/m227/state', methods=['GET'])
+def api_v733_m227_state():
+    """M227模块状态查询"""
+    try:
+        from modules.M227_EMLEngine import get_instance
+        inst = get_instance()
+        return jsonify(inst.get_state())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/m227/theorems', methods=['GET'])
+def api_v733_m227_theorems():
+    """M227定理验证 (T2.42)"""
+    try:
+        from modules.M227_EMLEngine import get_instance
+        engine = get_instance()
+        t242 = engine.verify_theorem()
+        return jsonify({'T242': t242, 'all_passed': t242.get('pass', False)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ══════════════════════════════════════════════════
+# M228 LiuMechanism — Liu机制变分原理引擎 (T2.43)
+# ══════════════════════════════════════════════════
+
+@bp.route('/liu/action', methods=['POST'])
+def api_v733_liu_action():
+    """
+    Liu作用量 S = Σ(T_i - V_i)
+
+    POST body:
+      heap: {V: [{sid, i_int, ports, chi, mod, phase}, ...], E: [{src, dst, w}, ...]}
+      (不提供heap则使用demo heap)
+    """
+    try:
+        from modules.M228_LiuMechanism import get_instance
+        data = request.get_json(force=True) or {}
+
+        engine = get_instance()
+        if 'heap' in data and data['heap']:
+            heap = engine.heap_from_dict(data['heap'])
+        else:
+            heap = engine.create_demo_heap(n_spheres=5, n_edges=4)
+
+        action = engine.compute_action(heap)
+        return jsonify({'action': action, 'sphere_count': len(heap.V), 'edge_count': len(heap.E)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/liu/variation', methods=['POST'])
+def api_v733_liu_variation():
+    """
+    Liu变分 δS (对每个球相位施加微扰)
+
+    POST body:
+      heap: {V: [...], E: [...]}   (optional, 使用demo)
+      epsilon: float               微扰大小 (default 0.01)
+    """
+    try:
+        from modules.M228_LiuMechanism import get_instance
+        data = request.get_json(force=True) or {}
+        epsilon = float(data.get('epsilon', 0.01))
+
+        engine = get_instance()
+        if 'heap' in data and data['heap']:
+            heap = engine.heap_from_dict(data['heap'])
+        else:
+            heap = engine.create_demo_heap(n_spheres=5, n_edges=4)
+
+        variation = engine.compute_variation(heap, epsilon=epsilon)
+        return jsonify({'variation': variation, 'epsilon': epsilon, 'sphere_count': len(heap.V)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/liu/equilibrium', methods=['POST'])
+def api_v733_liu_equilibrium():
+    """
+    Liu平衡判定 δS < threshold
+
+    POST body:
+      heap: {V: [...], E: [...]}   (optional, 使用demo)
+      threshold: float              平衡阈值 (default 0.1)
+    """
+    try:
+        from modules.M228_LiuMechanism import get_instance
+        data = request.get_json(force=True) or {}
+        threshold = float(data.get('threshold', 0.1))
+
+        engine = get_instance()
+        if 'heap' in data and data['heap']:
+            heap = engine.heap_from_dict(data['heap'])
+        else:
+            heap = engine.create_demo_heap(n_spheres=5, n_edges=4)
+
+        is_eq = engine.check_equilibrium(heap, threshold=threshold)
+        variation = engine.compute_variation(heap)
+        return jsonify({'is_equilibrium': is_eq, 'variation': variation, 'threshold': threshold})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/liu/free_energy', methods=['POST'])
+def api_v733_liu_free_energy():
+    """
+    Liu自由能 F = M - T·H
+
+    POST body:
+      heap: {V: [...], E: [...]}   (optional, 使用demo)
+      temperature: float            温度参数 (default 1.0)
+    """
+    try:
+        from modules.M228_LiuMechanism import get_instance
+        data = request.get_json(force=True) or {}
+        temperature = float(data.get('temperature', 1.0))
+
+        engine = get_instance()
+        if 'heap' in data and data['heap']:
+            heap = engine.heap_from_dict(data['heap'])
+        else:
+            heap = engine.create_demo_heap(n_spheres=5, n_edges=4)
+
+        free_energy = engine.compute_free_energy(heap, temperature=temperature)
+        return jsonify({'free_energy': free_energy, 'temperature': temperature, 'edge_count': len(heap.E)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/liu/evolution', methods=['POST'])
+def api_v733_liu_evolution():
+    """
+    Liu演化方向判定 (equilibrium/minimizing/expanding)
+
+    POST body:
+      heap: {V: [...], E: [...]}   (optional, 使用demo)
+    """
+    try:
+        from modules.M228_LiuMechanism import get_instance
+        data = request.get_json(force=True) or {}
+
+        engine = get_instance()
+        if 'heap' in data and data['heap']:
+            heap = engine.heap_from_dict(data['heap'])
+        else:
+            heap = engine.create_demo_heap(n_spheres=5, n_edges=4)
+
+        evolution = engine.compute_evolution_direction(heap)
+        return jsonify({'evolution': evolution, 'sphere_count': len(heap.V), 'edge_count': len(heap.E)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/liu/full_analysis', methods=['POST'])
+def api_v733_liu_full_analysis():
+    """
+    Liu机制全量分析 (action + variation + equilibrium + free_energy + evolution)
+
+    POST body:
+      heap: {V: [...], E: [...]}   (optional, 使用demo)
+      epsilon: float               微扰 (default 0.01)
+      threshold: float             平衡阈值 (default 0.1)
+      temperature: float           温度 (default 1.0)
+    """
+    try:
+        from modules.M228_LiuMechanism import get_instance
+        data = request.get_json(force=True) or {}
+        epsilon = float(data.get('epsilon', 0.01))
+        threshold = float(data.get('threshold', 0.1))
+        temperature = float(data.get('temperature', 1.0))
+
+        engine = get_instance()
+        if 'heap' in data and data['heap']:
+            heap = engine.heap_from_dict(data['heap'])
+        else:
+            heap = engine.create_demo_heap(n_spheres=5, n_edges=4)
+
+        analysis = engine.full_analysis(heap, epsilon=epsilon, threshold=threshold, temperature=temperature)
+        return jsonify(analysis)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/m228/state', methods=['GET'])
+def api_v733_m228_state():
+    """M228模块状态查询"""
+    try:
+        from modules.M228_LiuMechanism import get_instance
+        inst = get_instance()
+        return jsonify(inst.get_state())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/m228/theorems', methods=['GET'])
+def api_v733_m228_theorems():
+    """M228定理验证 (T2.43)"""
+    try:
+        from modules.M228_LiuMechanism import get_instance
+        engine = get_instance()
+        t243 = engine.verify_theorem()
+        return jsonify({'T243': t243, 'all_passed': t243.get('pass', False)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ══════════════════════════════════════════════════
+# M229 ActionSurfaceRouter — 混合动作面路由器 (PhoneHarness)
+# ══════════════════════════════════════════════════
+
+@bp.route('/router/route', methods=['POST'])
+def api_v733_router_route():
+    """
+    路由任务到最佳动作面
+
+    POST body:
+      task: str   任务描述
+    """
+    try:
+        from modules.M229_ActionSurfaceRouter import get_instance
+        data = request.get_json(force=True) or {}
+        task = data.get('task', '')
+
+        engine = get_instance()
+        result = engine.route_task(task)
+        return jsonify({
+            'task': result.task,
+            'surface': result.surface.value,
+            'confidence': result.confidence,
+            'reason': result.reason,
+            'affinity_scores': result.affinity_scores,
+            'alternatives': [{'surface': s.value, 'score': round(sc, 4)} for s, sc in result.alternatives],
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/router/surfaces', methods=['GET'])
+def api_v733_router_surfaces():
+    """查询所有动作面状态"""
+    try:
+        from modules.M229_ActionSurfaceRouter import get_instance
+        engine = get_instance()
+        return jsonify(engine.get_surface_status())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/router/surface/<surface_name>', methods=['GET'])
+def api_v733_router_surface_detail(surface_name):
+    """查询单个动作面详情"""
+    try:
+        from modules.M229_ActionSurfaceRouter import get_instance
+        engine = get_instance()
+        return jsonify(engine.get_surface_status(surface_name))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/router/workflow', methods=['POST'])
+def api_v733_router_workflow():
+    """
+    执行跨动作面工作流
+
+    POST body:
+      tasks: [str]   任务列表
+    """
+    try:
+        from modules.M229_ActionSurfaceRouter import get_instance
+        data = request.get_json(force=True) or {}
+        tasks = data.get('tasks', [])
+
+        engine = get_instance()
+        result = engine.execute_workflow(tasks)
+        return jsonify({
+            'workflow_id': result.workflow_id,
+            'success': result.success,
+            'total_duration_ms': result.total_duration_ms,
+            'surface_transitions': result.surface_transitions,
+            'steps': [{
+                'step_id': s.step_id,
+                'task': s.task,
+                'surface': s.surface.value,
+                'status': s.status,
+            } for s in result.steps],
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/m229/state', methods=['GET'])
+def api_v733_m229_state():
+    """M229模块状态查询"""
+    try:
+        from modules.M229_ActionSurfaceRouter import get_instance
+        inst = get_instance()
+        return jsonify(inst.get_state())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/m229/theorems', methods=['GET'])
+def api_v733_m229_theorems():
+    """M229定理验证 (T2.44)"""
+    try:
+        from modules.M229_ActionSurfaceRouter import get_instance
+        engine = get_instance()
+        t244 = engine.verify_theorem()
+        return jsonify({'T244': t244, 'all_passed': t244.get('pass', False)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ══════════════════════════════════════════════════
+# M230 SideEffectVerifier — 可验证副作用引擎 (PhoneHarness)
+# ══════════════════════════════════════════════════
+
+@bp.route('/verifier/register', methods=['POST'])
+def api_v733_verifier_register():
+    """
+    注册预期副作用
+
+    POST body:
+      operation: str            操作描述
+      effect_type: str          persist/topology/state/evidence
+      expected_state: dict      预期操作后状态
+      pre_state: dict           操作前状态(optional)
+    """
+    try:
+        from modules.M230_SideEffectVerifier import get_instance
+        data = request.get_json(force=True) or {}
+        operation = data.get('operation', '')
+        effect_type = data.get('effect_type', 'persist')
+        expected_state = data.get('expected_state', {})
+        pre_state = data.get('pre_state')
+
+        engine = get_instance()
+        ticket = engine.register_effect(operation, effect_type, expected_state, pre_state)
+        return jsonify({
+            'ticket_id': ticket.ticket_id,
+            'operation': ticket.operation,
+            'effect_type': ticket.effect_type.value,
+            'pre_hash': ticket.pre_hash,
+            'status': ticket.status.value,
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/verifier/verify', methods=['POST'])
+def api_v733_verifier_verify():
+    """
+    验证副作用是否真实发生
+
+    POST body:
+      ticket_id: str     副作用票据ID
+      post_state: dict   操作后实际状态
+    """
+    try:
+        from modules.M230_SideEffectVerifier import get_instance
+        data = request.get_json(force=True) or {}
+        ticket_id = data.get('ticket_id', '')
+        post_state = data.get('post_state')
+
+        engine = get_instance()
+        result = engine.verify_effect(ticket_id, post_state)
+        return jsonify({
+            'ticket_id': result.ticket_id,
+            'status': result.status.value,
+            'hash_changed': result.hash_match,
+            'integrity': result.integrity,
+            'details': result.details,
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/verifier/batch', methods=['POST'])
+def api_v733_verifier_batch():
+    """
+    批量验证副作用
+
+    POST body:
+      ticket_ids: [str]        票据ID列表
+      post_states: {id: dict}  各票据对应post_state
+    """
+    try:
+        from modules.M230_SideEffectVerifier import get_instance
+        data = request.get_json(force=True) or {}
+        ticket_ids = data.get('ticket_ids', [])
+        post_states = data.get('post_states', {})
+
+        engine = get_instance()
+        result = engine.batch_verify(ticket_ids, post_states)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/verifier/audit', methods=['GET'])
+def api_v733_verifier_audit():
+    """查询审计轨迹"""
+    try:
+        from modules.M230_SideEffectVerifier import get_instance
+        engine = get_instance()
+        return jsonify(engine.audit_trail())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/m230/state', methods=['GET'])
+def api_v733_m230_state():
+    """M230模块状态查询"""
+    try:
+        from modules.M230_SideEffectVerifier import get_instance
+        inst = get_instance()
+        return jsonify(inst.get_state())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/m230/theorems', methods=['GET'])
+def api_v733_m230_theorems():
+    """M230定理验证 (T2.45)"""
+    try:
+        from modules.M230_SideEffectVerifier import get_instance
+        engine = get_instance()
+        t245 = engine.verify_theorem()
+        return jsonify({'T245': t245, 'all_passed': t245.get('pass', False)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ══════════════════════════════════════════════════
+# M231 FailureAttributor — 失败归因引擎 (PhoneHarness)
+# ══════════════════════════════════════════════════
+
+@bp.route('/attributor/attribute', methods=['POST'])
+def api_v733_attributor_attribute():
+    """
+    对失败测试进行归因
+
+    POST body:
+      test_name: str       测试名称
+      error_message: str   错误信息
+      exception_type: str  异常类型(optional)
+      traceback_str: str   堆栈跟踪(optional)
+    """
+    try:
+        from modules.M231_FailureAttributor import get_instance
+        data = request.get_json(force=True) or {}
+        test_name = data.get('test_name', '')
+        error_message = data.get('error_message', '')
+        exception_type = data.get('exception_type', '')
+        traceback_str = data.get('traceback_str', '')
+
+        engine = get_instance()
+        result = engine.attribute_failure(test_name, error_message, exception_type, traceback_str)
+        return jsonify({
+            'failure_id': result.failure_id,
+            'primary_category': result.primary_category.value,
+            'confidence': result.confidence,
+            'all_scores': result.all_scores,
+            'evidence': result.evidence,
+            'fix_suggestion': result.fix_suggestion,
+            'secondary_categories': [c.value for c in result.secondary_categories],
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/attributor/root_cause', methods=['POST'])
+def api_v733_attributor_root_cause():
+    """
+    追踪根因
+
+    POST body:
+      failure_ids: [str]   失败ID列表(optional)
+    """
+    try:
+        from modules.M231_FailureAttributor import get_instance
+        data = request.get_json(force=True) or {}
+        failure_ids = data.get('failure_ids')
+
+        engine = get_instance()
+        root = engine.trace_root_cause(failure_ids)
+        return jsonify({
+            'root_category': root.root_category.value,
+            'root_evidence': root.root_evidence,
+            'chain': root.chain,
+            'suggested_fix': root.suggested_fix,
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/attributor/fix', methods=['POST'])
+def api_v733_attributor_fix():
+    """
+    生成修复建议
+
+    POST body:
+      (同attribute接口)
+    """
+    try:
+        from modules.M231_FailureAttributor import get_instance
+        data = request.get_json(force=True) or {}
+        test_name = data.get('test_name', '')
+        error_message = data.get('error_message', '')
+        exception_type = data.get('exception_type', '')
+
+        engine = get_instance()
+        attr = engine.attribute_failure(test_name, error_message, exception_type)
+        fix = engine.suggest_fix(attr)
+        return jsonify(fix)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/m231/state', methods=['GET'])
+def api_v733_m231_state():
+    """M231模块状态查询"""
+    try:
+        from modules.M231_FailureAttributor import get_instance
+        inst = get_instance()
+        return jsonify(inst.get_state())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/m231/theorems', methods=['GET'])
+def api_v733_m231_theorems():
+    """M231定理验证 (T2.46)"""
+    try:
+        from modules.M231_FailureAttributor import get_instance
+        engine = get_instance()
+        t246 = engine.verify_theorem()
+        return jsonify({'T246': t246, 'all_passed': t246.get('pass', False)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ══════════════════════════════════════════════════
 # v733 全局状态与总览
 # ══════════════════════════════════════════════════
 
 @bp.route('/overview', methods=['GET'])
 def api_v733_overview():
-    """v7.33b TMK模块全局总览"""
+    """v7.33c TMK模块全局总览"""
     try:
         from modules.M223_GoldenSymbol3D import get_instance as m223_inst
         from modules.M224_SOPGeneratorEngine import get_instance as m224_inst
         from modules.M225_ICELeanLoop import get_instance as m225_inst
         from modules.M226_PCTChecker import get_instance as m226_inst
         from modules.M155_FtelOptimizer import get_instance as m155_inst
+        from modules.M227_EMLEngine import get_instance as m227_inst
+        from modules.M228_LiuMechanism import get_instance as m228_inst
+        from modules.M229_ActionSurfaceRouter import get_instance as m229_inst
+        from modules.M230_SideEffectVerifier import get_instance as m230_inst
+        from modules.M231_FailureAttributor import get_instance as m231_inst
 
         return jsonify({
-            'version': 'v7.33b',
-            'codename': 'TMK (太一万有理论六合统合 + 端口兼容性 + IDO信息力)',
+            'version': 'v7.33c',
+            'codename': 'TMK (太一万有理论六合统合 + EML + Liu机制 + PhoneHarness混合动作面)',
             'modules': {
                 'M223': {'name': 'GoldenSymbol3D', 'desc': '金符学3D复广数+MNQ8能流引擎', 'state': m223_inst().get_state()},
                 'M224': {'name': 'SOPGeneratorEngine', 'desc': 'SOP六体系自动生成引擎', 'state': m224_inst().get_state()},
                 'M225': {'name': 'ICELeanLoop', 'desc': 'ICE自指闭环+Lean4对接+HAP协议', 'state': m225_inst().get_state()},
                 'M226': {'name': 'PCTChecker', 'desc': 'PCT端口兼容性定理引擎', 'state': m226_inst().get_state()},
                 'M155': {'name': 'FtelOptimizer', 'desc': 'Ftel+IDO信息力+时间箭头', 'state': m155_inst().get_state()},
+                'M227': {'name': 'EMLEngine', 'desc': 'EML指数-对数混合函数引擎', 'state': m227_inst().get_state()},
+                'M228': {'name': 'LiuMechanism', 'desc': 'Liu机制变分原理引擎', 'state': m228_inst().get_state()},
+                'M229': {'name': 'ActionSurfaceRouter', 'desc': '混合动作面路由器(PhoneHarness)', 'state': m229_inst().get_state()},
+                'M230': {'name': 'SideEffectVerifier', 'desc': '可验证副作用引擎(PhoneHarness)', 'state': m230_inst().get_state()},
+                'M231': {'name': 'FailureAttributor', 'desc': '失败归因引擎(PhoneHarness)', 'state': m231_inst().get_state()},
             },
-            'theorems': ['T2.32', 'T2.33', 'T2.34', 'T2.35', 'T2.36', 'T2.37', 'T2.38', 'T2.39', 'T2.40', 'T2.41'],
-            'routes_count': 40,
+            'theorems': ['T2.32', 'T2.33', 'T2.34', 'T2.35', 'T2.36', 'T2.37', 'T2.38', 'T2.39', 'T2.40', 'T2.41', 'T2.42', 'T2.43', 'T2.44', 'T2.45', 'T2.46'],
+            'routes_count': 70,
             'url_prefix': '/api/v733'
         })
     except Exception as e:
@@ -1180,15 +1902,26 @@ def api_v733_overview():
 
 @bp.route('/theorems/all', methods=['GET'])
 def api_v733_theorems_all():
-    """v7.33b 全部定理验证 (T2.32-T2.41)"""
+    """v7.33c 全部定理验证 (T2.32-T2.46)"""
     try:
         from modules.M223_GoldenSymbol3D import verify_theorem_t232, verify_theorem_t233, verify_theorem_t234
         from modules.M224_SOPGeneratorEngine import verify_theorem_t235, verify_theorem_t236
         from modules.M225_ICELeanLoop import verify_theorem_t237, verify_theorem_t238, verify_theorem_t239
         from modules.M226_PCTChecker import verify_theorem_t240
         from modules.M155_FtelOptimizer import get_instance as m155_get
+        from modules.M227_EMLEngine import get_instance as m227_get
+        from modules.M228_LiuMechanism import get_instance as m228_get
+        from modules.M229_ActionSurfaceRouter import get_instance as m229_get
+        from modules.M230_SideEffectVerifier import get_instance as m230_get
+        from modules.M231_FailureAttributor import get_instance as m231_get
 
         m155_engine = m155_get()
+        m227_engine = m227_get()
+        m228_engine = m228_get()
+        m229_engine = m229_get()
+        m230_engine = m230_get()
+        m231_engine = m231_get()
+
         results = {
             'T232': verify_theorem_t232(),
             'T233': verify_theorem_t233(),
@@ -1199,17 +1932,22 @@ def api_v733_theorems_all():
             'T238': verify_theorem_t238(),
             'T239': verify_theorem_t239(),
             'T240': verify_theorem_t240(),
-            'T241': m155_engine.verify_theorem_t241(),
+            'T241': m155_engine.verify_theorem(),
+            'T242': m227_engine.verify_theorem(),
+            'T243': m228_engine.verify_theorem(),
+            'T244': m229_engine.verify_theorem(),
+            'T245': m230_engine.verify_theorem(),
+            'T246': m231_engine.verify_theorem(),
         }
 
-        all_passed = all(r.get('passed', False) or r.get('verified', False) for r in results.values())
+        all_passed = all(r.get('pass', False) or r.get('passed', False) or r.get('verified', False) for r in results.values())
 
         return jsonify({
-            'version': 'v7.33b',
+            'version': 'v7.33c',
             'theorems': results,
             'total': len(results),
-            'passed': sum(1 for r in results.values() if r.get('passed', False) or r.get('verified', False)),
-            'failed': sum(1 for r in results.values() if not (r.get('passed', False) or r.get('verified', False))),
+            'passed': sum(1 for r in results.values() if r.get('pass', False) or r.get('passed', False) or r.get('verified', False)),
+            'failed': sum(1 for r in results.values() if not (r.get('pass', False) or r.get('passed', False) or r.get('verified', False))),
             'all_passed': all_passed
         })
     except Exception as e:

@@ -5877,12 +5877,70 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         <div id="v733-ido-result" style="font-size:9px;color:var(--txt2);max-height:120px;overflow-y:auto;padding:4px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.4;white-space:pre-wrap"></div>
       </div>
 
-      <!-- v7.33 全局控制 -->
-      <div class="panel-section panel-v717" id="v733-global-panel" data-hint="v7.33b TMK全局: 定理验证+版本信息">
-        <div class="panel-title">⚡ v7.33b TMK控制 <span style="font-size:8px;color:var(--txt3)">金符·SOP·ICE·PCT·IDO</span></div>
+      <!-- v7.33c M227 EML 指数-对数混合函数 -->
+      <div class="panel-section panel-v717" id="v733-eml-panel" data-hint="M227 EML: 指数-对数混合函数+极坐标运算+经典vs EML对比·T2.42">
+        <div class="panel-title">🔢 M227 EML <span style="font-size:8px;color:var(--txt3)">指数-对数混合·T2.42</span></div>
         <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
-          <button onclick="v733TheoremAll()" style="font-size:9px;padding:2px 6px;background:#6d28d9">全定理 T232-T241</button>
-          <button onclick="v733MveRunAll()" style="font-size:9px;padding:2px 6px;background:#6d28d9">MVE T265-T269</button>
+          <button onclick="v733EmlCompute()" style="font-size:9px;padding:2px 6px">EML计算</button>
+          <button onclick="v733EmlAdd()" style="font-size:9px;padding:2px 6px">EML加法</button>
+          <button onclick="v733EmlMul()" style="font-size:9px;padding:2px 6px">EML乘法</button>
+          <button onclick="v733EmlComparison()" style="font-size:9px;padding:2px 6px">经典vsEML</button>
+          <button onclick="v733M227Theorems()" style="font-size:9px;padding:2px 6px">T2.42</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          x<input id="v733-eml-x" value="1.0" style="width:35px;font-size:8px">
+          y<input id="v733-eml-y" value="2.0" style="width:35px;font-size:8px">
+          a<input id="v733-eml-a" value="2.0" style="width:35px;font-size:8px">
+          b<input id="v733-eml-b" value="3.0" style="width:35px;font-size:8px">
+          <span id="v733-eml-t242" style="color:var(--txt3)">T242</span>
+        </div>
+        <div id="v733-eml-result" style="font-size:9px;color:var(--txt2);max-height:110px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- v7.33c M228 Liu 机制变分原理 -->
+      <div class="panel-section panel-v717" id="v733-liu-panel" data-hint="M228 Liu: 作用量+变分+平衡+自由能+演化方向·T2.43">
+        <div class="panel-title">🔄 M228 Liu机制 <span style="font-size:8px;color:var(--txt3)">变分原理·T2.43</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
+          <button onclick="v733LiuAction()" style="font-size:9px;padding:2px 6px">作用量S</button>
+          <button onclick="v733LiuVariation()" style="font-size:9px;padding:2px 6px">变分δS</button>
+          <button onclick="v733LiuEquilibrium()" style="font-size:9px;padding:2px 6px">平衡判定</button>
+          <button onclick="v733LiuFullAnalysis()" style="font-size:9px;padding:2px 6px">全量分析</button>
+          <button onclick="v733M228Theorems()" style="font-size:9px;padding:2px 6px">T2.43</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          ε<input id="v733-liu-eps" value="0.01" style="width:35px;font-size:8px">
+          threshold<input id="v733-liu-thr" value="0.1" style="width:35px;font-size:8px">
+          T<input id="v733-liu-temp" value="1.0" style="width:35px;font-size:8px">
+          <span id="v733-liu-t243" style="color:var(--txt3)">T243</span>
+        </div>
+        <div id="v733-liu-result" style="font-size:9px;color:var(--txt2);max-height:110px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- v7.33c M229-M231 PhoneHarness 混合动作面 -->
+      <div class="panel-section panel-v717" id="v733-phoneharness-panel" data-hint="M229路由+M230副作用验证+M231失败归因(PhoneHarness启发)·T2.44-T2.46">
+        <div class="panel-title">🔀 PhoneHarness <span style="font-size:8px;color:var(--txt3)">混合动作面·T2.44-46</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
+          <button onclick="v733RouteTask()" style="font-size:9px;padding:2px 6px">路由任务</button>
+          <button onclick="v733Surfaces()" style="font-size:9px;padding:2px 6px">动作面</button>
+          <button onclick="v733VerifyEffect()" style="font-size:9px;padding:2px 6px">副作用验证</button>
+          <button onclick="v733AttributeFail()" style="font-size:9px;padding:2px 6px">失败归因</button>
+          <button onclick="v733PhoneHarnessTheorems()" style="font-size:9px;padding:2px 6px">T244-246</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          任务<input id="v733-ph-task" value="计算eml(2,3)的指数-对数混合值" style="width:150px;font-size:8px">
+          <span id="v733-ph-t244" style="color:var(--txt3)">T244</span>
+          <span id="v733-ph-t245" style="color:var(--txt3)">T245</span>
+          <span id="v733-ph-t246" style="color:var(--txt3)">T246</span>
+        </div>
+        <div id="v733-ph-result" style="font-size:9px;color:var(--txt2);max-height:110px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- v7.33 全局控制 -->
+      <div class="panel-section panel-v717" id="v733-global-panel" data-hint="v7.33c TMK全局: 定理验证+版本信息">
+        <div class="panel-title">⚡ v7.33c TMK控制 <span style="font-size:8px;color:var(--txt3)">金符·SOP·ICE·PCT·IDO·EML·Liu·PH</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
+          <button onclick="v733TheoremAll()" style="font-size:9px;padding:2px 6px;background:#6d28d9">全定理 T232-T246</button>
+          <button onclick="v733MveRunAll()" style="font-size:9px;padding:2px 6px;background:#6d28d9">MVE T265-T273</button>
         </div>
         <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
           <span>新定理:</span>
@@ -5896,6 +5954,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <span id="v733-g-t239" style="color:var(--txt3)">T239</span>
           <span id="v733-g-t240" style="color:var(--txt3)">T240</span>
           <span id="v733-g-t241" style="color:var(--txt3)">T241</span>
+          <span id="v733-g-t242" style="color:var(--txt3)">T242</span>
+          <span id="v733-g-t243" style="color:var(--txt3)">T243</span>
+          <span id="v733-g-t244" style="color:var(--txt3)">T244</span>
+          <span id="v733-g-t245" style="color:var(--txt3)">T245</span>
+          <span id="v733-g-t246" style="color:var(--txt3)">T246</span>
         </div>
         <div id="v733-global-result" style="font-size:9px;color:var(--txt2);max-height:140px;overflow-y:auto;padding:4px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.4;white-space:pre-wrap"></div>
       </div>
@@ -17064,7 +17127,7 @@ function v733TheoremAll() {
           results.push('T241: '+(t241p?'PASS':'FAIL'));
           let badge=document.getElementById('v733-g-t241');
           if(badge){badge.textContent='T241✓';badge.style.color=t241p?'#10b981':'#ef4444';}
-          v733ShowResult('v733-global-result','v7.33b定理验证: '+results.join(', '));
+          v733ShowResult('v733-global-result','v7.33c定理验证: '+results.join(', '));
         });
       });
     });
@@ -17190,6 +17253,132 @@ function v733M155Theorems() {
     if(badge){badge.textContent='T241'+(t241?'✓':'✗');badge.style.color=t241?'#10b981':'#ef4444';}
     v733ShowResult('v733-ido-result', `M155定理: T122 Ftel=${t122?'✅':'❌'} T241 IDO=${t241?'✅':'❌'}`);
   }).catch(e=>v733ShowResult('v733-ido-result','错误: '+e));
+}
+
+// ==================== v7.33c M227-M231 (EML+Liu+PhoneHarness) ====================
+
+function v733EmlCompute() {
+  fetch('/api/v733/eml/compute',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({x:parseFloat(document.getElementById('v733-eml-x').value)||0,y:parseFloat(document.getElementById('v733-eml-y').value)||1})})
+  .then(r=>r.json()).then(d=>v733ShowResult('v733-eml-result',`EML: exp(${d.x})-log(${d.y}) = ${d.eml_result?.toFixed(6)}`))
+  .catch(e=>v733ShowResult('v733-eml-result','错误: '+e));
+}
+
+function v733EmlAdd() {
+  fetch('/api/v733/eml/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({a:parseFloat(document.getElementById('v733-eml-a').value)||0,b:parseFloat(document.getElementById('v733-eml-b').value)||0})})
+  .then(r=>r.json()).then(d=>v733ShowResult('v733-eml-result',`EML加法: ${d.eml_add?.toFixed(6)} vs 经典: ${d.classic_add?.toFixed(6)} 误差=${d.absolute_error?.toExponential(2)}`))
+  .catch(e=>v733ShowResult('v733-eml-result','错误: '+e));
+}
+
+function v733EmlMul() {
+  fetch('/api/v733/eml/mul',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({a:parseFloat(document.getElementById('v733-eml-a').value)||1,b:parseFloat(document.getElementById('v733-eml-b').value)||1})})
+  .then(r=>r.json()).then(d=>v733ShowResult('v733-eml-result',`EML乘法: ${d.eml_mul?.toFixed(10)} vs 经典: ${d.classic_mul?.toFixed(10)} 误差=${d.absolute_error?.toExponential(2)}`))
+  .catch(e=>v733ShowResult('v733-eml-result','错误: '+e));
+}
+
+function v733EmlComparison() {
+  fetch('/api/v733/eml/comparison',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({x:parseFloat(document.getElementById('v733-eml-x').value)||1,y:parseFloat(document.getElementById('v733-eml-y').value)||2})})
+  .then(r=>r.json()).then(d=>v733ShowResult('v733-eml-result','经典vs EML对比:\n'+JSON.stringify(d.comparison,null,1)))
+  .catch(e=>v733ShowResult('v733-eml-result','错误: '+e));
+}
+
+function v733M227Theorems() {
+  fetch('/api/v733/m227/theorems').then(r=>r.json()).then(d=>{
+    let t242 = d.T242 || {};
+    let badge = document.getElementById('v733-eml-t242');
+    if(badge){badge.textContent='T242'+(t242.pass?'✓':'✗');badge.style.color=t242.pass?'#10b981':'#ef4444';}
+    v733ShowResult('v733-eml-result',`T2.42 EML定理: ${t242.pass?'✅ PASS':'❌ FAIL'}`);
+  }).catch(e=>v733ShowResult('v733-eml-result','错误: '+e));
+}
+
+function v733LiuAction() {
+  fetch('/api/v733/liu/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})})
+  .then(r=>r.json()).then(d=>v733ShowResult('v733-liu-result',`Liu作用量 S=${d.action?.toFixed(6)} (${d.sphere_count}球,${d.edge_count}边)`))
+  .catch(e=>v733ShowResult('v733-liu-result','错误: '+e));
+}
+
+function v733LiuVariation() {
+  let eps = parseFloat(document.getElementById('v733-liu-eps').value)||0.01;
+  fetch('/api/v733/liu/variation',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({epsilon:eps})})
+  .then(r=>r.json()).then(d=>v733ShowResult('v733-liu-result',`Liu变分 δS=${d.variation?.toFixed(6)} (ε=${d.epsilon})`))
+  .catch(e=>v733ShowResult('v733-liu-result','错误: '+e));
+}
+
+function v733LiuEquilibrium() {
+  let thr = parseFloat(document.getElementById('v733-liu-thr').value)||0.1;
+  fetch('/api/v733/liu/equilibrium',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({threshold:thr})})
+  .then(r=>r.json()).then(d=>v733ShowResult('v733-liu-result',`平衡判定: ${d.is_equilibrium?'✅平衡':'❌非平衡'} δS=${d.variation?.toFixed(6)} threshold=${d.threshold}`))
+  .catch(e=>v733ShowResult('v733-liu-result','错误: '+e));
+}
+
+function v733LiuFullAnalysis() {
+  let eps=parseFloat(document.getElementById('v733-liu-eps').value)||0.01;
+  let thr=parseFloat(document.getElementById('v733-liu-thr').value)||0.1;
+  let temp=parseFloat(document.getElementById('v733-liu-temp').value)||1.0;
+  fetch('/api/v733/liu/full_analysis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({epsilon:eps,threshold:thr,temperature:temp})})
+  .then(r=>r.json()).then(d=>v733ShowResult('v733-liu-result',`Liu全量分析:\nS=${d.action?.toFixed(4)} T=${d.kinetic_energy?.toFixed(4)} V=${d.potential_energy?.toFixed(4)}\nδS=${d.variation?.toFixed(4)} 平衡=${d.equilibrium} F=${d.free_energy?.toFixed(4)} 演化=${d.evolution?.direction}`))
+  .catch(e=>v733ShowResult('v733-liu-result','错误: '+e));
+}
+
+function v733M228Theorems() {
+  fetch('/api/v733/m228/theorems').then(r=>r.json()).then(d=>{
+    let t243 = d.T243 || {};
+    let badge = document.getElementById('v733-liu-t243');
+    if(badge){badge.textContent='T243'+(t243.pass?'✓':'✗');badge.style.color=t243.pass?'#10b981':'#ef4444';}
+    v733ShowResult('v733-liu-result',`T2.43 Liu定理: ${t243.pass?'✅ PASS':'❌ FAIL'}`);
+  }).catch(e=>v733ShowResult('v733-liu-result','错误: '+e));
+}
+
+function v733RouteTask() {
+  let task = document.getElementById('v733-ph-task').value || '计算eml值';
+  fetch('/api/v733/router/route',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({task:task})})
+  .then(r=>r.json()).then(d=>v733ShowResult('v733-ph-result',`路由: "${d.task}" → ${d.surface} (置信度=${d.confidence})\n理由: ${d.reason}`))
+  .catch(e=>v733ShowResult('v733-ph-result','错误: '+e));
+}
+
+function v733Surfaces() {
+  fetch('/api/v733/router/surfaces').then(r=>r.json()).then(d=>{
+    let lines = Object.entries(d).map(([k,v])=>`${k}: ${v.meta.name} [${v.available?'可用':'不可用'}] 成功率=${(v.success_rate*100).toFixed(0)}%`);
+    v733ShowResult('v733-ph-result','六大动作面:\n'+lines.join('\n'));
+  }).catch(e=>v733ShowResult('v733-ph-result','错误: '+e));
+}
+
+function v733VerifyEffect() {
+  fetch('/api/v733/verifier/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({operation:'前端测试操作',effect_type:'state',expected_state:{result:'ok'},pre_state:{}})})
+  .then(r=>r.json()).then(d=>{
+    let tid = d.ticket_id;
+    fetch('/api/v733/verifier/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ticket_id:tid,post_state:{result:'ok',timestamp:Date.now()}})})
+    .then(r2=>r2.json()).then(d2=>v733ShowResult('v733-ph-result',`副作用验证: ${d2.status} hash_changed=${d2.hash_changed} integrity=${d2.integrity}`))
+    .catch(e=>v733ShowResult('v733-ph-result','验证错误: '+e));
+  }).catch(e=>v733ShowResult('v733-ph-result','注册错误: '+e));
+}
+
+function v733AttributeFail() {
+  fetch('/api/v733/attributor/attribute',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({test_name:'demo_test',error_message:'AssertionError: 计算结果不匹配',exception_type:'AssertionError'})})
+  .then(r=>r.json()).then(d=>v733ShowResult('v733-ph-result',`失败归因: ${d.primary_category} (置信度=${d.confidence})\n修复建议: ${d.fix_suggestion}`))
+  .catch(e=>v733ShowResult('v733-ph-result','错误: '+e));
+}
+
+function v733PhoneHarnessTheorems() {
+  let results = [];
+  fetch('/api/v733/m229/theorems').then(r=>r.json()).then(d=>{
+    let t244 = d.T244?.pass;
+    let b244 = document.getElementById('v733-ph-t244');
+    if(b244){b244.textContent='T244'+(t244?'✓':'✗');b244.style.color=t244?'#10b981':'#ef4444';}
+    results.push('T244路由最优性:'+(t244?'✅':'❌'));
+    return fetch('/api/v733/m230/theorems');
+  }).then(r=>r.json()).then(d=>{
+    let t245 = d.T245?.pass;
+    let b245 = document.getElementById('v733-ph-t245');
+    if(b245){b245.textContent='T245'+(t245?'✓':'✗');b245.style.color=t245?'#10b981':'#ef4444';}
+    results.push('T245副作用可验证:'+(t245?'✅':'❌'));
+    return fetch('/api/v733/m231/theorems');
+  }).then(r=>r.json()).then(d=>{
+    let t246 = d.T246?.pass;
+    let b246 = document.getElementById('v733-ph-t246');
+    if(b246){b246.textContent='T246'+(t246?'✓':'✗');b246.style.color=t246?'#10b981':'#ef4444';}
+    results.push('T246归因完备性:'+(t246?'✅':'❌'));
+    v733ShowResult('v733-ph-result','PhoneHarness定理:\n'+results.join('\n'));
+  }).catch(e=>v733ShowResult('v733-ph-result','错误: '+e));
 }
 
 // ==================== v7.32b+c 升级 (M218-M222, 21路由) ====================
