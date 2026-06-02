@@ -392,3 +392,170 @@ def api_v732b_fascia_tau_eff():
         return jsonify({'result': result})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# M133 BetaRewireEngine — L3拓扑β-rewire API  (T206/T207/T208)
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _get_or_create_rewire_graph():
+    """从 shared_state 中获取或初始化全局 BetaRewire 图实例。"""
+    import shared_state
+    if not hasattr(shared_state, '_beta_rewire_graph') or shared_state._beta_rewire_graph is None:
+        from modules.M133_W2_JinlingGraphBetaRewire import JinlingGraph
+        shared_state._beta_rewire_graph = JinlingGraph()
+    return shared_state._beta_rewire_graph
+
+
+def _compute_edge_bitmask_v732b(graph):
+    """返回当前图所有边的 frozenset 集合（用于 bitmask diff）。"""
+    return frozenset(
+        (e.src, e.dst, e.port_src, e.port_dst)
+        for e in graph.edges()
+    )
+
+
+@bp.route('/beta_rewire/execute', methods=['POST'])
+def api_v732b_beta_rewire_execute():
+    """
+    执行一次 beta-rewire 操作。
+
+    POST body (JSON):
+        anomaly_type : str   — "CONTRADICTION" | "MIS_MATCH" | "NO_ANOMALY"
+        focus        : str   — 触发异常的焦点节点名（默认 "n1"）
+        reason       : str   — 异常原因描述（可选）
+        reset        : bool  — 是否在执行前重置为新图（默认 false）
+
+    Returns:
+        version_before, version_after, bitmask_diff_size,
+        laplacian_history_len, spectrum_after
+    """
+    try:
+        from modules.M133_W2_JinlingGraphBetaRewire import (
+            JinlingGraph, DeltaPsi, ICEPatch, PortEdge
+        )
+        import shared_state
+
+        data = request.get_json(force=True) or {}
+        anomaly_type = data.get('anomaly_type', 'CONTRADICTION')
+        focus = data.get('focus', 'n1')
+        reason = data.get('reason', 'api_trigger')
+        do_reset = bool(data.get('reset', False))
+
+        if do_reset or not hasattr(shared_state, '_beta_rewire_graph') or shared_state._beta_rewire_graph is None:
+            g = JinlingGraph()
+            # 构建一个默认5节点环图作为初始状态
+            nodes = ['n1', 'n2', 'n3', 'n4', 'n5']
+            for i in range(len(nodes)):
+                src = nodes[i]
+                dst = nodes[(i + 1) % len(nodes)]
+                g.add_edge(PortEdge(src=src, dst=dst, port_src=i, port_dst=(i + 1) % len(nodes), tag='ring'))
+            shared_state._beta_rewire_graph = g
+
+        g = shared_state._beta_rewire_graph
+        bitmask_before = _compute_edge_bitmask_v732b(g)
+        version_before = g.version
+
+        # 直接调用 JinlingGraph.beta_rewire(delta_psi, ice_patch)
+        # DeltaPsi(kind, focus, magnitude)  ICEPatch(target, action, data)
+        action_map = {
+            'CONTRADICTION': 'split',
+            'MIS_MATCH': 'rewire_port',
+            'NO_ANOMALY': 'noop',
+        }
+        action = action_map.get(anomaly_type, 'split')
+        delta = DeltaPsi(kind=anomaly_type, focus=focus, magnitude=1.0)
+        patch = ICEPatch(target='L3_GRAPH', action=action, data={'focus': focus, 'reason': reason})
+        g.beta_rewire(delta, patch)
+
+        bitmask_after = _compute_edge_bitmask_v732b(g)
+        bitmask_diff = bitmask_before.symmetric_difference(bitmask_after)
+        spectrum_after = g.laplacian_spectrum()
+
+        return jsonify({
+            'version_before': version_before,
+            'version_after': g.version,
+            'version_incremented': g.version > version_before,
+            'bitmask_diff_size': len(bitmask_diff),
+            'bitmask_changed': len(bitmask_diff) > 0,
+            'laplacian_history_len': len(g.laplacian_history),
+            'spectrum_after': [round(v, 6) for v in spectrum_after],
+            'focus': focus,
+            'anomaly_type': anomaly_type,
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/beta_rewire/spectrum', methods=['GET'])
+def api_v732b_beta_rewire_spectrum():
+    """
+    获取当前全局 BetaRewire 图的 Laplacian 谱。
+
+    Returns:
+        spectrum       : list[float]  — 当前 Laplacian 特征值列表
+        node_count     : int
+        edge_count     : int
+        version        : int
+    """
+    try:
+        g = _get_or_create_rewire_graph()
+        spectrum = g.laplacian_spectrum()
+        all_edges = list(g.edges())
+
+        return jsonify({
+            'spectrum': [round(v, 6) for v in spectrum],
+            'node_count': len(g.nodes()),
+            'edge_count': len(all_edges),
+            'version': g.version,
+            'spectral_gap': round(spectrum[1], 6) if len(spectrum) > 1 else 0.0,
+            'lambda_max': round(max(spectrum), 6) if spectrum else 0.0,
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/beta_rewire/audit', methods=['GET'])
+def api_v732b_beta_rewire_audit():
+    """
+    获取 BetaRewireEngine 完整审计追踪。
+
+    Query params:
+        limit : int  — 最多返回最近 N 条 laplacian_history（默认 20）
+
+    Returns:
+        version         : int          — 当前版本号
+        total_rewires   : int          — 已执行 rewire 次数（= version）
+        laplacian_history : list       — 历史谱记录（每次 rewire 后的特征值）
+        spectral_jumps  : list[float]  — 相邻两次谱之间的 L2 跳变幅度
+        serialized_snapshot : dict     — to_dict() 序列化快照
+    """
+    try:
+        limit = int(request.args.get('limit', 20))
+        g = _get_or_create_rewire_graph()
+
+        history = g.laplacian_history[-limit:] if g.laplacian_history else []
+
+        # 计算相邻谱跳变 L2 范数
+        spectral_jumps = []
+        for i in range(1, len(history)):
+            prev = history[i - 1]
+            curr = history[i]
+            min_len = min(len(prev), len(curr))
+            if min_len > 0:
+                jump = sum((curr[k] - prev[k]) ** 2 for k in range(min_len)) ** 0.5
+                spectral_jumps.append(round(jump, 6))
+
+        snapshot = g.to_dict()
+
+        return jsonify({
+            'version': g.version,
+            'total_rewires': g.version,
+            'laplacian_history_len': len(g.laplacian_history),
+            'laplacian_history': [[round(v, 6) for v in row] for row in history],
+            'spectral_jumps': spectral_jumps,
+            'avg_spectral_jump': round(sum(spectral_jumps) / len(spectral_jumps), 6) if spectral_jumps else 0.0,
+            'serialized_snapshot': snapshot,
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

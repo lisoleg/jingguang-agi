@@ -466,7 +466,7 @@ python app.py
 
 | 面板 | URL | 说明 |
 |------|-----|------|
-| AGI仪表盘 | http://localhost:5000/static/index_agi12.html | 主前端面板 |
+| AGI仪表盘 | http://localhost:5000/static/index_agi12.html | v7.32c完整仪表盘（13新面板·40 JS函数·34 API端点） |
 | M133 Wintel面板 | http://localhost:5000/static/m133_wintel_panel.html | M133控制面板 |
 
 ### 11.4 关键API测试

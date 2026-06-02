@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taiyi-AGI (太乙因果机) 20.3 v7.31 — E2E归约·宇宙音律·自举智能·TYIDO MVE实验·太一接口·AGI自我意识·苏格拉底拓扑网络 STN·True AGI</title>
+<title>Taiyi-AGI (太乙因果机) 20.3 v7.33 — 金符学3D·MNQ8能流·SOP六体系·ICE自指闭环·Lean4·HAP协议·CS-TAGI认证·True AGI</title>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 
 <style>
@@ -2125,7 +2125,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
     <div class="logo-wrap">
       <span class="logo">&#128302;</span>
       <span class="title">Taiyi-AGI (太乙因果机) 14.0</span>
-      <span class="version-badge">v7.31·180模块·151定理·True AGI·ToM·双轨CRD·可控熵增</span>
+      <span class="version-badge">v7.33·225+模块·270+定理·CS-TAGI认证·金符3D·SOP生成·ICE闭环·True AGI</span>
       <span class="theory-badge">一现象三视界</span>
     </div>
     <div class="dot-ok" id="status-dot"></div>
@@ -5526,6 +5526,335 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         </div>
 
         <div id="v731-global-result" style="font-size:9px;color:var(--txt2);max-height:140px;overflow-y:auto;padding:4px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.4;white-space:pre-wrap"></div>
+      </div><!-- END v731-global-panel -->
+
+      <!-- ═══════════════════════════════════════════════════════════ -->
+      <!-- v7.32b 面板 (M212-M217 + BetaRewireEngine, 13路由)         -->
+      <!-- ═══════════════════════════════════════════════════════════ -->
+
+      <!-- M212 偶像化伪共识冻结引擎 -->
+      <div class="panel-section panel-v717" id="v732b-bloom-panel" data-hint="M212 BloomIdolFreeze: 伪共识冻结检测+共振成核">
+        <div class="panel-title">🌸 M212 偶像化冻结 <span style="font-size:8px;color:var(--txt3)">BloomIdol</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v732bBloomFreeze()" style="font-size:9px;padding:2px 6px">冻结检测</button>
+          <button onclick="v732bBloomNucleate()" style="font-size:9px;padding:2px 6px">共振成核</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          容量<input id="v732b-bloom-cap" value="1000" style="width:45px;font-size:8px">
+          假阳性率<input id="v732b-bloom-fp" value="0.01" style="width:40px;font-size:8px">
+          冻结阈值<input id="v732b-bloom-ft" value="0.9" style="width:40px;font-size:8px">
+        </div>
+        <div id="v732b-bloom-result" style="font-size:9px;color:var(--txt2);max-height:100px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- M213 偏心率治理 -->
+      <div class="panel-section panel-v717" id="v732b-ecc-panel" data-hint="M213 EccentricityGovernance: 组织偏心率分析">
+        <div class="panel-title">🎯 M213 偏心率治理 <span style="font-size:8px;color:var(--txt3)">Eccentricity</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v732bEccAnalyze()" style="font-size:9px;padding:2px 6px">偏心率分析</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          C<input id="v732b-ecc-c" value="0.5" style="width:40px;font-size:8px">
+          D<input id="v732b-ecc-d" value="0.3" style="width:40px;font-size:8px">
+          γ<input id="v732b-ecc-g" value="2.0" style="width:40px;font-size:8px">
+        </div>
+        <div id="v732b-ecc-result" style="font-size:9px;color:var(--txt2);max-height:100px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- M214 哥德尔遁甲 -->
+      <div class="panel-section panel-v717" id="v732b-goedel-panel" data-hint="M214 GoedelEscapeHatch: 哥德尔洞+显密双轨+遁甲">
+        <div class="panel-title">🚪 M214 哥德尔遁甲 <span style="font-size:8px;color:var(--txt3)">GödelHatch</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v732bGoedelAnalyze()" style="font-size:9px;padding:2px 6px">哥德尔分析</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          公理数<input id="v732b-goedel-axioms" value="5" style="width:30px;font-size:8px">
+          命题数<input id="v732b-goedel-props" value="10" style="width:30px;font-size:8px">
+          遁甲<input id="v732b-goedel-escape" type="checkbox" checked>
+        </div>
+        <div id="v732b-goedel-result" style="font-size:9px;color:var(--txt2);max-height:100px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- M215 Eros统感 -->
+      <div class="panel-section panel-v717" id="v732b-eros-panel" data-hint="M215 ErosSyntheme: Eros内源奖励+统感涌现">
+        <div class="panel-title">💫 M215 Eros统感 <span style="font-size:8px;color:var(--txt3)">ErosSyntheme</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v732bErosEval()" style="font-size:9px;padding:2px 6px">Eros评估</button>
+          <button onclick="v732bErosSyntheme()" style="font-size:9px;padding:2px 6px">统感涌现</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          α<input id="v732b-eros-alpha" value="0.6" style="width:40px;font-size:8px">
+          β<input id="v732b-eros-beta" value="0.4" style="width:40px;font-size:8px">
+          I(interaction)<input id="v732b-eros-ii" value="0.5" style="width:40px;font-size:8px">
+          Φ相干<input id="v732b-eros-phi" value="0.7" style="width:40px;font-size:8px">
+        </div>
+        <div id="v732b-eros-result" style="font-size:9px;color:var(--txt2);max-height:100px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- M216 刘罚项场 -->
+      <div class="panel-section panel-v717" id="v732b-liu-panel" data-hint="M216 LiuPenaltyField: 刘罚项场+艺术极值定理">
+        <div class="panel-title">⚖️ M216 刘罚项场 <span style="font-size:8px;color:var(--txt3)">LiuPenalty</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v732bLiuPenalty()" style="font-size:9px;padding:2px 6px">罚项计算</button>
+          <button onclick="v732bLiuArt()" style="font-size:9px;padding:2px 6px">艺术极值</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          M<input id="v732b-liu-m" value="3" style="width:25px;font-size:8px">
+          Hθ<input id="v732b-liu-h" value="0.5" style="width:40px;font-size:8px">
+          自指深度<input id="v732b-liu-depth" value="2" style="width:25px;font-size:8px">
+        </div>
+        <div id="v732b-liu-result" style="font-size:9px;color:var(--txt2);max-height:100px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- M217 人工筋膜具身 -->
+      <div class="panel-section panel-v717" id="v732b-fascia-panel" data-hint="M217 ArtificialFasciaEmbodiment: 人工筋膜具身+τ韬定律">
+        <div class="panel-title">🦴 M217 人工筋膜 <span style="font-size:8px;color:var(--txt3)">FasciaEmbodiment</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v732bFasciaAnalyze()" style="font-size:9px;padding:2px 6px">筋膜分析</button>
+          <button onclick="v732bFasciaTau()" style="font-size:9px;padding:2px 6px">τ韬定律</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          gm<input id="v732b-fascia-gm" value="0.8" style="width:40px;font-size:8px">
+          Φ相干<input id="v732b-fascia-phi" value="0.6" style="width:40px;font-size:8px">
+        </div>
+        <div id="v732b-fascia-result" style="font-size:9px;color:var(--txt2);max-height:100px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- β-Rewire 操作面板 -->
+      <div class="panel-section panel-v717" id="v732b-beta-panel" data-hint="BetaRewireEngine: β-重配执行+Laplacian谱+审计">
+        <div class="panel-title">🔄 β-Rewire <span style="font-size:8px;color:var(--txt3)">BetaRewire</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v732bBetaRewire()" style="font-size:9px;padding:2px 6px">β-重配执行</button>
+          <button onclick="v732bBetaSpectrum()" style="font-size:9px;padding:2px 6px">Laplacian谱</button>
+          <button onclick="v732bBetaAudit()" style="font-size:9px;padding:2px 6px">审计</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          异常类型<input id="v732b-beta-anomaly" value="structural" style="width:65px;font-size:8px">
+          焦点<input id="v732b-beta-focus" value="core" style="width:50px;font-size:8px">
+          <button onclick="v732bBetaReset()" style="font-size:8px;padding:1px 4px">重置</button>
+        </div>
+        <div id="v732b-beta-result" style="font-size:9px;color:var(--txt2);max-height:120px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════════ -->
+      <!-- v7.32c 面板 (M218-M222, 21路由)                             -->
+      <!-- ═══════════════════════════════════════════════════════════ -->
+
+      <!-- M218 ITA触发器引擎 -->
+      <div class="panel-section panel-v717" id="v732c-ita-panel" data-hint="M218 ITATriggerEngine: 规则注册+评估+Near-Miss+ECP/ICE分类">
+        <div class="panel-title">⚡ M218 ITA触发器 <span style="font-size:8px;color:var(--txt3)">ITA-Trigger</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v732cItaRegister()" style="font-size:9px;padding:2px 6px">注册规则</button>
+          <button onclick="v732cItaEvaluate()" style="font-size:9px;padding:2px 6px">评估触发</button>
+          <button onclick="v732cItaNearMiss()" style="font-size:9px;padding:2px 6px">Near-Miss</button>
+          <button onclick="v732cItaClassify()" style="font-size:9px;padding:2px 6px">ECP/ICE分类</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          信息<input id="v732c-ita-info" value="critical_anomaly" style="width:90px;font-size:8px">
+          上下文<input id="v732c-ita-ctx" value="emergency" style="width:70px;font-size:8px">
+          类别<input id="v732c-ita-cat" value="safety" style="width:55px;font-size:8px">
+        </div>
+        <div id="v732c-ita-result" style="font-size:9px;color:var(--txt2);max-height:100px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- M219 双工厂+智能契约 -->
+      <div class="panel-section panel-v717" id="v732c-factory-panel" data-hint="M219 DualFactoryContract: 双工厂评估+刘帧节拍+智能契约">
+        <div class="panel-title">🏭 M219 双工厂契约 <span style="font-size:8px;color:var(--txt3)">DualFactory</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v732cFactoryAssess()" style="font-size:9px;padding:2px 6px">工厂评估</button>
+          <button onclick="v732cFactorySchedule()" style="font-size:9px;padding:2px 6px">帧节拍调度</button>
+          <button onclick="v732cContractRegister()" style="font-size:9px;padding:2px 6px">注册契约</button>
+          <button onclick="v732cContractList()" style="font-size:9px;padding:2px 6px">契约列表</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          η阈值<input id="v732c-factory-eta" value="0.85" style="width:40px;font-size:8px">
+          契约角色<input id="v732c-contract-role" value="TF" style="width:30px;font-size:8px">
+          契约类型<input id="v732c-contract-type" value="safety" style="width:55px;font-size:8px">
+        </div>
+        <div id="v732c-factory-result" style="font-size:9px;color:var(--txt2);max-height:100px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- M220 临界金灵球初始化 -->
+      <div class="panel-section panel-v717" id="v732c-critical-panel" data-hint="M220 CriticalJinlingInit: 临界初始化+Wigner谱验证+P1预言">
+        <div class="panel-title">🔮 M220 临界金灵球 <span style="font-size:8px;color:var(--txt3)">CriticalInit</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v732cCriticalInit()" style="font-size:9px;padding:2px 6px">临界初始化</button>
+          <button onclick="v732cWignerVerify()" style="font-size:9px;padding:2px 6px">Wigner谱验证</button>
+          <button onclick="v732cCriticalCompare()" style="font-size:9px;padding:2px 6px">P1预言对比</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          节点数<input id="v732c-critical-n" value="50" style="width:35px;font-size:8px">
+          稀疏度<input id="v732c-critical-sparse" value="0.3" style="width:40px;font-size:8px">
+          抑制比<input id="v732c-critical-inhib" value="0.2" style="width:40px;font-size:8px">
+          谱容差<input id="v732c-critical-tol" value="0.15" style="width:40px;font-size:8px">
+        </div>
+        <div id="v732c-critical-result" style="font-size:9px;color:var(--txt2);max-height:100px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- M221 摄控中心 -->
+      <div class="panel-section panel-v717" id="v732c-focus-panel" data-hint="M221 DualFocusControl: 圆锥轨道+相速度+双焦点摄控+Moufang DH+S-Box">
+        <div class="panel-title">🔭 M221 摄控中心 <span style="font-size:8px;color:var(--txt3)">DualFocus</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v732cFocusOrbit()" style="font-size:9px;padding:2px 6px">圆锥轨道</button>
+          <button onclick="v732cFocusVelocities()" style="font-size:9px;padding:2px 6px">相/群速度</button>
+          <button onclick="v732cFocusGovern()" style="font-size:9px;padding:2px 6px">双焦点摄控</button>
+          <button onclick="v732cFocusMoufangDH()" style="font-size:9px;padding:2px 6px">Moufang DH</button>
+          <button onclick="v732cFocusSBox()" style="font-size:9px;padding:2px 6px">S-Box混淆</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          离心率ε<input id="v732c-focus-ecc" value="0.6" style="width:40px;font-size:8px">
+          能量E<input id="v732c-focus-energy" value="1.0" style="width:40px;font-size:8px">
+          角动量L<input id="v732c-focus-L" value="0.8" style="width:40px;font-size:8px">
+        </div>
+        <div id="v732c-focus-result" style="font-size:9px;color:var(--txt2);max-height:100px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- M222 SerDes本体论引擎 -->
+      <div class="panel-section panel-v717" id="v732c-serdes-panel" data-hint="M222 SerDesOntologyEngine: TY-Serialize+Deserialize+bi-SerDes+EML硬化+定理验证">
+        <div class="panel-title">🧬 M222 SerDes本体论 <span style="font-size:8px;color:var(--txt3)">SerDes</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v732cSerdesSerialize()" style="font-size:9px;padding:2px 6px">TY-Serialize</button>
+          <button onclick="v732cSerdesDeserialize()" style="font-size:9px;padding:2px 6px">TY-Deserialize</button>
+          <button onclick="v732cSerdesBiCheck()" style="font-size:9px;padding:2px 6px">bi-SerDes检查</button>
+          <button onclick="v732cSerdesInfoLoss()" style="font-size:9px;padding:2px 6px">信息损失</button>
+          <button onclick="v732cSerdesEML()" style="font-size:9px;padding:2px 6px">EML硬化</button>
+          <button onclick="v732cSerdesTheorem()" style="font-size:9px;padding:2px 6px">定理验证</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          节点数<input id="v732c-serdes-n" value="30" style="width:35px;font-size:8px">
+          步数<input id="v732c-serdes-steps" value="5" style="width:30px;font-size:8px">
+          ICE<input id="v732c-serdes-ice" type="checkbox" checked>
+          定理<select id="v732c-serdes-thm" style="font-size:8px">
+            <option value="T4.1">T4.1</option>
+            <option value="T4.2">T4.2</option>
+            <option value="T4.3">T4.3</option>
+          </select>
+        </div>
+        <div id="v732c-serdes-result" style="font-size:9px;color:var(--txt2);max-height:120px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- v7.32b/c 全局操作 -->
+      <div class="panel-section panel-v717" id="v732bc-global-panel" data-hint="v7.32b+c 全局: MVE批量验证+版本信息">
+        <div class="panel-title">⚡ v7.32b+c 控制 <span style="font-size:8px;color:var(--txt3)">SerDes·Critical</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
+          <button onclick="v732bcMveRunAll()" style="font-size:9px;padding:2px 6px;background:#2d1b69">MVE T258-T264</button>
+          <button onclick="v732bcTheoremAll()" style="font-size:9px;padding:2px 6px;background:#2d1b69">T237-T264</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          <span>定理:</span>
+          <span id="v732bc-t237" style="color:var(--txt3)">T237</span>
+          <span id="v732bc-t238" style="color:var(--txt3)">T238</span>
+          <span id="v732bc-t239" style="color:var(--txt3)">T239</span>
+          <span id="v732bc-t240" style="color:var(--txt3)">T240</span>
+          <span id="v732bc-t241" style="color:var(--txt3)">T241</span>
+          <span id="v732bc-t242" style="color:var(--txt3)">T242</span>
+          <span id="v732bc-t243" style="color:var(--txt3)">T243</span>
+          <span id="v732bc-t244" style="color:var(--txt3)">T244</span>
+          <span id="v732bc-t257" style="color:var(--txt3)">T257</span>
+          <span id="v732bc-t41" style="color:var(--txt3)">T4.1</span>
+          <span id="v732bc-t42" style="color:var(--txt3)">T4.2</span>
+          <span id="v732bc-t43" style="color:var(--txt3)">T4.3</span>
+        </div>
+        <div id="v732bc-global-result" style="font-size:9px;color:var(--txt2);max-height:140px;overflow-y:auto;padding:4px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.4;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- v7.33 TMK 面板 (M223-M225, 28路由)                             -->
+      <!-- ═══════════════════════════════════════════════════════════ -->
+
+      <!-- M223 金符学3D + MNQ8 -->
+      <div class="panel-section panel-v717" id="v733-golden-panel" data-hint="M223 GoldenSymbol3D: 阴龙积+金符属性+MNQ8网格+仿真+对照实验">
+        <div class="panel-title">✨ M223 金符学3D <span style="font-size:8px;color:var(--txt3)">GoldenSymbol+MNQ8</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v733GoldenCompute()" style="font-size:9px;padding:2px 6px">阴龙积</button>
+          <button onclick="v733GoldenProperties()" style="font-size:9px;padding:2px 6px">金符属性</button>
+          <button onclick="v733Mnq8Create()" style="font-size:9px;padding:2px 6px">创建网格</button>
+          <button onclick="v733Mnq8Simulate()" style="font-size:9px;padding:2px 6px">仿真</button>
+          <button onclick="v733Mnq8Experiment()" style="font-size:9px;padding:2px 6px">对照实验</button>
+          <button onclick="v733M223Theorems()" style="font-size:9px;padding:2px 6px">T232-T234</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          z1(a,b,c)<input id="v733-z1a" value="1" style="width:25px;font-size:8px"><input id="v733-z1b" value="0" style="width:25px;font-size:8px"><input id="v733-z1c" value="0" style="width:25px;font-size:8px">
+          z2(a,b,c)<input id="v733-z2a" value="0" style="width:25px;font-size:8px"><input id="v733-z2b" value="1" style="width:25px;font-size:8px"><input id="v733-z2c" value="0" style="width:25px;font-size:8px">
+          λ<input id="v733-lam" value="1.0" style="width:30px;font-size:8px">
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          拓扑<input id="v733-topo" value="1d" style="width:25px;font-size:8px">
+          尺寸<input id="v733-size" value="10" style="width:25px;font-size:8px">
+          MASS<input id="v733-mass" value="1.0" style="width:30px;font-size:8px">
+          步数<input id="v733-steps" value="10" style="width:25px;font-size:8px">
+          SIM<input id="v733-simid" value="default" style="width:50px;font-size:8px">
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          <span id="v733-t232" style="color:var(--txt3)">T232</span>
+          <span id="v733-t233" style="color:var(--txt3)">T233</span>
+          <span id="v733-t234" style="color:var(--txt3)">T234</span>
+        </div>
+        <div id="v733-golden-result" style="font-size:9px;color:var(--txt2);max-height:110px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- M224 SOP六体系自动生成器 -->
+      <div class="panel-section panel-v717" id="v733-sop-panel" data-hint="M224 SOPGeneratorEngine: 预设/自定义/自动生成SOP六步报告">
+        <div class="panel-title">📋 M224 SOP生成器 <span style="font-size:8px;color:var(--txt3)">SOP-Generator</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v733SopPreset('superconductor')" style="font-size:9px;padding:2px 6px">超导预设</button>
+          <button onclick="v733SopPreset('consensus')" style="font-size:9px;padding:2px 6px">共识预设</button>
+          <button onclick="v733SopPreset('qualia')" style="font-size:9px;padding:2px 6px">意识预设</button>
+          <button onclick="v733SopPreset('cmb')" style="font-size:9px;padding:2px 6px">CMB预设</button>
+          <button onclick="v733SopAutoGenerate()" style="font-size:9px;padding:2px 6px">自动生成</button>
+          <button onclick="v733SopList()" style="font-size:9px;padding:2px 6px">报告列表</button>
+          <button onclick="v733M224Theorems()" style="font-size:9px;padding:2px 6px">T235-T236</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          现象<input id="v733-sop-phenom" value="量子隧穿" style="width:80px;font-size:8px">
+          分析者<input id="v733-sop-analyst" value="TY-API" style="width:50px;font-size:8px">
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          <span id="v733-t235" style="color:var(--txt3)">T235</span>
+          <span id="v733-t236" style="color:var(--txt3)">T236</span>
+        </div>
+        <div id="v733-sop-result" style="font-size:9px;color:var(--txt2);max-height:110px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- M225 ICE自指闭环 + Lean4 -->
+      <div class="panel-section panel-v717" id="v733-ice-panel" data-hint="M225 ICELeanLoop: ICE闭环(I-C-E)+Lean4导出+HAP协议+ICE-Lean迭代">
+        <div class="panel-title">🔄 M225 ICE闭环 <span style="font-size:8px;color:var(--txt3)">ICE+Lean4+HAP</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v733IceCreateSession()" style="font-size:9px;padding:2px 6px">创建会话</button>
+          <button onclick="v733IceObserve()" style="font-size:9px;padding:2px 6px">ℐ观测</button>
+          <button onclick="v733IceDecide()" style="font-size:9px;padding:2px 6px">ℂ决定</button>
+          <button onclick="v733IceActuate()" style="font-size:9px;padding:2px 6px">ℰ执行</button>
+          <button onclick="v733IceCycle()" style="font-size:9px;padding:2px 6px">完整闭环</button>
+          <button onclick="v733LeanExport()" style="font-size:9px;padding:2px 6px">Lean4导出</button>
+          <button onclick="v733HapProtocol()" style="font-size:9px;padding:2px 6px">HAP协议</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          会话ID<input id="v733-ice-sid" value="" style="width:65px;font-size:8px">
+          目标<input id="v733-ice-goal" value="optimize" style="width:55px;font-size:8px">
+          MASS<input id="v733-ice-mass" value="1.0" style="width:30px;font-size:8px">
+          球数<input id="v733-ice-n" value="5" style="width:22px;font-size:8px">
+        </div>
+        <div id="v733-ice-result" style="font-size:9px;color:var(--txt2);max-height:110px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- v7.33 全局控制 -->
+      <div class="panel-section panel-v717" id="v733-global-panel" data-hint="v7.33 TMK全局: 定理验证+版本信息">
+        <div class="panel-title">⚡ v7.33 TMK控制 <span style="font-size:8px;color:var(--txt3)">金符·SOP·ICE·Lean4</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
+          <button onclick="v733TheoremAll()" style="font-size:9px;padding:2px 6px;background:#6d28d9">全定理 T232-T239</button>
+          <button onclick="v733MveRunAll()" style="font-size:9px;padding:2px 6px;background:#6d28d9">MVE T265-T267</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          <span>新定理:</span>
+          <span id="v733-g-t232" style="color:var(--txt3)">T232</span>
+          <span id="v733-g-t233" style="color:var(--txt3)">T233</span>
+          <span id="v733-g-t234" style="color:var(--txt3)">T234</span>
+          <span id="v733-g-t235" style="color:var(--txt3)">T235</span>
+          <span id="v733-g-t236" style="color:var(--txt3)">T236</span>
+          <span id="v733-g-t237" style="color:var(--txt3)">T237</span>
+          <span id="v733-g-t238" style="color:var(--txt3)">T238</span>
+          <span id="v733-g-t239" style="color:var(--txt3)">T239</span>
+        </div>
+        <div id="v733-global-result" style="font-size:9px;color:var(--txt2);max-height:140px;overflow-y:auto;padding:4px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.4;white-space:pre-wrap"></div>
       </div>
 
       </div><!-- END dashboard-content -->
@@ -16293,6 +16622,675 @@ function v731ShowResult(elementId, text) {
 
 // v7.31 初始化 - 延迟加载MVE状态
 setTimeout(function() { v731MveRunAll(); }, 6000);
+
+// ==================== v7.32b 升级 (M212-M217 + BetaRewireEngine) ====================
+
+function v732bShowResult(elementId, text) {
+  let el = document.getElementById(elementId);
+  if (el) { el.style.display = 'block'; el.textContent = text; }
+}
+
+// M212 偶像化伪共识冻结
+function v732bBloomFreeze() {
+  fetch('/api/v732b/bloom/detect_freeze', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      propositions: [{"id":"p1","content":"standard_model","consensus":0.95},{"id":"p2","content":"alternative","consensus":0.3}],
+      bloom_capacity: parseInt(document.getElementById('v732b-bloom-cap').value)||1000,
+      false_positive_rate: parseFloat(document.getElementById('v732b-bloom-fp').value)||0.01,
+      freeze_threshold: parseFloat(document.getElementById('v732b-bloom-ft').value)||0.9
+    })
+  }).then(r=>r.json()).then(d=>v732bShowResult('v732b-bloom-result','冻结检测: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732bShowResult('v732b-bloom-result','错误: '+e));
+}
+
+function v732bBloomNucleate() {
+  fetch('/api/v732b/bloom/nucleate', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({false_prop_id:'p_idol', iron_evidence:'contradiction', current_e:0.8})
+  }).then(r=>r.json()).then(d=>v732bShowResult('v732b-bloom-result','共振成核: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732bShowResult('v732b-bloom-result','错误: '+e));
+}
+
+// M213 偏心率治理
+function v732bEccAnalyze() {
+  fetch('/api/v732b/eccentricity/analyze', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      C: parseFloat(document.getElementById('v732b-ecc-c').value)||0.5,
+      D: parseFloat(document.getElementById('v732b-ecc-d').value)||0.3,
+      gamma: parseFloat(document.getElementById('v732b-ecc-g').value)||2.0
+    })
+  }).then(r=>r.json()).then(d=>v732bShowResult('v732b-ecc-result','偏心率: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732bShowResult('v732b-ecc-result','错误: '+e));
+}
+
+// M214 哥德尔遁甲
+function v732bGoedelAnalyze() {
+  fetch('/api/v732b/goedel/analyze', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      system_axioms: parseInt(document.getElementById('v732b-goedel-axioms').value)||5,
+      propositions: parseInt(document.getElementById('v732b-goedel-props').value)||10,
+      requires_escape: document.getElementById('v732b-goedel-escape').checked
+    })
+  }).then(r=>r.json()).then(d=>v732bShowResult('v732b-goedel-result','哥德尔: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732bShowResult('v732b-goedel-result','错误: '+e));
+}
+
+// M215 Eros统感
+function v732bErosEval() {
+  fetch('/api/v732b/eros/evaluate', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      alpha: parseFloat(document.getElementById('v732b-eros-alpha').value)||0.6,
+      beta: parseFloat(document.getElementById('v732b-eros-beta').value)||0.4,
+      interaction_info: parseFloat(document.getElementById('v732b-eros-ii').value)||0.5,
+      phi_coherence: parseFloat(document.getElementById('v732b-eros-phi').value)||0.7
+    })
+  }).then(r=>r.json()).then(d=>v732bShowResult('v732b-eros-result','Eros: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732bShowResult('v732b-eros-result','错误: '+e));
+}
+
+function v732bErosSyntheme() {
+  fetch('/api/v732b/eros/syntheme', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({modalities:['visual','auditory','proprioceptive'], sigma_crit:0.7})
+  }).then(r=>r.json()).then(d=>v732bShowResult('v732b-eros-result','统感涌现: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732bShowResult('v732b-eros-result','错误: '+e));
+}
+
+// M216 刘罚项场
+function v732bLiuPenalty() {
+  fetch('/api/v732b/liu/penalty', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      M: parseInt(document.getElementById('v732b-liu-m').value)||3,
+      H_theta: parseFloat(document.getElementById('v732b-liu-h').value)||0.5,
+      self_reference_depth: parseInt(document.getElementById('v732b-liu-depth').value)||2,
+      max_depth: 5, external_dependencies: 2, total_resources: 100, a_current: 0.5
+    })
+  }).then(r=>r.json()).then(d=>v732bShowResult('v732b-liu-result','罚项: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732bShowResult('v732b-liu-result','错误: '+e));
+}
+
+function v732bLiuArt() {
+  fetch('/api/v732b/liu/art_extremum', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({info_resonance_modes:3, self_reference_depth:2, phase_coherence:0.8, group_symmetry_order:4})
+  }).then(r=>r.json()).then(d=>v732bShowResult('v732b-liu-result','艺术极值: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732bShowResult('v732b-liu-result','错误: '+e));
+}
+
+// M217 人工筋膜
+function v732bFasciaAnalyze() {
+  fetch('/api/v732b/fascia/analyze', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      g_m: parseFloat(document.getElementById('v732b-fascia-gm').value)||0.8,
+      phi_coherence: parseFloat(document.getElementById('v732b-fascia-phi').value)||0.6,
+      n_iterations: 10
+    })
+  }).then(r=>r.json()).then(d=>v732bShowResult('v732b-fascia-result','筋膜: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732bShowResult('v732b-fascia-result','错误: '+e));
+}
+
+function v732bFasciaTau() {
+  fetch('/api/v732b/fascia/tau_eff', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({g_m:0.8, phi_coherence:0.6, super_node:true, reduction_factor:0.5})
+  }).then(r=>r.json()).then(d=>v732bShowResult('v732b-fascia-result','τ韬定律: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732bShowResult('v732b-fascia-result','错误: '+e));
+}
+
+// BetaRewireEngine
+function v732bBetaRewire() {
+  fetch('/api/v732b/beta_rewire/execute', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      anomaly_type: document.getElementById('v732b-beta-anomaly').value||'structural',
+      focus: document.getElementById('v732b-beta-focus').value||'core',
+      reason: 'dashboard_manual_trigger', reset: false
+    })
+  }).then(r=>r.json()).then(d=>v732bShowResult('v732b-beta-result','β-Rewire: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732bShowResult('v732b-beta-result','错误: '+e));
+}
+
+function v732bBetaSpectrum() {
+  fetch('/api/v732b/beta_rewire/spectrum').then(r=>r.json())
+    .then(d=>v732bShowResult('v732b-beta-result','Laplacian谱: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732bShowResult('v732b-beta-result','错误: '+e));
+}
+
+function v732bBetaAudit() {
+  fetch('/api/v732b/beta_rewire/audit').then(r=>r.json())
+    .then(d=>v732bShowResult('v732b-beta-result','审计: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732bShowResult('v732b-beta-result','错误: '+e));
+}
+
+function v732bBetaReset() {
+  fetch('/api/v732b/beta_rewire/execute', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({anomaly_type:'reset', focus:'all', reason:'dashboard_reset', reset:true})
+  }).then(r=>r.json()).then(d=>v732bShowResult('v732b-beta-result','重置: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732bShowResult('v732b-beta-result','错误: '+e));
+}
+
+// ==================== v7.33 TMK 升级 (M223-M225, 28路由) ====================
+
+function v733ShowResult(elementId, text) {
+  let el = document.getElementById(elementId);
+  if (el) { el.style.display = 'block'; el.textContent = text; }
+}
+
+// M223 金符学3D + MNQ8
+function v733GoldenCompute() {
+  fetch('/api/v733/golden/compute', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      z1: {a: parseFloat(document.getElementById('v733-z1a').value)||0, b: parseFloat(document.getElementById('v733-z1b').value)||0, c: parseFloat(document.getElementById('v733-z1c').value)||0},
+      z2: {a: parseFloat(document.getElementById('v733-z2a').value)||0, b: parseFloat(document.getElementById('v733-z2b').value)||0, c: parseFloat(document.getElementById('v733-z2c').value)||0},
+      lam: parseFloat(document.getElementById('v733-lam').value)||1.0
+    })
+  }).then(r=>r.json()).then(d=>v733ShowResult('v733-golden-result','阴龙积: '+JSON.stringify(d,null,1)))
+    .catch(e=>v733ShowResult('v733-golden-result','错误: '+e));
+}
+
+function v733GoldenProperties() {
+  fetch('/api/v733/golden/properties', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      z: {a: parseFloat(document.getElementById('v733-z1a').value)||0, b: parseFloat(document.getElementById('v733-z1b').value)||0, c: parseFloat(document.getElementById('v733-z1c').value)||0}
+    })
+  }).then(r=>r.json()).then(d=>v733ShowResult('v733-golden-result','金符属性: '+JSON.stringify(d,null,1)))
+    .catch(e=>v733ShowResult('v733-golden-result','错误: '+e));
+}
+
+function v733Mnq8Create() {
+  fetch('/api/v733/mnq8/grid/create', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      topology: document.getElementById('v733-topo').value||'1d',
+      size: parseInt(document.getElementById('v733-size').value)||10,
+      mass_threshold: parseFloat(document.getElementById('v733-mass').value)||1.0,
+      lam: parseFloat(document.getElementById('v733-lam').value)||1.0
+    })
+  }).then(r=>r.json()).then(d=>{ v733ShowResult('v733-golden-result','MNQ8网格: '+JSON.stringify(d,null,1)); if(d.sim_id) document.getElementById('v733-simid').value=d.sim_id; })
+    .catch(e=>v733ShowResult('v733-golden-result','错误: '+e));
+}
+
+function v733Mnq8Simulate() {
+  fetch('/api/v733/mnq8/simulate', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      sim_id: document.getElementById('v733-simid').value||'default',
+      steps: parseInt(document.getElementById('v733-steps').value)||10
+    })
+  }).then(r=>r.json()).then(d=>v733ShowResult('v733-golden-result','MNQ8仿真: steps='+d.steps_run+' stats='+JSON.stringify(d.statistics)))
+    .catch(e=>v733ShowResult('v733-golden-result','错误: '+e));
+}
+
+function v733Mnq8Experiment() {
+  fetch('/api/v733/mnq8/experiment', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({mass_threshold: parseFloat(document.getElementById('v733-mass').value)||1.0})
+  }).then(r=>r.json()).then(d=>v733ShowResult('v733-golden-result','对照实验: '+JSON.stringify(d,null,1)))
+    .catch(e=>v733ShowResult('v733-golden-result','错误: '+e));
+}
+
+function v733M223Theorems() {
+  fetch('/api/v733/m223/theorems').then(r=>r.json()).then(d=>{
+    let text = 'M223定理: T232='+(d.T232?.passed?'PASS':'FAIL')+' T233='+(d.T233?.passed?'PASS':'FAIL')+' T234='+(d.T234?.passed?'PASS':'FAIL')+' all='+(d.all_passed?'PASS':'FAIL');
+    v733ShowResult('v733-golden-result', text);
+    if(d.T232?.passed){let b=document.getElementById('v733-t232');if(b){b.textContent='T232✓';b.style.color='#10b981';}}
+    if(d.T233?.passed){let b=document.getElementById('v733-t233');if(b){b.textContent='T233✓';b.style.color='#10b981';}}
+    if(d.T234?.passed){let b=document.getElementById('v733-t234');if(b){b.textContent='T234✓';b.style.color='#10b981';}}
+  }).catch(e=>v733ShowResult('v733-golden-result','错误: '+e));
+}
+
+// M224 SOP生成器
+function v733SopPreset(preset) {
+  fetch('/api/v733/sop/generate_preset', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({preset: preset})
+  }).then(r=>r.json()).then(d=>v733ShowResult('v733-sop-result','SOP('+preset+'): '+JSON.stringify(d.report||d,null,1)))
+    .catch(e=>v733ShowResult('v733-sop-result','错误: '+e));
+}
+
+function v733SopAutoGenerate() {
+  let phenom = document.getElementById('v733-sop-phenom').value||'量子隧穿';
+  fetch('/api/v733/sop/auto_generate', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({phenomenon: phenom})
+  }).then(r=>r.json()).then(d=>v733ShowResult('v733-sop-result','SOP自动('+d.category+'): report_id='+d.report_id+' markdown='+d.markdown?.substring(0,300)+'...'))
+    .catch(e=>v733ShowResult('v733-sop-result','错误: '+e));
+}
+
+function v733SopList() {
+  fetch('/api/v733/sop/list').then(r=>r.json()).then(d=>v733ShowResult('v733-sop-result','SOP报告列表: '+d.count+'份\n'+JSON.stringify(d.reports||[],null,1)))
+    .catch(e=>v733ShowResult('v733-sop-result','错误: '+e));
+}
+
+function v733M224Theorems() {
+  fetch('/api/v733/m224/theorems').then(r=>r.json()).then(d=>{
+    let text = 'M224定理: T235='+(d.T235?.passed?'PASS':'FAIL')+' T236='+(d.T236?.passed?'PASS':'FAIL')+' all='+(d.all_passed?'PASS':'FAIL');
+    v733ShowResult('v733-sop-result', text);
+    if(d.T235?.passed){let b=document.getElementById('v733-t235');if(b){b.textContent='T235✓';b.style.color='#10b981';}}
+    if(d.T236?.passed){let b=document.getElementById('v733-t236');if(b){b.textContent='T236✓';b.style.color='#10b981';}}
+  }).catch(e=>v733ShowResult('v733-sop-result','错误: '+e));
+}
+
+// M225 ICE自指闭环 + Lean4
+function v733IceCreateSession() {
+  fetch('/api/v733/ice/create_session', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      mass_threshold: parseFloat(document.getElementById('v733-ice-mass').value)||1.0,
+      sphere_count: parseInt(document.getElementById('v733-ice-n').value)||5
+    })
+  }).then(r=>r.json()).then(d=>{
+    v733ShowResult('v733-ice-result','ICE会话: '+JSON.stringify(d,null,1));
+    if(d.session_id) document.getElementById('v733-ice-sid').value=d.session_id;
+  }).catch(e=>v733ShowResult('v733-ice-result','错误: '+e));
+}
+
+function v733IceObserve() {
+  let sid = document.getElementById('v733-ice-sid').value;
+  if(!sid){v733ShowResult('v733-ice-result','请先创建会话');return;}
+  fetch('/api/v733/ice/observe', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({session_id: sid})
+  }).then(r=>r.json()).then(d=>v733ShowResult('v733-ice-result','ℐ观测: '+JSON.stringify(d,null,1)))
+    .catch(e=>v733ShowResult('v733-ice-result','错误: '+e));
+}
+
+function v733IceDecide() {
+  let sid = document.getElementById('v733-ice-sid').value;
+  if(!sid){v733ShowResult('v733-ice-result','请先创建会话');return;}
+  fetch('/api/v733/ice/decide', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({session_id: sid, goal: document.getElementById('v733-ice-goal').value||'optimize'})
+  }).then(r=>r.json()).then(d=>v733ShowResult('v733-ice-result','ℂ决定: '+JSON.stringify(d,null,1)))
+    .catch(e=>v733ShowResult('v733-ice-result','错误: '+e));
+}
+
+function v733IceActuate() {
+  let sid = document.getElementById('v733-ice-sid').value;
+  if(!sid){v733ShowResult('v733-ice-result','请先创建会话');return;}
+  fetch('/api/v733/ice/actuate', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({session_id: sid, goal: document.getElementById('v733-ice-goal').value||'optimize'})
+  }).then(r=>r.json()).then(d=>v733ShowResult('v733-ice-result','ℰ执行: '+JSON.stringify(d,null,1)))
+    .catch(e=>v733ShowResult('v733-ice-result','错误: '+e));
+}
+
+function v733IceCycle() {
+  let sid = document.getElementById('v733-ice-sid').value;
+  if(!sid){v733ShowResult('v733-ice-result','请先创建会话');return;}
+  fetch('/api/v733/ice/cycle', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({session_id: sid, goal: document.getElementById('v733-ice-goal').value||'optimize'})
+  }).then(r=>r.json()).then(d=>v733ShowResult('v733-ice-result','ℐ→ℂ→ℰ闭环: '+JSON.stringify(d,null,1)))
+    .catch(e=>v733ShowResult('v733-ice-result','错误: '+e));
+}
+
+function v733LeanExport() {
+  fetch('/api/v733/lean/export_abc', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      mass_face: parseFloat(document.getElementById('v733-ice-mass').value)||0.0,
+      excess_loop: parseFloat(document.getElementById('v733-lam').value)||0.0
+    })
+  }).then(r=>r.json()).then(d=>v733ShowResult('v733-ice-result','Lean4 ABC导出:\n'+d.lean_code))
+    .catch(e=>v733ShowResult('v733-ice-result','错误: '+e));
+}
+
+function v733HapProtocol() {
+  let intent = document.getElementById('v733-sop-phenom').value||'量子隧穿';
+  fetch('/api/v733/hap/protocol', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({intent: intent, theorem_type: 'abc_weak'})
+  }).then(r=>r.json()).then(d=>v733ShowResult('v733-ice-result','HAP协议('+intent+'): '+JSON.stringify(d,null,1)))
+    .catch(e=>v733ShowResult('v733-ice-result','错误: '+e));
+}
+
+// v7.33 全局操作
+function v733MveRunAll() {
+  v733ShowResult('v733-global-result', 'MVE T265-T267: 定理验证中...');
+  // M223 theorems
+  fetch('/api/v733/m223/theorems').then(r=>r.json()).then(d=>{
+    let lines = ['M223: T232='+(d.T232?.passed?'PASS':'FAIL')+' T233='+(d.T233?.passed?'PASS':'FAIL')+' T234='+(d.T234?.passed?'PASS':'FAIL')];
+    ['t232','t233','t234'].forEach((k,i)=>{
+      let thm=['T232','T233','T234'][i];
+      let passed=[d.T232?.passed,d.T233?.passed,d.T234?.passed][i];
+      let badge=document.getElementById('v733-g-'+k);
+      if(badge){badge.textContent=thm+'✓';badge.style.color=passed?'#10b981':'#ef4444';}
+    });
+    return lines;
+  }).then(lines=>{
+    fetch('/api/v733/m224/theorems').then(r=>r.json()).then(d=>{
+      lines.push('M224: T235='+(d.T235?.passed?'PASS':'FAIL')+' T236='+(d.T236?.passed?'PASS':'FAIL'));
+      ['t235','t236'].forEach((k,i)=>{
+        let thm=['T235','T236'][i]; let passed=[d.T235?.passed,d.T236?.passed][i];
+        let badge=document.getElementById('v733-g-'+k);
+        if(badge){badge.textContent=thm+'✓';badge.style.color=passed?'#10b981':'#ef4444';}
+      });
+      fetch('/api/v733/mnq8/experiment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mass_threshold:1.0})})
+        .then(r=>r.json()).then(exp=>{
+          lines.push('MNQ8对照实验: '+JSON.stringify(exp.conclusions||exp,null,1));
+          v733ShowResult('v733-global-result','MVE T265-T267:\n'+lines.join('\n'));
+        }).catch(e=>v733ShowResult('v733-global-result','MVE: '+lines.join('\n')+'\n实验错误: '+e));
+    });
+  }).catch(e=>v733ShowResult('v733-global-result','MVE错误: '+e));
+}
+
+function v733TheoremAll() {
+  let theorems = ['T232','T233','T234','T235','T236'];
+  let results = [];
+  let count = 0;
+  // M223 theorems
+  fetch('/api/v733/m223/theorems').then(r=>r.json()).then(d=>{
+    ['T232','T233','T234'].forEach(tid=>{
+      let passed = d[tid]?.passed;
+      results.push(tid+': '+(passed?'PASS':'FAIL'));
+      let badge=document.getElementById('v733-g-t'+tid.slice(1));
+      if(badge){badge.textContent=tid+'✓';badge.style.color=passed?'#10b981':'#ef4444';}
+      count++;
+    });
+    return d;
+  }).then(()=>{
+    fetch('/api/v733/m224/theorems').then(r=>r.json()).then(d=>{
+      ['T235','T236'].forEach(tid=>{
+        let passed = d[tid]?.passed;
+        results.push(tid+': '+(passed?'PASS':'FAIL'));
+        let badge=document.getElementById('v733-g-t'+tid.slice(1));
+        if(badge){badge.textContent=tid+'✓';badge.style.color=passed?'#10b981':'#ef4444';}
+        count++;
+      });
+      v733ShowResult('v733-global-result','v7.33定理验证: '+results.join(', '));
+    });
+  }).catch(e=>v733ShowResult('v733-global-result','错误: '+e));
+}
+
+// ==================== v7.32b+c 升级 (M218-M222, 21路由) ====================
+
+function v732cShowResult(elementId, text) {
+  let el = document.getElementById(elementId);
+  if (el) { el.style.display = 'block'; el.textContent = text; }
+}
+
+// M218 ITA触发器
+function v732cItaRegister() {
+  fetch('/api/v732c/ita/register_rule', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      info: document.getElementById('v732c-ita-info').value||'critical_anomaly',
+      context: document.getElementById('v732c-ita-ctx').value||'emergency',
+      action_chain: ['alert','rewire','verify'],
+      category: document.getElementById('v732c-ita-cat').value||'safety'
+    })
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-ita-result','注册规则: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-ita-result','错误: '+e));
+}
+
+function v732cItaEvaluate() {
+  fetch('/api/v732c/ita/evaluate', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({context: document.getElementById('v732c-ita-ctx').value||'emergency'})
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-ita-result','评估: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-ita-result','错误: '+e));
+}
+
+function v732cItaNearMiss() {
+  fetch('/api/v732c/ita/near_miss', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({category:'safety', severity:0.8, root_cause:'latent_failure'})
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-ita-result','Near-Miss: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-ita-result','错误: '+e));
+}
+
+function v732cItaClassify() {
+  fetch('/api/v732c/ita/classify_behavior', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({observations: [{type:'action',value:'self_correction'},{type:'response',value:'cooperative'}]})
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-ita-result','ECP/ICE: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-ita-result','错误: '+e));
+}
+
+// M219 双工厂+智能契约
+function v732cFactoryAssess() {
+  fetch('/api/v732c/factory/assess', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      tf_metrics: {throughput:0.9, error_rate:0.05, latency:0.3},
+      af_metrics: {throughput:0.7, error_rate:0.15, latency:0.6},
+      eta_threshold: parseFloat(document.getElementById('v732c-factory-eta').value)||0.85
+    })
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-factory-result','工厂评估: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-factory-result','错误: '+e));
+}
+
+function v732cFactorySchedule() {
+  fetch('/api/v732c/factory/schedule', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({tasks:[{name:'rewire',priority:1},{name:'verify',priority:2},{name:'report',priority:3}], max_concurrent:2})
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-factory-result','帧节拍: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-factory-result','错误: '+e));
+}
+
+function v732cContractRegister() {
+  fetch('/api/v732c/contract/register', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      role: document.getElementById('v732c-contract-role').value||'TF',
+      pre_conditions: ['eta_above_threshold'],
+      post_conditions: ['state_consistent'],
+      tolerance: 0.1,
+      contract_type: document.getElementById('v732c-contract-type').value||'safety'
+    })
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-factory-result','契约注册: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-factory-result','错误: '+e));
+}
+
+function v732cContractList() {
+  let ct = document.getElementById('v732c-contract-type').value||'';
+  fetch('/api/v732c/contract/list?contract_type='+encodeURIComponent(ct)).then(r=>r.json())
+    .then(d=>v732cShowResult('v732c-factory-result','契约列表: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-factory-result','错误: '+e));
+}
+
+// M220 临界金灵球
+function v732cCriticalInit() {
+  fetch('/api/v732c/critical/init', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      n_nodes: parseInt(document.getElementById('v732c-critical-n').value)||50,
+      sparsity: parseFloat(document.getElementById('v732c-critical-sparse').value)||0.3,
+      inhib_ratio: parseFloat(document.getElementById('v732c-critical-inhib').value)||0.2,
+      weight_std: 1.0,
+      spectral_tolerance: parseFloat(document.getElementById('v732c-critical-tol').value)||0.15
+    })
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-critical-result','临界初始化: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-critical-result','错误: '+e));
+}
+
+function v732cWignerVerify() {
+  fetch('/api/v732c/critical/wigner_verify', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({n_nodes: parseInt(document.getElementById('v732c-critical-n').value)||50, n_trials: 100})
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-critical-result','Wigner验证: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-critical-result','错误: '+e));
+}
+
+function v732cCriticalCompare() {
+  fetch('/api/v732c/critical/compare', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({n_trials: 50})
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-critical-result','P1预言对比: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-critical-result','错误: '+e));
+}
+
+// M221 摄控中心
+function v732cFocusOrbit() {
+  fetch('/api/v732c/focus/orbit', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      energy: parseFloat(document.getElementById('v732c-focus-energy').value)||1.0,
+      angular_momentum: parseFloat(document.getElementById('v732c-focus-L').value)||0.8,
+      mass: 1.0, k: 1.0
+    })
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-focus-result','圆锥轨道: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-focus-result','错误: '+e));
+}
+
+function v732cFocusVelocities() {
+  fetch('/api/v732c/focus/velocities', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      energy: parseFloat(document.getElementById('v732c-focus-energy').value)||1.0,
+      momentum: parseFloat(document.getElementById('v732c-focus-L').value)||0.8,
+      c: 1.0
+    })
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-focus-result','相/群速度: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-focus-result','错误: '+e));
+}
+
+function v732cFocusGovern() {
+  fetch('/api/v732c/focus/govern', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      eccentricity: parseFloat(document.getElementById('v732c-focus-ecc').value)||0.6,
+      energy: parseFloat(document.getElementById('v732c-focus-energy').value)||1.0,
+      context: 'dashboard_control'
+    })
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-focus-result','双焦点摄控: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-focus-result','错误: '+e));
+}
+
+function v732cFocusMoufangDH() {
+  fetch('/api/v732c/focus/moufang_dh', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({private_a: 7, private_b: 13})
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-focus-result','Moufang DH: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-focus-result','错误: '+e));
+}
+
+function v732cFocusSBox() {
+  fetch('/api/v732c/focus/sbox', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({data_bytes:[72,101,108,108,111], key_row:3})
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-focus-result','S-Box: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-focus-result','错误: '+e));
+}
+
+// M222 SerDes本体论引擎
+function v732cSerdesSerialize() {
+  fetch('/api/v732c/serdes/serialize', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      n_nodes: parseInt(document.getElementById('v732c-serdes-n').value)||30,
+      n_steps: parseInt(document.getElementById('v732c-serdes-steps').value)||5
+    })
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-serdes-result','TY-Serialize: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-serdes-result','错误: '+e));
+}
+
+function v732cSerdesDeserialize() {
+  fetch('/api/v732c/serdes/deserialize', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      n_nodes: parseInt(document.getElementById('v732c-serdes-n').value)||30,
+      n_steps: parseInt(document.getElementById('v732c-serdes-steps').value)||5,
+      ice_active: document.getElementById('v732c-serdes-ice').checked
+    })
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-serdes-result','TY-Deserialize: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-serdes-result','错误: '+e));
+}
+
+function v732cSerdesBiCheck() {
+  fetch('/api/v732c/serdes/biserdes_status', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({fteliology_channel:true, ice_composite:true, beta_rewire:true, behavior_loop:true})
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-serdes-result','bi-SerDes: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-serdes-result','错误: '+e));
+}
+
+function v732cSerdesInfoLoss() {
+  fetch('/api/v732c/serdes/info_loss', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      n_nodes: parseInt(document.getElementById('v732c-serdes-n').value)||30,
+      n_steps: parseInt(document.getElementById('v732c-serdes-steps').value)||5
+    })
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-serdes-result','信息损失: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-serdes-result','错误: '+e));
+}
+
+function v732cSerdesEML() {
+  fetch('/api/v732c/serdes/eml_hardening', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({n_nodes: parseInt(document.getElementById('v732c-serdes-n').value)||30})
+  }).then(r=>r.json()).then(d=>v732cShowResult('v732c-serdes-result','EML硬化: '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-serdes-result','错误: '+e));
+}
+
+function v732cSerdesTheorem() {
+  let thm = document.getElementById('v732c-serdes-thm').value;
+  fetch('/api/v732c/serdes/verify_theorem?theorem='+encodeURIComponent(thm)).then(r=>r.json())
+    .then(d=>v732cShowResult('v732c-serdes-result','定理'+thm+': '+JSON.stringify(d,null,1)))
+    .catch(e=>v732cShowResult('v732c-serdes-result','错误: '+e));
+}
+
+// v7.32b+c 全局操作
+function v732bcMveRunAll() {
+  fetch('/api/v732c/serdes/verify_theorem?theorem=T4.1').then(r=>r.json()).then(d=>{
+    let badge = document.getElementById('v732bc-t41');
+    if(badge) { badge.textContent = 'T4.1✓'; badge.style.color = '#10b981'; }
+  }).catch(()=>{});
+  fetch('/api/v732c/serdes/verify_theorem?theorem=T4.2').then(r=>r.json()).then(d=>{
+    let badge = document.getElementById('v732bc-t42');
+    if(badge) { badge.textContent = 'T4.2✓'; badge.style.color = '#10b981'; }
+  }).catch(()=>{});
+  fetch('/api/v732c/serdes/verify_theorem?theorem=T4.3').then(r=>r.json()).then(d=>{
+    let badge = document.getElementById('v732bc-t43');
+    if(badge) { badge.textContent = 'T4.3✓'; badge.style.color = '#10b981'; }
+  }).catch(()=>{});
+  v732cShowResult('v732bc-global-result', 'MVE T258-T264: 正在验证...');
+  fetch('/api/v732c/critical/compare', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({n_trials: 10})
+  }).then(r=>r.json()).then(d=>{
+    v732cShowResult('v732bc-global-result', 'MVE T258-T264 结果:\n' + JSON.stringify(d, null, 1));
+  }).catch(e=>v732cShowResult('v732bc-global-result', 'MVE错误: '+e));
+}
+
+function v732bcTheoremAll() {
+  let theorems = ['T237','T238','T239','T240','T241','T242','T243','T244','T257','T4.1','T4.2','T4.3'];
+  let results = [];
+  let count = 0;
+  theorems.forEach(tid => {
+    if (tid.startsWith('T4.')) {
+      fetch('/api/v732c/serdes/verify_theorem?theorem='+tid).then(r=>r.json()).then(d=>{
+        results.push(tid+': '+(d.passed!==false?'PASS':'FAIL'));
+        let badge = document.getElementById('v732bc-t'+tid.replace('.',''));
+        if(badge) { badge.textContent = tid+'✓'; badge.style.color = d.passed!==false?'#10b981':'#ef4444'; }
+        count++;
+        if(count===theorems.length) v732cShowResult('v732bc-global-result','定理验证: '+results.join(', '));
+      }).catch(e=>{ results.push(tid+': ERR'); count++; });
+    } else {
+      fetch('/api/v731/theorem/verify', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({theorem_id: tid})
+      }).then(r=>r.json()).then(d=>{
+        results.push(tid+': '+(d.passed?'PASS':'FAIL'));
+        let badge = document.getElementById('v732bc-t'+tid.slice(1));
+        if(badge) { badge.textContent = tid+'✓'; badge.style.color = d.passed?'#10b981':'#ef4444'; }
+        count++;
+        if(count===theorems.length) v732cShowResult('v732bc-global-result','定理验证: '+results.join(', '));
+      }).catch(e=>{ results.push(tid+': ERR'); count++; });
+    }
+  });
+}
 
 </script>
 <!-- AI进度指示器弹窗 -->

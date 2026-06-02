@@ -90,10 +90,10 @@ python app.py
 
 ### 前端面板
 
-| 面板 | URL |
-|------|-----|
-| AGI仪表盘 | http://localhost:5000/static/index_agi12.html |
-| M133 Wintel面板 | http://localhost:5000/static/m133_wintel_panel.html |
+| 面板 | URL | 说明 |
+|------|-----|------|
+| AGI仪表盘 | http://localhost:5000/static/index_agi12.html | v7.32c完整仪表盘（222+模块·257+定理） |
+| M133 Wintel面板 | http://localhost:5000/static/m133_wintel_panel.html | M133 W1-W5控制面板 |
 
 ---
 
