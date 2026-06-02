@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Blueprint: v733 (28 routes)
+Blueprint: v733b (40 routes)
 M223-M225 — 金符学3D复广数 + MNQ8能流引擎 + SOP六体系自动生成器 + ICE自指闭环+Lean4对接+HAP协议
+M226 — PCT端口兼容性定理引擎 (T2.40)
+M155 IDO — Ftel信息力增强 + 时间箭头 (T2.41)
 URL prefix: /api/v733
-Version: v7.33 TMK (太一万有理论六合统合)
+Version: v7.33b TMK (太一万有理论六合统合 + TMK端口兼容性)
 """
 
 import math
@@ -867,27 +869,309 @@ def api_v733_m225_theorems():
 
 
 # ══════════════════════════════════════════════════
+# M226 PCTChecker — PCT端口兼容性定理引擎 (T2.40)
+# ══════════════════════════════════════════════════
+
+@bp.route('/pct/check', methods=['POST'])
+def api_v733_pct_check():
+    """
+    PCT四条件兼容性校验
+
+    POST body:
+      src: {ports, phase, chi, grade, name}   源金灵球
+      dst: {ports, phase, chi, grade, name}   目标金灵球
+      target_phase: float                      目标相位 (default 0.0)
+      tolerance: float                         相位容差 (default 0.3)
+    """
+    try:
+        from modules.M226_PCTChecker import PCTChecker, PCTSphere
+        data = request.get_json(force=True) or {}
+        src_data = data.get('src', {})
+        dst_data = data.get('dst', {})
+        target_phase = float(data.get('target_phase', 0.0))
+        tolerance = float(data.get('tolerance', 0.3))
+
+        src = PCTSphere(
+            ports=int(src_data.get('ports', 0)),
+            phase=float(src_data.get('phase', 0.0)),
+            chi=int(src_data.get('chi', 0)),
+            grade=int(src_data.get('grade', 0)),
+            name=src_data.get('name', ''),
+        )
+        dst = PCTSphere(
+            ports=int(dst_data.get('ports', 0)),
+            phase=float(dst_data.get('phase', 0.0)),
+            chi=int(dst_data.get('chi', 0)),
+            grade=int(dst_data.get('grade', 0)),
+            name=dst_data.get('name', ''),
+        )
+
+        checker = PCTChecker()
+        result = checker.check_pct(src, dst, target_phase=target_phase, tolerance=tolerance)
+
+        return jsonify({
+            'src': {'name': src.name, 'ports': src.ports, 'phase': src.phase, 'chi': src.chi, 'grade': src.grade},
+            'dst': {'name': dst.name, 'ports': dst.ports, 'phase': dst.phase, 'chi': dst.chi, 'grade': dst.grade},
+            'result': {
+                'direction_ok': result.direction_ok,
+                'chirality_ok': result.chirality_ok,
+                'phase_ok': result.phase_ok,
+                'grade_ok': result.grade_ok,
+                'compatible': result.compatible,
+                'details': result.details,
+            }
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/pct/score', methods=['POST'])
+def api_v733_pct_score():
+    """
+    PCT兼容性评分 (0-4)
+
+    POST body:
+      src: {ports, phase, chi, grade, name}
+      dst: {ports, phase, chi, grade, name}
+    """
+    try:
+        from modules.M226_PCTChecker import PCTChecker, PCTSphere
+        data = request.get_json(force=True) or {}
+        src_data = data.get('src', {})
+        dst_data = data.get('dst', {})
+
+        src = PCTSphere(
+            ports=int(src_data.get('ports', 0)), phase=float(src_data.get('phase', 0.0)),
+            chi=int(src_data.get('chi', 0)), grade=int(src_data.get('grade', 0)),
+            name=src_data.get('name', ''),
+        )
+        dst = PCTSphere(
+            ports=int(dst_data.get('ports', 0)), phase=float(dst_data.get('phase', 0.0)),
+            chi=int(dst_data.get('chi', 0)), grade=int(dst_data.get('grade', 0)),
+            name=dst_data.get('name', ''),
+        )
+
+        checker = PCTChecker()
+        score = checker.pct_score(src, dst)
+        compatible = checker.is_port_compatible(src, dst)
+
+        return jsonify({'score': score, 'compatible': compatible, 'max_score': 4})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/pct/filter_candidates', methods=['POST'])
+def api_v733_pct_filter_candidates():
+    """
+    β-Rewire候选边PCT过滤
+
+    POST body:
+      spheres: [{name, ports, phase, chi, mod, grade}, ...]
+      min_score: int   最低分数 (default 3)
+    """
+    try:
+        from modules.M226_PCTChecker import PCTChecker, PCTSphere
+        data = request.get_json(force=True) or {}
+        spheres_data = data.get('spheres', [])
+        min_score = int(data.get('min_score', 3))
+
+        checker = PCTChecker()
+        spheres = []
+        for s in spheres_data:
+            spheres.append(PCTSphere(
+                ports=int(s.get('ports', 0)), phase=float(s.get('phase', 0.0)),
+                chi=int(s.get('chi', 0)), mod=float(s.get('mod', 1.0)),
+                grade=int(s.get('grade', 0)), name=s.get('name', ''),
+            ))
+
+        candidates = checker.filter_rewire_candidates(spheres, min_score=min_score)
+        serialized = []
+        for c in candidates:
+            serialized.append({
+                'src_name': c.src_name, 'dst_name': c.dst_name,
+                'port_src': c.port_src, 'port_dst': c.port_dst,
+                'tag': c.tag,
+                'compatible': c.pct_result.compatible,
+                'score': sum([c.pct_result.direction_ok, c.pct_result.chirality_ok,
+                             c.pct_result.phase_ok, c.pct_result.grade_ok]),
+            })
+
+        return jsonify({'candidates': serialized, 'total': len(serialized), 'min_score': min_score})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/m226/state', methods=['GET'])
+def api_v733_m226_state():
+    """M226模块状态查询"""
+    try:
+        from modules.M226_PCTChecker import get_instance
+        inst = get_instance()
+        return jsonify(inst.get_state())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/m226/theorems', methods=['GET'])
+def api_v733_m226_theorems():
+    """M226定理验证 (T2.40)"""
+    try:
+        from modules.M226_PCTChecker import verify_theorem_t240
+        t240 = verify_theorem_t240()
+        return jsonify({'T240': t240, 'all_passed': t240.get('passed', False)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ══════════════════════════════════════════════════
+# M155 IDO — Ftel信息力增强 + 时间箭头 (T2.41)
+# ══════════════════════════════════════════════════
+
+@bp.route('/ido/info_amount', methods=['POST'])
+def api_v733_ido_info_amount():
+    """
+    计算图Shannon信息量
+
+    POST body:
+      heap: {node_id: degree, ...}   度分布字典
+    """
+    try:
+        from modules.M155_FtelOptimizer import get_instance
+        data = request.get_json(force=True) or {}
+        heap = data.get('heap', {})
+        heap_float = {k: float(v) for k, v in heap.items()}
+
+        engine = get_instance()
+        result = engine.api_info_amount(heap_float)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/ido/info_force', methods=['POST'])
+def api_v733_ido_info_force():
+    """
+    计算节点信息力梯度
+
+    POST body:
+      node_id: str                    目标节点
+      heap: {node_id: degree, ...}    度分布字典
+    """
+    try:
+        from modules.M155_FtelOptimizer import get_instance
+        data = request.get_json(force=True) or {}
+        node_id = data.get('node_id', '')
+        heap = data.get('heap', {})
+        heap_float = {k: float(v) for k, v in heap.items()}
+
+        engine = get_instance()
+        result = engine.api_info_force(node_id, heap_float)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/ido/update', methods=['POST'])
+def api_v733_ido_update():
+    """
+    IDO信息力驱动mod微调
+
+    POST body:
+      node_id: str                     目标节点
+      heap: {node_id: degree, ...}     度分布字典
+      current_mod: float               当前mod值 (default 1.0)
+      dt: float                        时间步长 (default 0.1)
+    """
+    try:
+        from modules.M155_FtelOptimizer import get_instance
+        data = request.get_json(force=True) or {}
+        node_id = data.get('node_id', '')
+        heap = data.get('heap', {})
+        heap_float = {k: float(v) for k, v in heap.items()}
+        current_mod = float(data.get('current_mod', 1.0))
+        dt = float(data.get('dt', 0.1))
+
+        engine = get_instance()
+        result = engine.api_ido_update(node_id, heap_float, current_mod, dt)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/ido/time_arrow', methods=['POST'])
+def api_v733_ido_time_arrow():
+    """
+    时间箭头判定
+
+    POST body:
+      info_history: [float, ...]   信息量历史序列 (optional, 使用内部历史)
+    """
+    try:
+        from modules.M155_FtelOptimizer import get_instance
+        data = request.get_json(force=True) or {}
+        info_history = data.get('info_history', None)
+
+        engine = get_instance()
+        result = engine.api_time_arrow(info_history)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/m155/state', methods=['GET'])
+def api_v733_m155_state():
+    """M155模块状态查询 (含IDO增强)"""
+    try:
+        from modules.M155_FtelOptimizer import get_instance
+        inst = get_instance()
+        return jsonify(inst.get_state())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/m155/theorems', methods=['GET'])
+def api_v733_m155_theorems():
+    """M155定理验证 (T122 + T2.41)"""
+    try:
+        from modules.M155_FtelOptimizer import get_instance
+        engine = get_instance()
+        t122 = engine.verify_ftel_least_action()
+        t241 = engine.verify_theorem_t241()
+        return jsonify({
+            'T122': t122,
+            'T241': t241,
+            'all_passed': t122.get('verified', False) and t241.get('verified', False)
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ══════════════════════════════════════════════════
 # v733 全局状态与总览
 # ══════════════════════════════════════════════════
 
 @bp.route('/overview', methods=['GET'])
 def api_v733_overview():
-    """v7.33 TMK模块全局总览"""
+    """v7.33b TMK模块全局总览"""
     try:
         from modules.M223_GoldenSymbol3D import get_instance as m223_inst
         from modules.M224_SOPGeneratorEngine import get_instance as m224_inst
         from modules.M225_ICELeanLoop import get_instance as m225_inst
+        from modules.M226_PCTChecker import get_instance as m226_inst
+        from modules.M155_FtelOptimizer import get_instance as m155_inst
 
         return jsonify({
-            'version': 'v7.33',
-            'codename': 'TMK (太一万有理论六合统合)',
+            'version': 'v7.33b',
+            'codename': 'TMK (太一万有理论六合统合 + 端口兼容性 + IDO信息力)',
             'modules': {
                 'M223': {'name': 'GoldenSymbol3D', 'desc': '金符学3D复广数+MNQ8能流引擎', 'state': m223_inst().get_state()},
                 'M224': {'name': 'SOPGeneratorEngine', 'desc': 'SOP六体系自动生成引擎', 'state': m224_inst().get_state()},
                 'M225': {'name': 'ICELeanLoop', 'desc': 'ICE自指闭环+Lean4对接+HAP协议', 'state': m225_inst().get_state()},
+                'M226': {'name': 'PCTChecker', 'desc': 'PCT端口兼容性定理引擎', 'state': m226_inst().get_state()},
+                'M155': {'name': 'FtelOptimizer', 'desc': 'Ftel+IDO信息力+时间箭头', 'state': m155_inst().get_state()},
             },
-            'theorems': ['T2.32', 'T2.33', 'T2.34', 'T2.35', 'T2.36', 'T2.37', 'T2.38', 'T2.39'],
-            'routes_count': 28,
+            'theorems': ['T2.32', 'T2.33', 'T2.34', 'T2.35', 'T2.36', 'T2.37', 'T2.38', 'T2.39', 'T2.40', 'T2.41'],
+            'routes_count': 40,
             'url_prefix': '/api/v733'
         })
     except Exception as e:
@@ -896,12 +1180,15 @@ def api_v733_overview():
 
 @bp.route('/theorems/all', methods=['GET'])
 def api_v733_theorems_all():
-    """v7.33 全部定理验证 (T2.32-T2.39)"""
+    """v7.33b 全部定理验证 (T2.32-T2.41)"""
     try:
         from modules.M223_GoldenSymbol3D import verify_theorem_t232, verify_theorem_t233, verify_theorem_t234
         from modules.M224_SOPGeneratorEngine import verify_theorem_t235, verify_theorem_t236
         from modules.M225_ICELeanLoop import verify_theorem_t237, verify_theorem_t238, verify_theorem_t239
+        from modules.M226_PCTChecker import verify_theorem_t240
+        from modules.M155_FtelOptimizer import get_instance as m155_get
 
+        m155_engine = m155_get()
         results = {
             'T232': verify_theorem_t232(),
             'T233': verify_theorem_t233(),
@@ -911,16 +1198,18 @@ def api_v733_theorems_all():
             'T237': verify_theorem_t237(),
             'T238': verify_theorem_t238(),
             'T239': verify_theorem_t239(),
+            'T240': verify_theorem_t240(),
+            'T241': m155_engine.verify_theorem_t241(),
         }
 
-        all_passed = all(r.get('passed', False) for r in results.values())
+        all_passed = all(r.get('passed', False) or r.get('verified', False) for r in results.values())
 
         return jsonify({
-            'version': 'v7.33',
+            'version': 'v7.33b',
             'theorems': results,
             'total': len(results),
-            'passed': sum(1 for r in results.values() if r.get('passed', False)),
-            'failed': sum(1 for r in results.values() if not r.get('passed', False)),
+            'passed': sum(1 for r in results.values() if r.get('passed', False) or r.get('verified', False)),
+            'failed': sum(1 for r in results.values() if not (r.get('passed', False) or r.get('verified', False))),
             'all_passed': all_passed
         })
     except Exception as e:

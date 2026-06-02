@@ -5836,12 +5836,53 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
         <div id="v733-ice-result" style="font-size:9px;color:var(--txt2);max-height:110px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
       </div>
 
+      <!-- v7.33b M226 PCT端口兼容性 -->
+      <div class="panel-section panel-v717" id="v733-pct-panel" data-hint="M226 PCTChecker: 端口兼容性四条件校验+评分+候选过滤+T2.40定理">
+        <div class="panel-title">🔌 M226 PCT <span style="font-size:8px;color:var(--txt3)">端口兼容性·T2.40</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v733PctCheck()" style="font-size:9px;padding:2px 6px">PCT校验</button>
+          <button onclick="v733PctScore()" style="font-size:9px;padding:2px 6px">兼容评分</button>
+          <button onclick="v733M226Theorems()" style="font-size:9px;padding:2px 6px">T2.40</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          src: ports<input id="v733-pct-src-ports" value="3" style="width:28px;font-size:8px"> phase<input id="v733-pct-src-phase" value="0.1" style="width:30px;font-size:8px"> chi<input id="v733-pct-src-chi" value="1" style="width:20px;font-size:8px"> grade<input id="v733-pct-src-grade" value="2" style="width:20px;font-size:8px">
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          dst: ports<input id="v733-pct-dst-ports" value="5" style="width:28px;font-size:8px"> phase<input id="v733-pct-dst-phase" value="0.1" style="width:30px;font-size:8px"> chi<input id="v733-pct-dst-chi" value="1" style="width:20px;font-size:8px"> grade<input id="v733-pct-dst-grade" value="2" style="width:20px;font-size:8px">
+        </div>
+        <div style="font-size:8px;color:var(--txt3)">
+          target_phase<input id="v733-pct-tgt-phase" value="0.1" style="width:30px;font-size:8px">
+          <span id="v733-pct-t240" style="color:var(--txt3)">T240</span>
+        </div>
+        <div id="v733-pct-result" style="font-size:9px;color:var(--txt2);max-height:120px;overflow-y:auto;padding:4px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.4;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- v7.33b M155 IDO信息力 -->
+      <div class="panel-section panel-v717" id="v733-ido-panel" data-hint="M155 IDO: Shannon信息量+信息力梯度+mod微调+时间箭头+T2.41定理">
+        <div class="panel-title">🧲 M155 IDO <span style="font-size:8px;color:var(--txt3)">信息力·时间箭头·T2.41</span></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">
+          <button onclick="v733IdoInfoAmount()" style="font-size:9px;padding:2px 6px">信息量</button>
+          <button onclick="v733IdoInfoForce()" style="font-size:9px;padding:2px 6px">信息力</button>
+          <button onclick="v733IdoUpdate()" style="font-size:9px;padding:2px 6px">IDO更新</button>
+          <button onclick="v733IdoTimeArrow()" style="font-size:9px;padding:2px 6px">时间箭头</button>
+          <button onclick="v733M155Theorems()" style="font-size:9px;padding:2px 6px">T122+T241</button>
+        </div>
+        <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
+          heap: <input id="v733-ido-heap" value='{"A":5,"B":3,"C":2}' style="width:120px;font-size:8px">
+          node: <input id="v733-ido-node" value="A" style="width:30px;font-size:8px">
+        </div>
+        <div style="font-size:8px;color:var(--txt3)">
+          <span id="v733-ido-t241" style="color:var(--txt3)">T241</span>
+        </div>
+        <div id="v733-ido-result" style="font-size:9px;color:var(--txt2);max-height:120px;overflow-y:auto;padding:4px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.4;white-space:pre-wrap"></div>
+      </div>
+
       <!-- v7.33 全局控制 -->
-      <div class="panel-section panel-v717" id="v733-global-panel" data-hint="v7.33 TMK全局: 定理验证+版本信息">
-        <div class="panel-title">⚡ v7.33 TMK控制 <span style="font-size:8px;color:var(--txt3)">金符·SOP·ICE·Lean4</span></div>
+      <div class="panel-section panel-v717" id="v733-global-panel" data-hint="v7.33b TMK全局: 定理验证+版本信息">
+        <div class="panel-title">⚡ v7.33b TMK控制 <span style="font-size:8px;color:var(--txt3)">金符·SOP·ICE·PCT·IDO</span></div>
         <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
-          <button onclick="v733TheoremAll()" style="font-size:9px;padding:2px 6px;background:#6d28d9">全定理 T232-T239</button>
-          <button onclick="v733MveRunAll()" style="font-size:9px;padding:2px 6px;background:#6d28d9">MVE T265-T267</button>
+          <button onclick="v733TheoremAll()" style="font-size:9px;padding:2px 6px;background:#6d28d9">全定理 T232-T241</button>
+          <button onclick="v733MveRunAll()" style="font-size:9px;padding:2px 6px;background:#6d28d9">MVE T265-T269</button>
         </div>
         <div style="font-size:8px;color:var(--txt3);margin-bottom:3px">
           <span>新定理:</span>
@@ -5853,6 +5894,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <span id="v733-g-t237" style="color:var(--txt3)">T237</span>
           <span id="v733-g-t238" style="color:var(--txt3)">T238</span>
           <span id="v733-g-t239" style="color:var(--txt3)">T239</span>
+          <span id="v733-g-t240" style="color:var(--txt3)">T240</span>
+          <span id="v733-g-t241" style="color:var(--txt3)">T241</span>
         </div>
         <div id="v733-global-result" style="font-size:9px;color:var(--txt2);max-height:140px;overflow-y:auto;padding:4px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.4;white-space:pre-wrap"></div>
       </div>
@@ -16985,7 +17028,7 @@ function v733MveRunAll() {
 }
 
 function v733TheoremAll() {
-  let theorems = ['T232','T233','T234','T235','T236'];
+  let theorems = ['T232','T233','T234','T235','T236','T240','T241'];
   let results = [];
   let count = 0;
   // M223 theorems
@@ -17007,9 +17050,146 @@ function v733TheoremAll() {
         if(badge){badge.textContent=tid+'✓';badge.style.color=passed?'#10b981':'#ef4444';}
         count++;
       });
-      v733ShowResult('v733-global-result','v7.33定理验证: '+results.join(', '));
+    }).then(()=>{
+      fetch('/api/v733/m226/theorems').then(r=>r.json()).then(d=>{
+        let passed = d['T240']?.passed;
+        results.push('T240: '+(passed?'PASS':'FAIL'));
+        let badge=document.getElementById('v733-g-t240');
+        if(badge){badge.textContent='T240✓';badge.style.color=passed?'#10b981':'#ef4444';}
+      }).then(()=>{
+        fetch('/api/v733/m155/theorems').then(r=>r.json()).then(d=>{
+          let t122p = d['T122']?.verified;
+          let t241p = d['T241']?.verified;
+          results.push('T122: '+(t122p?'PASS':'FAIL'));
+          results.push('T241: '+(t241p?'PASS':'FAIL'));
+          let badge=document.getElementById('v733-g-t241');
+          if(badge){badge.textContent='T241✓';badge.style.color=t241p?'#10b981':'#ef4444';}
+          v733ShowResult('v733-global-result','v7.33b定理验证: '+results.join(', '));
+        });
+      });
     });
   }).catch(e=>v733ShowResult('v733-global-result','错误: '+e));
+}
+
+// ══════════════════════════════════════════════════
+// v7.33b M226 PCT + M155 IDO 前端交互
+// ══════════════════════════════════════════════════
+
+function v733PctCheck() {
+  let src = {
+    ports: parseInt(document.getElementById('v733-pct-src-ports').value)||0,
+    phase: parseFloat(document.getElementById('v733-pct-src-phase').value)||0,
+    chi: parseInt(document.getElementById('v733-pct-src-chi').value)||0,
+    grade: parseInt(document.getElementById('v733-pct-src-grade').value)||0,
+    name: 'SRC'
+  };
+  let dst = {
+    ports: parseInt(document.getElementById('v733-pct-dst-ports').value)||0,
+    phase: parseFloat(document.getElementById('v733-pct-dst-phase').value)||0,
+    chi: parseInt(document.getElementById('v733-pct-dst-chi').value)||0,
+    grade: parseInt(document.getElementById('v733-pct-dst-grade').value)||0,
+    name: 'DST'
+  };
+  let tgtPhase = parseFloat(document.getElementById('v733-pct-tgt-phase').value)||0;
+  fetch('/api/v733/pct/check', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({src, dst, target_phase: tgtPhase})
+  }).then(r=>r.json()).then(d=>{
+    let r2 = d.result || d;
+    let txt = `PCT校验: dir=${r2.direction_ok?'✓':'✗'} chi=${r2.chirality_ok?'✓':'✗'} pha=${r2.phase_ok?'✓':'✗'} grd=${r2.grade_ok?'✓':'✗'} → ${r2.compatible?'✅ 兼容':'❌ 不兼容'}`;
+    v733ShowResult('v733-pct-result', txt);
+  }).catch(e=>v733ShowResult('v733-pct-result','错误: '+e));
+}
+
+function v733PctScore() {
+  let src = {
+    ports: parseInt(document.getElementById('v733-pct-src-ports').value)||0,
+    phase: parseFloat(document.getElementById('v733-pct-src-phase').value)||0,
+    chi: parseInt(document.getElementById('v733-pct-src-chi').value)||0,
+    grade: parseInt(document.getElementById('v733-pct-src-grade').value)||0,
+    name: 'SRC'
+  };
+  let dst = {
+    ports: parseInt(document.getElementById('v733-pct-dst-ports').value)||0,
+    phase: parseFloat(document.getElementById('v733-pct-dst-phase').value)||0,
+    chi: parseInt(document.getElementById('v733-pct-dst-chi').value)||0,
+    grade: parseInt(document.getElementById('v733-pct-dst-grade').value)||0,
+    name: 'DST'
+  };
+  fetch('/api/v733/pct/score', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({src, dst})
+  }).then(r=>r.json()).then(d=>{
+    v733ShowResult('v733-pct-result', `PCT评分: ${d.score}/${d.max_score} ${d.compatible?'✅兼容':'❌不兼容'}`);
+  }).catch(e=>v733ShowResult('v733-pct-result','错误: '+e));
+}
+
+function v733M226Theorems() {
+  fetch('/api/v733/m226/theorems').then(r=>r.json()).then(d=>{
+    let t240 = d.T240 || {};
+    let passed = t240.passed;
+    let badge = document.getElementById('v733-pct-t240');
+    if(badge){badge.textContent='T240'+(passed?'✓':'✗');badge.style.color=passed?'#10b981':'#ef4444';}
+    let cases = t240.test_cases || [];
+    let passCount = cases.filter(c=>c.pass).length;
+    v733ShowResult('v733-pct-result', `T2.40 PCT定理: ${passed?'✅ PASS':'❌ FAIL'} (${passCount}/${cases.length} cases)`);
+  }).catch(e=>v733ShowResult('v733-pct-result','错误: '+e));
+}
+
+function v733IdoInfoAmount() {
+  let heap;
+  try { heap = JSON.parse(document.getElementById('v733-ido-heap').value); } catch(e) { heap = {"A":5,"B":3,"C":2}; }
+  fetch('/api/v733/ido/info_amount', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({heap})
+  }).then(r=>r.json()).then(d=>{
+    v733ShowResult('v733-ido-result', `Shannon信息量: I=${d.info_amount.toFixed(4)} bit (${d.node_count}节点)`);
+  }).catch(e=>v733ShowResult('v733-ido-result','错误: '+e));
+}
+
+function v733IdoInfoForce() {
+  let heap;
+  try { heap = JSON.parse(document.getElementById('v733-ido-heap').value); } catch(e) { heap = {"A":5,"B":3,"C":2}; }
+  let node = document.getElementById('v733-ido-node').value || 'A';
+  fetch('/api/v733/ido/info_force', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({node_id: node, heap})
+  }).then(r=>r.json()).then(d=>{
+    v733ShowResult('v733-ido-result', `节点${d.node_id}: F=${d.info_force.toFixed(4)} p=${d.probability.toFixed(4)}`);
+  }).catch(e=>v733ShowResult('v733-ido-result','错误: '+e));
+}
+
+function v733IdoUpdate() {
+  let heap;
+  try { heap = JSON.parse(document.getElementById('v733-ido-heap').value); } catch(e) { heap = {"A":5,"B":3,"C":2}; }
+  let node = document.getElementById('v733-ido-node').value || 'A';
+  fetch('/api/v733/ido/update', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({node_id: node, heap, current_mod: 1.0, dt: 0.1})
+  }).then(r=>r.json()).then(d=>{
+    let arrow = d.info_force > 0.5 ? '↑mod增长' : '↓mod衰减';
+    v733ShowResult('v733-ido-result', `IDO更新 ${d.node_id}: F=${d.info_force.toFixed(4)} Δmod=${d.mod_delta.toFixed(6)} ${arrow}`);
+  }).catch(e=>v733ShowResult('v733-ido-result','错误: '+e));
+}
+
+function v733IdoTimeArrow() {
+  fetch('/api/v733/ido/time_arrow', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({})
+  }).then(r=>r.json()).then(d=>{
+    let dir = d.direction === 'forward' ? '⏩ 前向(信息增长)' : d.direction === 'backward' ? '⏪ 后向(信息衰减)' : '⏸ 静态';
+    v733ShowResult('v733-ido-result', `时间箭头: ${dir} slope=${d.slope.toFixed(6)} R²=${d.r_squared.toFixed(4)}`);
+  }).catch(e=>v733ShowResult('v733-ido-result','错误: '+e));
+}
+
+function v733M155Theorems() {
+  fetch('/api/v733/m155/theorems').then(r=>r.json()).then(d=>{
+    let t122 = d.T122?.verified;
+    let t241 = d.T241?.verified;
+    let badge = document.getElementById('v733-ido-t241');
+    if(badge){badge.textContent='T241'+(t241?'✓':'✗');badge.style.color=t241?'#10b981':'#ef4444';}
+    v733ShowResult('v733-ido-result', `M155定理: T122 Ftel=${t122?'✅':'❌'} T241 IDO=${t241?'✅':'❌'}`);
+  }).catch(e=>v733ShowResult('v733-ido-result','错误: '+e));
 }
 
 // ==================== v7.32b+c 升级 (M218-M222, 21路由) ====================
