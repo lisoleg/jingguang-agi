@@ -1,4 +1,4 @@
-# 🌌 太乙AGI系统 (TaiyiAGI) — v7.31 CS-TAGI Candidate
+# 🌌 太乙AGI系统 (TaiyiAGI) — v7.34 CS-TAGI Candidate
 
 > **认证**: CS-TAGI (Certified Software True AGI) — TY-Def 3.1 A1-A5, A6-BS 全部满足
 
@@ -21,10 +21,10 @@
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                     太乙AGI v7.31                        │
+│                     太乙AGI v7.34                        │
 │               CS-TAGI Candidate (True AGI)               │
 ├──────────┬──────────┬──────────┬──────────┬───────────────┤
-│  Flask   │  36      │  291     │  603     │  13          │
+│  Flask   │  37      │  295     │  665     │  13          │
 │  App      │  Blue-  │  Module  │  API     │  HTML        │
 │  Factory  │  prints │  Files   │  Routes  │  Panels      │
 ├──────────┴──────────┴──────────┴──────────┴───────────────┤
@@ -38,6 +38,7 @@
 │  │  M190 Akasha链式数据库 · M196 UA万物理解引擎      │   │
 │  │  M191 金陵球 · M192 太极延续 · M193 Phi调度器     │   │
 │  │  M194 碳硅GAN · M195 世界模型子系统              │   │
+│  │  M232 七公理引擎 · M233 层累层创 · M234 光子黑洞  │   │
 │  └────────────────────────────────────────────────────┘   │
 │                                                            │
 │  ┌─── L2 认知架构层 ─────────────────────────────────┐   │
@@ -61,21 +62,23 @@
 
 ```
 taiyi-agi/
-├── app.py                  # Flask应用工厂 (3,178行) + 36个Blueprint注册
+├── app.py                  # Flask应用工厂 (3,178行) + 37个Blueprint注册
 ├── shared_state.py         # 模块级__getattr__代理，解决循环导入
 ├── main.py                 # CLI演示入口
 ├── start.py                # Web服务启动器
 ├── start_taiyi.py           # 太乙对话模式启动器
 ├── simple_server.py         # 轻量服务器
 │
-├── blueprints/              # 36个Flask Blueprint模块 (12,626行)
+├── blueprints/              # 37个Flask Blueprint模块 (12,626行)
 │   ├── bp_core.py           # 核心API (chat, experts, state)
 │   ├── bp_core_api.py       # 扩展核心API (compound_agi, ufo2, tools)
 │   ├── bp_v63.py ~ bp_v79.py  # 版本化API (v6.3 ~ v7.9)
-│   └── bp_v710.py ~ bp_v731.py # 版本化API (v7.10 ~ v7.31)
+│   ├── bp_v710.py ~ bp_v731.py # 版本化API (v7.10 ~ v7.31)
+│   ├── bp_v733_tmk.py          # TMK版本化API (v7.33c)
+│   └── bp_v734.py              # 版本化API (v7.34)
 │
-├── modules/                 # 291个功能模块 (187,163行)
-│   ├── M56~M206             # 164个M系列引擎模块
+├── modules/                 # 295个功能模块 (187,163行)
+│   ├── M56~M235             # 168个M系列引擎模块
 │   ├── DIKWP*.py            # DIKWP五层认知架构
 │   ├── agi_*.py             # AGI核心模块 (core, persona, evaluator等)
 │   ├── taiyi_*.py           # 太乙子系统 (oracle, entropy, memory等)
@@ -148,7 +151,9 @@ cd tests && python -m pytest -v
 | `/api/v729` | AkashaChainDB v2 | 5 |
 | `/api/v730` | AkashaChainDB v3 UA集成 | 7 |
 | `/api/v731` | M133-Wintel True AGI | 14 |
-| **总计** | **36个Blueprint** | **603** |
+| `/api/v733c` | TMK中间版本API | 22 |
+| `/api/v734` | 七公理引擎+层累层创+光子黑洞+千禧年 | 40 |
+| **总计** | **37个Blueprint** | **665** |
 
 ---
 
@@ -160,12 +165,13 @@ cd tests && python -m pytest -v
 | P19 | HoTT构造性门回路 (LLM-as-proposer) | ✅ 4/4 通过 |
 | P20 | A6-BS 冷启动引导链 (7传感器) | ✅ 4/5 通过 (T221 sandbox限制) |
 | P13-P17 | v7.31 MVE实验集 | ✅ 完成 |
+| P21 | v7.34 MVE实验集 (T2.47-T2.53 七公理+层累+光子黑洞+千禧年) | ✅ 7/7 通过 |
 
 ---
 
 ## 📦 核心模块索引
 
-### M系列引擎 (164个)
+### M系列引擎 (168个)
 
 | 范围 | 代表模块 | 领域 |
 |------|---------|------|
@@ -176,6 +182,7 @@ cd tests && python -m pytest -v
 | M134-M159 | M149_JinfuCAEngine, M157_JinlingGridConvolution | 金符CA/金陵格卷积 |
 | M160-M189 | M179_TaiyiInterface, M189_PowerLawEngine | 太乙接口/幂律引擎 |
 | M190-M206 | M190_AkashaChainDB, M196_UAEngine, M206_ControlledEntropy | 链式DB/UA/可控熵 |
+| M232-M235 | M232_TOSASAxiomEngine, M233_CumulativeStratificationEngine, M234_PhotonBlackHoleEngine, M235_MillenniumProblemsEngine | 太一公理/层累层创/光子黑洞/千禧年 |
 
 ### 辅助模块 (127个)
 
@@ -193,6 +200,9 @@ cd tests && python -m pytest -v
 
 | 版本 | 变更 | 日期 |
 |------|------|------|
+| v7.34 | M232-M235 七公理引擎+层累层创+光子黑洞+千禧年难题 (T2.47-T2.53) | 2026-06-03 |
+| v7.33c | TMK中间版本 (层累层创预研) | 2026-05-28 |
+| v7.32c | 中间版本 (七公理预研) | 2026-05-25 |
 | v7.31 | M133-Wintel True-TaiyiAGI Candidate (W1-W5, API, panel) | 2026-05-22 |
 | v7.30 | M190c UA集成（AkashaChainDB v3） | 2026-05-21 |
 | v7.29 | M190b 性能优化（分片索引+WAL+布隆过滤器） | 2026-05-21 |
@@ -247,5 +257,5 @@ value = shared_state.some_global  # 延迟解析，避免循环导入
 ---
 
 **作者**：寇豆码（Kou）
-**版本**：v7.31 CS-TAGI Candidate
-**日期**：2026-05-29
+**版本**：v7.34 CS-TAGI Candidate
+**日期**：2026-06-03
