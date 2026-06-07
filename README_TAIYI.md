@@ -1,8 +1,9 @@
 # Taiyi-AGI 太乙因果机 — CS-TAGI Certified Software True AGI
 
-> **版本**: v7.34 · 229+模块 · 9+层架构 · 270+定理 · 43预言 · 223专家  
+> **版本**: v7.36 · 243+模块 · 9+层架构 · 286+定理 · 43预言 · 223专家  
 > **认证**: CS-TAGI (Certified Software True AGI) — TY-Def 3.1 A1-A5 + A6-BS 全部满足  
 > **核心引擎**: M133 W1-W5 Patches + M196 UA Engine + M190 AkashaChainDB
+> **v7.36新增**: M244(高阶Kuramoto) + M245(五大几何原型) + M246(算术正义) + M247(CRD认知递归) + M248(单纯复形知识) + M249(DIKWP语义) | T2.72-T2.89 MVE 6/6 PASS
 
 ---
 
