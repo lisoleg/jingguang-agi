@@ -1642,6 +1642,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 
 .panel-v735{border-left:2px solid #06b6d4!important;background:linear-gradient(90deg,rgba(6,182,212,.06),transparent)!important}
 .panel-v735 .panel-title{color:#67e8f9!important}
+.panel-v737{border-left:2px solid #ec4899!important;background:linear-gradient(90deg,rgba(236,72,153,.06),transparent)!important}
+.panel-v737 .panel-title{color:#f472b6!important}
 
 .v77-row{display:flex;align-items:center;gap:6px;margin:3px 0}
 .v77-label{font-size:8px;color:var(--txt2);min-width:60px}
@@ -6199,6 +6201,82 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
           <span id="v736-g-t289" style="font-size:8px;padding:1px 4px;background:rgba(167,139,250,0.2);border-radius:3px;color:var(--txt3)">T289</span>
         </div>
         <div id="v736-global-result" style="font-size:9px;color:var(--txt2);max-height:110px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <!-- ═══════════ v7.37: M250 StableWorldModel Engine ═══════════ -->
+      <div class="panel-section panel-v737" id="v737-wm-panel" data-hint="M250 世界模型: f(s,a)→s' 状态转移预测+复合物理先验 T2.90">
+        <div class="panel-title">M250 世界模型预测</div>
+        <div style="display:flex;gap:3px;flex-wrap:wrap;margin:3px 0">
+          <button onclick="v737WmState()" style="font-size:9px;padding:2px 6px">状态</button>
+          <button onclick="v737WmT290()" style="font-size:9px;padding:2px 6px">T290</button>
+          <button onclick="v737WmPredict()" style="font-size:9px;padding:2px 6px">预测</button>
+        </div>
+        <div style="display:flex;gap:3px;flex-wrap:wrap;margin:2px 0">
+          <span style="font-size:8px;color:var(--txt3)">state_dim:</span>
+          <input id="v737-wm-sdim" type="number" value="4" style="width:32px;font-size:8px">
+          <span style="font-size:8px;color:var(--txt3)">action_dim:</span>
+          <input id="v737-wm-adim" type="number" value="2" style="width:32px;font-size:8px">
+        </div>
+        <div id="v737-wm-result" style="font-size:9px;color:var(--txt2);max-height:80px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <div class="panel-section panel-v737" id="v737-cem-panel" data-hint="M250 CEM规划器: 交叉熵方法+滚动时域优化 T2.91">
+        <div class="panel-title">M250 CEM规划器</div>
+        <div style="display:flex;gap:3px;flex-wrap:wrap;margin:3px 0">
+          <button onclick="v737CemState()" style="font-size:9px;padding:2px 6px">状态</button>
+          <button onclick="v737CemT291()" style="font-size:9px;padding:2px 6px">T291</button>
+          <button onclick="v737CemPlan()" style="font-size:9px;padding:2px 6px">规划</button>
+        </div>
+        <div id="v737-cem-result" style="font-size:9px;color:var(--txt2);max-height:80px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <div class="panel-section panel-v737" id="v737-mpc-panel" data-hint="M250 MPC控制器: 模型预测控制+稳定性保证 T2.92">
+        <div class="panel-title">M250 MPC控制器</div>
+        <div style="display:flex;gap:3px;flex-wrap:wrap;margin:3px 0">
+          <button onclick="v737MpcState()" style="font-size:9px;padding:2px 6px">状态</button>
+          <button onclick="v737MpcT292()" style="font-size:9px;padding:2px 6px">T292</button>
+          <button onclick="v737MpcRun()" style="font-size:9px;padding:2px 6px">执行</button>
+        </div>
+        <div id="v737-mpc-result" style="font-size:9px;color:var(--txt2);max-height:80px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <div class="panel-section panel-v737" id="v737-ood-panel" data-hint="M250 OOD泛化: 分布外评估+Wasserstein界 T2.93">
+        <div class="panel-title">M250 OOD泛化评估</div>
+        <div style="display:flex;gap:3px;flex-wrap:wrap;margin:3px 0">
+          <button onclick="v737OodState()" style="font-size:9px;padding:2px 6px">状态</button>
+          <button onclick="v737OodT293()" style="font-size:9px;padding:2px 6px">T293</button>
+          <button onclick="v737OodEval()" style="font-size:9px;padding:2px 6px">评估</button>
+        </div>
+        <div id="v737-ood-result" style="font-size:9px;color:var(--txt2);max-height:80px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <div class="panel-section panel-v737" id="v737-env-panel" data-hint="M250 标准环境套件: PushT/DMControl/OGBench+物理先验+域迁移 T2.94-T2.95">
+        <div class="panel-title">M250 环境套件+物理先验</div>
+        <div style="display:flex;gap:3px;flex-wrap:wrap;margin:3px 0">
+          <button onclick="v737EnvState()" style="font-size:9px;padding:2px 6px">状态</button>
+          <button onclick="v737EnvT294()" style="font-size:9px;padding:2px 6px">T294</button>
+          <button onclick="v737EnvT295()" style="font-size:9px;padding:2px 6px">T295</button>
+          <button onclick="v737EnvList()" style="font-size:9px;padding:2px 6px">环境</button>
+        </div>
+        <div id="v737-env-result" style="font-size:9px;color:var(--txt2);max-height:80px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
+      </div>
+
+      <div class="panel-section panel-v737" id="v737-global-panel" data-hint="v7.37 全局: M250 定理批量验证+MVE+预测验证">
+        <div class="panel-title">v7.37 全局验证</div>
+        <div style="display:flex;gap:3px;flex-wrap:wrap;margin:3px 0">
+          <button onclick="v737TheoremAll()" style="font-size:9px;padding:2px 6px">全部定理</button>
+          <button onclick="v737PredAll()" style="font-size:9px;padding:2px 6px">全部预测</button>
+          <button onclick="v737HealthCheck()" style="font-size:9px;padding:2px 6px">健康</button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin:3px 0">
+          <span id="v737-g-t290" style="font-size:8px;padding:1px 4px;background:rgba(236,72,153,0.2);border-radius:3px;color:var(--txt3)">T290</span>
+          <span id="v737-g-t291" style="font-size:8px;padding:1px 4px;background:rgba(236,72,153,0.2);border-radius:3px;color:var(--txt3)">T291</span>
+          <span id="v737-g-t292" style="font-size:8px;padding:1px 4px;background:rgba(236,72,153,0.2);border-radius:3px;color:var(--txt3)">T292</span>
+          <span id="v737-g-t293" style="font-size:8px;padding:1px 4px;background:rgba(236,72,153,0.2);border-radius:3px;color:var(--txt3)">T293</span>
+          <span id="v737-g-t294" style="font-size:8px;padding:1px 4px;background:rgba(236,72,153,0.2);border-radius:3px;color:var(--txt3)">T294</span>
+          <span id="v737-g-t295" style="font-size:8px;padding:1px 4px;background:rgba(236,72,153,0.2);border-radius:3px;color:var(--txt3)">T295</span>
+        </div>
+        <div id="v737-global-result" style="font-size:9px;color:var(--txt2);max-height:110px;overflow-y:auto;padding:3px;background:rgba(0,0,0,0.2);border-radius:4px;display:none;line-height:1.3;white-space:pre-wrap"></div>
       </div>
 
       <div class="panel-section panel-v735" id="v735-mincomp-panel" data-hint="M236 极简计算主义: 组织不变量+F-ISA指令集+弱意识必要性·T2.54-T2.55">
@@ -18369,6 +18447,140 @@ function v736TheoremAll() {
   });
 }
 function v736HealthCheck() { v736Fetch('/api/v736/health', function(d){ v736ShowResult('v736-global-result', d); }); }
+
+
+// ═══════════════════════════════════════════════════════════════
+// v7.37: M250 StableWorldModel Engine
+// ═══════════════════════════════════════════════════════════════
+function v737Fetch(url, cb, method, data) {
+  method = method || 'GET';
+  var opts = {method: method, headers: {'Content-Type': 'application/json'}};
+  if (data) opts.body = JSON.stringify(data);
+  fetch(url, opts).then(function(r){return r.json()}).then(cb).catch(function(e){console.error('v737 error', e)});
+}
+function v737ShowResult(id, d) {
+  var el = document.getElementById(id);
+  if (el) { el.style.display = 'block'; el.textContent = JSON.stringify(d, null, 2); }
+}
+
+// World Model
+function v737WmState() { v737Fetch('/api/v737/m250/state', function(d){ v737ShowResult('v737-wm-result', d); }); }
+function v737WmT290() {
+  v737Fetch('/api/v737/m250/verify_theorem', function(d){
+    v737ShowResult('v737-wm-result', d);
+    if (d.theorem==='T2.90' || d.proved!==undefined) {
+      var s = document.getElementById('v737-g-t290');
+      if (s) s.style.color = d.proved ? '#34d399' : '#f87171';
+    }
+  }, 'POST', {theorem_id: 'T2.90'});
+}
+function v737WmPredict() {
+  var sdim = parseInt(document.getElementById('v737-wm-sdim').value)||4;
+  var adim = parseInt(document.getElementById('v737-wm-adim').value)||2;
+  var s = []; for(var i=0;i<sdim;i++) s.push(Math.random().toFixed(2)*1);
+  var a = []; for(var j=0;j<adim;j++) a.push((Math.random()-0.5).toFixed(2)*1);
+  v737Fetch('/api/v737/m250/predict', function(d){ v737ShowResult('v737-wm-result', d); },
+    'POST', {state: s, action: a});
+}
+
+// CEM Planner
+function v737CemState() { v737Fetch('/api/v737/m250/cem_state', function(d){ v737ShowResult('v737-cem-result', d); }); }
+function v737CemT291() {
+  v737Fetch('/api/v737/m250/verify_theorem', function(d){
+    v737ShowResult('v737-cem-result', d);
+    if (d.theorem==='T2.91' || d.proved!==undefined) {
+      var s = document.getElementById('v737-g-t291');
+      if (s) s.style.color = d.proved ? '#34d399' : '#f87171';
+    }
+  }, 'POST', {theorem_id: 'T2.91'});
+}
+function v737CemPlan() {
+  v737Fetch('/api/v737/m250/cem_plan', function(d){ v737ShowResult('v737-cem-result', d); }, 'POST', {});
+}
+
+// MPC Controller
+function v737MpcState() { v737Fetch('/api/v737/m250/mpc_state', function(d){ v737ShowResult('v737-mpc-result', d); }); }
+function v737MpcT292() {
+  v737Fetch('/api/v737/m250/verify_theorem', function(d){
+    v737ShowResult('v737-mpc-result', d);
+    if (d.theorem==='T2.92' || d.proved!==undefined) {
+      var s = document.getElementById('v737-g-t292');
+      if (s) s.style.color = d.proved ? '#34d399' : '#f87171';
+    }
+  }, 'POST', {theorem_id: 'T2.92'});
+}
+function v737MpcRun() {
+  v737Fetch('/api/v737/m250/mpc_episode', function(d){ v737ShowResult('v737-mpc-result', d); }, 'POST', {n_steps: 5});
+}
+
+// OOD Evaluator
+function v737OodState() { v737Fetch('/api/v737/m250/ood_state', function(d){ v737ShowResult('v737-ood-result', d); }); }
+function v737OodT293() {
+  v737Fetch('/api/v737/m250/verify_theorem', function(d){
+    v737ShowResult('v737-ood-result', d);
+    if (d.theorem==='T2.93' || d.proved!==undefined) {
+      var s = document.getElementById('v737-g-t293');
+      if (s) s.style.color = d.proved ? '#34d399' : '#f87171';
+    }
+  }, 'POST', {theorem_id: 'T2.93'});
+}
+function v737OodEval() {
+  v737Fetch('/api/v737/m250/ood_evaluate', function(d){ v737ShowResult('v737-ood-result', d); }, 'POST', {});
+}
+
+// Environment + Physics Prior
+function v737EnvState() { v737Fetch('/api/v737/m250/env_state', function(d){ v737ShowResult('v737-env-result', d); }); }
+function v737EnvT294() {
+  v737Fetch('/api/v737/m250/verify_theorem', function(d){
+    v737ShowResult('v737-env-result', d);
+    if (d.theorem==='T2.94' || d.proved!==undefined) {
+      var s = document.getElementById('v737-g-t294');
+      if (s) s.style.color = d.proved ? '#34d399' : '#f87171';
+    }
+  }, 'POST', {theorem_id: 'T2.94'});
+}
+function v737EnvT295() {
+  v737Fetch('/api/v737/m250/verify_theorem', function(d){
+    v737ShowResult('v737-env-result', d);
+    if (d.theorem==='T2.95' || d.proved!==undefined) {
+      var s = document.getElementById('v737-g-t295');
+      if (s) s.style.color = d.proved ? '#34d399' : '#f87171';
+    }
+  }, 'POST', {theorem_id: 'T2.95'});
+}
+function v737EnvList() {
+  v737Fetch('/api/v737/m250/list_environments', function(d){ v737ShowResult('v737-env-result', d); });
+}
+
+// v7.37 Global
+function v737TheoremAll() {
+  var theorems = ['T2.90','T2.91','T2.92','T2.93','T2.94','T2.95'];
+  var results = {};
+  var n = theorems.length; var done = 0;
+  theorems.forEach(function(tid) {
+    v737Fetch('/api/v737/m250/verify_theorem', function(d) {
+      results[tid] = d.proved;
+      var sid = 'v737-g-' + tid.replace('.', '').toLowerCase();
+      var s = document.getElementById(sid);
+      if (s) s.style.color = d.proved ? '#34d399' : '#f87171';
+      done++;
+      if (done === n) v737ShowResult('v737-global-result', results);
+    }, 'POST', {theorem_id: tid});
+  });
+}
+function v737PredAll() {
+  var preds = ['P23', 'P24'];
+  var results = {};
+  var n = preds.length; var done = 0;
+  preds.forEach(function(pid) {
+    v737Fetch('/api/v737/m250/verify_prediction', function(d) {
+      results[pid] = d.passed;
+      done++;
+      if (done === n) v737ShowResult('v737-global-result', results);
+    }, 'POST', {prediction_id: pid});
+  });
+}
+function v737HealthCheck() { v737Fetch('/api/v737/health', function(d){ v737ShowResult('v737-global-result', d); }); }
 
 
 // v7.35 Global
