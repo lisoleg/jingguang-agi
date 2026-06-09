@@ -3085,6 +3085,7 @@ from blueprints.bp_v734 import bp as bp_v734
 from blueprints.bp_v735 import bp as bp_v735
 from blueprints.bp_v736 import bp as bp_v736
 from blueprints.bp_v737 import bp as bp_v737
+from blueprints.bp_v738 import bp as bp_v738
 from blueprints.bp_v74 import bp as bp_v74
 from blueprints.bp_v75 import bp as bp_v75
 from blueprints.bp_v76 import bp as bp_v76
@@ -3130,6 +3131,7 @@ app.register_blueprint(bp_v734)
 app.register_blueprint(bp_v735)
 app.register_blueprint(bp_v736)
 app.register_blueprint(bp_v737)
+app.register_blueprint(bp_v738)
 app.register_blueprint(bp_v75)
 app.register_blueprint(bp_v76)
 app.register_blueprint(bp_v77)
