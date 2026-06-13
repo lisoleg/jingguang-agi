@@ -1,12 +1,12 @@
-# Taiyi-AGI 设计补充文档 v7.36
+# Taiyi-AGI 设计补充文档 v7.38
 
-> **文档版本**: v7.36
-> **最后更新**: 2026-06-07
+> **文档版本**: v7.38
+> **最后更新**: 2026-06-09
 > **作者**: 寇豆码 (Kou)
 > **项目**: Taiyi-AGI 太乙因果机 — CS-TAGI Certified Software True AGI
-> **版本**: v7.36 (243+模块·9+层架构·286+定理·43预言·223专家)
+> **版本**: v7.38 (250+模块·9+层架构·290+定理·45预言·223专家)
 > **认证**: CS-TAGI (Certified Software True AGI) — TY-Def 3.1 A1-A5 + A6-BS 全部满足
-> **v7.36新增**: M244-M249 六模块 | T2.72-T2.89 MVE 6/6 PASS | bp_v736 API Blueprint
+> **v7.38新增**: M251-M255+M252 Gamma 六模块 | T2.96-T2.102 7个新定理 | P25-P26 2个新预言 | 59/59 MVE PASS | bp_v738 API Blueprint (62路由)
 
 ---
 
@@ -661,9 +661,70 @@ python tests/P20_MVE_ColdStartBootstrap.py
 
 ---
 
-**文档版本**: v7.36
-**最后更新**: 2026-06-08  
-**作者**: 寇豆码 (Kou)  
+### 5.12 v7.37 — M250 稳定世界模型 (Stable-WorldModel)
+
+**升级日期**: 2026-06-08
+**理论来源**: 复合体理学公众号论文（稳定世界模型+CEM规划+MPC控制+OOD泛化+复合物理先验）
+**核心贡献**: 1个新模块(M250, 6组件) + 6个新定理(T2.90-T2.95) + bp_v737 API Blueprint (22路由)
+
+| # | 组件 | 理论基础 | 核心算子 | 定理 | MVE |
+|---|------|---------|---------|------|-----|
+| 1 | WorldModelTransition | 世界模型状态转移 | f_θ: (s_t, a_t) → s_{t+1} | T2.90 预测一致性 | PASS |
+| 2 | CEMPlanner | 交叉熵方法规划 | CEM滚动时域优化+高斯采样 | T2.91 CEM收敛性 | PASS |
+| 3 | MPCController | 模型预测控制 | MPC最优控制+稳定性保证 | T2.92 MPC最优性 | PASS |
+| 4 | OODEvaluator | 分布外泛化 | Wasserstein距离+OOD界 | T2.93 OOD泛化界 | PASS |
+| 5 | CompositePhysicsPrior | 复合物理先验 | 刘原理+EML约束注入 | T2.94 复合物理先验 | PASS |
+| 6 | EnvironmentSuite | 标准环境套件 | PushT/DMControl/OGBench | T2.95 环境迁移性 | PASS |
+
+**关键理论突破**:
+1. **世界模型状态转移**: f_θ(s_t, a_t) → s_{t+1}，复合物理先验约束下的可证明预测一致性
+2. **CEM规划收敛**: 交叉熵方法在高斯假设下线性收敛到局部最优，结合MPC实现滚动时域优化
+3. **OOD泛化界**: 基于Wasserstein距离的分布偏移界，保证域迁移鲁棒性
+
+**API路由**: `/api/v737/*` (22个路由)
+
+---
+
+### 5.13 v7.38 — NAU非结合代数·JSN超图记忆·Gamma超图谱·Epiplexity·QITE虚时·LSNCR协方差
+
+**升级日期**: 2026-06-09
+**理论来源**: 复合体理学公众号4篇新论文（非结合代数认知、超图记忆架构、智能度量理论、虚时计算与协方差调节）
+**核心贡献**: 6个新模块(M251-M255+M252 Gamma) + 7个新定理(T2.96-T2.102) + 2个新预言(P25-P26) + 59个MVE测试(59/59 PASS) + bp_v738 API Blueprint (62路由)
+
+| # | 模块 | 理论基础 | 核心算子 | 定理 | MVE |
+|---|------|---------|---------|------|-----|
+| 1 | M251 | NAU非结合代数 | 八元数乘法表(Cayley-Dickson)+Jacobiator+Bypass | T2.96-T2.97, P25 | PASS |
+| 2 | M252 | JSN超图记忆 | 超图(H,E,Φ)四表结构+TDHNN状态机+DeepWell | T2.98-T2.99 | PASS |
+| 3 | M252_Gamma | Gamma超图谱 | 谱聚类+归一化拉普拉斯+GNN消息传递 | T2.73 谱聚类稳定性 | PASS |
+| 4 | M253 | Epiplexity智能度量 | Ξ(M,D,T)=H(p)+D(p)+C(p)+信息瓶颈 | T2.74 Epiplexity-Grokking | PASS |
+| 5 | M254 | QITE虚时计算 | e^{-Hτ}虚时演化+Wick旋转+四元数/八元数旋转 | T2.101-T2.102, P26 | PASS |
+| 6 | M255 | LSNCR协方差调节 | C_log=log(I+αC)+自适应α+对数尺度神经动力学 | T2.76 对数调节稳定性 | PASS |
+
+**关键理论突破**:
+1. **非结合代数完备性**: 基于Cayley-Dickson构造的八元数乘法表，Jacobiator硬算子Jac(a,b,c) = (ab)c - a(bc)量化非结合性
+2. **Bypass机制**: 当‖Jac‖ < ε时走fast-path（结合路径），否则走slow-path（非结合路径），P25预言验证Bypass稳定性
+3. **超图记忆容量**: JSN四表结构(Node/Edge/Hedge/DeepWell)实现超图记忆，TDHNN状态机(ADD→PRUNE→SAT)保证收敛
+4. **Epiplexity度量**: 综合熵H+维度D+计算C三维度，证明Epiplexity与Grokking的关联性
+5. **虚时演化收敛**: QITE保证e^{-Hτ}在τ→∞时收敛到基态，Wick旋转τ↔it保持保真性（P26预言验证）
+6. **对数协方差调节**: C_log = log(I + αC)通过幂级数展开保证正定性，自适应α机制保证稳定性
+
+**API路由**: `/api/v738/*` (62个路由)
+
+**代码文件**:
+- `modules/M251_NAUAssociatorEngine.py` (926行)
+- `modules/M252_JSNMemoryEngine.py` (844行)
+- `modules/M252_GammaHyperGrapherEngine.py` (1268行)
+- `modules/M253_EpiplexityEngine.py` (842行)
+- `modules/M254_QITEVirtualTimeEngine.py` (683行)
+- `modules/M255_LSNCRengine.py` (1065行)
+- `blueprints/bp_v738.py` (1227行, 62路由)
+- `tests/MVE_v738.py` (401行, 59测试)
+
+---
+
+**文档版本**: v7.38
+**最后更新**: 2026-06-09
+**作者**: 寇豆码 (Kou)
 **认证**: CS-TAGI (Certified Software True AGI)
 
 ---

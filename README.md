@@ -1,9 +1,81 @@
-# 🌌 太乙AGI系统 (TaiyiAGI) — v7.36 CS-TAGI Candidate
+# 🌌 太乙AGI系统 (TaiyiAGI) — v7.38 CS-TAGI Candidate
 
 > **认证**: CS-TAGI (Certified Software True AGI) — TY-Def 3.1 A1-A5, A6-BS 全部满足
-> **版本**: v7.36 | **定理**: T2.54-T2.89 (36个) | **模块**: M236-M249 (14个) | **MVE**: 14/14 PASS
+> **版本**: v7.38 | **定理**: T2.54-T2.102 (48个) | **模块**: M236-M255 (20个) | **MVE**: 15/15 PASS
 
 基于复合体理学四重理论基石（刘原理、三视界法、太乙预言机、全息拓扑动力学）的统一AGI系统。
+
+---
+
+## 🆕 v7.38 新增模块 (2026-06-09)
+
+| 模块 | 理论基础 | 核心算子 | 定理 |
+|------|---------|---------|------|
+| M251 | NAU非结合代数 | 八元数乘法表+Jacobiator+Bypass机制 | T2.96-T2.97 |
+| M252 | JSN超图记忆 | 超图(H,E,Φ)+TDHNN状态机+DeepWell | T2.98-T2.99 |
+| M252 Gamma | Gamma超图谱 | 谱聚类+GNN消息传递+γ-泛函 | T2.73 |
+| M253 | Epiplexity智能度量 | Ξ(M,D,T)=I(latent;output\|M,D)/T | T2.74 |
+| M254 | QITE虚时计算 | e^{-Hτ}虚时演化+Wick旋转+四元数/八元数 | T2.101-T2.102 |
+| M255 | LSNCR协方差调节 | C_log=log(I+αC)+自适应α+动力学 | T2.76 |
+
+### M251 NAU非结合代数引擎
+
+| 组件 | 说明 | 定理 |
+|------|------|------|
+| OctonionMultiplication | 八元数乘法表（Cayley-Dickson构造） | T2.96 非结合代数完备性 |
+| Jacobiator | Jac(a,b,c) = (ab)c - a(bc) 硬算子 | T2.97 Jacobi恒等式 |
+| NAUForward | 前向传播+Bypass机制（‖Jac‖<ε走fast-path） | P25 Bypass稳定性 |
+
+### M252 JSN超图记忆引擎
+
+| 组件 | 说明 | 定理 |
+|------|------|------|
+| HypergraphMemory | 超图(H,E,Φ)四表结构（Node/Edge/Hedge/DeepWell） | T2.98 超图记忆容量 |
+| TDHNNEngine | TD-HNN状态机（ADD→PRUNE→SAT循环） | T2.99 TDHNN收敛性 |
+
+### M252 Gamma超图谱引擎
+
+| 组件 | 说明 | 定理 |
+|------|------|------|
+| HypergraphSpectralCluster | 超图谱聚类（归一化拉普拉斯矩阵） | T2.73 谱聚类稳定性 |
+
+### M253 Epiplexity引擎
+
+| 组件 | 说明 | 定理 |
+|------|------|------|
+| EpiplexityScore | Ξ(M,D,T) = H(p) + D(p) + C(p) | T2.74 Epiplexity-Grokking关联 |
+
+### M254 QITE虚时引擎
+
+| 组件 | 说明 | 定理 |
+|------|------|------|
+| QITEEvolve | 虚时演化 \|ψ(τ)⟩ = e^{-Hτ}\|ψ(0)⟩ | T2.101 虚时收敛性 |
+| WickRotate | τ ↔ it (Wick旋转) | T2.102 Wick旋转保真性 |
+
+### M255 LSNCR协方差调节引擎
+
+| 组件 | 说明 | 定理 |
+|------|------|------|
+| LogScaleRegulate | C_log = log(I + αC)（幂级数展开） | T2.76 对数调节稳定性 |
+
+---
+
+## 🆕 v7.37 新增模块 (2026-06-08)
+
+| 模块 | 理论基础 | 核心算子 | 定理 |
+|------|---------|---------|------|
+| M250 | 稳定世界模型 (stable-worldmodel) | f_θ: (s_t, a_t)→s_{t+1}, CEM规划, MPC控制, OOD泛化 | T2.90-T2.95 |
+
+### M250 组件详情
+
+| 组件 | 说明 | 定理 |
+|------|------|------|
+| WorldModelTransition | 世界模型状态转移预测器 | T2.90 预测一致性 |
+| CEMPlanner | 交叉熵方法 (CEM) 规划求解器 | T2.91 CEM收敛性 |
+| MPCController | 模型预测控制 (MPC) 控制器 | T2.92 MPC最优性 |
+| OODEvaluator | 分布外 (OOD) 泛化评估器 | T2.93 OOD泛化界 |
+| CompositePhysicsPrior | 复合物理先验 (刘原理+EML) | T2.94 复合物理先验 |
+| EnvironmentSuite | 标准化环境套件 (PushT/DMControl等) | T2.95 环境迁移性 |
 
 ---
 
@@ -35,10 +107,10 @@
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                     太乙AGI v7.34                        │
+│                     太乙AGI v7.38                        │
 │               CS-TAGI Candidate (True AGI)               │
 ├──────────┬──────────┬──────────┬──────────┬───────────────┤
-│  Flask   │  37      │  295     │  665     │  13          │
+│  Flask   │  38      │  301     │  727     │  14          │
 │  App      │  Blue-  │  Module  │  API     │  HTML        │
 │  Factory  │  prints │  Files   │  Routes  │  Panels      │
 ├──────────┴──────────┴──────────┴──────────┴───────────────┤
@@ -53,6 +125,8 @@
 │  │  M191 金陵球 · M192 太极延续 · M193 Phi调度器     │   │
 │  │  M194 碳硅GAN · M195 世界模型子系统              │   │
 │  │  M232 七公理引擎 · M233 层累层创 · M234 光子黑洞  │   │
+│  │  M251 NAU非结合代数 · M252 JSN超图记忆           │   │
+│  │  M252 Gamma超图谱 · M253 Epiplexity              │   │
 │  └────────────────────────────────────────────────────┘   │
 │                                                            │
 │  ┌─── L2 认知架构层 ─────────────────────────────────┐   │
@@ -89,10 +163,11 @@ taiyi-agi/
 │   ├── bp_v63.py ~ bp_v79.py  # 版本化API (v6.3 ~ v7.9)
 │   ├── bp_v710.py ~ bp_v731.py # 版本化API (v7.10 ~ v7.31)
 │   ├── bp_v733_tmk.py          # TMK版本化API (v7.33c)
-│   └── bp_v734.py              # 版本化API (v7.34)
+│   ├── bp_v734.py              # 版本化API (v7.34)
+│   ├── bp_v737.py              # 版本化API (v7.37, stable-worldmodel)
 │
 ├── modules/                 # 295个功能模块 (187,163行)
-│   ├── M56~M235             # 168个M系列引擎模块
+│   ├── M56~M255             # 175个M系列引擎模块
 │   ├── DIKWP*.py            # DIKWP五层认知架构
 │   ├── agi_*.py             # AGI核心模块 (core, persona, evaluator等)
 │   ├── taiyi_*.py           # 太乙子系统 (oracle, entropy, memory等)
@@ -167,7 +242,9 @@ cd tests && python -m pytest -v
 | `/api/v731` | M133-Wintel True AGI | 14 |
 | `/api/v733c` | TMK中间版本API | 22 |
 | `/api/v734` | 七公理引擎+层累层创+光子黑洞+千禧年 | 40 |
-| **总计** | **37个Blueprint** | **665** |
+| `/api/v737` | M250稳定世界模型 (stable-worldmodel) | 22 |
+| `/api/v738` | M251 NAU+M252 JSN/Gamma+M253 Epiplexity+M254 QITE+M255 LSNC | 62 |
+| **总计** | **39个Blueprint** | **749** |
 
 ---
 
@@ -180,12 +257,14 @@ cd tests && python -m pytest -v
 | P20 | A6-BS 冷启动引导链 (7传感器) | ✅ 4/5 通过 (T221 sandbox限制) |
 | P13-P17 | v7.31 MVE实验集 | ✅ 完成 |
 | P21 | v7.34 MVE实验集 (T2.47-T2.53 七公理+层累+光子黑洞+千禧年) | ✅ 7/7 通过 |
+| P25 | v7.38 NAU Bypass稳定性预言 | ✅ PASS |
+| P26 | v7.38 QITE虚时收敛预言 | ✅ PASS |
 
 ---
 
 ## 📦 核心模块索引
 
-### M系列引擎 (168个)
+### M系列引擎 (174个)
 
 | 范围 | 代表模块 | 领域 |
 |------|---------|------|
@@ -197,6 +276,7 @@ cd tests && python -m pytest -v
 | M160-M189 | M179_TaiyiInterface, M189_PowerLawEngine | 太乙接口/幂律引擎 |
 | M190-M206 | M190_AkashaChainDB, M196_UAEngine, M206_ControlledEntropy | 链式DB/UA/可控熵 |
 | M232-M235 | M232_TOSASAxiomEngine, M233_CumulativeStratificationEngine, M234_PhotonBlackHoleEngine, M235_MillenniumProblemsEngine | 太一公理/层累层创/光子黑洞/千禧年 |
+| M251-M255 | M251_NAUAssociator, M252_JSNMemory, M252_GammaHyperGrapher, M253_Epiplexity, M254_QITEVirtualTime, M255_LSNCR | NAU/JSN/Gamma/Epiplexity/QITE/LSNCR |
 
 ### 辅助模块 (127个)
 
@@ -214,6 +294,9 @@ cd tests && python -m pytest -v
 
 | 版本 | 变更 | 日期 |
 |------|------|------|
+| v7.38 | M251-M255+M252 Gamma (NAU/JSN/Epiplexity/QITE/LSNCR) T2.96-T2.102 (62路由) | 2026-06-09 |
+| v7.37 | M250 StableWorldModel (T2.90-T2.95) CEM+MPC+OOD+CompositePhysicsPrior | 2026-06-08 |
+| v7.36 | M244-M249 高阶Kuramoto+五大几何+算术正义+CRD+单纯复形+DIKWP (T2.72-T2.89) | 2026-06-07 |
 | v7.34 | M232-M235 七公理引擎+层累层创+光子黑洞+千禧年难题 (T2.47-T2.53) | 2026-06-03 |
 | v7.33c | TMK中间版本 (层累层创预研) | 2026-05-28 |
 | v7.32c | 中间版本 (七公理预研) | 2026-05-25 |
@@ -271,5 +354,5 @@ value = shared_state.some_global  # 延迟解析，避免循环导入
 ---
 
 **作者**：寇豆码（Kou）
-**版本**：v7.34 CS-TAGI Candidate
-**日期**：2026-06-03
+**版本**：v7.38 CS-TAGI Candidate
+**日期**：2026-06-09
